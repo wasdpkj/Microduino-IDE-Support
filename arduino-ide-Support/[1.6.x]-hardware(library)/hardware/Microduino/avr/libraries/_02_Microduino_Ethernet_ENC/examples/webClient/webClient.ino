@@ -9,7 +9,7 @@ static byte mymac[] = { 0x74,0x69,0x69,0x2D,0x30,0x31 };
 byte Ethernet::buffer[700];
 static uint32_t timer;
 
-char website[] PROGMEM = "www.google.com";
+const char website[] PROGMEM = "www.google.com";
 
 // called when the client request is complete
 static void my_callback (byte status, word off, word len) {
@@ -21,12 +21,12 @@ static void my_callback (byte status, word off, word len) {
 
 void setup () {
   Serial.begin(57600);
-  Serial.println("\n[webClient]");
+  Serial.println(F("\n[webClient]"));
 
   if (ether.begin(sizeof Ethernet::buffer, mymac) == 0) 
-    Serial.println( "Failed to access Ethernet controller");
+    Serial.println(F("Failed to access Ethernet controller"));
   if (!ether.dhcpSetup())
-    Serial.println("DHCP failed");
+    Serial.println(F("DHCP failed"));
 
   ether.printIp("IP:  ", ether.myip);
   ether.printIp("GW:  ", ether.gwip);  

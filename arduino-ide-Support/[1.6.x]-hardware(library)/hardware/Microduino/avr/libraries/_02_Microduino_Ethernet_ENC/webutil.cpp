@@ -6,32 +6,32 @@
 
 #include "EtherCard.h"
 
-void EtherCard::copyIp (byte *dst, const byte *src) {
+void EtherCard::copyIp (uint8_t *dst, const uint8_t *src) {
     memcpy(dst, src, 4);
 }
 
-void EtherCard::copyMac (byte *dst, const byte *src) {
+void EtherCard::copyMac (uint8_t *dst, const uint8_t *src) {
     memcpy(dst, src, 6);
 }
 
-void EtherCard::printIp (const char* msg, const byte *buf) {
+void EtherCard::printIp (const char* msg, const uint8_t *buf) {
     Serial.print(msg);
     EtherCard::printIp(buf);
     Serial.println();
 }
 
-void EtherCard::printIp (const __FlashStringHelper *ifsh, const byte *buf) {
-	Serial.print(ifsh);
-	EtherCard::printIp(buf);
-	Serial.println();
+void EtherCard::printIp (const __FlashStringHelper *ifsh, const uint8_t *buf) {
+    Serial.print(ifsh);
+    EtherCard::printIp(buf);
+    Serial.println();
 }
 
-void EtherCard::printIp (const byte *buf) {
-	for (byte i = 0; i < 4; ++i) {
-		Serial.print( buf[i], DEC );
-		if (i < 3)
-			Serial.print('.');
-	}
+void EtherCard::printIp (const uint8_t *buf) {
+    for (uint8_t i = 0; i < 4; ++i) {
+        Serial.print( buf[i], DEC );
+        if (i < 3)
+            Serial.print('.');
+    }
 }
 
 // search for a string of the form key=value in
@@ -40,30 +40,30 @@ void EtherCard::printIp (const byte *buf) {
 // The returned value is stored in strbuf. You must allocate
 // enough storage for strbuf, maxlen is the size of strbuf.
 // I.e the value it is declated with: strbuf[5]-> maxlen=5
-byte EtherCard::findKeyVal (const char *str,char *strbuf, byte maxlen,const char *key)
+uint8_t EtherCard::findKeyVal (const char *str,char *strbuf, uint8_t maxlen,const char *key)
 {
-    byte found=0;
-    byte i=0;
+    uint8_t found=0;
+    uint8_t i=0;
     const char *kp;
     kp=key;
-    while(*str &&  *str!=' ' && *str!='\n' && found==0){
-        if (*str == *kp){
+    while(*str &&  *str!=' ' && *str!='\n' && found==0) {
+        if (*str == *kp) {
             kp++;
-            if (*kp == '\0'){
+            if (*kp == '\0') {
                 str++;
                 kp=key;
-                if (*str == '='){
+                if (*str == '=') {
                     found=1;
                 }
             }
-        }else{
+        } else {
             kp=key;
         }
         str++;
     }
-    if (found==1){
+    if (found==1) {
         // copy the value to a buffer and terminate it with '\0'
-        while(*str &&  *str!=' ' && *str!='\n' && *str!='&' && i<maxlen-1){
+        while(*str &&  *str!=' ' && *str!='\n' && *str!='&' && i<maxlen-1) {
             *strbuf=*str;
             i++;
             str++;
@@ -78,13 +78,13 @@ byte EtherCard::findKeyVal (const char *str,char *strbuf, byte maxlen,const char
 // convert a single hex digit character to its integer value
 unsigned char h2int(char c)
 {
-    if (c >= '0' && c <='9'){
+    if (c >= '0' && c <='9') {
         return((unsigned char)c - '0');
     }
-    if (c >= 'a' && c <='f'){
+    if (c >= 'a' && c <='f') {
         return((unsigned char)c - 'a' + 10);
     }
-    if (c >= 'A' && c <='F'){
+    if (c >= 'A' && c <='F') {
         return((unsigned char)c - 'A' + 10);
     }
     return(0);
@@ -112,25 +112,25 @@ void EtherCard::urlDecode (char *urlbuf)
 void int2h(char c, char *hstr)
 {
     hstr[1]=(c & 0xf)+'0';
-    if ((c & 0xf) >9){
+    if ((c & 0xf) >9) {
         hstr[1]=(c & 0xf) - 10 + 'a';
     }
     c=(c>>4)&0xf;
     hstr[0]=c+'0';
-    if (c > 9){
+    if (c > 9) {
         hstr[0]=c - 10 + 'a';
     }
     hstr[2]='\0';
 }
 
-// there must be enoug space in urlbuf. In the worst case that is
+// there must be enough space in urlbuf. In the worst case that is
 // 3 times the length of str
 void EtherCard::urlEncode (char *str,char *urlbuf)
 {
     char c;
     while ((c = *str) != 0) {
-        if (c == ' '||isalnum(c)){ 
-            if (c == ' '){ 
+        if (c == ' '||isalnum(c)) {
+            if (c == ' ') {
                 c = '+';
             }
             *urlbuf=c;
@@ -148,23 +148,23 @@ void EtherCard::urlEncode (char *str,char *urlbuf)
     *urlbuf='\0';
 }
 
-// parse a string an extract the IP to bytestr
-byte EtherCard::parseIp (byte *bytestr,char *str)
+// parse a string and extract the IP to bytestr
+uint8_t EtherCard::parseIp (uint8_t *bytestr,char *str)
 {
     char *sptr;
-    byte i=0;
+    uint8_t i=0;
     sptr=NULL;
-    while(i<4){
+    while(i<4) {
         bytestr[i]=0;
         i++;
     }
     i=0;
-    while(*str && i<4){
+    while(*str && i<4) {
         // if a number then start
-        if (sptr==NULL && isdigit(*str)){
+        if (sptr==NULL && isdigit(*str)) {
             sptr=str;
         }
-        if (*str == '.'){
+        if (*str == '.') {
             *str ='\0';
             bytestr[i]=(atoi(sptr)&0xff);
             i++;
@@ -173,7 +173,7 @@ byte EtherCard::parseIp (byte *bytestr,char *str)
         str++;
     }
     *str ='\0';
-    if (i==3){
+    if (i==3) {
         bytestr[i]=(atoi(sptr)&0xff);
         return(0);
     }
@@ -181,14 +181,16 @@ byte EtherCard::parseIp (byte *bytestr,char *str)
 }
 
 // take a byte string and convert it to a human readable display string  (base is 10 for ip and 16 for mac addr), len is 4 for IP addr and 6 for mac.
-void EtherCard::makeNetStr (char *resultstr,byte *bytestr,byte len,char separator,byte base)
+void EtherCard::makeNetStr (char *resultstr,uint8_t *bytestr,uint8_t len,char separator,uint8_t base)
 {
-    byte i=0;
-    byte j=0;
-    while(i<len){
+    uint8_t i=0;
+    uint8_t j=0;
+    while(i<len) {
         itoa((int)bytestr[i],&resultstr[j],base);
         // search end of str:
-        while(resultstr[j]){j++;}
+        while(resultstr[j]) {
+            j++;
+        }
         resultstr[j]=separator;
         j++;
         i++;
