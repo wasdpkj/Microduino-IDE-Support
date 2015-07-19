@@ -124,7 +124,7 @@ menu.cpu=Processor
 644p.menu.cpu.16MHzatmega644.bootloader.extended_fuses=0xFD
 644p.menu.cpu.16MHzatmega644.bootloader.file=optiboot/optiboot_micro_644pa_16m.hex
 
-644p.menu.cpu.16MHzatmega644.build.mcu=atmega644p
+644p.menu.cpu.16MHzatmega644.build.mcu=atmega644pa
 644p.menu.cpu.16MHzatmega644.build.f_cpu=16000000L
 
 ## ATmega644 8M
@@ -140,7 +140,7 @@ menu.cpu=Processor
 644p.menu.cpu.8MHzatmega644.bootloader.extended_fuses=0xFD
 644p.menu.cpu.8MHzatmega644.bootloader.file=optiboot/optiboot_micro_644pa_8m.hex
 
-644p.menu.cpu.8MHzatmega644.build.mcu=atmega644p
+644p.menu.cpu.8MHzatmega644.build.mcu=atmega644pa
 644p.menu.cpu.8MHzatmega644.build.f_cpu=8000000L
 
 ##Microduino Core+ (1284pa)
