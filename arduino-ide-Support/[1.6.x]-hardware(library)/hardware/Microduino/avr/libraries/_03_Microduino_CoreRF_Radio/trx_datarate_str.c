@@ -113,7 +113,7 @@ const uint8_t rate_hshtable[] PROGMEM =
 
 
 
-PGM_P rate_strtable[] PROGMEM =
+const rate_strtable[] PROGMEM =
 {
 # ifdef TRX_BPSK20
     C_BPSK20_STR,

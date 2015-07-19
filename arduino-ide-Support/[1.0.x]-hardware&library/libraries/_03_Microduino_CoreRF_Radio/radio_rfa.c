@@ -304,7 +304,7 @@ void radio_set_param(radio_attribute_t attr, radio_param_t parm)
             if (parm.tx_pwr >= -17 && parm.tx_pwr <= 3)
             {
                 /** @todo move this into a radio-specific header file */
-                static const prog_uint8_t pwrtable[] =
+                static const uint8_t pwrtable[] =
                 {
                     0x0F, 0x0F, 0x0F, 0x0F, 0x0F, /* -17...-13 dBm */
                     0x0E, 0x0E, 0x0E,             /* -12...-10 dBm */
