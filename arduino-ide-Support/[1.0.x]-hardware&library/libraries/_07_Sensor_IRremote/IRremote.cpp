@@ -60,6 +60,44 @@ int MATCH_SPACE(int measured_ticks, int desired_us) {
 }
 #endif
 
+void IRsend::sendMedia(unsigned char *data, int length)
+{
+  enableIROut(38);
+  mark(4400);
+  space(4400);
+  for(int i = 0; i < length; i++){
+	for(int j = 0; j < 8; j++){
+		if((*(data+i))&(0x80>>j)){
+			mark(540);
+			space(1620);
+		}
+		else{
+			mark(540);
+			space(540);
+		}
+	}
+  }
+  mark(540);
+  space(5220);
+  mark(4400);
+  space(4400);
+  for(int i = 0; i < length; i++){
+	for(int j = 0; j < 8; j++){
+		if((*(data+i))&(0x80>>j)){
+			mark(540);
+			space(1620);
+		}
+		else{
+			mark(540);
+			space(540);
+		}
+	}
+  }
+  mark(540);
+  space(0);
+}
+
+
 void IRsend::sendNEC(unsigned long data, int nbits)
 {
   enableIROut(38);
@@ -169,7 +207,7 @@ void IRsend::sendRC6(unsigned long data, int nbits)
 void IRsend::mark(int time) {
   // Sends an IR mark for the specified number of microseconds.
   // The mark output is modulated at the PWM frequency.
-  TCCR2A |= _BV(COM2B1); // Enable pin 3 PWM output
+  TCCR1A |= _BV(COM1B1); // Enable pin 3 PWM output
   delayMicroseconds(time);
 }
 
@@ -177,7 +215,7 @@ void IRsend::mark(int time) {
 void IRsend::space(int time) {
   // Sends an IR space for the specified number of microseconds.
   // A space is no output, so the PWM output is disabled.
-  TCCR2A &= ~(_BV(COM2B1)); // Disable pin 3 PWM output
+  TCCR1A &= ~(_BV(COM1B1)); // Disable pin 3 PWM output
   delayMicroseconds(time);
 }
 
@@ -195,26 +233,27 @@ void IRsend::enableIROut(int khz) {
 
   
   // Disable the Timer2 Interrupt (which is used for receiving IR)
-  TIMSK2 &= ~_BV(TOIE2); //Timer2 Overflow Interrupt
-  
-#if defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__)
+  TIMSK1 &= ~_BV(TOIE1); //Timer2 Overflow Interrupt
+ 
+#if defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega32U4__)
   pinMode(8, OUTPUT);
   digitalWrite(8, LOW); // When not sending PWM, we want it low
 #else 
-  pinMode(3, OUTPUT);
-  digitalWrite(3, LOW); // When not sending PWM, we want it low
+  pinMode(10, OUTPUT);
+  digitalWrite(10, LOW); // When not sending PWM, we want it low
 #endif
 
   // COM2A = 00: disconnect OC2A
   // COM2B = 00: disconnect OC2B; to send signal set to 10: OC2B non-inverted
   // WGM2 = 101: phase-correct PWM with OCRA as top
-  // CS2 = 000: no prescaling
-  TCCR2A = _BV(WGM20);
-  TCCR2B = _BV(WGM22) | _BV(CS20);
+  // CS2 = 000: no prescaling 
+  TCCR1A = _BV(WGM10) | _BV(WGM11);
+  TCCR1B = _BV(WGM13) | _BV(CS10);
 
   // The top value for the timer.  The modulation frequency will be SYSCLOCK / 2 / OCR2A.
-  OCR2A = SYSCLOCK / 2 / khz / 1000;
-  OCR2B = OCR2A / 3; // 33% duty cycle
+  OCR1A = SYSCLOCK / 2 / khz / 1000;
+  OCR1B = OCR1A / 3; // 33% duty cycle
+
 }
 
 IRrecv::IRrecv(int recvpin)
@@ -226,20 +265,18 @@ IRrecv::IRrecv(int recvpin)
 // initialization
 void IRrecv::enableIRIn() {
   // setup pulse clock timer interrupt
-  TCCR2A = 0;  // normal mode
-
+  TCCR1A = 0;  // normal mode
   //Prescale /8 (16M/8 = 0.5 microseconds per tick)
   // Therefore, the timer interval can range from 0.5 to 128 microseconds
   // depending on the reset value (255 to 0)
-  cbi(TCCR2B,CS22);
-  sbi(TCCR2B,CS21);
-  cbi(TCCR2B,CS20);
+  cbi(TCCR1B,CS12);
+  sbi(TCCR1B,CS11);
+  cbi(TCCR1B,CS10);
 
   //Timer2 Overflow Interrupt Enable
-  sbi(TIMSK2,TOIE2);
+  sbi(TIMSK1,TOIE1);
 
-  RESET_TIMER2;
-
+  RESET_TIMER1;
   sei();  // enable interrupts
 
   // initialize state machine variables
@@ -266,9 +303,10 @@ void IRrecv::blinkLED(int blinkflag)
 // First entry is the SPACE between transmissions.
 // As soon as a SPACE gets long, ready is set, state switches to IDLE, timing of SPACE continues.
 // As soon as first MARK arrives, gap width is recorded, ready is cleared, and new logging starts
-ISR(TIMER2_OVF_vect)
+
+ISR(TIMER1_OVF_vect)
 {
-  RESET_TIMER2;
+  RESET_TIMER1;
 
   uint8_t irdata = (uint8_t)digitalRead(irparams.recvpin);
 
@@ -332,6 +370,7 @@ ISR(TIMER2_OVF_vect)
     }
   }
 }
+
 
 void IRrecv::resume() {
   irparams.rcvstate = STATE_IDLE;
