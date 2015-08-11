@@ -24,7 +24,7 @@ sendSony KEYWORD2
 sendRaw KEYWORD2
 sendRC5 KEYWORD2
 sendRC6 KEYWORD2
-
+#
 #######################################
 # Constants (LITERAL1)
 #######################################
@@ -35,4 +35,3 @@ RC5 LITERAL1
 RC6 LITERAL1
 UNKNOWN LITERAL1
 REPEAT LITERAL1
-

@@ -97,7 +97,6 @@ void IRsend::sendMedia(unsigned char *data, int length)
   space(0);
 }
 
-
 void IRsend::sendNEC(unsigned long data, int nbits)
 {
   enableIROut(38);
@@ -207,15 +206,25 @@ void IRsend::sendRC6(unsigned long data, int nbits)
 void IRsend::mark(int time) {
   // Sends an IR mark for the specified number of microseconds.
   // The mark output is modulated at the PWM frequency.
-  TCCR1A |= _BV(COM1B1); // Enable pin 3 PWM output
+  
+#if defined (__AVR_ATmega32U4__)
+  TCCR4A |= _BV(COM4A1); 
+#else
+  TCCR2A |= _BV(COM2B1); // Enable pin 3 PWM output
+#endif
   delayMicroseconds(time);
+
 }
 
 /* Leave pin off for time (given in microseconds) */
 void IRsend::space(int time) {
   // Sends an IR space for the specified number of microseconds.
   // A space is no output, so the PWM output is disabled.
-  TCCR1A &= ~(_BV(COM1B1)); // Disable pin 3 PWM output
+#if defined (__AVR_ATmega32U4__)
+  TCCR4A &= ~(_BV(COM4A1));
+#else
+  TCCR2A &= ~(_BV(COM2B1)); // Disable pin 3 PWM output
+#endif
   delayMicroseconds(time);
 }
 
@@ -233,27 +242,43 @@ void IRsend::enableIROut(int khz) {
 
   
   // Disable the Timer2 Interrupt (which is used for receiving IR)
-  TIMSK1 &= ~_BV(TOIE1); //Timer2 Overflow Interrupt
+#if defined (__AVR_ATmega32U4__)
+	TIMSK4 &= ~_BV(TOIE4);
+#else
+	TIMSK2 &= ~_BV(TOIE2); //Timer2 Overflow Interrupt
+#endif
  
-#if defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega32U4__)
+#if defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__)
   pinMode(8, OUTPUT);
   digitalWrite(8, LOW); // When not sending PWM, we want it low
+#elif defined(__AVR_ATmega32U4__)
+  pinMode(6, OUTPUT);
+  digitalWrite(6, LOW);
 #else 
-  pinMode(10, OUTPUT);
-  digitalWrite(10, LOW); // When not sending PWM, we want it low
+  pinMode(3, OUTPUT);
+  digitalWrite(3, LOW); // When not sending PWM, we want it low
 #endif
-
+ 
+  
   // COM2A = 00: disconnect OC2A
   // COM2B = 00: disconnect OC2B; to send signal set to 10: OC2B non-inverted
   // WGM2 = 101: phase-correct PWM with OCRA as top
-  // CS2 = 000: no prescaling 
-  TCCR1A = _BV(WGM10) | _BV(WGM11);
-  TCCR1B = _BV(WGM13) | _BV(CS10);
+  // CS2 = 000: no prescaling
+#if defined (__AVR_ATmega32U4__)
+  TCCR4B = _BV(PWM4X) | _BV(CS40);
+  TCCR4D = _BV(WGM40);
+  
+  OCR4A = SYSCLOCK / 2 / khz / 1000;
+  OCR4B = OCR4A / 3;
+ 
+#else  
+  TCCR2A = _BV(WGM20);
+  TCCR2B = _BV(WGM22) | _BV(CS20);
 
   // The top value for the timer.  The modulation frequency will be SYSCLOCK / 2 / OCR2A.
-  OCR1A = SYSCLOCK / 2 / khz / 1000;
-  OCR1B = OCR1A / 3; // 33% duty cycle
-
+  OCR2A = SYSCLOCK / 2 / khz / 1000;
+  OCR2B = OCR2A / 3; // 33% duty cycle
+#endif 
 }
 
 IRrecv::IRrecv(int recvpin)
@@ -265,18 +290,34 @@ IRrecv::IRrecv(int recvpin)
 // initialization
 void IRrecv::enableIRIn() {
   // setup pulse clock timer interrupt
-  TCCR1A = 0;  // normal mode
+#if defined (__AVR_ATmega32U4__)
+  sbi(TCCR4B,PWM4X);
+
+  cbi(TCCR4B,CS43);
+  sbi(TCCR4B,CS42);
+  cbi(TCCR4B,CS41);
+  cbi(TCCR4B,CS40);
+  
+  cbi(TCCR4D,WGM41);
+  cbi(TCCR4D,WGM40);
+  sbi(TIMSK4, TOIE4);
+  
+  RESET_TIMER4;
+#else
+  TCCR2A = 0;  // normal mode
+
   //Prescale /8 (16M/8 = 0.5 microseconds per tick)
   // Therefore, the timer interval can range from 0.5 to 128 microseconds
   // depending on the reset value (255 to 0)
-  cbi(TCCR1B,CS12);
-  sbi(TCCR1B,CS11);
-  cbi(TCCR1B,CS10);
+  cbi(TCCR2B,CS22);
+  sbi(TCCR2B,CS21);
+  cbi(TCCR2B,CS20);
 
   //Timer2 Overflow Interrupt Enable
-  sbi(TIMSK1,TOIE1);
+  sbi(TIMSK2,TOIE2);
 
-  RESET_TIMER1;
+  RESET_TIMER2;
+#endif
   sei();  // enable interrupts
 
   // initialize state machine variables
@@ -303,10 +344,10 @@ void IRrecv::blinkLED(int blinkflag)
 // First entry is the SPACE between transmissions.
 // As soon as a SPACE gets long, ready is set, state switches to IDLE, timing of SPACE continues.
 // As soon as first MARK arrives, gap width is recorded, ready is cleared, and new logging starts
-
-ISR(TIMER1_OVF_vect)
+#if defined (__AVR_ATmega32U4__)
+ISR(TIMER4_OVF_vect)
 {
-  RESET_TIMER1;
+  RESET_TIMER4;
 
   uint8_t irdata = (uint8_t)digitalRead(irparams.recvpin);
 
@@ -370,7 +411,74 @@ ISR(TIMER1_OVF_vect)
     }
   }
 }
+#else
+ISR(TIMER2_OVF_vect)
+{
+  RESET_TIMER2;
 
+  uint8_t irdata = (uint8_t)digitalRead(irparams.recvpin);
+
+  irparams.timer++; // One more 50us tick
+  if (irparams.rawlen >= RAWBUF) {
+    // Buffer overflow
+    irparams.rcvstate = STATE_STOP;
+  }
+  switch(irparams.rcvstate) {
+  case STATE_IDLE: // In the middle of a gap
+    if (irdata == MARK) {
+      if (irparams.timer < GAP_TICKS) {
+        // Not big enough to be a gap.
+        irparams.timer = 0;
+      } 
+      else {
+        // gap just ended, record duration and start recording transmission
+        irparams.rawlen = 0;
+        irparams.rawbuf[irparams.rawlen++] = irparams.timer;
+        irparams.timer = 0;
+        irparams.rcvstate = STATE_MARK;
+      }
+    }
+    break;
+  case STATE_MARK: // timing MARK
+    if (irdata == SPACE) {   // MARK ended, record time
+      irparams.rawbuf[irparams.rawlen++] = irparams.timer;
+      irparams.timer = 0;
+      irparams.rcvstate = STATE_SPACE;
+    }
+    break;
+  case STATE_SPACE: // timing SPACE
+    if (irdata == MARK) { // SPACE just ended, record it
+      irparams.rawbuf[irparams.rawlen++] = irparams.timer;
+      irparams.timer = 0;
+      irparams.rcvstate = STATE_MARK;
+    } 
+    else { // SPACE
+      if (irparams.timer > GAP_TICKS) {
+        // big SPACE, indicates gap between codes
+        // Mark current code as ready for processing
+        // Switch to STOP
+        // Don't reset timer; keep counting space width
+        irparams.rcvstate = STATE_STOP;
+      } 
+    }
+    break;
+  case STATE_STOP: // waiting, measuring gap
+    if (irdata == MARK) { // reset gap timer
+      irparams.timer = 0;
+    }
+    break;
+  }
+
+  if (irparams.blinkflag) {
+    if (irdata == MARK) {
+      PORTB |= B00100000;  // turn pin 13 LED on
+    } 
+    else {
+      PORTB &= B11011111;  // turn pin 13 LED off
+    }
+  }
+}
+#endif
 
 void IRrecv::resume() {
   irparams.rcvstate = STATE_IDLE;

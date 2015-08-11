@@ -19,7 +19,7 @@
 #endif
 
 #define CLKFUDGE 5      // fudge factor for clock interrupt overhead
-#define CLK 0xFFFF      // max value for clock (timer 1)
+#define CLK 256      // max value for clock (timer 2)
 #define PRESCALE 8      // timer2 clock prescale
 #define SYSCLOCK 16000000  // main Arduino clock
 #define CLKSPERUSEC (SYSCLOCK/PRESCALE/1000000)   // timer clocks per microsecond
@@ -38,15 +38,16 @@
 #endif
 
 // clock timer reset value
-#define INIT_TIMER_COUNT (CLK - USECPERTICK*CLKSPERUSEC + CLKFUDGE)
-#define RESET_TIMER1 TCNT1 = INIT_TIMER_COUNT
+#define INIT_TIMER_COUNT (CLK - USECPERTICK*CLKSPERUSEC + CLKFUDGE) 
+#define RESET_TIMER2 TCNT2 = INIT_TIMER_COUNT
+#define RESET_TIMER4 TCNT4 = INIT_TIMER_COUNT
 
 // pulse parameters in usec
 #define NEC_HDR_MARK	9000
 #define NEC_HDR_SPACE	4500
-#define NEC_BIT_MARK	600
-#define NEC_ONE_SPACE	1750
-#define NEC_ZERO_SPACE	600
+#define NEC_BIT_MARK	560
+#define NEC_ONE_SPACE	1600
+#define NEC_ZERO_SPACE	560
 #define NEC_RPT_SPACE	2250
 
 #define SONY_HDR_MARK	2400
@@ -67,7 +68,7 @@
 #define LTOL (1.0 - TOLERANCE/100.) 
 #define UTOL (1.0 + TOLERANCE/100.) 
 
-#define _GAP 10000 // Minimum map between transmissions
+#define _GAP 5000 // Minimum map between transmissions
 #define GAP_TICKS (_GAP/USECPERTICK)
 
 #define TICKS_LOW(us) (int) (((us)*LTOL/USECPERTICK))
