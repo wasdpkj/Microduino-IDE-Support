@@ -31,7 +31,6 @@ menu.cpu=Processor
 328p.menu.cpu.16MHzatmega328.bootloader.file=optiboot/optiboot_micro_328p_16m.hex
 
 328p.menu.cpu.16MHzatmega328.build.mcu=atmega328p
-328p.menu.cpu.16MHzatmega328.build.mcu.pa=
 328p.menu.cpu.16MHzatmega328.build.f_cpu=16000000L
 
 ## ATmega328 8M
@@ -48,7 +47,6 @@ menu.cpu=Processor
 328p.menu.cpu.8MHzatmega328.bootloader.file=optiboot/optiboot_micro_328p_8m.hex
 
 328p.menu.cpu.8MHzatmega328.build.mcu=atmega328p
-328p.menu.cpu.8MHzatmega328.build.mcu.pa=
 328p.menu.cpu.8MHzatmega328.build.f_cpu=8000000L
 
 ##Microduino Core (168pa)
@@ -80,7 +78,6 @@ menu.cpu=Processor
 168p.menu.cpu.16MHzatmega168.bootloader.file=optiboot/optiboot_micro_168pa_16m.hex
 
 168p.menu.cpu.16MHzatmega168.build.mcu=atmega168p
-168p.menu.cpu.16MHzatmega168.build.mcu.pa=a
 168p.menu.cpu.16MHzatmega168.build.f_cpu=16000000L
 
 ## ATmega168 8M
@@ -97,7 +94,6 @@ menu.cpu=Processor
 168p.menu.cpu.8MHzatmega168.bootloader.file=optiboot/optiboot_micro_168pa_8m.hex
 
 168p.menu.cpu.8MHzatmega168.build.mcu=atmega168p
-168p.menu.cpu.8MHzatmega168.build.mcu.pa=a
 168p.menu.cpu.8MHzatmega168.build.f_cpu=8000000L
 
 ##Microduino Core+ (644pa)
@@ -129,7 +125,6 @@ menu.cpu=Processor
 644p.menu.cpu.16MHzatmega644.bootloader.file=optiboot/optiboot_micro_644pa_16m.hex
 
 644p.menu.cpu.16MHzatmega644.build.mcu=atmega644p
-644p.menu.cpu.16MHzatmega644.build.mcu.pa=a
 644p.menu.cpu.16MHzatmega644.build.f_cpu=16000000L
 
 ## ATmega644 8M
@@ -146,7 +141,6 @@ menu.cpu=Processor
 644p.menu.cpu.8MHzatmega644.bootloader.file=optiboot/optiboot_micro_644pa_8m.hex
 
 644p.menu.cpu.8MHzatmega644.build.mcu=atmega644p
-644p.menu.cpu.8MHzatmega644.build.mcu.pa=a
 644p.menu.cpu.8MHzatmega644.build.f_cpu=8000000L
 
 ##Microduino Core+ (1284pa)
@@ -178,7 +172,6 @@ menu.cpu=Processor
 1284p.menu.cpu.16MHzatmega1284.bootloader.file=optiboot/optiboot_micro_1284_16m.hex
 
 1284p.menu.cpu.16MHzatmega1284.build.mcu=atmega1284p
-1284p.menu.cpu.16MHzatmega1284.build.mcu.pa=
 1284p.menu.cpu.16MHzatmega1284.build.f_cpu=16000000L
 
 ## ATmega1284 8M
@@ -195,7 +188,6 @@ menu.cpu=Processor
 1284p.menu.cpu.8MHzatmega1284.bootloader.file=optiboot/optiboot_micro_1284_8m.hex
 
 1284p.menu.cpu.8MHzatmega1284.build.mcu=atmega1284p
-1284p.menu.cpu.8MHzatmega1284.build.mcu.pa=
 1284p.menu.cpu.8MHzatmega1284.build.f_cpu=8000000L
  
 
@@ -232,7 +224,6 @@ menu.cpu=Processor
 32u416m.bootloader.lock_bits=0x2F
 
 32u416m.build.mcu=atmega32u4
-32u416m.build.mcu.pa=
 32u416m.build.f_cpu=16000000L
 32u416m.build.vid=0x2341
 32u416m.build.pid=0x8036
@@ -261,7 +252,6 @@ zigduino_r2.bootloader.lock_bits=0x0F
 zigduino_r2.bootloader.file=atmega/ATmegaBOOT_atmega128rfa1.hex
 
 zigduino_r2.build.mcu=atmega128rfa1
-zigduino_r2.build.mcu.pa=
 zigduino_r2.build.f_cpu=16000000L
 zigduino_r2.build.board=AVR_RF
 zigduino_r2.build.core=RF
