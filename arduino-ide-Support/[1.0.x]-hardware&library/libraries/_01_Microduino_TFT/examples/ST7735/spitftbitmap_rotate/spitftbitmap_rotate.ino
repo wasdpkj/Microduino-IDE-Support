@@ -29,15 +29,15 @@
 // Hardware SPI pins are specific to the Arduino board type and
 // cannot be remapped to alternate pins.  For Arduino Uno,
 // Duemilanove, etc., pin 11 = MOSI, pin 12 = MISO, pin 13 = SCK.
-#define SD_CS    4  // Chip select line for SD card
-#define TFT_CS  10  // Chip select line for TFT display
-#define TFT_DC   9  // Data/command line for TFT
-#define TFT_RST  8  // Reset line for TFT (or connect to +5V)
+#define SD_CS    7  // Chip select line for SD card
+#define TFT_CS  5  // Chip select line for TFT display
+#define TFT_DC   4  // Data/command line for TFT
+#define TFT_RST  -1  // Reset line for TFT (or connect to +5V)
 
 //Use these pins for the shield!
-//#define TFT_CS   10
-//#define TFT_DC   8
-//#define TFT_RST  0  // you can also connect this to the Arduino reset
+//#define TFT_CS   5
+//#define TFT_DC   4
+//#define TFT_RST  -1  // you can also connect this to the Arduino reset
 
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
