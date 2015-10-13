@@ -19,8 +19,10 @@ void loop()
 /// --------------------------
 /// Custom ISR Timer Routine
 /// --------------------------
+boolean sta=false;
 void timerIsr()
 {
     // Toggle LED
-    digitalWrite( 13, digitalRead( 13 ) ^ 1 );
+    sta=!sta;
+    digitalWrite( 13, sta);
 }
