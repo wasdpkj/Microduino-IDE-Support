@@ -1,4 +1,4 @@
-THERMOMETER THERMOMETER #include <Adafruit_NeoPixel.h>
+#include <Adafruit_NeoPixel.h>
 
 #include <Wire.h>
 #include "I2Cdev.h"
