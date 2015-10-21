@@ -11,7 +11,7 @@
 #define humanHotSensor 4//PIR传感器D4
 #define buttonPin 12
 #define PIN 6//彩灯
-#define SERVOPIN 8//舵机
+#define SERVOPIN SDA//舵机
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(2, PIN, NEO_GRB + NEO_KHZ800);
 
