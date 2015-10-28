@@ -1,3 +1,4 @@
+@@ -1,78 +0,0 @@
 /*************************************************************************
 * Demo sketch for monochrome displays
 * Distributed under GPL v2.0

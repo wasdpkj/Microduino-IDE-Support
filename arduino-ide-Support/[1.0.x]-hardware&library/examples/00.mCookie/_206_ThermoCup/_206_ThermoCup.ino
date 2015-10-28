@@ -6,7 +6,7 @@
 #include <AM2321.h>
 AM2321 am2321;
 
-#define PIXEL_PIN    6    // Digital IO pin connected to the NeoPixels.
+#define PIXEL_PIN    A0    // Digital IO pin connected to the NeoPixels.
 #define PIXEL_COUNT  6
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(PIXEL_COUNT, PIXEL_PIN, NEO_GRB + NEO_KHZ800);

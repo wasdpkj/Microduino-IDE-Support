@@ -1,6 +1,10 @@
+#include <Adafruit_GPS.h>
+#include <SoftwareSerial.h>
+Adafruit_GPS GPS(&Serial1);
+
 void setup() {
   Serial.begin(115200);
-  Serial1.begin(115200);
+  GPS.begin(115200);
 }
 
 void loop() {
