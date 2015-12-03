@@ -329,6 +329,13 @@ ISR(PCINT3_vect)
 }
 #endif
 
+#if defined(PCINT6_vect)
+ISR(PCINT6_vect)
+{
+  SoftwareSerial::handle_interrupt();
+}
+#endif
+
 //
 // Constructor
 //
