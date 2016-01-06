@@ -36,40 +36,6 @@
 #define SPI_SCK  13     // PB5 = SCK
 #define GDO0	 2        // PD2 = INT0
 
-#if defined(__AVR_ATmega128RFA1__)
-#define PORT_SPI_MISO  PINB
-#define BIT_SPI_MISO  3
-
-#define PORT_SPI_SS  PORTB
-#define BIT_SPI_SS   4
-
-#define PORT_GDO0  PIND
-#define BIT_GDO0  2
-#endif
-
-#if defined(__AVR_ATmega32U4__)
-#define PORT_SPI_MISO  PINB
-#define BIT_SPI_MISO  3
-
-#define PORT_SPI_SS  PORTB
-#define BIT_SPI_SS   0
-
-#define PORT_GDO0  PINE
-#define BIT_GDO0  6
-#endif
-
-#if defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega644P__)
-#define PORT_SPI_MISO  PINB
-#define BIT_SPI_MISO  6
-
-#define PORT_SPI_SS  PORTB
-#define BIT_SPI_SS   4
-
-#define PORT_GDO0  PIND
-#define BIT_GDO0  2
-#endif
-
-#if defined (__AVR_ATmega168__) || defined (__AVR_ATmega328__) || defined (__AVR_ATmega328P__)
 #define PORT_SPI_MISO  PINB
 #define BIT_SPI_MISO  4
 
@@ -78,7 +44,6 @@
 
 #define PORT_GDO0  PIND
 #define BIT_GDO0  2
-#endif
 
 /**
  * Macros
