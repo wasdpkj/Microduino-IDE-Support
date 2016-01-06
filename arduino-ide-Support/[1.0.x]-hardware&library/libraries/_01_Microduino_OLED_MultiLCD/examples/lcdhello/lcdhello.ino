@@ -1,4 +1,3 @@
-@@ -1,78 +0,0 @@
 /*************************************************************************
 * Demo sketch for monochrome displays
 * Distributed under GPL v2.0
@@ -11,8 +10,8 @@
 #include <SPI.h>
 #include <MultiLCD.h>
 
-LCD_SH1106 lcd; /* for SH1106 OLED module */
-//LCD_SSD1306 lcd; /* for SSD1306 OLED module */
+//LCD_SH1106 lcd; /* for SH1106 OLED module */
+LCD_SSD1306 lcd; /* for SSD1306 OLED module */
 //LCD_PCD8544 lcd; /* for LCD4884 shield or Nokia 5100 screen module */
 //LCD_ILI9325D lcd; /* for Itead 2.8" TFT LCD shield */
 //LCD_ILI9341 lcd; /* for Freematics 2.2" TFT LCD shield */

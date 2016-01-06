@@ -235,24 +235,24 @@ menu.cpu=Processor
 
 ##Microduino Core RF
 ##############################################################
-zigduino_r2.name=Microduino-Core RF
+128rfa116m.name=Microduino-Core RF
 
-zigduino_r2.upload.tool=avrdude
-zigduino_r2.upload.protocol=arduino
-zigduino_r2.upload.maximum_size=126976
-zigduino_r2.upload.maximum_data_size=16384
-zigduino_r2.upload.speed=57600
+128rfa116m.upload.tool=avrdude
+128rfa116m.upload.protocol=arduino
+128rfa116m.upload.maximum_size=126976
+128rfa116m.upload.maximum_data_size=16384
+128rfa116m.upload.speed=57600
 
-zigduino_r2.bootloader.tool=avrdude
-zigduino_r2.bootloader.low_fuses=0xff
-zigduino_r2.bootloader.high_fuses=0xda
-zigduino_r2.bootloader.extended_fuses=0xf5
-zigduino_r2.bootloader.unlock_bits=0x3F
-zigduino_r2.bootloader.lock_bits=0x0F
-zigduino_r2.bootloader.file=atmega/ATmegaBOOT_atmega128rfa1.hex
+128rfa116m.bootloader.tool=avrdude
+128rfa116m.bootloader.low_fuses=0xff
+128rfa116m.bootloader.high_fuses=0xda
+128rfa116m.bootloader.extended_fuses=0xf5
+128rfa116m.bootloader.unlock_bits=0x3F
+128rfa116m.bootloader.lock_bits=0x0F
+128rfa116m.bootloader.file=atmega/ATmegaBOOT_atmega128rfa1.hex
 
-zigduino_r2.build.mcu=atmega128rfa1
-zigduino_r2.build.f_cpu=16000000L
-zigduino_r2.build.board=AVR_RF
-zigduino_r2.build.core=RF
-zigduino_r2.build.variant=RF
+128rfa116m.build.mcu=atmega128rfa1
+128rfa116m.build.f_cpu=16000000L
+128rfa116m.build.board=AVR_RF
+128rfa116m.build.core=arduino
+128rfa116m.build.variant=RF

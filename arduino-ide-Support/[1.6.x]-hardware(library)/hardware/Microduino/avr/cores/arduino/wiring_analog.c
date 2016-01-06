@@ -20,8 +20,6 @@
   Boston, MA  02111-1307  USA
 
   Modified 28 September 2010 by Mark Sproul
-
-  $Id: wiring.c 248 2007-02-03 15:36:30Z mellis $
 */
 
 #include "wiring_private.h"
@@ -48,6 +46,8 @@ int analogRead(uint8_t pin)
 #elif defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644__)
 	if (pin <= 7) pin = 7 - pin; 
 	else if (pin >= 24) pin = 31 - pin; // allow for channel or pin numbers
+#elif defined(__AVR_ATmega128RFA1__)
+	pin=analogPinToChannel(pin);
 #else
 	if (pin >= 14) pin -= 14; // allow for channel or pin numbers
 #endif
@@ -156,6 +156,14 @@ void analogWrite(uint8_t pin, int val)
 				// connect pwm to pin on timer 1, channel B
 				sbi(TCCR1A, COM1B1);
 				OCR1B = val; // set pwm duty
+				break;
+			#endif
+
+			#if defined(TCCR1A) && defined(COM1C1)
+			case TIMER1C:
+				// connect pwm to pin on timer 1, channel B
+				sbi(TCCR1A, COM1C1);
+				OCR1C = val; // set pwm duty
 				break;
 			#endif
 
