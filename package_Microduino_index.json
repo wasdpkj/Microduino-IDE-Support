@@ -27,7 +27,7 @@
             {"name": "ATmega644pa"},
             {"name": "ATmega1284pa"},
             {"name": "ATmega32u4"},
-            {"name": "ATmega128rfa1"},
+            {"name": "ATmega128rfa1"}
           ],
           "toolsDependencies": [
             {
