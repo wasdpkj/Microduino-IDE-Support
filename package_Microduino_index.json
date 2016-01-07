@@ -17,18 +17,17 @@
           "help": {
             "online": ""
           },
-          "url": "https://MCUdude.github.io/MightyCore/MightyCore-1.0.0.tar.gz",
-          "archiveFileName": "MightyCore-1.0.0.tar.gz",
-          "checksum": "SHA-256:283b442209cef5406bc7c21074664e1b2783d9b5997f50b3195a5c6cd0ee4de5",
-          "size": "306232",
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/arduino-ide-Support/%5B1.6.x%5D-hardware(library)/hardware/Microduino.zip",
+          "archiveFileName": "Microduino.zip",
+          "checksum": "SHA-256:E4DDC09BCCE5D507AC66CA9614FC0708E9D58185BA2B37C3141D9DBB42784E17",
+          "size": "10994261",
           "boards": [
-            {"name": "ATmega1284p"},
-            {"name": "ATmega644p"},
-            {"name": "ATmega324p"},
-            {"name": "ATmega164p"},
-            {"name": "ATmega32"},
-            {"name": "ATmega16"},
-            {"name": "ATmega8535"}
+            {"name": "ATmega168pa"},
+            {"name": "ATmega328p"},
+            {"name": "ATmega644pa"},
+            {"name": "ATmega1284pa"},
+            {"name": "ATmega32u4"},
+            {"name": "ATmega128rfa1"},
           ],
           "toolsDependencies": [
             {
