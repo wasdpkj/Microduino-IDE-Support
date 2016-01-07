@@ -19,8 +19,8 @@
           },
           "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/arduino-ide-Support/%5B1.6.x%5D-hardware(library)/hardware/Microduino.zip",
           "archiveFileName": "Microduino.zip",
-          "checksum": "SHA-256:E4DDC09BCCE5D507AC66CA9614FC0708E9D58185BA2B37C3141D9DBB42784E17",
-          "size": "10994261",
+          "checksum": "SHA-256:2FFE99EBE4481042B64EA558D4F79BCA0279C02F17ECDDCE21963722268CF2D9",
+          "size": "11026934",
           "boards": [
             {"name": "ATmega168pa"},
             {"name": "ATmega328p"},
