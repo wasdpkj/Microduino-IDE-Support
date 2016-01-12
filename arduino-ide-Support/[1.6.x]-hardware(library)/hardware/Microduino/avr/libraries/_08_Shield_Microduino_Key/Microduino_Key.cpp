@@ -1,5 +1,3 @@
-#include <Arduino.h>
-
 #include "Microduino_Key.h"
 // compensation ticks to trim adjust for digitalWrite delays // 12 August 2009
 

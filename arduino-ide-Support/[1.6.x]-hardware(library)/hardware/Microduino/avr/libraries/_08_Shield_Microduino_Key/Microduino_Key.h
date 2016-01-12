@@ -1,6 +1,8 @@
 #ifndef Key_h
 #define Key_h
 
+#include <Arduino.h>
+
 #if defined (__AVR_ATmega168P__) || defined(__AVR_ATmega328P__)
 #define NUM_DIGITAL_PINS 22
 #endif
