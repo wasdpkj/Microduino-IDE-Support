@@ -34,50 +34,50 @@ void setup()
 
 void loop()
 {
-  Serial.print("throttle=100,steering=0");
+  Serial.println("throttle=100,steering=0");
   throttle = 100;
   steering = 0;
   MotorLeft.Driver(MotorLeft.GetData(throttle, steering, CHAN_LEFT));
   MotorRight.Driver(MotorRight.GetData(throttle, steering, CHAN_RIGHT));
   delay(2000);
 
-  Serial.print("Break");
+  Serial.println("Break");
   MotorLeft.Brake();
   MotorRight.Brake();
   delay(2000);
 
-  Serial.print("throttle=-255,steering=0");
+  Serial.println("throttle=-255,steering=0");
   throttle = -255;
   steering = 0;
   MotorLeft.Driver(MotorLeft.GetData(throttle, steering, CHAN_LEFT));
   MotorRight.Driver(MotorRight.GetData(throttle, steering, CHAN_RIGHT));
   delay(2000);
 
-  Serial.print("Free");
+  Serial.println("Free");
   MotorLeft.Free();
   MotorRight.Free();
   delay(2000);
 
-  Serial.print("throttle=0,steering=-255");
+  Serial.println("throttle=0,steering=-255");
   throttle = 0;
   steering = -255;
   MotorLeft.Driver(MotorLeft.GetData(throttle, steering, CHAN_LEFT));
   MotorRight.Driver(MotorRight.GetData(throttle, steering, CHAN_RIGHT));
   delay(2000);
 
-  Serial.print("Break");
+  Serial.println("Break");
   MotorLeft.Brake();
   MotorRight.Brake();
   delay(2000);
 
-  Serial.print("throttle=255,steering=100");
+  Serial.println("throttle=255,steering=100");
   throttle = 255;
   steering = 100;
   MotorLeft.Driver(MotorLeft.GetData(throttle, steering, CHAN_LEFT));
   MotorRight.Driver(MotorRight.GetData(throttle, steering, CHAN_RIGHT));
   delay(2000);
 
-  Serial.print("Free");
+  Serial.println("Free");
   MotorLeft.Free();
   MotorRight.Free();
   delay(2000);
