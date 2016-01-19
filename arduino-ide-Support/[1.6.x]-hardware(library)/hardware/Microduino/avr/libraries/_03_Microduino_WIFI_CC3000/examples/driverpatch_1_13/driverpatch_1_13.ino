@@ -45,9 +45,9 @@
 #include "utility/nvmem.h"
 #include "driverpatchinc_1_13.h"
 
-#define ADAFRUIT_CC3000_IRQ   3  // MUST be an interrupt pin!
+#define ADAFRUIT_CC3000_IRQ   2  // MUST be an interrupt pin!
 #define ADAFRUIT_CC3000_CS    10
-#define ADAFRUIT_CC3000_VBAT  5
+#define ADAFRUIT_CC3000_VBAT  9
 
 Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ, ADAFRUIT_CC3000_VBAT);
 
