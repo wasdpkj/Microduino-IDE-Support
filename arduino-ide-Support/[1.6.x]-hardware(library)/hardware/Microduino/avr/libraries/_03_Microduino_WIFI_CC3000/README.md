@@ -1,3 +1,5 @@
+# Adafruit CC3000 Library
+
 This is a library for the Adafruit CC3000 WiFi Breakouts etc
 
 Designed specifically to work with the Adafruit CC3000 Breakout 
@@ -19,3 +21,6 @@ Check that the Adafruit_CC3000 folder contains Adafruit_CC3000.cpp and Adafruit_
 
 Place the Adafruit_CC3000 library folder your *arduinosketchfolder*/libraries/ folder. 
 You may need to create the libraries subfolder if its your first library. Restart the IDE.
+
+NOTE: the 'SendTweet' example currently DOES NOT WORK due to Twitter API changes. The code is being kept for posterity in case a workaround can be developed.
+

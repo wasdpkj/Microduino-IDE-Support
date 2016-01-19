@@ -40,17 +40,18 @@ kindly-provided free geolocation service.
 #include "utility/debug.h"
 
 // These are the interrupt and control pins
-#define ADAFRUIT_CC3000_IRQ   2  // MUST be an interrupt pin!
+#define ADAFRUIT_CC3000_IRQ   3  // MUST be an interrupt pin!
 // These can be any two pins
-#define ADAFRUIT_CC3000_VBAT  9
+#define ADAFRUIT_CC3000_VBAT  5
 #define ADAFRUIT_CC3000_CS    10
 // Use hardware SPI for the remaining pins
 // On an UNO, SCK = 13, MISO = 12, and MOSI = 11
-Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ, ADAFRUIT_CC3000_VBAT,
-                                         SPI_CLOCK_DIV2); // you can change this clock speed but DI
+Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS,
+  ADAFRUIT_CC3000_IRQ, ADAFRUIT_CC3000_VBAT,
+  SPI_CLOCK_DIVIDER); // you can change this clock speed
 
-#define WLAN_SSID       "Panyunhu"        // cannot be longer than 32 characters!
-#define WLAN_PASS       "13007298662"
+#define WLAN_SSID       "myNetwork"   // cannot be longer than 32 characters!
+#define WLAN_PASS       "myPassword"
 // Security can be WLAN_SEC_UNSEC, WLAN_SEC_WEP, WLAN_SEC_WPA or WLAN_SEC_WPA2
 #define WLAN_SECURITY   WLAN_SEC_WPA2
 
@@ -128,7 +129,7 @@ void setup(void) {
   client = cc3000.connectTCP(ip, 80);
   if(client.connected()) {
     Serial.print(F("connected.\r\nRequesting data..."));
-    client.print(F("GET /json/ HTTP/1.0\r\nConnection: close\r\n\r\n"));
+    client.print(F("GET /json/ HTTP/1.1\r\nHost: freegeoip.net\r\n\r\n"));
   } else {
     Serial.println(F("failed"));
     return;

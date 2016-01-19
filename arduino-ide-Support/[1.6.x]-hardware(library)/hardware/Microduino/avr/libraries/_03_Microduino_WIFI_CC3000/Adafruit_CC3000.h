@@ -2,18 +2,18 @@
 /*! 
   @file     Adafruit_CC3000.h
   @author   KTOWN (Kevin Townsend for Adafruit Industries)
-	@license  BSD (see license.txt)	
+  @license  BSD (see license.txt) 
 
-	This is a library for the Adafruit CC3000 WiFi breakout board
-	This library works with the Adafruit CC3000 breakout
-	----> https://www.adafruit.com/products/1469
-	
-	Check out the links above for our tutorials and wiring diagrams 
-	These chips use SPI to communicate.
+  This is a library for the Adafruit CC3000 WiFi breakout board
+  This library works with the Adafruit CC3000 breakout
+  ----> https://www.adafruit.com/products/1469
   
-	Adafruit invests time and resources providing this open source code, 
-	please support Adafruit and open-source hardware by purchasing 
-	products from Adafruit!	
+  Check out the links above for our tutorials and wiring diagrams 
+  These chips use SPI to communicate.
+  
+  Adafruit invests time and resources providing this open source code, 
+  please support Adafruit and open-source hardware by purchasing 
+  products from Adafruit! 
 */
 /**************************************************************************/
 
@@ -29,7 +29,30 @@
 #include "utility/wlan.h"
 #include "utility/netapp.h"
 #include "ccspi.h"
+#include "Client.h"
 
+#if defined(__arm__) && defined(__SAM3X8E__) // Arduino Due
+  #define SPI_CLOCK_DIVIDER 6 // used to set the speed for the SPI bus; 6 == 14 Mhz on the Arduino Due
+#else
+  #define SPI_CLOCK_DIVIDER SPI_CLOCK_DIV2 // Don't set this to a slower speed (i.e. larger div value)
+                                           // or communication will be flakey on 16mhz chips!
+#endif
+
+//#define ENABLE_CC3K_PRINTER
+
+#ifdef ENABLE_CC3K_PRINTER
+#define CHECK_PRINTER if(CC3KPrinter != 0)
+#else
+#define CHECK_PRINTER if(false)
+#endif
+
+#if defined(UDR0) || defined(UDR1) || defined(CORE_TEENSY) || ( defined (__arm__) && defined (__SAM3X8E__) )
+  #define CC3K_DEFAULT_PRINTER &Serial
+#else
+  #define CC3K_DEFAULT_PRINTER 0
+#endif
+
+#define SMART_CONFIG_TIMEOUT 60000  // how long to wait for smart config to complete
 #define WLAN_CONNECT_TIMEOUT 10000  // how long to wait, in milliseconds
 #define RXBUFFERSIZE  64 // how much to buffer on the incoming side
 #define TXBUFFERSIZE  32 // how much to buffer on the outgoing side
@@ -40,14 +63,14 @@
 
 typedef struct Result_Struct
 {
-	uint32_t	num_networks;
-	uint32_t 	scan_status;
-	uint8_t 	rssiByte;
-	uint8_t 	Sec_ssidLen;
-	uint16_t 	time;
-	uint8_t 	ssid_name[32];
-	uint8_t 	bssid[6];
-} ResultStruct_t;  	/**!ResultStruct_t : data struct to store SSID scan results */
+  uint32_t  num_networks;
+  uint32_t  scan_status;
+  uint8_t   rssiByte;
+  uint8_t   Sec_ssidLen;
+  uint16_t  time;
+  uint8_t   ssid_name[32];
+  uint8_t   bssid[6];
+} ResultStruct_t;   /**!ResultStruct_t : data struct to store SSID scan results */
 
 /* Enum for wlan_ioctl_statusget results */
 typedef enum 
@@ -60,9 +83,9 @@ typedef enum
 
 class Adafruit_CC3000;
 
-class Adafruit_CC3000_Client : public Print {
+class Adafruit_CC3000_Client : public Client {
  public:
-  Adafruit_CC3000_Client(uint16_t s);
+  Adafruit_CC3000_Client(int32_t s);
   Adafruit_CC3000_Client(void);
   Adafruit_CC3000_Client(const Adafruit_CC3000_Client& copy);
   void operator=(const Adafruit_CC3000_Client& other);
@@ -70,25 +93,37 @@ class Adafruit_CC3000_Client : public Print {
   // NOTE: If public functions below are added/modified/removed please make sure to update the 
   // Adafruit_CC3000_ClientRef class to match!
 
-  bool connected(void);
+  int connect(IPAddress ip, uint16_t port);
+  int connect(const char *host, uint16_t port);
+
+  uint8_t connected(void);
   size_t write(uint8_t c);
 
   size_t fastrprint(const char *str);
   size_t fastrprintln(const char *str);
+  size_t fastrprint(char *str);
+  size_t fastrprintln(char *str);
   size_t fastrprint(const __FlashStringHelper *ifsh);
   size_t fastrprintln(const __FlashStringHelper *ifsh);
 
-  int16_t write(const void *buf, uint16_t len, uint32_t flags = 0);
-  int16_t read(void *buf, uint16_t len, uint32_t flags = 0);
-  uint8_t read(void);
+  size_t write(const void *buf, uint16_t len, uint32_t flags = 0);
+  int read(void *buf, uint16_t len, uint32_t flags = 0);
+  int read(void);
   int32_t close(void);
-  uint8_t available(void);
+  int available(void);
+
+  int read(uint8_t *buf, size_t size);
+  size_t write(const uint8_t *buf, size_t size);
+  int peek();
+  void flush();
+  void stop();
+  operator bool();
 
   uint8_t _rx_buf[RXBUFFERSIZE], _rx_buf_idx;
   int16_t bufsiz;
 
  private:
-  int16_t _socket;
+  int32_t _socket;
 
 };
 
@@ -100,8 +135,8 @@ class Adafruit_CC3000_Client : public Print {
 
 class Adafruit_CC3000 {
   public:
-  Adafruit_CC3000(uint8_t csPin, uint8_t irqPin, uint8_t vbatPin, uint8_t spispeed = SPI_CLOCK_DIV128);
-    bool     begin(uint8_t patchReq = 0, bool useSmartConfigData = false);
+    Adafruit_CC3000(uint8_t csPin, uint8_t irqPin, uint8_t vbatPin, uint8_t spispeed = SPI_CLOCK_DIVIDER, Print* cc3kPrinter = CC3K_DEFAULT_PRINTER);
+    bool     begin(uint8_t patchReq = 0, bool useSmartConfigData = false, const char *_deviceName = NULL);
     void     reboot(uint8_t patchReq = 0);
     void     stop(void);
     bool     disconnect(void);
@@ -113,8 +148,10 @@ class Adafruit_CC3000 {
     uint32_t IP2U32(uint8_t a, uint8_t b, uint8_t c, uint8_t d);
     bool     getMacAddress(uint8_t address[6]);
     bool     setMacAddress(uint8_t address[6]);
+    bool     setStaticIPAddress(uint32_t ip, uint32_t subnetMask, uint32_t defaultGateway, uint32_t dnsServer);
+    bool     setDHCP();
 
-    bool     connectToAP(const char *ssid, const char *key, uint8_t secmode);
+    bool     connectToAP(const char *ssid, const char *key, uint8_t secmode, uint8_t attempts = 0);
     bool     connectSecure(const char *ssid, const char *key, int32_t secMode);
     bool     connectOpen(const char *ssid); 
     bool     checkConnected(void);
@@ -129,18 +166,17 @@ class Adafruit_CC3000 {
     #ifndef CC3000_TINY_DRIVER
     bool     getFirmwareVersion(uint8_t *major, uint8_t *minor);
     status_t getStatus(void);
-    uint16_t startSSIDscan(void);
+    bool     startSSIDscan(uint32_t *index);
     void     stopSSIDscan();
     uint8_t  getNextSSID(uint8_t *rssi, uint8_t *secMode, char *ssidname);
 
     bool     listSSIDResults(void);
-    bool     startSmartConfig(bool enableAES);
-
+    bool     startSmartConfig(const char *_deviceName = NULL, const char *smartConfigKey = NULL, uint32_t = SMART_CONFIG_TIMEOUT);
     bool     getIPConfig(tNetappIpconfigRetArgs *ipConfig);
 
 
     uint16_t ping(uint32_t ip, uint8_t attempts=3,  uint16_t timeout=500, uint8_t size=32);
-    uint16_t getHostByName(char *hostname, uint32_t *ip);
+    uint16_t getHostByName(const char *hostname, uint32_t *ip);
     #endif
 
     /* Functions that aren't available with the tiny driver */

@@ -4,6 +4,8 @@
 
 #include "sntp.h"
 
+#define CLOCK_DEBUG 1
+
 //Lists of pool servers
 
 
@@ -63,12 +65,12 @@ char    monthDays[12] = { 31,  28,  31,  30,  31,  30,  31,  31,  30,  31,  30, 
 		char* pAscii = ascii;
 	
 	delay(10);
-		if (CC3KPrinter != 0) { CC3KPrinter->print(F("Block: (addr ")); CC3KPrinter->print((uint16_t)buf, HEX); CC3KPrinter->print(F(", length ")); CC3KPrinter->print(len, HEX); }
+		if (CC3KPrinter != 0) { CC3KPrinter->print(F("Block: (addr ")); CC3KPrinter->print((uint32_t)buf, HEX); CC3KPrinter->print(F(", length ")); CC3KPrinter->print(len, HEX); }
 	//	traceFn("Block: (addr %p, length 0x%04x)", buf, len);
 
 		while (count < len)
 		{
-			if (CC3KPrinter != 0) { CC3KPrinter->println(); CC3KPrinter->print((uint16_t)offset,HEX); CC3KPrinter->print(F(": ")); }
+			if (CC3KPrinter != 0) { CC3KPrinter->println(); CC3KPrinter->print((uint32_t)offset,HEX); CC3KPrinter->print(F(": ")); }
 	//		traceFn("\r\n  %p: ", offset);
 			lineCount = 0;
 			pAscii = (char*)&ascii;
@@ -556,9 +558,18 @@ bool sntp::UpdateNTPTime()
 			{
 				//start with user's NTP servers.  These may not be pool servers, so they'll only get one IP address from DNS
 				ntp_pool_list = m_userServers;            //start with user's ntp server list
+        m_localPool = ntp_us_pool_list;
+        m_globalPool = ntp_global_pool_list;
 				checkLocal = (NULL !=  m_localPool);   	// if that craps out, we'll try the local server-pool list
 				checkGlobal = (NULL != m_globalPool);		//if that craps out, we'll try the global server-pool list
-				#ifdef CLOCK_DEBUG
+        #ifdef CLOCK_DEEP_DEBUG
+          if (CC3KPrinter != 0) 
+          { 
+            CC3KPrinter->print(F("m_localPool: ")); CC3KPrinter->print(*m_localPool); CC3KPrinter->print(F("checkLocal: ")); CC3KPrinter->println(checkLocal);
+            CC3KPrinter->print(F("m_globalPool: ")); CC3KPrinter->print(*m_globalPool); CC3KPrinter->print(F("checkGlobal: ")); CC3KPrinter->println(checkGlobal);
+          }
+        #endif
+        #ifdef CLOCK_DEBUG
 					if (CC3KPrinter != 0) { CC3KPrinter->print(F("try user's ntp server list: ")); CC3KPrinter->println((uint32_t)*ntp_pool_list); }
 				#endif
 
