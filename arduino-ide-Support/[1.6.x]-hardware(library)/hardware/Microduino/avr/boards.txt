@@ -222,7 +222,7 @@ menu.usb=UploadType
 32u416m.menu.usb.ttl32u416m.upload.wait_for_upload_port=false
 
 
-32u416m.upload.maximum_size=27679
+32u416m.upload.maximum_size=28672
 32u416m.upload.maximum_data_size=2560
 32u416m.upload.speed=57600
 
