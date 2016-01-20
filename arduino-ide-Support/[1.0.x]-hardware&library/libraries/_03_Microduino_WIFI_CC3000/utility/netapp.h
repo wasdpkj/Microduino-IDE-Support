@@ -43,7 +43,11 @@
 #ifndef __NETAPP_H__
 #define	__NETAPP_H__
 
+// Adafruit CC3k Host Driver Difference
+// Include root Arduino header.
+// Noted 12-12-2014 by tdicola
 #include <Arduino.h>
+#include "data_types.h"
 
 //*****************************************************************************
 //
@@ -64,33 +68,33 @@ extern "C" {
 
 typedef struct _netapp_dhcp_ret_args_t
 {
-    unsigned char aucIP[4];
-	unsigned char aucSubnetMask[4];
-	unsigned char aucDefaultGateway[4];
-	unsigned char aucDHCPServer[4];
-	unsigned char aucDNSServer[4];
+    UINT8 aucIP[4];
+	UINT8 aucSubnetMask[4];
+	UINT8 aucDefaultGateway[4];
+	UINT8 aucDHCPServer[4];
+	UINT8 aucDNSServer[4];
 }tNetappDhcpParams;
 
 typedef struct _netapp_ipconfig_ret_args_t
 {
-    unsigned char aucIP[4];
-	unsigned char aucSubnetMask[4];
-	unsigned char aucDefaultGateway[4];
-	unsigned char aucDHCPServer[4];
-	unsigned char aucDNSServer[4];
-	unsigned char uaMacAddr[6];
-	unsigned char uaSSID[32];
+    UINT8 aucIP[4];
+	UINT8 aucSubnetMask[4];
+	UINT8 aucDefaultGateway[4];
+	UINT8 aucDHCPServer[4];
+	UINT8 aucDNSServer[4];
+	UINT8 uaMacAddr[6];
+	UINT8 uaSSID[32];
 }tNetappIpconfigRetArgs;
 
 
 /*Ping send report parameters*/
 typedef struct _netapp_pingreport_args
 {
-	unsigned long packets_sent;
-	unsigned long packets_received;
-	unsigned long min_round_time;
-	unsigned long max_round_time;
-	unsigned long avg_round_time;
+	UINT32 packets_sent;
+	UINT32 packets_received;
+	UINT32 min_round_time;
+	UINT32 max_round_time;
+	UINT32 avg_round_time;
 } netapp_pingreport_args_t;
 
 
@@ -108,7 +112,7 @@ typedef struct _netapp_pingreport_args
 //!                over resets.
 //
 //*****************************************************************************
-extern long  netapp_config_mac_adrress( unsigned char *mac );
+extern INT32  netapp_config_mac_adrress( UINT8 *mac );
 
 //*****************************************************************************
 //
@@ -136,7 +140,7 @@ extern long  netapp_config_mac_adrress( unsigned char *mac );
 //!               AP was established. 
 //!
 //*****************************************************************************
-extern 	long netapp_dhcp(unsigned long *aucIP, unsigned long *aucSubnetMask,unsigned long *aucDefaultGateway, unsigned long *aucDNSServer);
+extern 	INT32 netapp_dhcp(UINT32 *aucIP, UINT32 *aucSubnetMask,UINT32 *aucDefaultGateway, UINT32 *aucDNSServer);
 
 
 
@@ -149,7 +153,7 @@ extern 	long netapp_dhcp(unsigned long *aucIP, unsigned long *aucSubnetMask,unsi
 //!                     0 or 0xffffffff == infinity lease timeout.
 //!                     Resolution:10 seconds. Influence: only after 
 //!                     reconnecting to the AP. 
-//!                     Minimal bound value: MIN_TIMER_VAL_SECONDS - 20 seconds.
+//!                     Minimal bound value: MIN_TIMER_VAL_SECONDS - 10 seconds.
 //!                     The parameter is saved into the CC3000 NVMEM. 
 //!                     The default value on CC3000 is 14400 seconds.
 //!	 
@@ -158,7 +162,7 @@ extern 	long netapp_dhcp(unsigned long *aucIP, unsigned long *aucSubnetMask,unsi
 //!                     the end of the timeout. 
 //!                     Range: [0-0xffffffff] seconds, 0 == infinity ARP timeout
 //!                     Resolution: 10 seconds. Influence: on runtime.
-//!                     Minimal bound value: MIN_TIMER_VAL_SECONDS - 20 seconds
+//!                     Minimal bound value: MIN_TIMER_VAL_SECONDS - 10 seconds
 //!                     The parameter is saved into the CC3000 NVMEM. 
 //!	                    The default value on CC3000 is 3600 seconds.
 //!
@@ -166,7 +170,7 @@ extern 	long netapp_dhcp(unsigned long *aucIP, unsigned long *aucSubnetMask,unsi
 //!                         Range: [0-0xffffffff] seconds, 0 == infinity timeout
 //!                         Resolution: 10 seconds.
 //!                         Influence: on runtime.
-//!                         Minimal bound value: MIN_TIMER_VAL_SECONDS - 20 sec
+//!                         Minimal bound value: MIN_TIMER_VAL_SECONDS - 10 sec
 //!                         The parameter is saved into the CC3000 NVMEM. 
 //!                         The default value on CC3000 is 10 seconds.
 //!
@@ -175,7 +179,7 @@ extern 	long netapp_dhcp(unsigned long *aucIP, unsigned long *aucSubnetMask,unsi
 //!                          end of the socket timeout the socket will be closed
 //!                          Range: [0-0xffffffff] sec, 0 == infinity timeout.
 //!                          Resolution: 10 seconds. Influence: on runtime.
-//!                          Minimal bound value: MIN_TIMER_VAL_SECONDS - 20 sec
+//!                          Minimal bound value: MIN_TIMER_VAL_SECONDS - 10 sec
 //!                          The parameter is saved into the CC3000 NVMEM. 
 //!	                         The default value on CC3000 is 60 seconds.
 //!
@@ -185,12 +189,12 @@ extern 	long netapp_dhcp(unsigned long *aucIP, unsigned long *aucSubnetMask,unsi
 //!               DHCP lease timeout, ARP  refresh timeout, keepalive event 
 //!               timeout and socket inactivity timeout 
 //!	 
-//! @note         If a parameter set to non zero value which is less than 20s,
-//!               it will be set automatically to 20s.
+//! @note         If a parameter set to non zero value which is less than 10s,
+//!               it will be set automatically to 10s.
 //!
 //*****************************************************************************
- #ifndef CC3000_TINY_DRIVER
-extern long netapp_timeout_values(unsigned long *aucDHCP, unsigned long *aucARP,unsigned long *aucKeepalive,	unsigned long *aucInactivity);
+#ifndef CC3000_TINY_DRIVER
+extern INT32 netapp_timeout_values(UINT32 *aucDHCP, UINT32 *aucARP, UINT32 *aucKeepalive, UINT32 *aucInactivity);
 #endif
 
 //*****************************************************************************
@@ -215,7 +219,7 @@ extern long netapp_timeout_values(unsigned long *aucDHCP, unsigned long *aucARP,
 //*****************************************************************************
 
  #ifndef CC3000_TINY_DRIVER
-extern long netapp_ping_send(uint32_t *ip, uint32_t ulPingAttempts, uint32_t ulPingSize, uint32_t ulPingTimeout);
+extern INT32 netapp_ping_send(UINT32 *ip, UINT32 ulPingAttempts, UINT32 ulPingSize, UINT32 ulPingTimeout);
 #endif
 
 //*****************************************************************************
@@ -232,7 +236,7 @@ extern long netapp_ping_send(uint32_t *ip, uint32_t ulPingAttempts, uint32_t ulP
 //*****************************************************************************
 
 #ifndef CC3000_TINY_DRIVER
-extern long netapp_ping_stop();
+extern INT32 netapp_ping_stop();
 #endif
 //*****************************************************************************
 //
@@ -303,7 +307,7 @@ extern void netapp_ipconfig( tNetappIpconfigRetArgs * ipconfig );
 //*****************************************************************************
 
 #ifndef CC3000_TINY_DRIVER
-extern long netapp_arp_flush();
+extern INT32 netapp_arp_flush();
 #endif
 
 
@@ -327,7 +331,7 @@ extern long netapp_arp_flush();
 
 
 #ifndef CC3000_TINY_DRIVER
-long netapp_set_debug_level(unsigned long ulLevel);
+INT32 netapp_set_debug_level(UINT32 ulLevel);
 #endif
 //*****************************************************************************
 //
@@ -347,6 +351,9 @@ long netapp_set_debug_level(unsigned long ulLevel);
 }
 #endif // __cplusplus
 
+// Adafruit CC3k Host Driver Difference
+// Define reference to CC3k debug printer object.
+// Noted 12-12-2014 by tdicola
 extern Print* CC3KPrinter;
 
 #endif	// __NETAPP_H__

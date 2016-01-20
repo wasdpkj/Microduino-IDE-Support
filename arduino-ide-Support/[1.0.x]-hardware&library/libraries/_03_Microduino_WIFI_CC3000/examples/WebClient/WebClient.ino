@@ -39,10 +39,10 @@ It might not work on all networks!
 // Use hardware SPI for the remaining pins
 // On an UNO, SCK = 13, MISO = 12, and MOSI = 11
 Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ, ADAFRUIT_CC3000_VBAT,
-                                         SPI_CLOCK_DIV2); // you can change this clock speed but DI
+                                         SPI_CLOCK_DIVIDER); // you can change this clock speed
 
-#define WLAN_SSID       "Panyunhu"        // cannot be longer than 32 characters!
-#define WLAN_PASS       "13007298662"
+#define WLAN_SSID       "myNetwork"           // cannot be longer than 32 characters!
+#define WLAN_PASS       "myPassword"
 // Security can be WLAN_SEC_UNSEC, WLAN_SEC_WEP, WLAN_SEC_WPA or WLAN_SEC_WPA2
 #define WLAN_SECURITY   WLAN_SEC_WPA2
 
@@ -82,6 +82,7 @@ void setup(void)
   // Optional SSID scan
   // listSSIDResults();
   
+  Serial.print(F("\nAttempting to connect to ")); Serial.println(WLAN_SSID);
   if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY)) {
     Serial.println(F("Failed!"));
     while(1);
@@ -170,10 +171,14 @@ void loop(void)
 
 void listSSIDResults(void)
 {
-  uint8_t valid, rssi, sec, index;
+  uint32_t index;
+  uint8_t valid, rssi, sec;
   char ssidname[33]; 
 
-  index = cc3000.startSSIDscan();
+  if (!cc3000.startSSIDscan(&index)) {
+    Serial.println(F("SSID scan failed!"));
+    return;
+  }
 
   Serial.print(F("Networks found: ")); Serial.println(index);
   Serial.println(F("================================================"));

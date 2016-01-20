@@ -50,12 +50,14 @@
 #define ADAFRUIT_CC3000_VBAT  9
 #define ADAFRUIT_CC3000_CS    10
 
+#define DEVICE_NAME "CC3000"
+
 // Use hardware SPI for the remaining pins
 // On an UNO, SCK = 13, MISO = 12, and MOSI = 11
 Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, 
                                          ADAFRUIT_CC3000_IRQ, 
                                          ADAFRUIT_CC3000_VBAT,
-                                         SPI_CLOCK_DIV2);
+                                         SPI_CLOCK_DIVIDER);
 
 // The SSID & Password are retrieved via the Smartconfig app
 
@@ -83,7 +85,7 @@ void setup(void)
   }
 
   uint16_t firmware = checkFirmwareVersion();
-  if ((firmware != 0x113) && (firmware != 0x118)) {
+  if (firmware < 0x113) {
     Serial.println(F("Wrong firmware version!"));
     for(;;);
   }
@@ -92,7 +94,7 @@ void setup(void)
   /* Try to use the smart config app (no AES encryption), saving */
   /* the connection details if we succeed */
   Serial.println(F("Waiting for a SmartConfig connection (~60s) ..."));
-  if (!cc3000.startSmartConfig(false))
+  if (!cc3000.startSmartConfig(DEVICE_NAME))
   {
     Serial.println(F("SmartConfig failed"));
     while(1);
@@ -113,7 +115,7 @@ void setup(void)
   }
   
   Serial.println(F("\nTo use these connection details be sure to use"));
-  Serial.println(F("'.begin(false, true)' with your Adafruit_CC3000"));
+  Serial.println(F("'.begin(false, true, DEVICE_NAME)' with your Adafruit_CC3000"));
   Serial.println(F("code instead of the default '.begin()' values!"));
   
   /* You need to make sure to clean up after yourself or the CC3000 can freak out */

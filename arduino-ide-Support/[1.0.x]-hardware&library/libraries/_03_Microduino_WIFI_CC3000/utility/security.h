@@ -3,6 +3,14 @@
 *  security.h  - CC3000 Host Driver Implementation.
 *  Copyright (C) 2011 Texas Instruments Incorporated - http://www.ti.com/
 *
+* Adapted for use with the Arduino/AVR by KTOWN (Kevin Townsend) 
+* & Limor Fried for Adafruit Industries
+* This library works with the Adafruit CC3000 breakout 
+*	----> https://www.adafruit.com/products/1469
+* Adafruit invests time and resources providing this open source code,
+* please support Adafruit and open-source hardware by purchasing
+* products from Adafruit!
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
 *  are met:
@@ -69,7 +77,7 @@ extern "C" {
 //!	 
 //!
 //*****************************************************************************
-extern void aes_encrypt(unsigned char *state, unsigned char *key);
+extern void aes_encrypt(UINT8 *state, UINT8 *key);
 
 //*****************************************************************************
 //
@@ -87,7 +95,7 @@ extern void aes_encrypt(unsigned char *state, unsigned char *key);
 //!	 
 //!
 //*****************************************************************************
-extern void aes_decrypt(unsigned char *state, unsigned char *key);
+extern void aes_decrypt(UINT8 *state, UINT8 *key);
 
 
 //*****************************************************************************
@@ -104,7 +112,7 @@ extern void aes_decrypt(unsigned char *state, unsigned char *key);
 //!	 
 //!
 //*****************************************************************************
-extern signed long aes_read_key(unsigned char *key);
+extern INT32 aes_read_key(UINT8 *key);
 
 //*****************************************************************************
 //
@@ -119,15 +127,10 @@ extern signed long aes_read_key(unsigned char *key);
 //!	 
 //!
 //*****************************************************************************
-extern signed long aes_write_key(unsigned char *key);
+extern INT32 aes_write_key(UINT8 *key);
 
 #endif //CC3000_UNENCRYPTED_SMART_CONFIG
 
-//*****************************************************************************
-//
-// Mark the end of the C bindings section for C++ compilers.
-//
-//*****************************************************************************
 #ifdef  __cplusplus
 }
 #endif // __cplusplus

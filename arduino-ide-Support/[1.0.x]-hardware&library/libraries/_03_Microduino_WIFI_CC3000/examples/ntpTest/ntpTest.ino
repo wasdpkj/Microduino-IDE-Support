@@ -30,7 +30,7 @@ This example does a test of the SNTP (Simple Network Time Protocol) client:
 //#include "utility/NetTime.h"
 #include <string.h>
 #include "utility/debug.h"
-#include "utility/sntp.h"
+#include "sntp.h"
 
 // These are the interrupt and control pins
 #define ADAFRUIT_CC3000_IRQ   2  // MUST be an interrupt pin!
@@ -40,10 +40,10 @@ This example does a test of the SNTP (Simple Network Time Protocol) client:
 // Use hardware SPI for the remaining pins
 // On an UNO, SCK = 13, MISO = 12, and MOSI = 11
 Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ, ADAFRUIT_CC3000_VBAT,
-                                         SPI_CLOCK_DIV2); // you can change this clock speed but DI
+                                         SPI_CLOCK_DIVIDER); // you can change this clock speed but DI
 
-#define WLAN_SSID       "Panyunhu"        // cannot be longer than 32 characters!
-#define WLAN_PASS       "13007298662"
+#define WLAN_SSID       "myNetwork"   // cannot be longer than 32 characters!
+#define WLAN_PASS       "myPassword"
 // Security can be WLAN_SEC_UNSEC, WLAN_SEC_WEP, WLAN_SEC_WPA or WLAN_SEC_WPA2
 #define WLAN_SECURITY   WLAN_SEC_WPA2
 
@@ -136,10 +136,10 @@ void setup(void)
 */
   
   uint16_t firmware = checkFirmwareVersion();
-  if ((firmware != 0x113) && (firmware != 0x118)) {
+  if (firmware < 0x113) {
     Serial.println(F("Wrong firmware version!"));
     for(;;);
-  }
+  } 
   
   /* Delete any old connection data on the module */
   Serial.println(F("\nDeleting old connection profiles"));
@@ -168,14 +168,15 @@ void setup(void)
   }  
 
   Serial.println(F("UpdateNTPTime"));
-  mysntp.UpdateNTPTime();
+  if (mysntp.UpdateNTPTime())
+  {
+    Serial.println(F("Current local time is:"));
+    mysntp.ExtractNTPTime(mysntp.NTPGetTime(&now, true), &timeExtract);
 
-  Serial.println(F("Current local time is:"));
-  mysntp.ExtractNTPTime(mysntp.NTPGetTime(&now, true), &timeExtract);
-
-  Serial.print(timeExtract.hour); Serial.print(F(":")); Serial.print(timeExtract.min); Serial.print(F(":"));Serial.print(timeExtract.sec); Serial.print(F("."));Serial.println(timeExtract.millis);
-  Serial.print(pF(&dayStrs[timeExtract.wday])); Serial.print(F(", ")); Serial.print(pF(&monthStrs[timeExtract.mon])); Serial.print(F(" ")); Serial.print(timeExtract.mday); Serial.print(F(", "));Serial.println(timeExtract.year);
-  Serial.print(F("Day of year: ")); Serial.println(timeExtract.yday + 1); 
+    Serial.print(timeExtract.hour); Serial.print(F(":")); Serial.print(timeExtract.min); Serial.print(F(":"));Serial.print(timeExtract.sec); Serial.print(F("."));Serial.println(timeExtract.millis);
+    Serial.print(pF(&dayStrs[timeExtract.wday])); Serial.print(F(", ")); Serial.print(pF(&monthStrs[timeExtract.mon])); Serial.print(F(" ")); Serial.print(timeExtract.mday); Serial.print(F(", "));Serial.println(timeExtract.year);
+    Serial.print(F("Day of year: ")); Serial.println(timeExtract.yday + 1); 
+  }
 
   /* You need to make sure to clean up after yourself or the CC3000 can freak out */
   /* the next time you try to connect ... */

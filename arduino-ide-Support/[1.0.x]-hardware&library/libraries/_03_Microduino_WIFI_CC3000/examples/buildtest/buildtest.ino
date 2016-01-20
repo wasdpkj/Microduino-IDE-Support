@@ -1,3 +1,31 @@
+/*************************************************** 
+  This is an example for the Adafruit CC3000 Wifi Breakout & Shield
+
+  Designed specifically to work with the Adafruit WiFi products:
+  ----> https://www.adafruit.com/products/1469
+
+  Adafruit invests time and resources providing this open source code, 
+  please support Adafruit and open-source hardware by purchasing 
+  products from Adafruit!
+
+  Written by Kevin Townsend & Limor Fried for Adafruit Industries.  
+  BSD license, all text above must be included in any redistribution
+ ****************************************************/
+
+/*
+
+This example does a full test of core connectivity:
+* Initialization
+* SSID Scan
+* AP connection
+* DHCP printout
+* DNS lookup
+* Ping
+* Disconnect
+It's a good idea to run this sketch when first setting up the
+module.
+
+*/
 
 #include <Adafruit_CC3000.h>
 #include <ccspi.h>
@@ -13,10 +41,10 @@
 // Use hardware SPI for the remaining pins
 // On an UNO, SCK = 13, MISO = 12, and MOSI = 11
 Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ, ADAFRUIT_CC3000_VBAT,
-                                         SPI_CLOCK_DIV2); // you can change this clock speed but DI
+                                         SPI_CLOCK_DIVIDER); // you can change this clock speed but DI
 
-#define WLAN_SSID       "HiWiFi_xjj"        // cannot be longer than 32 characters!
-#define WLAN_PASS       "1234567890"
+#define WLAN_SSID       "myNetwork"        // cannot be longer than 32 characters!
+#define WLAN_PASS       "myPassword"
 // Security can be WLAN_SEC_UNSEC, WLAN_SEC_WEP, WLAN_SEC_WPA or WLAN_SEC_WPA2
 #define WLAN_SECURITY   WLAN_SEC_WPA2
 
@@ -55,10 +83,10 @@ void setup(void)
 */
   
   uint16_t firmware = checkFirmwareVersion();
-  if ((firmware != 0x113) && (firmware != 0x118)) {
+  if (firmware < 0x113) {
     Serial.println(F("Wrong firmware version!"));
     for(;;);
-  }
+  } 
   
   displayMACAddress();
   
@@ -74,11 +102,51 @@ void setup(void)
     while(1);
   }
 
+  /* Optional: Set a static IP address instead of using DHCP.
+     Note that the setStaticIPAddress function will save its state
+     in the CC3000's internal non-volatile memory and the details
+     will be used the next time the CC3000 connects to a network.
+     This means you only need to call the function once and the
+     CC3000 will remember the connection details.  To switch back
+     to using DHCP, call the setDHCP() function (again only needs
+     to be called once).
+  */
+  /*
+  uint32_t ipAddress = cc3000.IP2U32(192, 168, 1, 19);
+  uint32_t netMask = cc3000.IP2U32(255, 255, 255, 0);
+  uint32_t defaultGateway = cc3000.IP2U32(192, 168, 1, 1);
+  uint32_t dns = cc3000.IP2U32(8, 8, 4, 4);
+  if (!cc3000.setStaticIPAddress(ipAddress, netMask, defaultGateway, dns)) {
+    Serial.println(F("Failed to set static IP!"));
+    while(1);
+  }
+  */
+  /* Optional: Revert back from static IP addres to use DHCP.
+     See note for setStaticIPAddress above, this only needs to be
+     called once and will be remembered afterwards by the CC3000.
+  */
+  /*
+  if (!cc3000.setDHCP()) {
+    Serial.println(F("Failed to set DHCP!"));
+    while(1);
+  }
+  */
+
   /* Attempt to connect to an access point */
   char *ssid = WLAN_SSID;             /* Max 32 chars */
   Serial.print(F("\nAttempting to connect to ")); Serial.println(ssid);
   
-  /* NOTE: Secure connections are not available in 'Tiny' mode! */
+  /* NOTE: Secure connections are not available in 'Tiny' mode!
+     By default connectToAP will retry indefinitely, however you can pass an
+     optional maximum number of retries (greater than zero) as the fourth parameter.
+     
+     ALSO NOTE: By default connectToAP will retry forever until it can connect to
+     the access point.  This means if the access point doesn't exist the call
+     will _never_ return!  You can however put in an optional maximum retry count
+     by passing a 4th parameter to the connectToAP function below.  This should
+     be a number of retries to make before giving up, for example 5 would retry
+     5 times and then fail if a connection couldn't be made.
+  */
   if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY)) {
     Serial.println(F("Failed!"));
     while(1);
@@ -232,10 +300,14 @@ bool displayConnectionDetails(void)
 
 void listSSIDResults(void)
 {
-  uint8_t valid, rssi, sec, index;
+  uint32_t index;
+  uint8_t valid, rssi, sec;
   char ssidname[33]; 
 
-  index = cc3000.startSSIDscan();
+  if (!cc3000.startSSIDscan(&index)) {
+    Serial.println(F("SSID scan failed!"));
+    return;
+  }
 
   Serial.print(F("Networks found: ")); Serial.println(index);
   Serial.println(F("================================================"));
