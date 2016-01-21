@@ -33,7 +33,7 @@ void loop() { //declaring function loop
         led = MatrixD;
         break;
     }
-    led.clearColor(); 
+    led.clearColor();
 	led.setFastMode();	//On Fast mode
 	//led.clearFastMode();	//Off Fast Mode
     led.setColor(0, 255, 255);
@@ -109,8 +109,8 @@ void loop() { //declaring function loop
             break;
         }
         randomSeed(analogRead(A0));
-        //led.setLedColorFast(x, y, random(0, 255), random(0, 255), random(0, 255));
-        led.setLedColor(x, y, random(0, 255), random(0, 255), random(0, 255));
+        led.setLedColorFast(x, y, random(0, 255), random(0, 255), random(0, 255));
+        //led.setLedColor(x, y, random(0, 255), random(0, 255), random(0, 255));
       }
       delay(20);
     }
@@ -136,4 +136,5 @@ void loop() { //declaring function loop
     }
     led.clearDisplay();
   }
+
 }

@@ -130,7 +130,10 @@ class LedControl : public Print {
     void clearColor();
 	
 	void setLed(int row, int column, boolean state);
-	void setLedColor(int row, int column, uint8_t value_r, uint8_t value_g, uint8_t value_b);	
+	void setLedColor(int row, int column, uint8_t value_r, uint8_t value_g, uint8_t value_b);
+	void setLedColorFast(int row, int column, uint8_t value_r, uint8_t value_g, uint8_t value_b);
+	void setFastMode();
+	void clearFastMode();
 	
 	void setRow(int row, byte value);	
 	void setColumn(int col, byte value);
@@ -141,6 +144,7 @@ class LedControl : public Print {
 
  protected:
   int Devices_addr;
+  bool Fast_mode;
   uint8_t value_color[3];
   // const int16_t
     // WIDTH, HEIGHT;   // This is the 'raw' display w/h - never changes

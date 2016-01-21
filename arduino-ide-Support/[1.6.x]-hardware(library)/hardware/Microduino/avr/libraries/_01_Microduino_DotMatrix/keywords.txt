@@ -17,12 +17,16 @@ setColor	KEYWORD2
 clearColor	KEYWORD2
 setLed		KEYWORD2
 setLedColor	KEYWORD2
+setLedColorFast	KEYWORD2
 setRow		KEYWORD2
 setColumn	KEYWORD2
 writeString	KEYWORD2
 displayChar	KEYWORD2
 getDeviceAddr	KEYWORD2
 getCharArrayPosition	KEYWORD2
+setFastMode	KEYWORD2
+clearFastMode	KEYWORD2
+
 
 #######################################
 # Constants (LITERAL1)

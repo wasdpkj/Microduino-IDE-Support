@@ -3,6 +3,8 @@
 
 #define ADDR1 64
 LedControl MatrixA = LedControl(ADDR1);
+//#define ADDR2 63
+//LedControl MatrixB = LedControl(ADDR2);
 
 void setup() { // initalizes and sets up the initial values. Declaring function setup.
   Serial.begin(9600); // setting data rate as 9600 bits per second for serial data communication to computer
@@ -10,10 +12,11 @@ void setup() { // initalizes and sets up the initial values. Declaring function 
   Serial.println("Setup"); //prints data to serial port as human-readable text
   Wire.begin();
 
-  MatrixA.clearDisplay(); //clear the display after each letter
-  //MatrixA.setFastMode();	//On Fast mode
-  MatrixA.clearFastMode();	//Off Fast Mode  
-  MatrixA.setColor(255, 255, 255);
+  MatrixA.clearDisplay();
+  MatrixA.setFastMode();	//On Fast mode
+  //MatrixA.clearFastMode();	//Off Fast Mode
+  
+  MatrixA.setColor(255, 255, 255); //clear the display after each letter
   //  MatrixA.writeString(ADDR1, 20, "Hello Microduino!");
   for (int a = 0; a < 64; a++)
   {
@@ -21,7 +24,7 @@ void setup() { // initalizes and sets up the initial values. Declaring function 
     MatrixA.print("HELLO mCookie!");
     delay(50);
   }
-  MatrixA.clearDisplay();
+  MatrixA.clearDisplay(); //clear the display after each letter
 }
 
 void loop() { //declaring function loop
@@ -34,22 +37,22 @@ void loop() { //declaring function loop
   }
   delay(2000);
 
-  MatrixA.clearDisplay();
+  MatrixA.clearDisplay(); //clear the display after each letter
   MatrixA.setColor(255, 0, 0);
   MatrixA.writeString(20, "RED");
   delay(500);
 
-  MatrixA.clearDisplay();
+  MatrixA.clearDisplay(); //clear the display after each letter
   MatrixA.setColor(0, 255, 0);
   MatrixA.writeString(20, "GREEN");
   delay(500);
 
-  MatrixA.clearDisplay();
+  MatrixA.clearDisplay(); //clear the display after each letter
   MatrixA.setColor(0, 0, 255);
   MatrixA.writeString(20, "BLUE");
   delay(500);
 
-  MatrixA.clearDisplay();
+  MatrixA.clearDisplay(); //clear the display after each letter
   MatrixA.clearColor();
   MatrixA.writeString(20, "Null");
   delay(500);

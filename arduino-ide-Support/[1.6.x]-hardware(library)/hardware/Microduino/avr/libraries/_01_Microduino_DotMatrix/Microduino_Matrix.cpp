@@ -17,7 +17,8 @@ LedControl::LedControl(int _addr) {
   }
   else
     this->matrixIndex = 255 ;  // too many keys
-
+	
+  this->Fast_mode=false;
   clearColor();
 }
 
@@ -25,6 +26,15 @@ int LedControl::getDeviceAddr() {
   return this->Devices_addr;
 }
 
+void LedControl::clearFastMode()
+{
+  this->Fast_mode=false;
+}
+
+void LedControl::setFastMode()
+{
+  this->Fast_mode=true;
+}
 
 void LedControl::clearColor()
 {
@@ -65,11 +75,26 @@ void LedControl::setLedColor(int _row, int _col, uint8_t _value_r, uint8_t _valu
   Wire.endTransmission();    // stop transmitting
 }
 
+void LedControl::setLedColorFast(int _row, int _col, uint8_t _value_r, uint8_t _value_g, uint8_t _value_b) {
+  //Wire.beginTransmission(64); // transmit to device #4
+  Wire.beginTransmission(matrixs[this->matrixIndex].Addr.nbr+1); // transmit to device #4
+  uint8_t temp[2];
+  temp[0] = 0xC0 | (_row << 3) | _col;
+  temp[1] = ((_value_b / 64)<<4) | ((_value_g / 64)<<2) | (_value_r / 64);
+  Wire.write(temp, 2);       // sends five bytes
+  Wire.endTransmission();    // stop transmitting
+}
+
 void LedControl::setLed(int _row, int _col, boolean _state) {
   if (_state)
-    this->setLedColor(_row, _col, this->value_color[0], this->value_color[1], this->value_color[2]);
+  {
+	if(this->Fast_mode)
+		this->setLedColorFast(_row, _col, this->value_color[0], this->value_color[1], this->value_color[2]);	
+	else
+		this->setLedColor(_row, _col, this->value_color[0], this->value_color[1], this->value_color[2]);
+  }
   else
-    this->setLedColor(_row, _col, 0, 0, 0);
+    this->setLedColorFast(_row, _col, 0, 0, 0);
 }
 
 void LedControl::setRow(int _row, byte _value) {
