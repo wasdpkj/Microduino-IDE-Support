@@ -31,8 +31,8 @@
 #define BLYNK_PRINT Serial    // Comment this out to disable prints and save space
 
 // These are the interrupt and control pins for СС3000
-#define ADAFRUIT_CC3000_IRQ   3
-#define ADAFRUIT_CC3000_VBAT  5
+#define ADAFRUIT_CC3000_IRQ   2
+#define ADAFRUIT_CC3000_VBAT  9
 #define ADAFRUIT_CC3000_CS    10
 
 #include <SPI.h>

@@ -32,7 +32,13 @@
  * THE SOFTWARE.
  *
  * bjoern@cs.stanford.edu 12/30/2008
+ *
+ * - 10 Apr. 2015
+ * Added support for Arduino Ethernet Shield 2
+ * by Arduino.org team
+ *
  */
+ 
 
 #ifndef ethernetudp_h
 #define ethernetudp_h

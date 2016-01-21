@@ -1,23 +1,21 @@
 /*
  DHCP Chat  Server
- 
+
  A simple server that distributes any incoming messages to all
  connected clients.  To use telnet to  your device's IP address and type.
  You can see the client's input in the serial monitor as well.
- Using an Arduino Wiznet Ethernet shield. 
- 
+ Using an Arduino Wiznet Ethernet shield.
+
  THis version attempts to get an IP address using DHCP
- 
+
  Circuit:
  * Ethernet shield attached to pins 10, 11, 12, 13
- 
- Based on ChatServer example by David A. Mellis
+
  created 21 May 2011
  modified 9 Apr 2012
  by Tom Igoe
- modified 12 Aug 2013
- by Soohwan Kim  
- 
+ Based on ChatServer example by David A. Mellis
+
  */
 
 #include <SPI.h>
@@ -26,9 +24,11 @@
 // Enter a MAC address and IP address for your controller below.
 // The IP address will be dependent on your local network.
 // gateway and subnet are optional:
-byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-IPAddress ip(192,168,1, 177);
-IPAddress gateway(192,168,1, 1);
+byte mac[] = {
+  0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x02
+};
+IPAddress ip(192, 168, 1, 177);
+IPAddress gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 0, 0);
 
 // telnet defaults to port 23
@@ -36,11 +36,10 @@ EthernetServer server(23);
 boolean gotAMessage = false; // whether or not you got a message from the client yet
 
 void setup() {
- 
   // Open serial communications and wait for port to open:
-  Serial.begin(115200);
+  Serial.begin(9600);
   // this check is only needed on the Leonardo:
-   while (!Serial) {
+  while (!Serial) {
     ; // wait for serial port to connect. Needed for Leonardo only
   }
 
@@ -50,11 +49,7 @@ void setup() {
   if (Ethernet.begin(mac) == 0) {
     Serial.println("Failed to configure Ethernet using DHCP");
     // initialize the ethernet device not using DHCP:
-#if defined(WIZ550io_WITH_MACADDRESS)
-    Ethernet.begin(ip, gateway, subnet);
-#else
     Ethernet.begin(mac, ip, gateway, subnet);
-#endif  
   }
   // print your local IP address:
   Serial.print("My IP address: ");
@@ -62,12 +57,12 @@ void setup() {
   for (byte thisByte = 0; thisByte < 4; thisByte++) {
     // print the value of each byte of the IP address:
     Serial.print(ip[thisByte], DEC);
-    Serial.print("."); 
+    Serial.print(".");
   }
   Serial.println();
   // start listening for clients
   server.begin();
- 
+
 }
 
 void loop() {
@@ -78,7 +73,7 @@ void loop() {
   if (client) {
     if (!gotAMessage) {
       Serial.println("We have a new client");
-      client.println("Hello, client!"); 
+      client.println("Hello, client!");
       gotAMessage = true;
     }
 

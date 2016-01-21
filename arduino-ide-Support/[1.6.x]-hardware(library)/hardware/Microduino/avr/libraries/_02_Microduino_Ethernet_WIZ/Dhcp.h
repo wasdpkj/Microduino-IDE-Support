@@ -137,6 +137,7 @@ typedef struct _RIP_MSG_FIXED
 }RIP_MSG_FIXED;
 
 class DhcpClass {
+
 private:
   uint32_t _dhcpInitialTransactionId;
   uint32_t _dhcpTransactionId;
@@ -156,7 +157,6 @@ private:
   unsigned long _secTimeout;
   uint8_t _dhcp_state;
   EthernetUDP _dhcpUdpSocket;
-  
   int request_DHCP_lease();
   void reset_DHCP_lease();
   void presend_DHCP();
@@ -171,7 +171,7 @@ public:
   IPAddress getDhcpServerIp();
   IPAddress getDnsServerIp();
   
-  int beginWithDHCP(uint8_t *, unsigned long timeout = 60000, unsigned long responseTimeout = 4000);
+  int beginWithDHCP(uint8_t *, unsigned long timeout = 60000, unsigned long responseTimeout = 5000);  
   int checkLease();
 };
 
