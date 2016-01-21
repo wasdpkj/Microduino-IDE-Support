@@ -14,11 +14,14 @@
  *
  **************************************************************
  *
- * This example shows how to use Arduino Ethernet shield (W5100)
+ * This example shows how to use Microduino Ethernet WIZ(W5500)
  * to connect your project to Blynk.
  * Feel free to apply it to any other example. It's simple!
  *
- * NOTE: Pins 10, 11, 12 and 13 are reserved for Ethernet module.
+ * NOTE: You may have to install Arduino.ORG IDE to get it working:
+ *         http://www.arduino.org/software
+ *
+ *       Pins 8, 11, 12 and 13 are reserved for Ethernet module.
  *       DON'T use them in your sketch directly!
  *
  **************************************************************/

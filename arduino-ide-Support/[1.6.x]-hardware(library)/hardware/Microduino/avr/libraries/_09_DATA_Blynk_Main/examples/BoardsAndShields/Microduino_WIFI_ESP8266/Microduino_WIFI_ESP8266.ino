@@ -14,32 +14,42 @@
  *
  **************************************************************
  *
- * This is an example for RedBearLab WiFi Mini board.
+ * This example shows how to use ESP8266 Shield via Hardware Serial
+ * (on Mega, Leonardo, Micro...) to connect your project to Blynk.
  *
+ * Note: Ensure a stable serial connection to ESP8266!
+ *       Firmware version 1.0.0 (AT v0.22) or later is needed.
+ *       You can change ESP baud rate. Connect to AT console and call:
+ *           AT+UART_DEF=115200,8,1,0,0
+ *
+ * Change WiFi ssid, pass, and Blynk auth token to run :)
  * Feel free to apply it to any other example. It's simple!
  *
  **************************************************************/
-
+//#define BLYNK_DEBUG
 #define BLYNK_PRINT Serial    // Comment this out to disable prints and save space
-#include <SPI.h>
-#include <WiFi.h>
-#include <BlynkSimpleRBL_WiFi_Mini.h>
+#include <ESP8266_HardSer.h>
+#include <BlynkSimpleShieldEsp8266_HardSer.h>
+
+// Set ESP8266 Serial object
+#define EspSerial Serial1
+
+ESP8266 wifi(EspSerial);
 
 // You should get Auth Token in the Blynk App.
 // Go to the Project Settings (nut icon).
 char auth[] = "YourAuthToken";
 
-// Your WiFi credentials
-char ssid[] = "YourNetworkName";
-char pass[] = "YourPassword";        // Set to "" for open networks
-
 void setup()
 {
+  // Set console baud rate
   Serial.begin(9600);
-  Blynk.begin(auth, ssid, pass);
-  // Or specify server using one of those commands:
-  //Blynk.begin(auth, ssid, pass, "cloud.blynk.cc", 8442);
-  //Blynk.begin(auth, ssid, pass, server_ip, port);
+  delay(10);
+  // Set ESP8266 baud rate
+  EspSerial.begin(115200);
+  delay(10);
+
+  Blynk.begin(auth, wifi, "ssid", "pass");
 }
 
 void loop()
