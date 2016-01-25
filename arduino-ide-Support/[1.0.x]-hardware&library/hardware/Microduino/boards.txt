@@ -134,7 +134,7 @@
 
 32u416m.name=Microduino-Core USB (ATmega32U4@16M,5V)
 32u416m.upload.protocol=avr109
-32u416m.upload.maximum_size=28860
+32u416m.upload.maximum_size=28672
 32u416m.upload.speed=57600
 32u416m.upload.disable_flushing=true
 32u416m.bootloader.low_fuses=0xff

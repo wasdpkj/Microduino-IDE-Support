@@ -1,5 +1,8 @@
 #include <Wire.h>
 #include "Microduino_Matrix.h"
+#include "Microduino_MatrixMultiple.h"
+
+LedMultiple display = LedMultiple(1, 1);
 
 #define ADDR1 64
 LedControl MatrixA = LedControl(ADDR1);
@@ -11,15 +14,18 @@ void setup() { // initalizes and sets up the initial values. Declaring function 
   Wire.begin();
 
   MatrixA.clearDisplay(); //clear the display after each letter
-  //MatrixA.setFastMode();	//On Fast mode
-  MatrixA.clearFastMode();	//Off Fast Mode  
+  //MatrixA.setFastMode();  //On Fast mode
+  MatrixA.clearFastMode();  //Off Fast Mode
   MatrixA.setColor(255, 255, 255);
   //  MatrixA.writeString(ADDR1, 20, "Hello Microduino!");
-  for (int a = 0; a < 64; a++)
+  for (int a = display.getStringLeng("Hello mCookie!"); a > -8; a--)
   {
-    MatrixA.setCursor(a, 0);
-    MatrixA.print("HELLO mCookie!");
-    delay(50);
+    MatrixA = MatrixA;
+    MatrixA.setCursor(0, 0);
+    MatrixA.setCursor(a - display.getStringLeng("Hello mCookie!") + 8, 0);
+    //led.print("!B");
+    MatrixA.print("Hello mCookie!");
+    delay(200);
   }
   MatrixA.clearDisplay();
 }
