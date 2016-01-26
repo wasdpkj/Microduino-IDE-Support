@@ -1,114 +1,102 @@
-#include <Wire.h>
+// 本作品采用知识共享 署名-非商业性使用-相同方式共享 3.0 未本地化版本 许可协议进行许可
+// 访问 http://creativecommons.org/licenses/by-nc-sa/3.0/ 查看该许可协议
+// ==============
+
+// 版权所有：
+// @老潘orz  wasdpkj@hotmail.com
+// ==============
+
+// Microduino-IDE
+// ==============
+// Microduino Getting start:
+// http://www.microduino.cc/download/
+
+// Microduino IDE Support：
+// https://github.com/wasdpkj/Microduino-IDE-Support/
+
+// ==============
+// Microduino wiki:
+// http://wiki.microduino.cc
+
+// ==============
+// E-mail:
+// Kejia Pan
+// pankejia@microduino.cc
+
+// ==============
+// Weibo:
+// @老潘orz
+
 #include "Microduino_Matrix.h"
-#include "Microduino_MatrixMultiple.h"
 
-LedMultiple display = LedMultiple(4, 1);
+uint8_t Addr[MatrixPix_X][MatrixPix_Y] = {	//3x2
+  { 64, 63, 62},
+  { 61, 60, 59}
+};
 
-LedControl MatrixA = LedControl(64);
-LedControl MatrixB = LedControl(63);
-LedControl MatrixC = LedControl(62);
-LedControl MatrixD = LedControl(61);
+Matrix display = Matrix(Addr);
 
-LedControl led = 0;
-
-void setup() { // initalizes and sets up the initial values. Declaring function setup.
-  Serial.begin(9600); // setting data rate as 9600 bits per second for serial data communication to computer
-  //  delay(6000);
-  Serial.println("Setup"); //prints data to serial port as human-readable text
+void setup() {
+  Serial.begin(115200); // See the connection status in Serial Monitor
   Wire.begin();
-  
-  for (int a = 0; a < 4; a++) {
-    switch (a) {
-      case 0:
-        led = MatrixA;
-        break;
-      case 1:
-        led = MatrixB;
-        break;
-      case 2:
-        led = MatrixC;
-        break;
-      case 3:
-        led = MatrixD;
-        break;
-    }
-    led.clearDisplay();
-    led.clearColor();
-    led.setFastMode();  //On Fast mode
-    //led.clearFastMode();  //Off Fast Mode
-    led.setColor(0, 255, 255);
-  }
-}
 
-void loop() { //declaring function loop
-  for (int a = 0; a < 4; a++) {
-    switch (a) {
-      case 0:
-        led = MatrixA;
-        break;
-      case 1:
-        led = MatrixB;
-        break;
-      case 2:
-        led = MatrixC;
-        break;
-      case 3:
-        led = MatrixD;
-        break;
-    }
-    led.clearDisplay();
+  //getDeviceAddr
+  for (int a = 0; a < display.getMatrixNum(); a++) {
+    Serial.print(display.getDeviceAddr(a));
+    Serial.print(" ");
   }
+  Serial.println("");
 
-  for (int y = 0; y < 8; y++) {
-    for (int x = 0; x < 8; x++) {
-      for (int a = 0; a < 4; a++) {
-        switch (a) {
-          case 0:
-            led = MatrixA;
-            break;
-          case 1:
-            led = MatrixB;
-            break;
-          case 2:
-            led = MatrixC;
-            break;
-          case 3:
-            led = MatrixD;
-            break;
-        }
-        randomSeed(analogRead(A0));
-        //led.setLedColorFast(x, y, random(0, 255), random(0, 255), random(0, 255));
-        led.setLedColor(x, y, random(0, 255), random(0, 255), random(0, 255));
-      }
-      delay(20);
+  //setLedColor
+  for (int y = 0; y < display.getHeight() * 8; y++) {
+    for (int x = 0; x < display.getWidth() * 8; x++) {
+      randomSeed(analogRead(A0));
+      display.setLedColor(x, y, random(0, 255), random(0, 255), random(0, 255));   //x, y, r, g, b
+      delay(5);
     }
   }
   delay(1000);
+  display.clearDisplay();
 
-  int x = 0;
-  for (int a = display.getStringLeng("Hello mCookie!"); a > -32; a--) {
-    for (int b = 0; b < 4; b++) {
-      switch (b) {
-        case 0:
-          led = MatrixA;
-          x = 24;
-          break;
-        case 1:
-          led = MatrixB;
-          x = 16;
-          break;
-        case 2:
-          led = MatrixC;
-          x = 8;
-          break;
-        case 3:
-          led = MatrixD;
-          x = 0;
-          break;
-      }
-      led.setCursor(a - display.getStringLeng("Hello mCookie!") + 32 - x, 0);
-      led.print("Hello mCookie!");
-      //      delay(5);
-    }
+  //clearColor
+  display.clearColor();
+  //writeString H
+  display.writeString("Microduino", MODE_H, 20, 0); //string, MODE, time ,y
+  display.clearDisplay();
+  //writeString V
+  display.writeString("Microduino", MODE_V, 20, 0); //string, MODE, time ,x
+  display.clearDisplay();
+}
+
+int i;
+void loop() {
+  i = display.getStringWidth("mCookie!");
+  display.setColor(255, 255, 0);
+  display.setFontMode(MODE_H);
+  for (int a = display.getWidth() * 8; a > -i - display.getWidth() * 8; a--) {
+    display.setCursor(a, 0);   //x, y
+    display.print("mCookie!");
+    delay(20);
   }
+  display.clearDisplay();
+
+  i = display.getStringHeight("mCookie!");
+  display.setColor(255, 0, 255);
+  display.setFontMode(MODE_V);
+  for (int a = display.getHeight() * 8; a > -i - display.getHeight() * 8; a--) {
+    display.setCursor(0, a);   //x, y
+    display.print("mCookie!");
+    delay(20);
+  }
+  display.clearDisplay();
+
+  unsigned long timer = millis();
+  display.setColor(0, 255, 255);
+  display.setFontMode(MODE_H);
+  while (millis() - timer < 5000) {
+    display.setCursor(0, 0);   //x, y
+    display.print((millis() - timer) / 100);
+    delay(20);
+  }
+  display.clearDisplay();
 }
