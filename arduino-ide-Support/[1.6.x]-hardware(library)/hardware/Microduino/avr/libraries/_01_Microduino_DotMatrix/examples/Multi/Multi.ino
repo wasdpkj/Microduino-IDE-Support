@@ -29,10 +29,32 @@
 
 #include "Microduino_Matrix.h"
 
-uint8_t Addr[MatrixPix_X][MatrixPix_Y] = {	//3x2
+uint8_t Addr[MatrixPix_X][MatrixPix_Y] = {  //2x2
+  { 64, 63},
+  { 62, 61}
+};
+
+/*
+  uint8_t Addr[MatrixPix_X][MatrixPix_Y] = {  //1x4
+  { 64, 63, 62 , 61}
+  };
+*/
+
+/*
+uint8_t Addr[MatrixPix_X][MatrixPix_Y] = {  //3x2
   { 64, 63, 62},
   { 61, 60, 59}
 };
+*/
+
+/*
+uint8_t Addr[MatrixPix_X][MatrixPix_Y] = {  //4x4
+  { 64, 63, 62, 61},
+  { 60, 59, 58, 57},
+  { 56, 55, 54, 53},
+  { 52, 51, 50, 49}
+};
+*/
 
 Matrix display = Matrix(Addr);
 

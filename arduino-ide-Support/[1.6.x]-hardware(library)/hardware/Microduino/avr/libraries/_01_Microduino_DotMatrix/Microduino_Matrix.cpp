@@ -31,7 +31,7 @@
 
 Matrix::Matrix(uint8_t (*_addr)[8]) {
 //	uint8_t (*p)[10]=_addr;
-  int _x=0, _y=0;
+  uint8_t _x = 0, _y = 0;
   for(uint8_t a=0;a<8;a++)	//判断第一层
   {
      if(_addr[0][a] == 0){
@@ -49,7 +49,7 @@ Matrix::Matrix(uint8_t (*_addr)[8]) {
         }
       }
     } 
-  }  
+  }
   
   this->_numX = _x;
   this->_numY = _y;
@@ -59,6 +59,15 @@ Matrix::Matrix(uint8_t (*_addr)[8]) {
 
   this->cursor_y = 0;
   this->cursor_x = 0;
+
+  uint8_t _p[64];  
+  for (int a = 0; a < this->_numY; a++) {
+    for (int b = 0; b < this->_numX ; b++) {
+      uint8_t _s = b + a * this->_numX ;
+      _p[_s]=_addr[a][b];
+    }
+  }
+  setDeviceAddr(_p);
 
   clearFastMode();
   clearColor();
@@ -149,7 +158,9 @@ void Matrix::writeString(char* _c, bool _m, uint16_t _t, int16_t _xy) {
     setCursor((_m ? a : _xy), (_m ? _xy : a));
     print(_c);
     delay(_t);
-//    wdt_reset();
+#ifdef WDT
+    wdt_reset();
+#endif
   }
 }
 

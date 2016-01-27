@@ -39,6 +39,11 @@
 
 #include "Microduino_MatrixBase.h"
 
+#define WDT
+#ifdef WDT
+#include <avr/wdt.h>
+#endif
+
 #define MODE_H 1
 #define MODE_V 0
 

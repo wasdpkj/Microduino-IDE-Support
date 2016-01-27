@@ -40,7 +40,6 @@
 #include "Fonts.h"
 #include <Wire.h>
 #include <avr/pgmspace.h>
-#include <avr/wdt.h>
 
 #define MatrixPix_X 8
 #define MatrixPix_Y 8

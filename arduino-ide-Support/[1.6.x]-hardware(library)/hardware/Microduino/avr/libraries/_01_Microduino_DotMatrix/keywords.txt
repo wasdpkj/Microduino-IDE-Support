@@ -7,7 +7,7 @@
 #######################################
 
 LedControl	KEYWORD1
-LedMultiple	KEYWORD1
+Matrix	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
