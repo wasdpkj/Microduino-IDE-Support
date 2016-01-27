@@ -19,7 +19,7 @@
           },
           "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/Microduino-ide-Support.zip",
           "archiveFileName": "Microduino-ide-Support.zip",
-          "checksum": "SHA-256:E86633B0F8B8EE6370B85A827BB96CD2C97B2B3ED5F14F06894EFBF54BBF13B5",
+          "checksum": "SHA-256:B5E484C6E6A9248BF52FDA525A1436DC6F40D0044E98BA43D5E6DDF018ACC02C",
           "size": "11026934",
           "boards": [
             {"name": "ATmega168pa"},
