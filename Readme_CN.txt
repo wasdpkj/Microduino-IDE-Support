@@ -1,7 +1,12 @@
 Microduino Arduino IDE 配置包历史：
-*2015年2月14日，更新了atmega32u4的Analog I/O，扩增为10个：新增D8(A8),D9(A9),D3(A10),D4(A11)
-*2014年10月19日，更新了atmega32u4的bootloader文件，解决了D10管脚作为RX_LED引起的BUG
-*2014年10月17日，更新了HID.cpp文件，解决了atmega32u4不能作为鼠标、键盘的BUG
+*2016年2月03日，更新了AM2321库问题，支持负数温度值；在Adafruit_VS1053库中添加了playBuffer函数用以播放对应长度的音乐数据。
+*2016年1月10日，添加了Blynk库，支持Microduino_Ethernet_ENC28J60、Microduino_Ethernet_W5500、Microduino_WIFI_CC3000、Microduino_WIFI_ESP8266。
+*2016年1月20日，添加了Microduino官方的_01_Microduino_DotMatrix、_08_Shield_Microduino_Key、_04_Microduino_Motor库，来自老潘。
+*2016年1月15日，atmega32u4添加支持USBTTL的bootloader，但因为bootloader大小4K限制，不能同时支持CDC下载，需要刷不同的bootloader并从菜单选择是USBTTL还是USB。
+*2016年1月01日，整个Core核心包重新从arduino官方1.6.7移植更新，直接支持atmega128rfa1，提升编译速度。
+*2015年2月14日，更新了atmega32u4的Analog I/O，扩增为10个：新增D8(A8),D9(A9),D3(A10),D4(A11)。
+*2014年10月19日，更新了atmega32u4的bootloader文件，解决了D10管脚作为RX_LED引起的BUG。
+*2014年10月17日，更新了HID.cpp文件，解决了atmega32u4不能作为鼠标、键盘的BUG。
 *2014年10月10日，更新了因为缺少avr-libc文件夹导致atmega32u4的一些BUG问题。
 *2014年10月7日，更新了1284熔丝位错误导致IO口不能使用的问题。
 *2014年6月24日，更新了atmega32u4的使用AnglogRead直接读取“AX”模拟口问题，所有Core统一A6、A7引脚。
@@ -33,3 +38,4 @@ Microduino Arduino IDE 配置包历史：
 **Microduino Core（Atmega168PA@16M,5V）（已支持，未测试）
 **Microduino Core（Atmega168PA@8M,3.3V）（已支持，已测试）
 **核心为Arduino IDE 1.03对应核心文件。
+、
