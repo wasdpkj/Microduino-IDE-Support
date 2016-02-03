@@ -5,18 +5,20 @@
  * it under the terms of either the GNU General Public License version 2
  * or the GNU Lesser General Public License version 2.1, both as
  * published by the Free Software Foundation.
+ *
+ * - 10 Apr. 2015
+ * Added support for Arduino Ethernet Shield 2
+ * by Arduino.org team
  */
 
 #ifndef	W5500_H_INCLUDED
 #define	W5500_H_INCLUDED
 
-//#include <avr/pgmspace.h>
-//#include <SPI.h>
-
 #define MAX_SOCK_NUM 8
-//typedef uint8_t SOCKET;
 
+#include <SPI.h>
 
+typedef uint8_t SOCKET;
 /*
 class MR {
 public:
@@ -134,7 +136,7 @@ public:
    * the data from Receive buffer. Here also take care of the condition while it exceed
    * the Rx memory uper-bound of socket.
    */
-  void read_data(SOCKET s, volatile uint8_t * src, volatile uint8_t * dst, uint16_t len);
+  void read_data(SOCKET s, volatile uint16_t  src, volatile uint8_t * dst, uint16_t len);
   
   /**
    * @brief	 This function is being called by send() and sendto() function also. 
@@ -179,6 +181,9 @@ public:
 
   inline void setRetransmissionTime(uint16_t timeout);
   inline void setRetransmissionCount(uint8_t _retry);
+
+  inline void setPHYCFGR(uint8_t _val);
+  inline uint8_t getPHYCFGR();
 
   void execCmdSn(SOCKET s, SockCMD _cmd);
   
@@ -231,6 +236,8 @@ public:
   __GP_REGISTER8 (RCR,    0x001B);    // Retry count
   __GP_REGISTER_N(UIPR,   0x0028, 4); // Unreachable IP address in UDP mode
   __GP_REGISTER16(UPORT,  0x002C);    // Unreachable Port address in UDP mode
+  __GP_REGISTER8 (PHYCFGR,     0x002E);    // PHY Configuration register, default value: 0b 1011 1xxx
+
   
 #undef __GP_REGISTER8
 #undef __GP_REGISTER16
@@ -322,9 +329,57 @@ public:
 private:
   static const uint16_t RSIZE = 2048; // Max Rx buffer size
 
+private:
+#if defined(ARDUINO_ARCH_AVR)
+#if (defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168P__)) && defined(CORE_MICRODUINO)	
+// Microduino Core
+  inline static void initSS()    { DDRB  |=  _BV(0); };
+  inline static void setSS()     { PORTB &= ~_BV(0); };
+  inline static void resetSS()   { PORTB |=  _BV(0); }; 
+#elif (defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__)) && defined(CORE_MICRODUINO)	
+// Microduino Core+
+  inline static void initSS()    { DDRD  |=  _BV(6); };
+  inline static void setSS()     { PORTD &= ~_BV(6); };
+  inline static void resetSS()   { PORTD |=  _BV(6); };
+#elif defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1284P__)
+  inline static void initSS()    { DDRB  |=  _BV(4); };
+  inline static void setSS()     { PORTB &= ~_BV(4); };
+  inline static void resetSS()   { PORTB |=  _BV(4); };
+#elif defined(__AVR_ATmega32U4__) || (defined(__AVR_ATmega128RFA1__) && defined(CORE_MICRODUINO))
+// Microduino Core USB
+// Microduino Core RF
+  inline static void initSS()    { DDRB  |=  _BV(6); };
+  inline static void setSS()     { PORTB &= ~_BV(6); };
+  inline static void resetSS()   { PORTB |=  _BV(6); }; 
+#elif defined(__AVR_AT90USB1286__) || defined(__AVR_AT90USB646__) || defined(__AVR_AT90USB162__)
+  inline static void initSS()    { DDRB  |=  _BV(0); };
+  inline static void setSS()     { PORTB &= ~_BV(0); };
+  inline static void resetSS()   { PORTB |=  _BV(0); }; 
+#elif defined(REL_GR_KURUMI) || defined(REL_GR_KURUMI_PROTOTYPE)
+  inline static void initSS()    { pinMode(SS, OUTPUT); 
+                                   digitalWrite(SS, HIGH); };
+  inline static void setSS()     { digitalWrite(SS, LOW); };
+  inline static void resetSS()   { digitalWrite(SS, HIGH); };
+#elif defined(REL_GR_KURUMI) || defined(REL_GR_KURUMI_PROTOTYPE)
+  inline static void initSS()    { DDRB  |=  _BV(0); };
+  inline static void setSS()     { PORTB &= ~_BV(0); };
+  inline static void resetSS()   { PORTB |=  _BV(0); };
+#else
+  inline static void initSS()    { DDRB  |=  _BV(2); };
+  inline static void setSS()     { PORTB &= ~_BV(2); };
+  inline static void resetSS()   { PORTB |=  _BV(2); };
+#endif
+#elif defined(ARDUINO_ARCH_SAMD) 
+  inline static void initSS()    { PORT->Group[g_APinDescription[10].ulPort].PINCFG[g_APinDescription[10].ulPin].reg&=~(uint8_t)(PORT_PINCFG_INEN) ;
+								   PORT->Group[g_APinDescription[10].ulPort].DIRSET.reg = (uint32_t)(1<<g_APinDescription[10].ulPin) ;
+								   PORT->Group[g_APinDescription[10].ulPort].PINCFG[g_APinDescription[10].ulPin].reg=(uint8_t)(PORT_PINCFG_PULLEN) ;
+                                   PORT->Group[g_APinDescription[10].ulPort].OUTSET.reg = (1ul << g_APinDescription[10].ulPin) ; };
+  inline static void setSS()     { PORT->Group[g_APinDescription[10].ulPort].OUTCLR.reg = (1ul << g_APinDescription[10].ulPin) ; };
+  inline static void resetSS()   { PORT->Group[g_APinDescription[10].ulPort].OUTSET.reg = (1ul << g_APinDescription[10].ulPin) ; };
+#endif // ARDUINO_ARCH_AVR
 };
 
-extern W5500Class W5100;
+extern W5500Class w5500;
 
 uint8_t W5500Class::readSn(SOCKET _s, uint16_t _addr) {
     uint8_t cntl_byte = (_s<<5)+0x08;
@@ -384,6 +439,15 @@ void W5500Class::setRetransmissionTime(uint16_t _timeout) {
 
 void W5500Class::setRetransmissionCount(uint8_t _retry) {
   writeRCR(_retry);
+}
+
+void W5500Class::setPHYCFGR(uint8_t _val) {
+  writePHYCFGR(_val);
+}
+
+uint8_t W5500Class::getPHYCFGR() {
+//  readPHYCFGR();
+  return read(0x002E, 0x00);
 }
 
 #endif

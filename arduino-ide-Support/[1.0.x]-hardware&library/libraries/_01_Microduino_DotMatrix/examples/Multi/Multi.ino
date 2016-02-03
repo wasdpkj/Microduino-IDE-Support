@@ -1,77 +1,124 @@
-#include <Wire.h>
+// 本作品采用知识共享 署名-非商业性使用-相同方式共享 3.0 未本地化版本 许可协议进行许可
+// 访问 http://creativecommons.org/licenses/by-nc-sa/3.0/ 查看该许可协议
+// ==============
+
+// 版权所有：
+// @老潘orz  wasdpkj@hotmail.com
+// ==============
+
+// Microduino-IDE
+// ==============
+// Microduino Getting start:
+// http://www.microduino.cc/download/
+
+// Microduino IDE Support：
+// https://github.com/wasdpkj/Microduino-IDE-Support/
+
+// ==============
+// Microduino wiki:
+// http://wiki.microduino.cc
+
+// ==============
+// E-mail:
+// Kejia Pan
+// pankejia@microduino.cc
+
+// ==============
+// Weibo:
+// @老潘orz
+
 #include "Microduino_Matrix.h"
 
-#define ADDR1 64
-LedControl MatrixA = LedControl(ADDR1);
-#define ADDR2 63
-LedControl MatrixB = LedControl(ADDR2);
+uint8_t Addr[MatrixPix_X][MatrixPix_Y] = {  //2x2
+  { 64, 63},
+  { 62, 61}
+};
 
-void setup() { // initalizes and sets up the initial values. Declaring function setup.
-  Serial.begin(9600); // setting data rate as 9600 bits per second for serial data communication to computer
-  //  delay(6000);
-  Serial.println("Setup"); //prints data to serial port as human-readable text
+/*
+  uint8_t Addr[MatrixPix_X][MatrixPix_Y] = {  //1x4
+  { 64, 63, 62 , 61}
+  };
+*/
+
+/*
+uint8_t Addr[MatrixPix_X][MatrixPix_Y] = {  //3x2
+  { 64, 63, 62},
+  { 61, 60, 59}
+};
+*/
+
+/*
+uint8_t Addr[MatrixPix_X][MatrixPix_Y] = {  //4x4
+  { 64, 63, 62, 61},
+  { 60, 59, 58, 57},
+  { 56, 55, 54, 53},
+  { 52, 51, 50, 49}
+};
+*/
+
+Matrix display = Matrix(Addr);
+
+void setup() {
+  Serial.begin(115200); // See the connection status in Serial Monitor
   Wire.begin();
 
-  MatrixA.clearDisplay(); //clear the display after each letter
-  MatrixB.clearDisplay(); //clear the display after each letter
-
-  MatrixA.setColor(0, 255, 255); //clear the display after each letter
-  MatrixB.setColor(255, 0, 255); //clear the display after each letter
-
-  for (int a = 0; a < 64; a++)
-  {
-    MatrixA.setCursor(a, 0);
-    MatrixB.setCursor(a, 0);
-    MatrixA.print("HELLO mCookie");
-    MatrixB.print("HELLO mCookie");
-    delay(50);
+  //getDeviceAddr
+  for (int a = 0; a < display.getMatrixNum(); a++) {
+    Serial.print(display.getDeviceAddr(a));
+    Serial.print(" ");
   }
-  MatrixB.clearDisplay(); //clear the display after each letter
-}
+  Serial.println("");
 
-void loop() { //declaring function loop
-  for (int y = 0; y < 8; y++) {
-    for (int x = 0; x < 8; x++) {
+  //setLedColor
+  for (int y = 0; y < display.getHeight() * 8; y++) {
+    for (int x = 0; x < display.getWidth() * 8; x++) {
       randomSeed(analogRead(A0));
-      MatrixA.setLedColor(x, y, random(0, 255), random(0, 255), random(0, 255));
-      MatrixB.setLedColor(x, y, random(0, 255), random(0, 255), random(0, 255));
-      delay(20);
+      display.setLedColor(x, y, random(0, 255), random(0, 255), random(0, 255));   //x, y, r, g, b
+      delay(5);
     }
   }
-  delay(2000);
+  delay(1000);
+  display.clearDisplay();
 
-  MatrixA.clearDisplay(); //clear the display after each letter
-  MatrixB.clearDisplay(); //clear the display after each letter
-  MatrixA.setColor(255, 0, 0); //clear the display after each letter
-  MatrixB.setColor(255, 0, 0); //clear the display after each letter
-  MatrixA.writeString(20, "RED");
-  MatrixB.writeString(20, "RED");
-  delay(500);
+  //clearColor
+  display.clearColor();
+  //writeString H
+  display.writeString("Microduino", MODE_H, 20, 0); //string, MODE, time ,y
+  display.clearDisplay();
+  //writeString V
+  display.writeString("Microduino", MODE_V, 20, 0); //string, MODE, time ,x
+  display.clearDisplay();
+}
 
-  MatrixA.clearDisplay(); //clear the display after each letter
-  MatrixB.clearDisplay(); //clear the display after each letter
-  MatrixA.setColor(0, 255, 0); //clear the display after each letter
-  MatrixB.setColor(0, 255, 0); //clear the display after each letter
-  MatrixA.writeString(20, "GREEN");
-  MatrixB.writeString(20, "GREEN");
-  delay(500);
+int i;
+void loop() {
+  i = display.getStringWidth("mCookie!");
+  display.setColor(255, 255, 0);
+  display.setFontMode(MODE_H);
+  for (int a = display.getWidth() * 8; a > -i - display.getWidth() * 8; a--) {
+    display.setCursor(a, 0);   //x, y
+    display.print("mCookie!");
+    delay(20);
+  }
+  display.clearDisplay();
 
-  MatrixA.clearDisplay(); //clear the display after each letter
-  MatrixB.clearDisplay(); //clear the display after each letter
-  MatrixA.setColor(0, 0, 255); //clear the display after each letter
-  MatrixB.setColor(0, 0, 255); //clear the display after each letter
-  MatrixA.writeString(20, "BLUE");
-  MatrixB.writeString(20, "BLUE");
-  delay(500);
+  i = display.getStringHeight("mCookie!");
+  display.setColor(255, 0, 255);
+  display.setFontMode(MODE_V);
+  for (int a = display.getHeight() * 8; a > -i - display.getHeight() * 8; a--) {
+    display.setCursor(0, a);   //x, y
+    display.print("mCookie!");
+    delay(20);
+  }
+  display.clearDisplay();
 
-  MatrixA.clearDisplay(); //clear the display after each letter
-  MatrixB.clearDisplay(); //clear the display after each letter
-  MatrixA.clearColor(); //clear the display after each letter
-  MatrixB.clearColor(); //clear the display after each letter
-  MatrixA.writeString(20, "Null");
-  MatrixB.writeString(20, "Null");
-  delay(500);
-
-  MatrixA.clearDisplay();
-  MatrixB.clearDisplay();
+  unsigned long timer = millis();
+  display.setColor(0, 255, 255);
+  display.setFontMode(MODE_H);
+  while (millis() - timer < 5000) {
+    display.setCursor(0, 0);   //x, y
+    display.print((millis() - timer) / 100);
+    delay(20);
+  }
+  display.clearDisplay();
 }

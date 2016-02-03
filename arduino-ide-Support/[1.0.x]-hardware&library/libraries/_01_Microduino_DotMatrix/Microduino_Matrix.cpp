@@ -1,158 +1,219 @@
+// 本作品采用知识共享 署名-非商业性使用-相同方式共享 3.0 未本地化版本 许可协议进行许可
+// 访问 http://creativecommons.org/licenses/by-nc-sa/3.0/ 查看该许可协议
+// ==============
+
+// 版权所有：
+// @老潘orz  wasdpkj@hotmail.com
+// ==============
+
+// Microduino-IDE
+// ==============
+// Microduino Getting start:
+// http://www.microduino.cc/download/
+
+// Microduino IDE Support：
+// https://github.com/wasdpkj/Microduino-IDE-Support/
+
+// ==============
+// Microduino wiki:
+// http://wiki.microduino.cc
+
+// ==============
+// E-mail:
+// Kejia Pan
+// pankejia@microduino.cc
+
+// ==============
+// Weibo:
+// @老潘orz
+
 #include "Microduino_Matrix.h"
 
-#include <avr/pgmspace.h>
-
-static matrix_t matrixs[64];                          // static array of key structures
-
-uint8_t MatrixCount = 0;                                     // the total number of attached keys
-
-LedControl::LedControl(int _addr) {
-  _addr--;
-  if ( MatrixCount < 64)
+Matrix::Matrix(uint8_t (*_addr)[8]) {
+//	uint8_t (*p)[10]=_addr;
+  uint8_t _x = 0, _y = 0;
+  for(uint8_t a=0;a<8;a++)	//判断第一层
   {
-    this->matrixIndex = MatrixCount++;                    // assign a key index to this instance
-    if (_addr < 64) {
-      matrixs[this->matrixIndex].Addr.nbr = _addr;
+     if(_addr[0][a] == 0){
+
+      break;	//NULL，结束当前层判断
+    }
+    else{
+      _x = a+1;
+      for(uint8_t b=0;b<8;b++) { //判断第二层
+        if(_addr[b][a] == 0){
+          break;	//NULL，结束当前层判断
+        }
+        else {
+          _y = b+1;
+        }
+      }
+    } 
+  }
+  
+  this->_numX = _x;
+  this->_numY = _y;
+
+  this->_matrixNum = this->_numX * this->_numY;
+  led = new LedControl[this->_matrixNum];
+
+  this->cursor_y = 0;
+  this->cursor_x = 0;
+
+  uint8_t _p[64];  
+  for (int a = 0; a < this->_numY; a++) {
+    for (int b = 0; b < this->_numX ; b++) {
+      uint8_t _s = b + a * this->_numX ;
+      _p[_s]=_addr[a][b];
     }
   }
-  else
-    this->matrixIndex = 255 ;  // too many keys
+  setDeviceAddr(_p);
 
+  clearFastMode();
   clearColor();
-}
-
-int LedControl::getDeviceAddr() {
-  return this->Devices_addr;
+  setFontMode(true);
 }
 
 
-void LedControl::clearColor()
-{
-  this->value_color[0] = 255;
-  this->value_color[1] = 255;
-  this->value_color[2] = 255;
-}
-
-void LedControl::setColor(uint8_t value_r, uint8_t value_g, uint8_t value_b)
-{
-  this->value_color[0] = value_r;
-  this->value_color[1] = value_g;
-  this->value_color[2] = value_b;
-}
-
-void LedControl::clearDisplay() {
-  //Wire.beginTransmission(64); // transmit to device #4
-  Wire.beginTransmission(matrixs[this->matrixIndex].Addr.nbr+1); // transmit to device #4
-  Wire.write(0x60);       // sends five bytes
-  Wire.endTransmission();    // stop transmitting
-/*   for (int i = 0; i < 8; i++)
-  {
-    for (int j = 0; j < 8; j++)
-      setLed(i, j, false);
-  } */
+uint8_t Matrix::getDeviceAddr(uint8_t _a) {
+    return led[_a].getDeviceAddr();
 }
 
 
-void LedControl::setLedColor(int _row, int _col, uint8_t _value_r, uint8_t _value_g, uint8_t _value_b) {
-  //Wire.beginTransmission(64); // transmit to device #4
-  Wire.beginTransmission(matrixs[this->matrixIndex].Addr.nbr+1); // transmit to device #4
-  uint8_t temp[4];
-  temp[0] = 0x80 | (_row << 3) | _col;
-  temp[1] = _value_b / 8;
-  temp[2] = 0x20 | _value_g / 8;
-  temp[3] = 0x40 | _value_r / 8;
-  Wire.write(temp, 4);       // sends five bytes
-  Wire.endTransmission();    // stop transmitting
+void Matrix::setDeviceAddr(uint8_t* _addr){
+  for (int a = 0; a < getMatrixNum(); a++)
+    led[a].setDeviceAddr(_addr[a]);
 }
 
-void LedControl::setLed(int _row, int _col, boolean _state) {
-  if (_state)
-    this->setLedColor(_row, _col, this->value_color[0], this->value_color[1], this->value_color[2]);
-  else
-    this->setLedColor(_row, _col, 0, 0, 0);
+
+void Matrix::clearDisplay() {
+  for (int a = 0; a < getMatrixNum(); a++)
+    led[a].clearDisplay();
 }
 
-void LedControl::setRow(int _row, byte _value) {
-  byte val;
 
-  if (_row < 0 || _row > 7)
-    return;
-  for (int _col = 0; _col < 8; _col++) {
-	//val=value >> (7-col);
-    val = _value >> (_col);
-    val = val & 0x01;
-    this->setLed(_row, _col, val);
-  }
+void Matrix::setLedColor(uint8_t _row, uint8_t _col, uint8_t _value_r, uint8_t _value_g, uint8_t _value_b) {
+    int16_t _s = (_row/8) + (_col/8) * getWidth();
+    led[_s].setLedColor(_row%8, _col%8, _value_r, _value_g, _value_b);
 }
 
-void LedControl::setColumn(int _col, byte _value) {
-  byte val;
 
-  if (_col < 0 || _col > 7)
-    return;
-  for (int _row = 0; _row < 8; _row++) {
-	val=_value >> (7-_row);
-    //val = _value >> (_row);
-    val = val & 0x01;
-    this->setLed(_row, _col, val);
-  }
+void Matrix::setLedColorFast(uint8_t _row, uint8_t _col, uint8_t _value_r, uint8_t _value_g, uint8_t _value_b) {
+    int16_t _s = (_row/8) + (_col/8) * getWidth();
+    led[_s].setLedColorFast(_row%8, _col%8, _value_r, _value_g, _value_b);
 }
 
-void LedControl::writeString(int _time, char * _displayString) {
-  int _leng = 0;
-  int _wight = 0;
-  while (_displayString[_leng] != NULL) _wight += alphabetBitmap[((int)_displayString[_leng++] - 32)][FONE_SIZE_X];
-  //Serial.println(_wight);
 
-  for (int a = 0; a > -_wight; a--) {
-    int c = 0;
-    for (int b = 0; b < _leng; b++) {
-      //Serial.print(_displayString[b]);
-      //Serial.print("[");
-      //Serial.print(b);
-      //Serial.print("]");
-      //Serial.print(" c: ");
-      //Serial.println(a+c);
-	  if(b)	c += alphabetBitmap[((int)_displayString[b] - 32)][FONE_SIZE_X];
-      this->displayChar(a + c, 0, _displayString[b]);
-    }
-    delay(_time);
-//    clearDisplay(addr);
-  }
-}
-
-void LedControl::setCursor(int16_t _x, int16_t _y) {
+void Matrix::setCursor(int16_t _x, int16_t _y) {
   this->cursor_x = _x;
   this->cursor_y = _y;
+
+  for (int _y = 0; _y < getHeight(); _y++) {
+    for (int _x = 0; _x < getWidth(); _x++) {
+      uint8_t _s = _x + _y * getWidth();
+      led[_s].setCursor(-(8 * _x) + this->cursor_x, -(8 * _y) + this->cursor_y);
+    }
+  }
 }
 
-size_t LedControl::write(uint8_t c) {
-  if (c == '\n') {
-     this->cursor_y += 8;
-     this->cursor_x  = 0;
-  } else if (c == '\r') {
- //   skip em
-  } else {
-    int k = alphabetBitmap[((int)c - 32)][FONE_SIZE_X];
-	this->cursor_x -= k;
-    this->displayChar(-(this->cursor_x), 0, c);
-    // if (cursor_x > (8 - k)) {
-    // cursor_y += 8;
-    // cursor_x = 0;
-    // }
+
+void Matrix::setFastMode() {
+  //  runFun(&setFastMode);
+  //  this->Fast_mode = true;
+  for (int a = 0; a < getMatrixNum(); a++)
+    led[a].setFastMode();
+}
+
+
+void Matrix::clearFastMode() {
+  //  this->Fast_mode = false;
+  for (int a = 0; a < getMatrixNum(); a++)
+    led[a].clearFastMode();
+}
+
+
+void Matrix::setFontMode(bool _Mode) {
+  for (int a = 0; a < getMatrixNum(); a++)
+    led[a].setFontMode(_Mode);
+}
+
+
+void Matrix::setColor(uint8_t value_r, uint8_t value_g, uint8_t value_b) {
+  for (int a = 0; a < getMatrixNum(); a++)
+    led[a].setColor(value_r, value_g, value_b);
+}
+
+
+void Matrix::clearColor() {
+  for (int a = 0; a < getMatrixNum(); a++)
+    led[a].clearColor();
+}
+
+
+void Matrix::writeString(char* _c, bool _m, uint16_t _t, int16_t _xy) {
+  setFontMode(_m);
+  int c1 = (_m ? getWidth() : getHeight()) * 8;
+  int c2 = -(_m ? getStringWidth(_c) : getStringHeight(_c))  - c1;
+  for (int a = c1; a > c2; a--) {
+    setCursor((_m ? a : _xy), (_m ? _xy : a));
+    print(_c);
+    delay(_t);
+#ifdef WDT
+    wdt_reset();
+#endif
   }
-  	// displayChar(Devices_addr, cursor_x, cursor_y, c);
+}
+
+
+size_t Matrix::write(uint8_t c) {
+   if(CharToInt(c) > 94 || CharToInt(c) < 0)
+	return 0;
+
+  for (int a = 0; a < getMatrixNum(); a++)
+    led[a].write(c);
+
   return 1;
+/* void Matrix::print(char* _c) {
+  for (int a = 0; a < this->_matrixNum; a++)
+    led[a].print(_c);
+} */
 }
 
-void LedControl::displayChar(int row, int col, char _charIndex) {
-  if (row < 0-8 || row > 7+8)
-    return;
-  
-  int n=((int)_charIndex - 32);
-  int k = alphabetBitmap[n][FONE_SIZE_X];
 
-  for (int i = FONE_SIZE_X-k; i < FONE_SIZE_X; i++) {
-    this->setRow(i + row, alphabetBitmap[n][i]);
+int16_t Matrix::getStringWidth(char* _String) {
+  //    return (uint32_t)(offset + millis() / 1000);
+  int _leng = 0;
+  int _Width = 0;
+  while (_String[_leng] != NULL) {
+    _Width += 1 + pgm_read_byte(alphabetBitmap[((int)_String[_leng] - 32)] + FONE_SIZE_X);
+    _leng++;
   }
+  return _Width;
+}
+
+
+int16_t Matrix::getStringHeight(char* _String) {
+  //    return (uint32_t)(offset + millis() / 1000);
+  int _leng = 0;
+  int _Height = 0;
+  while (_String[_leng] != NULL) {
+    _Height += 1 + FONE_SIZE_Y;
+    _leng++;
+  }
+  return _Height;
+}
+
+
+int16_t Matrix::getMatrixNum() {
+  return this->_matrixNum;
+}
+
+
+int16_t Matrix::getWidth() {
+  return this->_numX;
+}
+
+
+int16_t Matrix::getHeight() {
+  return this->_numY;
 }
