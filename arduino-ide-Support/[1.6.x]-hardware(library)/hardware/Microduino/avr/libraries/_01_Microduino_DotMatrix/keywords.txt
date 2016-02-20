@@ -34,6 +34,16 @@ getStringHeight			KEYWORD2
 getMatrixNum 			KEYWORD2
 getHeight				KEYWORD2
 getWidth				KEYWORD2
+drawLine				KEYWORD2
+drawCircle				KEYWORD2
+drawDisc				KEYWORD2
+drawFrame				KEYWORD2
+drawRFrame				KEYWORD2
+drawBox					KEYWORD2
+drawRBox				KEYWORD2
+drawBMP					KEYWORD2
+
+
 
 
 #######################################

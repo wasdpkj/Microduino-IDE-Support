@@ -35,6 +35,10 @@ uint8_t Addr[MatrixPix_X][MatrixPix_Y] = {
 
 Matrix display = Matrix(Addr);
 
+static const unsigned char PROGMEM logo[] = {   //高位在前 逐行
+  0x00, 0x66, 0x66, 0xDB, 0xDB, 0xDB, 0xDB, 0x00
+};
+
 void setup() {
   Serial.begin(115200); // See the connection status in Serial Monitor
   Wire.begin();
@@ -57,6 +61,11 @@ void setup() {
   delay(1000);
   display.clearDisplay();
 
+  display.setColor(0, 255, 0);
+  display.drawBMP(0, 0, 8, 8, logo);  //x,y,w,h,data
+  delay(2000);
+  display.clearDisplay();
+
   //clearColor
   display.clearColor();
   //writeString H
@@ -69,6 +78,36 @@ void setup() {
 
 int i;
 void loop() {
+  display.setColor(255, 255, 0);
+
+  display.drawBox(0, 0, 8, 8);
+  delay(2000);
+  display.clearDisplay();
+
+  display.drawRBox(0, 0, 8, 8, 2);
+  delay(2000);
+  display.clearDisplay();
+
+  display.drawFrame(0, 0, 8, 8);
+  delay(2000);
+  display.clearDisplay();
+
+  display.drawRFrame(0, 0, 8, 8, 2);
+  delay(2000);
+  display.clearDisplay();
+
+  display.drawCircle(3, 3, 3);
+  delay(2000);
+  display.clearDisplay();
+
+  display.drawDisc(3, 3, 3);
+  delay(2000);
+  display.clearDisplay();
+
+  display.drawLine(0, 0, 7, 7);
+  delay(2000);
+  display.clearDisplay();
+
   i = display.getStringWidth("mCookie!");
   display.setColor(255, 255, 0);
   display.setFontMode(MODE_H);
