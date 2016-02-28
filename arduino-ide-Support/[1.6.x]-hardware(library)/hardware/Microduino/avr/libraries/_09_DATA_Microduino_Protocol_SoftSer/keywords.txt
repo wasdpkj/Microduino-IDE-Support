@@ -1,0 +1,30 @@
+#######################################
+# Syntax Coloring Map For Microduino_Protocol
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+Protocol	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+begin			KEYWORD2
+parse			KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+P_BUSY  	KEYWORD1
+P_TIMEOUT   KEYWORD1
+P_NONE 		KEYWORD1
+P_FINE 		KEYWORD1
+P_ERROR 	KEYWORD1
+MODE_WHILE 	KEYWORD1
+MODE_LOOP 	KEYWORD1
+BUFFER_MAX 	KEYWORD1
+CHANNEL_NUM	KEYWORD1
+TYPE_NUM 	KEYWORD1
+#######################################
