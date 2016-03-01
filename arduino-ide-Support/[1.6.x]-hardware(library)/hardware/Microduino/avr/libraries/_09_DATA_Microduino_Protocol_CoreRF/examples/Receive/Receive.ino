@@ -32,20 +32,22 @@
   AA BB C8 DC 05 DC 05 D0 07 EF 03 DC 05 DC 05 DC 05 DC 05 E3
 */
 
-#include <Microduino_Protocol_HardSer.h>
-Protocol ProtocolB(&Serial, TYPE_NUM);
+#include <Microduino_Protocol_CoreRF.h>
+Protocol ProtocolA(TYPE_NUM);
 
 uint16_t Data[8];
 
 void setup() {
   Serial.begin(9600);
 
-  ProtocolB.begin(9600);  //9600/19200/38400
+  ProtocolA.begin(11);  //param chan the channel number for the radio to use, 11 to 26
 }
 
 void loop() {
-  int sta = ProtocolB.parse(Data, MODE_WHILE);
+  int sta = ProtocolA.parse(Data, MODE_WHILE);
   if (sta != P_NONE) {
+    Serial.print("RSSI:");
+    Serial.println(ProtocolA.getRSSI());
     switch (sta) {
       case P_FINE:
         for (int a = 0; a < CHANNEL_NUM; a++) {
@@ -64,5 +66,5 @@ void loop() {
   }
 
   delay(10);
-//  Serial.println("loop!");
+  //  Serial.println("loop!");
 }

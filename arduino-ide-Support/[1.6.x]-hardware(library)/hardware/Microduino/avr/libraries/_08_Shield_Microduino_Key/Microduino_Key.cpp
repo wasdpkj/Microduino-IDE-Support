@@ -97,7 +97,7 @@ uint8_t Key::read(int min, int max) // return the value as degrees
   {
 	int analog=analogRead(channel);
     this->key_cache = this->key_status; //缓存作判断用
-    this->key_status = bool( analog> min && analog < max); //触发时
+    this->key_status = bool( analog>= min && analog <= max); //触发时
 
     if (this->key_status && !this->key_cache) this->key_time = millis();
 

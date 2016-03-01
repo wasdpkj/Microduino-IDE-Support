@@ -12,6 +12,7 @@ Protocol	KEYWORD1
 #######################################
 begin			KEYWORD2
 parse			KEYWORD2
+getRSSI			KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
