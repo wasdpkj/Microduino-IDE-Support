@@ -58,7 +58,7 @@ uint8_t Addr[MatrixPix_X][MatrixPix_Y] = {  //4x4
 
 Matrix display = Matrix(Addr);
 
-static const unsigned char PROGMEM logo[] = {   //高位在前 逐行
+static const unsigned char PROGMEM logo[] = {   //低位在前 逐行
   0x00, 0x66, 0x66, 0xDB, 0xDB, 0xDB, 0xDB, 0x00
 };
 
