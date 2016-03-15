@@ -17,7 +17,7 @@ byte getChecksum(byte length, byte cmd, byte mydata[]) {
   this->sta = false;
   this->error = false;
   P_Serial = ser; // ...override P_Serial with value passed.
-} */
+  } */
 
 
 void Protocol::begin(uint16_t _baud) {
@@ -37,8 +37,10 @@ bool Protocol::available(bool _sta) {
         this->num = 0;
         return false;
       }
-      else
+      else {
         this->num++;
+      }
+
       delayMicroseconds(200);
     }
     return true;
@@ -56,7 +58,9 @@ uint8_t Protocol::parse(uint16_t* _data, bool _mod) {
         this->num = 0;
         if (this->inChar == this->channel) {
           this->error = false;
-          //return P_BUSY;
+          if (!_mod) {
+            return P_BUSY;
+          }
         }
         else  {
           this->error = true;
@@ -66,7 +70,9 @@ uint8_t Protocol::parse(uint16_t* _data, bool _mod) {
 
       if (this->inChar == 0xBB && this->inCache == 0xAA) {
         this->sta = true;
-        //return P_BUSY;
+        if (!_mod) {
+          return P_BUSY;
+        }
       }
 
       if (this->num  == (CHANNEL_NUM * 2 + 1) && !this->error) {
@@ -81,14 +87,20 @@ uint8_t Protocol::parse(uint16_t* _data, bool _mod) {
           }
           return P_FINE;
         }
-        else
+        else {
           return P_ERROR;
+        }
       }
-      // else
-      // return P_BUSY;
+      else if (!_mod) {
+        return P_BUSY;
+      }
     } while (_mod && (available(true) && millis() - time < 100));
-    if (_mod) return P_TIMEOUT;
+
+    if (_mod) {
+      return P_TIMEOUT;
+    }
   }
-  else
+  else {
     return P_NONE;
+  }
 }
