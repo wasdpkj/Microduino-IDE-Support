@@ -53,6 +53,10 @@
 #define U8G_DRAW_LOWER_RIGHT  0x08
 #define U8G_DRAW_ALL (U8G_DRAW_UPPER_RIGHT|U8G_DRAW_UPPER_LEFT|U8G_DRAW_LOWER_RIGHT|U8G_DRAW_LOWER_LEFT)
 
+#define read16(Y,Z)  (uint16_t)((uint8_t)pgm_read_byte((Y) + (Z++)) | ((uint8_t)pgm_read_byte((Y) + (Z++)) << 8))
+#define read32(Y,Z) (uint32_t)((uint8_t)pgm_read_byte((Y) + (Z++)) | ((uint8_t)pgm_read_byte((Y) + (Z++)) << 8) | ((uint8_t)pgm_read_byte((Y) + (Z++)) << 16) | ((uint8_t)pgm_read_byte((Y) + (Z++)) << 24))
+#define BUFFPIXEL (20 * 3)
+
 class Matrix : public Print {
 public:
 	LedControl* led;
@@ -94,6 +98,7 @@ public:
     void drawRBox(int8_t x, int8_t y, int8_t w, int8_t h, uint8_t r);
 	
 	void drawBMP(int16_t x, int16_t y, int16_t w, int16_t h,const uint8_t *bitmap);	
+	bool drawBMP(int16_t x, int16_t y, const uint8_t *bitmap);
 
 	void setFastMode();
 	void clearFastMode();

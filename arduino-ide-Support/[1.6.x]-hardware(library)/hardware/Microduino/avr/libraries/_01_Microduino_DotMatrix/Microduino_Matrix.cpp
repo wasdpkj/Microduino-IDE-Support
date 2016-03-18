@@ -495,6 +495,74 @@ void Matrix::drawBMP(int16_t x, int16_t y, int16_t w, int16_t h,const uint8_t *b
 }
 
 
+bool Matrix::drawBMP(int16_t x, int16_t y, const uint8_t *bitmap){
+  uint32_t _dataNum = 0;
+  uint8_t  _dataBuffer[BUFFPIXEL]; //pixel buffer (R+G+B per pixel)
+
+  //Parse BMP header
+  if (read16(bitmap, _dataNum) == 0x4D42) { //BMP signature
+    (void)read32(bitmap, _dataNum); //File size
+    (void)read32(bitmap, _dataNum); //Read & ignore creator bytes
+    uint32_t bmpImageoffset = read32(bitmap, _dataNum); //Start of image data in file
+    //Read DIB header
+    (void)read32(bitmap, _dataNum);  //Header size
+    int bmpWidth  = read32(bitmap, _dataNum),
+        bmpHeight = read32(bitmap, _dataNum);
+
+    bool  flip = true;      //BMP is stored bottom-to-top
+    //If bmpHeight is negative, image is in top-down order.
+    if (bmpHeight < 0) {
+      bmpHeight = -bmpHeight;
+      flip = false;
+    }
+
+    if (read16(bitmap, _dataNum) == 1) { //# planes -- must be '1'
+      uint8_t bmpDepth = read16(bitmap, _dataNum); //Bit depth (currently must be 24)
+      if ((bmpDepth == 24) && (read32(bitmap, _dataNum) == 0)) { //0 = uncompressed
+        //BMP rows are padded (if needed) to 4-byte boundary
+        uint32_t rowSize = (bmpWidth * 3 + 3) & ~3; //Not always = bmpWidth; may have padding
+
+        //Crop area to be loaded
+        int w = bmpWidth,
+            h = bmpHeight;
+
+        if ((x + w - 1) >= getWidth() * 8)  w = getWidth() * 8  - x;
+        if ((y + h - 1) >= (getHeight() * 8)) h = (getHeight() * 8) - y;
+
+        for (int row = 0; row < h; row++) { //For each scanline...
+          uint32_t pos = bmpImageoffset + (flip ? (bmpHeight - 1 - row) : row) * rowSize ;
+          uint8_t  buffidx = sizeof(_dataBuffer); //Current position in _dataBuffer
+          for (int col = 0; col < w; col++) { //For each pixel...
+            //Time to read more pixel data?
+            if (buffidx >= sizeof(_dataBuffer)) { //Indeed
+              buffidx = 0; //Set index to beginning
+              for (int a = 0; a < BUFFPIXEL; a++) {
+                _dataBuffer[a] = pgm_read_byte(bitmap + (pos + a));
+              }
+            }
+
+            uint8_t _b = _dataBuffer[buffidx++],
+                    _g = _dataBuffer[buffidx++],
+                    _r = _dataBuffer[buffidx++];
+            setLedColor(col + x, row + y, _r, _g, _b);
+          } //end pixel
+        } //end scanline
+      } //end goodBmp
+      else {
+        return false;
+      }
+    }//end planes
+    else {
+      return false;
+    }
+  }//end sianatrue
+  else {
+    return false;
+  }
+  return true;
+}
+
+
 void Matrix::writeString(char* _c, bool _m, uint16_t _t, int16_t _xy) {
   setFontMode(_m);
   int c1 = (_m ? getWidth() : getHeight()) * 8;
