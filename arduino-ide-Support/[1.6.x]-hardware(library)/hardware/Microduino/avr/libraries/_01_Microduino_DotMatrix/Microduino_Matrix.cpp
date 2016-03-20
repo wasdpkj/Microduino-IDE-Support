@@ -93,17 +93,23 @@ void Matrix::clearDisplay() {
 
 
 void Matrix::setLedColor(uint8_t _row, uint8_t _col, uint8_t _value_r, uint8_t _value_g, uint8_t _value_b) {
+  if((_col > (getHeight() * 8 - 1)) || (_row > (getWidth() * 8 - 1)))
+	return;
   int16_t _s = (_row / 8) + (_col / 8) * getWidth();
   led[_s].setLedColor(_row % 8, _col % 8, _value_r, _value_g, _value_b);
 }
 
 
 void Matrix::setLedColorFast(uint8_t _row, uint8_t _col, uint8_t _value_r, uint8_t _value_g, uint8_t _value_b) {
+  if((_col > (getHeight() * 8 - 1)) || (_row > (getWidth() * 8 - 1)))
+	return;
   int16_t _s = (_row / 8) + (_col / 8) * getWidth();
   led[_s].setLedColorFast(_row % 8, _col % 8, _value_r, _value_g, _value_b);
 }
 
 void Matrix::setLed(uint8_t _row, uint8_t _col, bool _state) {
+  if((_col > (getHeight() * 8 - 1)) || (_row > (getWidth() * 8 - 1)))
+	return;
   int16_t _s = (_row / 8) + (_col / 8) * getWidth();
   led[_s].setLed(_row % 8, _col % 8, _state);
 }
@@ -526,7 +532,7 @@ bool Matrix::drawBMP(int16_t x, int16_t y, const uint8_t *bitmap){
         int w = bmpWidth,
             h = bmpHeight;
 
-        if ((x + w - 1) >= getWidth() * 8)  w = getWidth() * 8  - x;
+        if ((x + w - 1) >= (getWidth() * 8)) w = (getWidth() * 8)  - x;
         if ((y + h - 1) >= (getHeight() * 8)) h = (getHeight() * 8) - y;
 
         for (int row = 0; row < h; row++) { //For each scanline...

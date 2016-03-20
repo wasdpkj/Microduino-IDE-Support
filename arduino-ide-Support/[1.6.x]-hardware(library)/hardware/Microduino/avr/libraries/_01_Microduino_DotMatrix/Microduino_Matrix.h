@@ -55,7 +55,7 @@
 
 #define read16(Y,Z)  (uint16_t)((uint8_t)pgm_read_byte((Y) + (Z++)) | ((uint8_t)pgm_read_byte((Y) + (Z++)) << 8))
 #define read32(Y,Z) (uint32_t)((uint8_t)pgm_read_byte((Y) + (Z++)) | ((uint8_t)pgm_read_byte((Y) + (Z++)) << 8) | ((uint8_t)pgm_read_byte((Y) + (Z++)) << 16) | ((uint8_t)pgm_read_byte((Y) + (Z++)) << 24))
-#define BUFFPIXEL (20 * 3)
+#define BUFFPIXEL (MatrixPix_X * 8 * 3)
 
 class Matrix : public Print {
 public:
