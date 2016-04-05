@@ -72,6 +72,7 @@ void setup() {
   }
   Serial.println("");
 
+  display.clearDisplay();
   //setLedColor
   for (int y = 0; y < display.getHeight() * 8; y++) {
     for (int x = 0; x < display.getWidth() * 8; x++) {
@@ -81,17 +82,38 @@ void setup() {
     }
   }
   delay(1000);
-  display.clearDisplay();
 
+  //setLed
+  display.clearDisplay();
+  display.setColor(0, 255, 0);
+  for (int y = 0; y < display.getHeight() * 8; y++) {
+    for (int x = 0; x < display.getWidth() * 8; x++) {
+      display.setLed(x, y, true);   //x, y, sta
+      delay(5);
+    }
+  }
+  delay(1000);
+
+  //setLed
+  display.clearDisplay();
+  display.setColor(255, 0, 0);
+  for (int y = 0; y < display.getHeight() * 8; y++) {
+    for (int x = 0; x < display.getWidth() * 8; x++) {
+      display.setLed(x, y, true);   //x, y, sta
+      delay(5);
+    }
+  }
+  delay(1000);
+
+  display.clearDisplay();
   display.setColor(0, 255, 0);
   display.drawBMP(0, 0, 8, 8, logoA);  //x,y,w,h,data
   delay(2000);
-  display.clearDisplay();
 
+  display.clearDisplay();
   //Windows Bitmap (BMP) file,24bit
   display.drawBMP(0, 0, logoB);   //x,y,data
   delay(2000);
-  display.clearDisplay();
 
   //clearColor
   display.clearColor();
@@ -107,31 +129,31 @@ int i;
 void loop() {
   display.setColor(255, 255, 0);
 
-  display.drawBox(0, 0, 8, 8);
+  display.drawBox(0, 0, 8, 8);  //x,y,w,h
   delay(2000);
   display.clearDisplay();
 
-  display.drawRBox(0, 0, 8, 8, 2);
+  display.drawRBox(0, 0, 8, 8, 2);  //x,y,w,h,r
   delay(2000);
   display.clearDisplay();
 
-  display.drawFrame(0, 0, 8, 8);
+  display.drawFrame(0, 0, 8, 8);  //x,y,w,h
   delay(2000);
   display.clearDisplay();
 
-  display.drawRFrame(0, 0, 8, 8, 2);
+  display.drawRFrame(0, 0, 8, 8, 2);  //x,y,w,h,r
   delay(2000);
   display.clearDisplay();
 
-  display.drawCircle(3, 3, 3);
+  display.drawCircle(3, 3, 3);  //x,y,r
   delay(2000);
   display.clearDisplay();
 
-  display.drawDisc(3, 3, 3);
+  display.drawDisc(3, 3, 3);  //x,y,r
   delay(2000);
   display.clearDisplay();
 
-  display.drawLine(0, 0, 7, 7);
+  display.drawLine(0, 0, 7, 7); //x,y,x1,y1
   delay(2000);
   display.clearDisplay();
 
@@ -155,6 +177,7 @@ void loop() {
   }
   display.clearDisplay();
 
+  //Print
   unsigned long timer = millis();
   display.setColor(0, 255, 255);
   display.setFontMode(MODE_H);
@@ -164,4 +187,21 @@ void loop() {
     delay(20);
   }
   display.clearDisplay();
+
+  //String to char*
+  String _buffer_data = "Analog(A0):";
+  _buffer_data +=  analogRead(A0);
+
+  char buffer_data[128];
+  for (int a = 0; a < 128; a++) {
+    buffer_data[a] = NULL;
+  }
+
+  for (int a = 0; a < _buffer_data.length(); a++) {
+    buffer_data[a] = _buffer_data[a];
+  }
+
+  display.setColor(255, 255, 255);
+  display.clearDisplay();
+  display.writeString(buffer_data, MODE_H, 50, 1);
 }

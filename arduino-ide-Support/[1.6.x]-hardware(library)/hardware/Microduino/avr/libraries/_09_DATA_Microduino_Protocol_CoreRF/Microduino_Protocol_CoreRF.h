@@ -11,11 +11,13 @@
 
 #define PRO_PORT ZigduinoRadio
 
-#define P_BUSY 128
-#define P_TIMEOUT 255
-#define P_NONE 64
-#define P_FINE 1
-#define P_ERROR 0
+enum p_sta {
+	P_ERROR,
+	P_BUSY,
+	P_NONE,
+	P_FINE,
+	P_TIMEOUT,
+};
 
 #define MODE_WHILE 1
 #define MODE_LOOP 0
