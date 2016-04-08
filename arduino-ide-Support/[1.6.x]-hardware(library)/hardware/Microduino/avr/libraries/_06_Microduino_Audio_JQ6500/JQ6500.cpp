@@ -82,16 +82,16 @@ void JQ6500::eq(uint8_t eq){
 void JQ6500::setDevice(uint8_t device){
 	cmdBuffer[0] = device;
 	sendCommand(CMD_DEVICE, cmdBuffer, 1);
+	delay(1500);
 }
 
-void JQ6500::sleep(){
-	
+void JQ6500::sleep(){	
 	sendCommand(CMD_SLEEP, NULL, 0);
 }
 
 void JQ6500::reset(){
-	
 	sendCommand(CMD_RESET, NULL, 0);
+	delay(1000);
 }
 
 void JQ6500::play(){
