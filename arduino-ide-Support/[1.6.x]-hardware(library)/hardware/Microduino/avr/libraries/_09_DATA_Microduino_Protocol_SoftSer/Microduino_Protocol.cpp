@@ -40,8 +40,6 @@ bool Protocol::available(bool _sta) {
       else {
         this->num++;
       }
-
-      delayMicroseconds(200);
     }
     return true;
   }
