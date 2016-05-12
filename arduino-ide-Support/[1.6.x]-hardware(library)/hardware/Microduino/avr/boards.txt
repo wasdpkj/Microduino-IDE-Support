@@ -194,7 +194,6 @@ menu.usb=UploadType
 
 ##Microduino Core USB
 ##############################################################
-
 32u416m.name=Microduino/mCookie-Core USB (32u4)
 32u416m.vid.0=0x2341
 32u416m.pid.0=0x0036
@@ -205,8 +204,6 @@ menu.usb=UploadType
 32u416m.vid.3=0x2A03
 32u416m.pid.3=0x8036
              
-32u416m.vid.0x2A03.warning=Uncertified
-
 32u416m.menu.cpu.usb32u416m=USB
 32u416m.menu.cpu.usb32u416m.upload.tool=avrdude
 32u416m.menu.cpu.usb32u416m.upload.protocol=avr109

@@ -1,4 +1,5 @@
 Microduino Arduino IDE 配置包历史：
+*2016年5月12日，给所有核心硬件支持包添加了digitalPinToInterrupt函数，Core核心库更新为1.6.9。
 *2016年3月21日，更新了DotMatrix库，修正了几个BUG，支持了24bit的BMP显示。
 *2016年2月03日，更新了AM2321库问题，支持负数温度值；在Adafruit_VS1053库中添加了playBuffer函数用以播放对应长度的音乐数据。
 *2016年1月10日，添加了Blynk库，支持Microduino_Ethernet_ENC28J60、Microduino_Ethernet_W5500、Microduino_WIFI_CC3000、Microduino_WIFI_ESP8266。
