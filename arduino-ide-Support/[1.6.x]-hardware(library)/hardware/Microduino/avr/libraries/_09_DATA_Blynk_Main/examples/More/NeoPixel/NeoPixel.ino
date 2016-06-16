@@ -39,7 +39,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(6, PIN, NEO_GRB + NEO_KHZ800);
 
 // You should get Auth Token in the Blynk App.
 // Go to the Project Settings (nut icon).
-char auth[] = "2798b5c7be0b4c2280354afdac75f5ed";
+char auth[] = "";
 
 void setup()
 {
