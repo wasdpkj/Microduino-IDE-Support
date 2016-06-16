@@ -20,7 +20,7 @@ byte getChecksum(byte length, byte cmd, byte mydata[]) {
   } */
 
 
-void Protocol::begin(uint16_t _baud) {
+void Protocol::begin(uint32_t _baud) {
   P_Serial->begin(_baud);
   delay(20);
 }

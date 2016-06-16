@@ -9,7 +9,7 @@ byte getChecksum(byte length, byte cmd, byte mydata[]) {
   return checksum;
 }
 
-void Protocol::begin(uint16_t _baud) {  //param chan the channel number for the radio to use, 11 to 26
+void Protocol::begin(uint8_t _baud) {  //param chan the channel number for the radio to use, 11 to 26
   PRO_PORT.begin(_baud);
   delay(20);
 }

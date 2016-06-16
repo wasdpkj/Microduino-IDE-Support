@@ -6,15 +6,16 @@ JQ6500 Audio(&mySerial);     //音频控制类实例,使用软串口（2，3）
 //Core+默认使用Serial1
 //JQ6500 Audio(&Serial1);
 
-int musicVol = 20;             //初始音量20
-int musicMode = MODE_ALL;      //初始播放模式--全部循环
-boolean music_status = false;  //歌曲播放状态
-int fileNum = 0;               //查询当前播放歌曲编号
-int fileNumCache = 0;          //播放歌曲编号缓存
-int totalNum = 0;              //歌曲总数量
-int totalTime = 0;             //当前播放歌曲总时间
-int playTime = 0;              //当前播放歌曲播放时间
-int key, keyCache;
+uint8_t musicVol = 20;             //初始音量20
+uint8_t musicMode = MODE_ALL;      //初始播放模式--全部循环
+boolean music_status = false;      //歌曲播放状态
+uint16_t fileNum = 0;               //查询当前播放歌曲编号
+uint16_t fileNumCache = 0;          //播放歌曲编号缓存
+uint16_t totalNum = 0;              //歌曲总数量
+uint16_t totalTime = 0;             //当前播放歌曲总时间
+uint16_t playTime = 0;              //当前播放歌曲播放时间
+uint16_t key = 800;
+uint16_t keyCache = 800;
 
 String nameCache = "";
 
@@ -53,16 +54,12 @@ void loop()
   }
 
   fileNum = Audio.queryTFFile();        //查询当前播放歌曲的编号
-  delay(100);
   if (fileNum != fileNumCache) {      //发现播放歌曲更换
     fileNumCache = fileNum;
     nameCache = Audio.queryName();    //查询当前播放歌曲名称
-    delay(100);
     totalTime = Audio.queryTotalTime();     //查询当前播放歌曲总时间
-    delay(100);
   }
   playTime = Audio.queryPlayTime();       //查询当前播放歌曲播放时间
-  delay(100);
   Serial.print("FileNum:");
   Serial.print(fileNum);
   Serial.print(", FileName:");

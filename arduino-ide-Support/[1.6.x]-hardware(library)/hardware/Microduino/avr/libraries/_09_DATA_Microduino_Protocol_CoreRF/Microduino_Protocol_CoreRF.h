@@ -35,7 +35,7 @@ class Protocol {
 	  sta = false;
 	  error = false;
 	}
-    void begin(uint16_t _baud);
+    void begin(uint8_t _baud);
     uint8_t parse(uint16_t* _data, bool _mod);
     int8_t getRSSI();
 

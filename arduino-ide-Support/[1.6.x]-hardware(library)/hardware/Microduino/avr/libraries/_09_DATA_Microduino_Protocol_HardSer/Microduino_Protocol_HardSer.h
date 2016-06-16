@@ -34,7 +34,7 @@ class Protocol {
 	  error = false;
 	  P_Serial = ser; // ...override P_Serial with value passed.
 	}
-    void begin(uint16_t _baud);
+    void begin(uint32_t _baud);
     uint8_t parse(uint16_t* _data, bool _mod);
 
   private:

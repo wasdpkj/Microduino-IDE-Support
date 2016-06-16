@@ -22,10 +22,11 @@ void JQ6500::common_init(void){
 	
 }
 
-void JQ6500::begin(uint16_t baud){
+void JQ6500::begin(uint16_t _baud){
+	baud = _baud;
 	if(audioSwSerial) audioSwSerial->begin(baud);
 	else			  audioHwSerial->begin(baud);
-	delay(5);
+	delay(100);
 }
 
 void JQ6500::sendCommand(uint8_t cmd, uint8_t *buf, uint16_t len){
@@ -40,32 +41,28 @@ void JQ6500::sendCommand(uint8_t cmd, uint8_t *buf, uint16_t len){
 		audioSwSerial->write(sendBuffer, len+4);
 	else
 		audioHwSerial->write(sendBuffer, len+4);
-	delay(70);
+	delay(160);
 }
 
 void JQ6500::next(){
-	
 	sendCommand(CMD_NEXT, NULL, 0);
 }
 
 void JQ6500::prev(){
-	
 	sendCommand(CMD_PREV, NULL, 0);
 }
 
 void JQ6500::choose(uint16_t num){
-	cmdBuffer[0] = num>>4;
+	cmdBuffer[0] = num>>8;
 	cmdBuffer[1] = num&0xFF;
 	sendCommand(CMD_CHOOSE, cmdBuffer, 2);
 }
 
 void JQ6500::volUp(){
-	
 	sendCommand(CMD_UP, NULL, 0);
 }
 
 void JQ6500::volDown(){
-	
 	sendCommand(CMD_DOWN, NULL, 0);
 }
 
@@ -82,7 +79,7 @@ void JQ6500::eq(uint8_t eq){
 void JQ6500::setDevice(uint8_t device){
 	cmdBuffer[0] = device;
 	sendCommand(CMD_DEVICE, cmdBuffer, 1);
-	delay(1500);
+	delay(1500);	
 }
 
 void JQ6500::sleep(){	
@@ -91,16 +88,14 @@ void JQ6500::sleep(){
 
 void JQ6500::reset(){
 	sendCommand(CMD_RESET, NULL, 0);
-	delay(1000);
+	delay(1500);	
 }
 
 void JQ6500::play(){
-	
 	sendCommand(CMD_PLAY, NULL, 0);
 }
 
 void JQ6500::pause(){
-	
 	sendCommand(CMD_PAUSE, NULL, 0);
 }
 
@@ -122,7 +117,6 @@ void JQ6500::chooseFile(uint8_t folder, uint8_t file){
 
 void JQ6500::init(uint8_t device, uint8_t mode, uint8_t vol){
 	begin(9600);
-	delay(100);
 	reset();
 	setDevice(device);
 	setMode(mode);
@@ -160,12 +154,14 @@ uint16_t JQ6500::dataParse(){
 }
 
 uint16_t JQ6500::queryNum(uint8_t cmd){
-	if(audioSwSerial)
-		audioSwSerial->flush();
-	else
-		audioHwSerial->flush();
+	if(audioSwSerial){
+		audioSwSerial->stopListening();
+		audioSwSerial->listen();
+	}else{
+		audioHwSerial->end();
+		audioHwSerial->begin(baud);
+	}
 	sendCommand(cmd, NULL, 0);	
-    delay(1);	
 	return dataParse();	
 }
 
@@ -197,12 +193,14 @@ String JQ6500::queryName(){
 	String nameCache = "";
 	char temp;
 	uint16_t i = 0;
-	if(audioSwSerial)
-		audioSwSerial->flush();
-	else
-		audioHwSerial->flush();
+	if(audioSwSerial){
+		audioSwSerial->stopListening();
+		audioSwSerial->listen();
+	}else{
+		audioHwSerial->end();
+		audioHwSerial->begin(baud);
+	}
 	sendCommand(QUERY_NAME, NULL, 0);	
-	delay(1);	
 	if(audioSwSerial){
 		
 		while(audioSwSerial->available()){

@@ -86,6 +86,7 @@ public:
 	String queryName();
 	
 private:
+	uint16_t baud;
 	uint8_t sendBuffer[8];
 	uint8_t cmdBuffer[8];
 
