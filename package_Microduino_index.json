@@ -12,14 +12,14 @@
         {
           "name": "Microduino",
           "architecture": "avr",
-          "version": "1.6.7",
+          "version": "1.6.9",
           "category": "Contributed",
           "help": {
             "online": ""
           },
           "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/Microduino-ide-Support.zip",
           "archiveFileName": "Microduino-ide-Support.zip",
-          "checksum": "SHA-256:C695A9C13F2F9BB441305E9BC797F39F48B10813C667C33F3D64C55F6D16C5A4",
+          "checksum": "SHA-256:33F40BA44FB09D08FDF383388BE4165A1B086149B35D48360B9C918FC3AC3AC6",
           "size": "11026934",
           "boards": [
             {"name": "ATmega168pa"},
