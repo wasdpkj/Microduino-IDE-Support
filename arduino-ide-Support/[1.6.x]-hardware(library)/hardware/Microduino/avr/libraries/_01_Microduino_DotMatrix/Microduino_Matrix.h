@@ -44,9 +44,6 @@
 #include <avr/wdt.h>
 #endif
 
-#define MODE_H 1
-#define MODE_V 0
-
 #define U8G_DRAW_UPPER_RIGHT 0x01
 #define U8G_DRAW_UPPER_LEFT  0x02
 #define U8G_DRAW_LOWER_LEFT 0x04
@@ -64,7 +61,7 @@ public:
 //	LedControl m_ledctl;
 	//LedControl m(20);
 //	virtual void clearDisplay();
-	Matrix(uint8_t (*_addr)[8]);
+	Matrix(uint8_t (*_addr)[8],bool _type = TYPE_COLOR);
 //	Matrix(int _x,int _y);
 //	void clearDisplay();
 	int16_t getWidth();
@@ -78,14 +75,15 @@ public:
 
     void clearDisplay();
 
-    void setColor(uint8_t value_r, uint8_t value_g, uint8_t value_b);
+    void setColor(uint8_t _value_r, uint8_t _value_g, uint8_t _value_b);
     void clearColor();	
+	
+	void setBrightness(uint8_t _value);
 
-	void setFontMode(bool _Mode);
-
-	void setLed(uint8_t row, uint8_t column, bool state);
-	void setLedColor(uint8_t row, uint8_t column, uint8_t value_r, uint8_t value_g, uint8_t value_b);
-	void setLedColorFast(uint8_t row, uint8_t column, uint8_t value_r, uint8_t value_g, uint8_t value_b);
+	void setLedBrightness(uint8_t _row, uint8_t _col, uint8_t _value);
+	void setLed(uint8_t _row, uint8_t _col, bool state);
+	void setLedColor(uint8_t _row, uint8_t _col, uint8_t _value_r, uint8_t _value_g, uint8_t _value_b);
+	void setLedColorFast(uint8_t _row, uint8_t _col, uint8_t _value_r, uint8_t _value_g, uint8_t _value_b);
 
     void drawLine(int8_t x1, int8_t y1, int8_t x2, int8_t y2);
    
@@ -103,6 +101,8 @@ public:
 	void setFastMode();
 	void clearFastMode();
 	
+	void setType(bool _type);
+	
     virtual size_t write(uint8_t);
 	
     void setCursor(int16_t x, int16_t y);
@@ -113,7 +113,7 @@ public:
     int16_t getStringWidth( char* _String);
     int16_t getStringHeight( char* _String);
 		
-	void writeString(char* _c,bool _m,uint16_t _t,int16_t _xy);
+	void writeString(char* _c,uint16_t _t,int16_t _xy);
 
 private:
 //	bool Fast_mode;

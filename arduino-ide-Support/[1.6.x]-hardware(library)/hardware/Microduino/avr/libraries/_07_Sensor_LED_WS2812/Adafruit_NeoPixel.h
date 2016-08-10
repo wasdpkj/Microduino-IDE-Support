@@ -27,7 +27,7 @@
 #endif
 
 // 'type' flags for LED pixels (third parameter to constructor):
-#define NEO_RGB     0x00 // Wired for RGB data order
+#define NEO_RGB     0x01 // Wired for RGB data order	//0x00
 #define NEO_GRB     0x01 // Wired for GRB data order
 #define NEO_COLMASK 0x01
 #define NEO_KHZ400  0x00 // 400 KHz datastream

@@ -29,7 +29,7 @@
 
 #include "Microduino_Matrix.h"
 
-Matrix::Matrix(uint8_t (*_addr)[8]) {
+Matrix::Matrix(uint8_t (*_addr)[8],bool _type) {
   //  uint8_t (*p)[10]=_addr;
   uint8_t _x = 0, _y = 0;
   for (uint8_t a = 0; a < 8; a++) //判断第一层
@@ -68,10 +68,16 @@ Matrix::Matrix(uint8_t (*_addr)[8]) {
     }
   }
   setDeviceAddr(_p);
+  setType(_type);
+  setBrightness(255);
 
   clearFastMode();
   clearColor();
-  setFontMode(true);
+}
+
+void Matrix::setType(bool _type){
+  for (int a = 0; a < getMatrixNum(); a++)
+    led[a].setType(_type);
 }
 
 
@@ -114,6 +120,13 @@ void Matrix::setLed(uint8_t _row, uint8_t _col, bool _state) {
   led[_s].setLed(_row % 8, _col % 8, _state);
 }
 
+void Matrix::setLedBrightness(uint8_t _row, uint8_t _col, uint8_t _value) {
+  if((_col > (getHeight() * 8 - 1)) || (_row > (getWidth() * 8 - 1)))
+	return;
+  int16_t _s = (_row / 8) + (_col / 8) * getWidth();
+  led[_s].setLedBrightness(_row % 8, _col % 8, _value);
+}
+
 
 void Matrix::setCursor(int16_t _x, int16_t _y) {
   this->cursor_x = _x;
@@ -143,21 +156,20 @@ void Matrix::clearFastMode() {
 }
 
 
-void Matrix::setFontMode(bool _Mode) {
+void Matrix::setColor(uint8_t _value_r, uint8_t _value_g, uint8_t _value_b) {
   for (int a = 0; a < getMatrixNum(); a++)
-    led[a].setFontMode(_Mode);
-}
-
-
-void Matrix::setColor(uint8_t value_r, uint8_t value_g, uint8_t value_b) {
-  for (int a = 0; a < getMatrixNum(); a++)
-    led[a].setColor(value_r, value_g, value_b);
+    led[a].setColor(_value_r, _value_g, _value_b);
 }
 
 
 void Matrix::clearColor() {
   for (int a = 0; a < getMatrixNum(); a++)
     led[a].clearColor();
+}
+
+void Matrix::setBrightness(uint8_t _value) {
+  for (int a = 0; a < getMatrixNum(); a++)
+    led[a].setBrightness(_value);
 }
 
 
@@ -569,12 +581,11 @@ bool Matrix::drawBMP(int16_t x, int16_t y, const uint8_t *bitmap){
 }
 
 
-void Matrix::writeString(char* _c, bool _m, uint16_t _t, int16_t _xy) {
-  setFontMode(_m);
-  int c1 = (_m ? getWidth() : getHeight()) * 8;
-  int c2 = -(_m ? getStringWidth(_c) : getStringHeight(_c))  - c1;
+void Matrix::writeString(char* _c, uint16_t _t, int16_t _xy) {
+  int c1 = getWidth() * 8;
+  int c2 = -getStringWidth(_c)  - c1;
   for (int a = c1; a > c2; a--) {
-    setCursor((_m ? a : _xy), (_m ? _xy : a));
+    setCursor(a, _xy);
     print(_c);
     delay(_t);
 #ifdef WDT

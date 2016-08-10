@@ -29,34 +29,11 @@
 
 #include "Microduino_Matrix.h"
 
-uint8_t Addr[MatrixPix_X][MatrixPix_Y] = {  //2x2
-  { 64, 63},
-  { 62, 61}
+uint8_t Addr[MatrixPix_X][MatrixPix_Y] = {  //1x1
+  { 64}
 };
 
-/*
-  uint8_t Addr[MatrixPix_X][MatrixPix_Y] = {  //1x4
-  { 64, 63, 62 , 61}
-  };
-*/
-
-/*
-uint8_t Addr[MatrixPix_X][MatrixPix_Y] = {  //3x2
-  { 64, 63, 62},
-  { 61, 60, 59}
-};
-*/
-
-/*
-uint8_t Addr[MatrixPix_X][MatrixPix_Y] = {  //4x4
-  { 64, 63, 62, 61},
-  { 60, 59, 58, 57},
-  { 56, 55, 54, 53},
-  { 52, 51, 50, 49}
-};
-*/
-
-Matrix display = Matrix(Addr);
+Matrix display = Matrix(Addr, TYPE_COLOR); //TYPE_COLOR or TYPE_S2
 
 static const uint8_t logoA[] PROGMEM = {   //低位在前 逐行
   0x00, 0x66, 0x66, 0xDB, 0xDB, 0xDB, 0xDB, 0x00
@@ -87,6 +64,7 @@ void setup() {
 
   //display.clearFastMode();
   //display.setFastMode();
+  //display.setBrightness(255);
 
   //getDeviceAddr
   for (int a = 0; a < display.getMatrixNum(); a++) {
@@ -101,6 +79,7 @@ void setup() {
     for (int x = 0; x < display.getWidth() * 8; x++) {
       randomSeed(analogRead(A0));
       display.setLedColor(x, y, random(0, 255), random(0, 255), random(0, 255));   //x, y, r, g, b
+      //display.setLedBrightness(x, y, random(0, 255));   //x, y, brightness
       delay(5);
     }
   }
@@ -140,11 +119,7 @@ void setup() {
 
   //clearColor
   display.clearColor();
-  //writeString H
-  display.writeString("Microduino", MODE_H, 20, 0); //string, MODE, time ,y
-  display.clearDisplay();
-  //writeString V
-  display.writeString("Microduino", MODE_V, 20, 0); //string, MODE, time ,x
+  display.writeString("Microduino", 20, 0); //string, time ,y
   display.clearDisplay();
 }
 
@@ -182,7 +157,6 @@ void loop() {
 
   i = display.getStringWidth("mCookie!");
   display.setColor(255, 255, 0);
-  display.setFontMode(MODE_H);
   for (int a = display.getWidth() * 8; a > -i - display.getWidth() * 8; a--) {
     display.setCursor(a, 0);   //x, y
     display.print("mCookie!");
@@ -190,20 +164,10 @@ void loop() {
   }
   display.clearDisplay();
 
-  i = display.getStringHeight("mCookie!");
-  display.setColor(255, 0, 255);
-  display.setFontMode(MODE_V);
-  for (int a = display.getHeight() * 8; a > -i - display.getHeight() * 8; a--) {
-    display.setCursor(0, a);   //x, y
-    display.print("mCookie!");
-    delay(20);
-  }
-  display.clearDisplay();
 
   //Print
   unsigned long timer = millis();
   display.setColor(0, 255, 255);
-  display.setFontMode(MODE_H);
   while (millis() - timer < 5000) {
     display.setCursor(0, 0);   //x, y
     display.print((millis() - timer) / 100);
@@ -226,5 +190,5 @@ void loop() {
 
   display.setColor(255, 255, 255);
   display.clearDisplay();
-  display.writeString(buffer_data, MODE_H, 50, 1);
+  display.writeString(buffer_data, 50, 1);
 }

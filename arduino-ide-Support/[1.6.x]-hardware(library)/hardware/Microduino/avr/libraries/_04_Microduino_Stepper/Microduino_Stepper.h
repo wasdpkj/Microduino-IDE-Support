@@ -10,8 +10,12 @@
 #include <Arduino.h>
 
 #define _useTimer1
-#define MAX_SPEED 	4096
-#define TIMER_COMP	327680/MAX_SPEED
+#define MAX_SPEED 	1024
+#if F_CPU == 16000000
+#define TIMER_COMP	160	//12.5K
+#elif F_CPU == 8000000
+#define TIMER_COMP	80 //12.5K
+#endif
 
 
 #define PIN_SET(pin) (*portOutputRegister(digitalPinToPort(pin)) |= digitalPinToBitMask(pin))
@@ -31,28 +35,34 @@
 #define PIN_STEPD 	8   //PORTD,6
 
 #define DEFAULT_ACCEL 120
+#define DEFAULT_MAX_SPEED 1
 
 void stepperAllEnable();
 void stepperAllDisable();
 
-class Stepper
+class StepMotor
 {
 public:
 	 
-	Stepper(uint8_t _dirPin, uint8_t _stepPin);
+	StepMotor(uint8_t _dirPin, uint8_t _stepPin);
 	
 	uint8_t begin();
+	
+	uint8_t begin(uint16_t _maxSpeed);
 
-	void setSpeed(int16_t _speed);
+	bool setSpeed(int16_t _speed);
  
 	void setMaxAccel(uint16_t _accel);
+	
+	void setMaxSpeed(uint16_t _maxSpeed);
 
 	int16_t getSpeed();
 	
 	uint16_t getMaxAccel();
+	
+	uint16_t getMaxSpeed();
 
 	void computeStep();
-
 private:
 
 	uint8_t 	stepperIndex;
@@ -60,15 +70,69 @@ private:
 	uint8_t 	stepPin;
 	int16_t		speed;
 	uint16_t	maxAccel;
+	uint16_t 	maxSpeed;
 	uint16_t 	period;
 	uint16_t	counter;
 
 };
 
 
+class StepServo
+{
+public:
+    
+    StepServo(uint8_t _dirPin, uint8_t _stepPin);
+	
+	uint8_t begin();
+	void setMaxSpeed(float _speed);
+    void setAcceleration(float acceleration);
+	float getAcceleration();
+	void setSpeed(float _speed);
+	float getSpeed();
+	bool runSpeedToPosition();
+	void setCurrentPosition(int32_t position);
+	int32_t getCurrentPosition();
+	int32_t getTargetPosition();
+	int32_t distanceToGo();
+	void moveTo(int32_t _absolute);
+	void move(int32_t _relative);
+	void runToPosition();
+	void runToNewPosition(int32_t position);
+	void runDistance(int32_t _relative);
+	void stop();
+	void run();
+
+private:
+	typedef enum{
+		DIRECTION_CCW = 0,  ///< Clockwise
+        DIRECTION_CW  = 1   ///< Counter-Clockwise
+    } Direction;
+    
+	uint8_t 	stepperIndex;
+	uint8_t 	dirPin;
+	uint8_t 	stepPin;
+	int32_t  	currentPos = 0;    // Steps
+    int32_t  	targetPos = 0;     // Steps
+    float    	speed = 0;         // Steps per second
+    float    	maxSpeed;
+    float    	accel = 1.0;
+    uint32_t  	stepInterval = 0;
+    uint32_t  	lastStepTime = 0;
+    int32_t 	n = 0;
+    float 		c0 = 0.0;
+    float 		cn = 0.0;
+    float 		cmin = 1.0; // at max speed
+    bool 		direction; // 1 == CW
+	
+	void computeNewSpeed();
+	bool runSpeed();
+	void step();
+
+};
+
 typedef struct{
 	uint8_t isActive = false;
-	Stepper *stepper;
+	StepMotor *stepper;
 }Stepper_t;
 
 
