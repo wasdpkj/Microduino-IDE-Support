@@ -1,6 +1,6 @@
 // Microduino_Stepper.cpp
 //
-// Copyright (C) 2009-2013 Shenyang
+// Copyright (C) 2009-2016 Shenyang
 // $Id: Microduino_Stepper.cpp,v 1.00 2016/04/07 $
 
 #include "Microduino_Stepper.h"
@@ -63,9 +63,9 @@ static bool isTimerActive(){
 
 /****************** end of static functions ******************************/
 
-/************************ StepMotor ******************************/
+/************************ Stepper ******************************/
 
-StepMotor::StepMotor(uint8_t _dirPin, uint8_t _stepPin){
+Stepper::Stepper(uint8_t _dirPin, uint8_t _stepPin){
 	if(StepperCount < MAX_STEPPERS){
 		this->stepperIndex = StepperCount++;
 	}else{
@@ -79,7 +79,7 @@ StepMotor::StepMotor(uint8_t _dirPin, uint8_t _stepPin){
 }  
 
 
-uint8_t StepMotor::begin(uint16_t _maxSpeed){
+uint8_t Stepper::begin(uint16_t _maxSpeed){
 	if(this->stepperIndex < MAX_STEPPERS){
 		pinMode(dirPin, OUTPUT);
 		pinMode(stepPin, OUTPUT);
@@ -93,12 +93,12 @@ uint8_t StepMotor::begin(uint16_t _maxSpeed){
 	return this->stepperIndex;
 }
 
-uint8_t StepMotor::begin(){
+uint8_t Stepper::begin(){
 	begin(MAX_SPEED);
 }
   
  
-bool StepMotor::setSpeed(int16_t _speed){	
+bool Stepper::setSpeed(int16_t _speed){	
 	speed += constrain((_speed-speed), -(int16_t)maxAccel, (int16_t)maxAccel);
     if(speed == 0)
 		period = 0;
@@ -109,20 +109,20 @@ bool StepMotor::setSpeed(int16_t _speed){
 }
  
  
-void StepMotor::setMaxAccel(uint16_t _accel){
+void Stepper::setMaxAccel(uint16_t _accel){
 	maxAccel = _accel;
 }
 
-void StepMotor::setMaxSpeed(uint16_t _maxSpeed){
+void Stepper::setMaxSpeed(uint16_t _maxSpeed){
 	maxSpeed = _maxSpeed;
 }
 
-int16_t StepMotor::getSpeed() { return  speed; }
-uint16_t StepMotor::getMaxAccel() { return  maxAccel;}
-uint16_t StepMotor::getMaxSpeed() { return  maxSpeed;}
+int16_t Stepper::getSpeed() { return  speed; }
+uint16_t Stepper::getMaxAccel() { return  maxAccel;}
+uint16_t Stepper::getMaxSpeed() { return  maxSpeed;}
 
 
-void StepMotor::computeStep(){
+void Stepper::computeStep(){
 	counter++;
 	if(counter > period){
 		counter = 0;

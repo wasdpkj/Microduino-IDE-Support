@@ -1,6 +1,6 @@
 // Microduino_Stepper.cpp
 //
-// Copyright (C) 2009-2013 Shenyang
+// Copyright (C) 2009-2016 Shenyang
 // $Id: Microduino_Stepper.cpp,v 1.00 2016/04/07 $
 
 #ifndef __MICRODUINO_STEPPER_H__
@@ -40,11 +40,11 @@
 void stepperAllEnable();
 void stepperAllDisable();
 
-class StepMotor
+class Stepper
 {
 public:
 	 
-	StepMotor(uint8_t _dirPin, uint8_t _stepPin);
+	Stepper(uint8_t _dirPin, uint8_t _stepPin);
 	
 	uint8_t begin();
 	
@@ -132,7 +132,7 @@ private:
 
 typedef struct{
 	uint8_t isActive = false;
-	StepMotor *stepper;
+	Stepper *stepper;
 }Stepper_t;
 
 

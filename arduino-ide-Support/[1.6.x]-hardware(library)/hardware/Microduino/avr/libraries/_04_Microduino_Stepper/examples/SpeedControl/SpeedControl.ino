@@ -1,8 +1,8 @@
 #include <Microduino_Stepper.h>
 
 
-StepMotor stepperL(PIN_DIRA, PIN_STEPA);
-StepMotor stepperR(PIN_DIRD, PIN_STEPD);
+Stepper stepperL(PIN_DIRA, PIN_STEPA);
+Stepper stepperR(PIN_DIRD, PIN_STEPD);
 
 
 void setup()
