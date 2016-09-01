@@ -1,4 +1,4 @@
-#define DEBUG       1      //串口调试功能  打开/关闭.
+#define DEBUG       0      //串口调试功能  打开/关闭.
 #define PIN_RECV    4      //红外接收引脚
 #define PIN_LED     12     //彩灯引脚
 #define LED_NUM     2      //彩灯的数量 

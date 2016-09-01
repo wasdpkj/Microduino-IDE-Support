@@ -1,6 +1,6 @@
 #define DEBUG       0       //串口调试功能  打开/关闭.
 #define PIN_KEY     6       //碰撞传感器引脚.
-#define PIN_LED     12      //蜂鸣器引脚.
+#define PIN_LED     12      //彩灯引脚.
 #define PIN_LIGHT   A2      //光照传感器引脚.
 #define PIN_MIC     A6      //声音传感器引脚.
 #define VOICE_MAX   1023    //声音检测的触发值

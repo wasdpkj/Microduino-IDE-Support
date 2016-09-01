@@ -1,4 +1,4 @@
-#define DEBUG       1       //串口调试功能  打开/关闭.
+#define DEBUG       0       //串口调试功能  打开/关闭.
 #define PIN_BUZZER  10      //蜂鸣器引脚.
 #define PIN_LED     12      //彩灯引脚.
 #define PIN_LINEA   A0      //灰度传感器引脚.
