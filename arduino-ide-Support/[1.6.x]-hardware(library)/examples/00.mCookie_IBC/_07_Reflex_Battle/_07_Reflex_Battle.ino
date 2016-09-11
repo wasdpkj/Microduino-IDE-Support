@@ -62,7 +62,7 @@
   =================================================================================
                                   | Questions? |
   ---------------------------------------------------------------------------------                                 
-  Visit us at www.microduino.cc and click the chatbox in the lower right to submit
+  Visit us at http://www.microduino.cc/ and click the chatbox in the lower right to submit
   a question. We'll get back to you as soon as possible.
 */
 

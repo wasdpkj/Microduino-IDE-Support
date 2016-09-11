@@ -8,8 +8,8 @@
 
 #include <IRremote.h>
 
-int RECV_PIN = 11;
-int RELAY_PIN = 4;
+int RECV_PIN = 4;
+int RELAY_PIN = 6;
 
 IRrecv irrecv(RECV_PIN);
 decode_results results;

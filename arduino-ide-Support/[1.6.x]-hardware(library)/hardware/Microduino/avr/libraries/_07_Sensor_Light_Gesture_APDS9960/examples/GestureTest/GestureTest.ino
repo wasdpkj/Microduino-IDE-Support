@@ -1,47 +1,47 @@
 /****************************************************************
-GestureTest.ino
-APDS-9960 RGB and Gesture Sensor
-Shawn Hymel @ SparkFun Electronics
-May 30, 2014
-https://github.com/sparkfun/APDS-9960_RGB_and_Gesture_Sensor
+  GestureTest.ino
+  APDS-9960 RGB and Gesture Sensor
+  Shawn Hymel @ SparkFun Electronics
+  May 30, 2014
+  https://github.com/sparkfun/APDS-9960_RGB_and_Gesture_Sensor
 
-Tests the gesture sensing abilities of the APDS-9960. Configures
-APDS-9960 over I2C and waits for gesture events. Calculates the
-direction of the swipe (up, down, left, right) and displays it
-on a serial console. 
+  Tests the gesture sensing abilities of the APDS-9960. Configures
+  APDS-9960 over I2C and waits for gesture events. Calculates the
+  direction of the swipe (up, down, left, right) and displays it
+  on a serial console.
 
-To perform a NEAR gesture, hold your hand
-far above the sensor and move it close to the sensor (within 2
-inches). Hold your hand there for at least 1 second and move it
-away.
+  To perform a NEAR gesture, hold your hand
+  far above the sensor and move it close to the sensor (within 2
+  inches). Hold your hand there for at least 1 second and move it
+  away.
 
-To perform a FAR gesture, hold your hand within 2 inches of the
-sensor for at least 1 second and then move it above (out of
-range) of the sensor.
+  To perform a FAR gesture, hold your hand within 2 inches of the
+  sensor for at least 1 second and then move it above (out of
+  range) of the sensor.
 
-Hardware Connections:
+  Hardware Connections:
 
-IMPORTANT: The APDS-9960 can only accept 3.3V!
- 
- Arduino Pin  APDS-9960 Board  Function
- 
- 3.3V         VCC              Power
- GND          GND              Ground
- A4           SDA              I2C Data
- A5           SCL              I2C Clock
+  IMPORTANT: The APDS-9960 can only accept 3.3V!
 
-Resources:
-Include Wire.h and SparkFun_APDS-9960.h
+  Arduino Pin  APDS-9960 Board  Function
 
-Development environment specifics:
-Written in Arduino 1.0.5
-Tested with SparkFun Arduino Pro Mini 3.3V
+  3.3V         VCC              Power
+  GND          GND              Ground
+  A4           SDA              I2C Data
+  A5           SCL              I2C Clock
 
-This code is beerware; if you see me (or any other SparkFun 
-employee) at the local, and you've found our code helpful, please
-buy us a round!
+  Resources:
+  Include Wire.h and SparkFun_APDS-9960.h
 
-Distributed as-is; no warranty is given.
+  Development environment specifics:
+  Written in Arduino 1.0.5
+  Tested with SparkFun Arduino Pro Mini 3.3V
+
+  This code is beerware; if you see me (or any other SparkFun
+  employee) at the local, and you've found our code helpful, please
+  buy us a round!
+
+  Distributed as-is; no warranty is given.
 ****************************************************************/
 
 #include <Wire.h>
@@ -59,16 +59,22 @@ void setup() {
   Serial.println(F("--------------------------------"));
   Serial.println(F("SparkFun APDS-9960 - GestureTest"));
   Serial.println(F("--------------------------------"));
-  
+
   // Initialize APDS-9960 (configure I2C and initial values)
-  if ( apds.init() ) {
+  if ( apds.init()) {
     Serial.println(F("APDS-9960 initialization complete"));
   } else {
     Serial.println(F("Something went wrong during APDS-9960 init!"));
   }
-  
+
+  if (apds.setGestureGain(GGAIN_2X)) { //GGAIN_1X GGAIN_2X GGAIN_4X GGAIN_8X
+    Serial.println(F("APDS-9960 setGestureGain complete"));
+  } else {
+    Serial.println(F("Something went wrong during APDS-9960 setGestureGain!"));
+  }
+
   // Start running the APDS-9960 gesture sensor engine
-  if ( apds.enableGestureSensor(true) ) {
+  if ( apds.enableGestureSensor(false) ) {
     Serial.println(F("Gesture sensor is now running"));
   } else {
     Serial.println(F("Something went wrong during gesture sensor init!"));
@@ -76,11 +82,11 @@ void setup() {
 }
 
 void loop() {
-    handleGesture();
+  handleGesture();
 }
 
 void handleGesture() {
-    if ( apds.isGestureAvailable() ) {
+  if ( apds.isGestureAvailable() ) {
     switch ( apds.readGesture() ) {
       case DIR_UP:
         Serial.println("UP");
