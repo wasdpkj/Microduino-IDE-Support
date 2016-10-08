@@ -1,19 +1,18 @@
-#include <Wire.h>
 #include <Rtc_Pcf8563.h>
 
 //init the real time clock
 Rtc_Pcf8563 rtc;
+//year, month, weekday, day, hour, minute, second
+DateTime dateTime = {2016, 6, 3, 1, 15, 30, 40};
 
 void setup()
 {
   Serial.begin(9600);
   //clear out the registers
-  rtc.initClock();
+  rtc.begin();
+  rtc.clearAll();
   //set a time to start with.
-  //day, weekday, month, century(1=1900, 0=2000), year(0-99)
-  rtc.setDate(29, 4, 8, 0, 13);
-  //hr, min, sec
-  rtc.setTime(00, 21, 0);
+  rtc.setDateTime(dateTime);
 }
 
 void loop()
@@ -26,19 +25,19 @@ void loop()
   Serial.print(rtc.formatDate());
   Serial.print("\r\n");
 
+  dateTime = rtc.getDateTime();
   Serial.println("CODE_2:");
-  Serial.print("20");
-  Serial.print(rtc.getYear());
+  Serial.print(dateTime.year);
   Serial.print("/");
-  Serial.print(rtc.getMonth());
+  Serial.print(dateTime.month);
   Serial.print("/");
-  Serial.print(rtc.getDay());
+  Serial.print(dateTime.day);
   Serial.print("     ");
-  Serial.print(rtc.getHour());
+  Serial.print(dateTime.hour);
   Serial.print(":");
-  Serial.print(rtc.getMinute());
+  Serial.print(dateTime.minute);
   Serial.print(":");
-  Serial.print(rtc.getSecond());
+  Serial.print(dateTime.second);
   Serial.print("\r\n");
 
   delay(1000);
