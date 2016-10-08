@@ -261,8 +261,9 @@ void LedControl::displayChar(int8_t _row, int8_t _col, char _charIndex) {
   uint8_t n = CharToInt(_charIndex);
   uint8_t m = FONE_SIZE_X - pgm_read_byte(alphabetBitmap[n] + FONE_SIZE_X);
 
-  byte _val, _cache = 0x00;
+
   for (int8_t i = m; i < FONE_SIZE_X + 1; i++) {
+	byte _val,_cache = 0x00;
     for (int8_t j = _col; _col < 0 ? j < 8 + _col : j < 8; j++) {
       if (i - m + _row < 0 || i - m + _row > 7) {
         break;
@@ -272,8 +273,8 @@ void LedControl::displayChar(int8_t _row, int8_t _col, char _charIndex) {
       else
         _val = 0x00 >> (j - _col);
       _val = _val & 0x01;
-      bitWrite(_cache, j, _val);
+	  
+      this->setLed(i - m + _row, j, _val);
     }
-    setRow(i - m + _row, _cache);
   }
 }
