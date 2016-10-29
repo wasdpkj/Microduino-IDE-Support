@@ -164,6 +164,10 @@ void digitalWrite(uint8_t pin, uint8_t val)
 
 int digitalRead(uint8_t pin)
 {
+#if defined(__AVR_ATmega328P__)
+	if (pin == 20 || pin == 21) return analogRead(pin)>512;
+#endif
+
 	uint8_t timer = digitalPinToTimer(pin);
 	uint8_t bit = digitalPinToBitMask(pin);
 	uint8_t port = digitalPinToPort(pin);

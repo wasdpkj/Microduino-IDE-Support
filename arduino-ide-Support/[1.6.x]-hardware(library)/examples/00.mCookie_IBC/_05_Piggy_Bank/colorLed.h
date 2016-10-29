@@ -98,7 +98,7 @@ void ledBreath(uint8_t color, uint8_t wait) {
   if (millis() - breathTimer > wait)
   {
     uint8_t i = (millis() / wait) & 0xFF;
-    if (< 2)
+    if (i < 2)
       breathFlag = !breathFlag;
     if (!breathFlag)
       i = 255 - i;

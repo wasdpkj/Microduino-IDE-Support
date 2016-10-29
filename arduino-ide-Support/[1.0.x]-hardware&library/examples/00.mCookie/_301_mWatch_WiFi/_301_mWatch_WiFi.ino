@@ -199,7 +199,7 @@ void volcd() {
   do {
       setFont_L;
       u8g.setPrintPos(4, 16);
-      u8g.print(rtc.formatDate(RTCC_DATE_US));
+      u8g.print(rtc.formatDate());
       u8g.print("    ");
       switch (rtc.getWeekday()) {
         case 1:

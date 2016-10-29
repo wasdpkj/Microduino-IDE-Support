@@ -141,9 +141,9 @@ void getDateStamp(uint32_t _getDateStamp)
 
 
 String getRtcTimeString() {
-  dateStr = rtc.formatDate(RTCC_DATE_US);
+  dateStr = rtc.formatDate();
   dateStr += " ";
-  dateStr += rtc.formatTime(RTCC_TIME_HMS);
+  dateStr += rtc.formatTime();
 
   return dateStr;
 }
