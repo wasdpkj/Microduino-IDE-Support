@@ -58,7 +58,7 @@ void draw()
 {
   setFont_L;
   u8g.setPrintPos(4, 16);
-  u8g.print(rtc.formatDate(RTCC_DATE_US));
+  u8g.print(rtc.formatDate());
   u8g.print("    ");
   switch (rtc.getWeekday()) {
     case 1:
@@ -112,9 +112,9 @@ void setRtcTime (byte _year, byte _month, byte _day, byte _week, byte _hour, byt
 }
 
 String getRtcTimeString() {
-  dateStr = rtc.formatDate(RTCC_DATE_US);
+  dateStr = rtc.formatDate();
   dateStr += " ";
-  dateStr += rtc.formatTime(RTCC_TIME_HMS);
+  dateStr += rtc.formatTime();
 
   return dateStr;
 }
