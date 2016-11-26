@@ -36,8 +36,11 @@
 #include <stdlib.h>
 #include <float.h>
 #include <ctype.h>
+#ifdef __AVR__
 #include <avr/pgmspace.h>
-
+#else
+#include <pgmspace.h>
+#endif
 #include "aJSON.h"
 #include "utility/stringbuffer.h"
 
@@ -45,10 +48,10 @@
  * Definitions
  ******************************************************************************/
 //Default buffer sizes - buffers get initialized and grow acc to that size
-#define BUFFER_DEFAULT_SIZE 20
+#define BUFFER_DEFAULT_SIZE 4
 
 //how much digits after . for float
-#define FLOAT_PRECISION 4
+#define FLOAT_PRECISION 5
 
 
 bool
@@ -125,7 +128,7 @@ aJsonClientStream::getch()
       return ret;
     }
   while (!stream()->available() && stream()->connected()) /* spin */;
-  if (!stream()->connected())
+  if (!stream()->available()) // therefore, !stream()->connected()
     {
       stream()->stop();
       return EOF;
@@ -211,8 +214,8 @@ aJsonClass::deleteItem(aJsonObject *c)
 int
 aJsonStream::parseNumber(aJsonObject *item)
 {
-  double i = 0;
-  char sign = 1;
+  int i = 0;
+  int sign = 1;
 
   int in = this->getch();
   if (in == EOF)
@@ -231,8 +234,6 @@ aJsonStream::parseNumber(aJsonObject *item)
           return EOF;
         }
     }
-
-
   if (in >= '0' && in <= '9')
     do
       {
@@ -240,9 +241,7 @@ aJsonStream::parseNumber(aJsonObject *item)
         in = this->getch();
       }
     while (in >= '0' && in <= '9'); // Number?
-
-  //end of integer part Ð or isn't it?
-/*
+  //end of integer part ï¿½ or isn't it?
   if (!(in == '.' || in == 'e' || in == 'E'))
     {
       item->valueint = i * (int) sign;
@@ -250,10 +249,8 @@ aJsonStream::parseNumber(aJsonObject *item)
     }
   //ok it seems to be a double
   else
-*/
     {
-      double n = i;
-
+      double n = (double) i;
       int scale = 0;
       int subscale = 0;
       char signsubscale = 1;
@@ -266,8 +263,7 @@ aJsonStream::parseNumber(aJsonObject *item)
               in = this->getch();
             }
           while (in >= '0' && in <= '9');
-        }
-         // Fractional part?
+        } // Fractional part?
       if (in == 'e' || in == 'E') // Exponent?
         {
           in = this->getch();
@@ -287,7 +283,8 @@ aJsonStream::parseNumber(aJsonObject *item)
             }
         }
 
-      n = sign * n * pow(10.0, ((double) scale + (double) subscale * (double) signsubscale)); // number = +/- number.fraction * 10^+/- exponent
+      n = sign * n * pow(10.0, ((double) scale + (double) subscale
+          * (double) signsubscale)); // number = +/- number.fraction * 10^+/- exponent
 
       item->valuefloat = n;
       item->type = aJson_Float;
@@ -572,12 +569,12 @@ aJsonClass::print(aJsonObject* item, aJsonStream* stream)
 char*
 aJsonClass::print(aJsonObject* item)
 {
-  char* outBuf = (char*) malloc(256); /* XXX: Dynamic size. */
+  char* outBuf = (char*) malloc(PRINT_BUFFER_LEN); /* XXX: Dynamic size. */
   if (outBuf == NULL)
     {
       return NULL;
     }
-  aJsonStringStream stringStream(NULL, outBuf, 256);
+  aJsonStringStream stringStream(NULL, outBuf, PRINT_BUFFER_LEN);
   print(item, &stringStream);
   return outBuf;
 }
@@ -644,8 +641,8 @@ aJsonStream::parseValue(aJsonObject *item, char** filter)
         }
       if (!strncmp(buffer, "false", 5))
         {
-          item->type = aJson_False;
-          item->valuebool = 0;
+          item->type = aJson_Boolean;
+          item->valuebool = false;
           return 0;
         }
     }
@@ -660,18 +657,17 @@ aJsonStream::parseValue(aJsonObject *item, char** filter)
         }
       if (!strncmp(buffer, "true", 4))
         {
-          item->type = aJson_True;
-          item->valuebool = -1;
+          item->type = aJson_Boolean;
+          item->valuebool = true;
           return 0;
         }
     }
-    else
+  else
     {
       char buffer[] =
         {0};
 	  readBytes((uint8_t*) buffer, 1);
     }
-
 
   return EOF; // failure.
 }
@@ -691,11 +687,13 @@ aJsonStream::printValue(aJsonObject *item)
   case aJson_NULL:
     result = this->print("null");
     break;
-  case aJson_False:
-    result = this->print("false");
-    break;
-  case aJson_True:
-    result = this->print("true");
+  case aJson_Boolean:
+    if(item->valuebool){
+      result = this->print("true");
+    }
+    else{
+      result = this->print("false");
+    }
     break;
   case aJson_Int:
     result = this->printInt(item);
@@ -1104,34 +1102,24 @@ aJsonClass::createNull()
 }
 
 aJsonObject*
-aJsonClass::createTrue()
+aJsonClass::createItem(bool b)
 {
   aJsonObject *item = newItem();
-  if (item)
-    {
-      item->type = aJson_True;
-      item->valuebool = -1;
-    }
+  if (item){
+    item->type = aJson_Boolean;
+    item->valuebool = b;
+  }
+    
   return item;
 }
-aJsonObject*
-aJsonClass::createFalse()
-{
-  aJsonObject *item = newItem();
-  if (item)
-    {
-      item->type = aJson_False;
-      item->valuebool = 0;
-    }
-  return item;
-}
+
 aJsonObject*
 aJsonClass::createItem(char b)
 {
   aJsonObject *item = newItem();
   if (item)
     {
-      item->type = b ? aJson_True : aJson_False;
+      item->type = aJson_Boolean;
       item->valuebool = b ? -1 : 0;
     }
   return item;
@@ -1266,15 +1254,9 @@ aJsonClass::addNullToObject(aJsonObject* object, const char* name)
 }
 
 void
-aJsonClass::addTrueToObject(aJsonObject* object, const char* name)
+aJsonClass::addBooleanToObject(aJsonObject* object, const char* name, bool b)
 {
-  addItemToObject(object, name, createTrue());
-}
-
-void
-aJsonClass::addFalseToObject(aJsonObject* object, const char* name)
-{
-  addItemToObject(object, name, createFalse());
+  addItemToObject(object, name, createItem(b));
 }
 
 void
