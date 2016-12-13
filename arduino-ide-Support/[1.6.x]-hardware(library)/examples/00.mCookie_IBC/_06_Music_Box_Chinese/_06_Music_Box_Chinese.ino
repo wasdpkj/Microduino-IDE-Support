@@ -66,7 +66,7 @@ void setup() {
 void loop() {
 #if DEBUG
   Serial.print("LINE Val:");
-  Serial.println(analogRead(PIN_LINE));      //灰度传感器检测到的亮度。
+  Serial.println(analogRead(PIN_LINEA));      //灰度传感器检测到的亮度。
 #endif
   getCard();
   if (millis() - cardTimer > 1000 && cardTimer > 0) //1秒钟内没有检测到新的条纹，即认为刷卡结束。

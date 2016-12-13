@@ -583,7 +583,7 @@ bool Matrix::drawBMP(int16_t x, int16_t y, const uint8_t *bitmap){
 
 void Matrix::writeString(char* _c, uint16_t _t, int16_t _xy) {
   int c1 = getWidth() * 8;
-  int c2 = -getStringWidth(_c)  - c1;
+  int c2 = -getStringWidth(_c)  - c1 + 8;
   for (int a = c1; a > c2; a--) {
     setCursor(a, _xy);
     print(_c);
@@ -615,7 +615,7 @@ int16_t Matrix::getStringWidth(char* _String) {
   int _leng = 0;
   int _Width = 0;
   while (_String[_leng] != NULL) {
-    _Width += 1 + pgm_read_byte(alphabetBitmap[((int)_String[_leng] - 32)] + FONE_SIZE_X);
+    _Width += 1 + pgm_read_byte(alphabetBitmap[CharToInt(_String[_leng])] + FONE_SIZE_X);
     _leng++;
   }
   return _Width;

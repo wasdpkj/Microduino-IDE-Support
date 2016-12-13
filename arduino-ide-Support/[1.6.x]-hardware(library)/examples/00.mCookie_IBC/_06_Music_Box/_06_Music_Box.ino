@@ -68,7 +68,7 @@ void setup() {
 void loop() {
 #if DEBUG
   Serial.print("LINE Val:");
-  Serial.println(analogRead(PIN_LINE));//Intensity of darkness detected by Line Finder.
+  Serial.println(analogRead(PIN_LINEA));//Intensity of darkness detected by Line Finder.
 #endif
   getCard();
   if (millis() - cardTimer > 1000 && cardTimer > 0) //You have one second to scan the whole card.
