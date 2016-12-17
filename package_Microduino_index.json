@@ -4,9 +4,9 @@
       "name": "Microduino",
       "maintainer": "Makermodule",
       "websiteURL": "https://github.com/wasdpkj/Microduino-IDE-Support",
-      "email": "",
+      "email": "pankejia@microduino.cc",
       "help": {
-        "online": ""
+        "online": "https://www.microduino.cn"
       },
       "platforms": [
         {
