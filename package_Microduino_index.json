@@ -11,7 +11,7 @@
       "platforms": [
         {
           "name": "Microduino",
-          "architecture": "mddevice",
+          "architecture": "avr",
           "version": "1.6.10",
           "category": "Contributed",
           "help": {
