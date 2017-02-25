@@ -61,9 +61,11 @@ MPU6050::MPU6050(uint8_t address) {
  * the default internal clock source.
  */
 void MPU6050::initialize() {
+	setRate(15);
+    setDLPFMode(MPU6050_DLPF_BW_256);
     setClockSource(MPU6050_CLOCK_PLL_XGYRO);
-    setFullScaleGyroRange(MPU6050_GYRO_FS_250);
-    setFullScaleAccelRange(MPU6050_ACCEL_FS_2);
+    setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+    setFullScaleAccelRange(MPU6050_ACCEL_FS_4);
     setSleepEnabled(false); // thanks to Jack Elston for pointing this one out!
 }
 

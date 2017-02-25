@@ -1,13 +1,21 @@
 // I2C device class (I2Cdev) demonstration Arduino sketch for MPU6050 class using DMP (MotionApps v2.0)
 
 #include "MPU6050_6Axis_Microduino.h"
+#include "HMC5883L.h"
 //#include "MPU6050.h" // not necessary if using MotionApps include file
+
+//use HMC5883L
+#define AXIS_9
 
 // class default I2C address is 0x68
 // specific I2C addresses may be passed as a parameter here
 // AD0 low = 0x68 (default for SparkFun breakout and InvenSense evaluation board)
 // AD0 high = 0x69
 MPU6050 mpu;
+
+#ifdef AXIS_9
+  HMC5883L mag;
+#endif
 
 // uncomment "OUTPUT_READABLE_QUATERNION" if you want to see the actual
 // quaternion components in a [w, x, y, z] format (not best for parsing
@@ -24,6 +32,7 @@ MPU6050 mpu;
 // orientation/motion vars
 Quaternion q;           // [w, x, y, z]         quaternion container
 float ypr[3];           // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
+float mx, my, mz;   //magneto measurements
 uint8_t mpuMode;
 bool mpuReady;
 
@@ -39,7 +48,7 @@ void setup() {
     while (!Serial); // wait for Leonardo enumeration, others continue immediately
 
     //set MPU mode
-    mpuMode = MODE_DMP;    //MODE_DMP/MODE_SW
+    mpuMode = MODE_SW;    //MODE_DMP/MODE_SW
     // verify connection
     // load and configure the MPU
     Serial.println(F("Initializing MPU..."));
@@ -51,6 +60,19 @@ void setup() {
         // (if it's going to break, usually the code will be 1)
         Serial.print(F("MPU Initialization failed!"));
     }
+#ifdef AXIS_9
+    Serial.println("Initializing HMC5883L...");
+    Serial.println(mag.begin() ? "HMC5883L connection successful" : "HMC5883L connection failed");
+
+    // calibrate mag
+    Serial.println("Calibrate mag start, please roate the sensor in 20s ...");
+    mag.calibrateMag(0);
+    Serial.println("Calibrate done.");
+    Serial.print("offser:\t");
+    Serial.print(mag.xOffset); Serial.print("\t");
+    Serial.print(mag.yOffset); Serial.print("\t");
+    Serial.println(mag.zOffset);
+#endif    
 }
 
 // ================================================================
@@ -60,10 +82,18 @@ void setup() {
 void loop() {
     // if programming failed, don't try to do anything
     if (!mpuReady) return;
+
+#ifdef AXIS_9
+    mag.getMagneto(&mx, &my, &mz);
+#endif
     
 #ifdef OUTPUT_READABLE_QUATERNION
     // display quaternion values in easy matrix form: w x y z
-    mpu.getQuaternion(&q);
+  #ifdef AXIS_9
+    mpu.getQuaternion(&q, mx, my, mz);
+  #else
+    mpu.getQuaternion(&q);  
+  #endif
     Serial.print("quat\t");
     Serial.print(q.w);
     Serial.print("\t");
@@ -76,7 +106,11 @@ void loop() {
 
 #ifdef OUTPUT_READABLE_YAWPITCHROLL
     // display Euler angles in degrees
-    mpu.getYawPitchRoll(ypr);
+  #ifdef AXIS_9
+    mpu.getYawPitchRoll(ypr, mx, my, mz);
+  #else
+    mpu.getYawPitchRoll(ypr);  
+  #endif
     Serial.print("ypr\t");
     Serial.print(ypr[0]);
     Serial.print("\t");

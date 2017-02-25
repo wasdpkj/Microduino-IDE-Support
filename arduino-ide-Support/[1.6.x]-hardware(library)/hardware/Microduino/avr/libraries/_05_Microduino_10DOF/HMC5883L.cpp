@@ -34,6 +34,8 @@ THE SOFTWARE.
 
 #include "HMC5883L.h"
 
+const float magScale[] = {0.73, 0.92, 1.22, 1.52, 2.27, 2.56, 3.03, 4.35};
+
 /** Default constructor, uses default I2C address.
  * @see HMC5883L_DEFAULT_ADDRESS
  */
@@ -58,7 +60,11 @@ HMC5883L::HMC5883L(uint8_t address) {
  * after initialization, especially the gain settings if you happen to be seeing
  * a lot of -4096 values (see the datasheet for mor information).
  */
-void HMC5883L::initialize() {
+bool HMC5883L::begin() {
+	Wire.begin();
+	
+	if(!testConnection())
+		return false;
     // write CONFIG_A register
     I2Cdev::writeByte(devAddr, HMC5883L_RA_CONFIG_A,
         (HMC5883L_AVERAGING_8 << (HMC5883L_CRA_AVERAGE_BIT - HMC5883L_CRA_AVERAGE_LENGTH + 1)) |
@@ -69,7 +75,11 @@ void HMC5883L::initialize() {
     setGain(HMC5883L_GAIN_1090);
     
     // write MODE register
-    setMode(HMC5883L_MODE_SINGLE);
+    setMode(HMC5883L_MODE_CONTINUOUS);
+	
+	xOffset = yOffset = zOffset = 0;
+	
+	return true;
 }
 
 /** Verify the I2C connection.
@@ -206,6 +216,7 @@ void HMC5883L::setGain(uint8_t gain) {
     // requirement specified in the datasheet; it's actually more efficient than
     // using the I2Cdev.writeBits method
     I2Cdev::writeByte(devAddr, HMC5883L_RA_CONFIG_B, gain << (HMC5883L_CRB_GAIN_BIT - HMC5883L_CRB_GAIN_LENGTH + 1));
+	magGain = magScale[gain];	
 }
 
 // MODE register
@@ -267,18 +278,20 @@ void HMC5883L::setMode(uint8_t newMode) {
  * @param z 16-bit signed integer container for Z-axis heading
  * @see HMC5883L_RA_DATAX_H
  */
-void HMC5883L::getHeading(int16_t *x, int16_t *y, int16_t *z) {
+ 
+ void HMC5883L::getRaw(int16_t *x, int16_t *y, int16_t *z) {
     I2Cdev::readBytes(devAddr, HMC5883L_RA_DATAX_H, 6, buffer);
     if (mode == HMC5883L_MODE_SINGLE) I2Cdev::writeByte(devAddr, HMC5883L_RA_MODE, HMC5883L_MODE_SINGLE << (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1));
     *x = (((int16_t)buffer[0]) << 8) | buffer[1];
     *y = (((int16_t)buffer[4]) << 8) | buffer[5];
     *z = (((int16_t)buffer[2]) << 8) | buffer[3];
 }
+
 /** Get X-axis heading measurement.
  * @return 16-bit signed integer with X-axis heading
  * @see HMC5883L_RA_DATAX_H
  */
-int16_t HMC5883L::getHeadingX() {
+int16_t HMC5883L::getRawX() {
     // each axis read requires that ALL axis registers be read, even if only
     // one is used; this was not done ineffiently in the code by accident
     I2Cdev::readBytes(devAddr, HMC5883L_RA_DATAX_H, 6, buffer);
@@ -289,7 +302,7 @@ int16_t HMC5883L::getHeadingX() {
  * @return 16-bit signed integer with Y-axis heading
  * @see HMC5883L_RA_DATAY_H
  */
-int16_t HMC5883L::getHeadingY() {
+int16_t HMC5883L::getRawY() {
     // each axis read requires that ALL axis registers be read, even if only
     // one is used; this was not done ineffiently in the code by accident
     I2Cdev::readBytes(devAddr, HMC5883L_RA_DATAX_H, 6, buffer);
@@ -300,13 +313,74 @@ int16_t HMC5883L::getHeadingY() {
  * @return 16-bit signed integer with Z-axis heading
  * @see HMC5883L_RA_DATAZ_H
  */
-int16_t HMC5883L::getHeadingZ() {
+int16_t HMC5883L::getRawZ() {
     // each axis read requires that ALL axis registers be read, even if only
     // one is used; this was not done ineffiently in the code by accident
     I2Cdev::readBytes(devAddr, HMC5883L_RA_DATAX_H, 6, buffer);
     if (mode == HMC5883L_MODE_SINGLE) I2Cdev::writeByte(devAddr, HMC5883L_RA_MODE, HMC5883L_MODE_SINGLE << (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1));
     return (((int16_t)buffer[2]) << 8) | buffer[3];
 }
+
+void HMC5883L::getHeading(int16_t *x, int16_t *y, int16_t *z){
+	getRaw(x, y, z);
+	*x -= xOffset;
+	*y -= yOffset;
+	*z -= zOffset;
+}
+
+
+int16_t HMC5883L::getHeadingX(){
+	return (getRawX() - xOffset);
+}
+
+
+int16_t HMC5883L::getHeadingY(){
+	return (getRawY() - yOffset);
+}
+
+
+int16_t HMC5883L::getHeadingZ(){
+	return (getRawZ() - zOffset);
+}
+
+
+void HMC5883L::getMagneto(float *mx, float *my, float *mz){
+	int16_t x, y, z;
+	getHeading(&x, &y, &z);
+	*mx = x * magGain;
+	*my = y * magGain;
+	*mz = z * magGain;
+}
+
+float HMC5883L::getMagnetoX(){
+	return getHeadingX() * magGain;
+}
+
+float HMC5883L::getMagnetoY(){
+	return getHeadingY() * magGain;
+}
+
+float HMC5883L::getMagnetoZ(){
+	return getHeadingZ() * magGain;
+}
+
+
+float HMC5883L::calculateDegrees(int16_t x, int16_t y){
+	float degrees = atan2(x, y);
+	if(degrees < 0) degrees += 2*PI;
+	if(degrees > 2*PI) degrees -= 2*PI;
+	return degrees * 180/PI;
+	
+}
+
+void HMC5883L::getDegrees(float *dx, float *dy, float *dz){
+	int16_t x, y, z;
+	getHeading(&x, &y, &z);
+	*dx = calculateDegrees(y, x);
+	*dy = calculateDegrees(z, x);
+	*dz = calculateDegrees(z, y);	
+}
+
 
 // STATUS register
 
@@ -363,3 +437,38 @@ uint8_t HMC5883L::getIDC() {
     I2Cdev::readByte(devAddr, HMC5883L_RA_ID_C, buffer);
     return buffer[0];
 }
+
+
+void HMC5883L::calibrateMag(uint8_t calThreshold)
+{
+	int16_t x, y, z;
+	int16_t xMax, xMin, yMax, yMin, zMax, zMin;
+	getRaw(&x, &y, &z);
+	
+	xMax = xMin = x;
+	yMax = yMin = y;
+	zMax = zMin = z;
+	
+	xOffset = yOffset = zOffset = 0;
+	
+	for(int i=0; i<200; i++)
+	{
+		getRaw(&x, &y, &z);
+		xMax = max(xMax, x);
+		xMin = min(xMin, x);
+		yMax = max(yMax, y);
+		yMin = min(yMin, y);
+		zMax = max(zMax, z);
+		zMin = min(zMin, z);
+		delay(100);	
+	}
+	
+	if(abs(xMax - xMin) > calThreshold)
+		xOffset = (xMax + xMin)/2;
+	if(abs(xMax - xMin) > calThreshold)
+		yOffset = (yMax + yMin)/2;
+	if(abs(zMax - zMin) > calThreshold)
+		zOffset = (zMax + zMin)/2;		
+}
+
+

@@ -34,6 +34,7 @@ THE SOFTWARE.
 #define _BMP085_H_
 
 #include "I2Cdev.h"
+#include "Wire.h"
 
 #define BMP085_ADDRESS              0x77
 #define BMP085_DEFAULT_ADDRESS      BMP085_ADDRESS
@@ -71,6 +72,10 @@ THE SOFTWARE.
 #define BMP085_MODE_PRESSURE_2      0xB4
 #define BMP085_MODE_PRESSURE_3      0xF4
 
+#define STATUS_START_TEM			0x00
+#define STATUS_GETTING_TEM		0x01
+#define STATUS_GETTING_PRE		0x02
+
 class BMP085 {
     public:
         BMP085();
@@ -78,6 +83,7 @@ class BMP085 {
         
         void initialize();
         bool testConnection();
+		bool begin();
 
         /* calibration register methods */
         int16_t     getAC1();
@@ -110,16 +116,26 @@ class BMP085 {
         uint32_t    getRawPressure();
         float       getPressure();
         float       getAltitude(float pressure, float seaLevelPressure=101325);
+		bool available(uint8_t mode);
+		float readTemperature();
+		float readPressure();
 
    private:
         uint8_t devAddr;
+		uint8_t devStatus;
         uint8_t buffer[2];
+		bool temperatureFlag = false;
+		bool pressureFlag = false;
+		float temperatureBuf, pressureBuf;
 
         bool calibrationLoaded;
         int16_t ac1, ac2, ac3, b1, b2, mb, mc, md;
         uint16_t ac4, ac5, ac6;
         int32_t b5;
         uint8_t measureMode;
+		uint8_t delayTime;
+		uint32_t lastMillis;
+		
 };
 
 #endif /* _BMP085_H_ */

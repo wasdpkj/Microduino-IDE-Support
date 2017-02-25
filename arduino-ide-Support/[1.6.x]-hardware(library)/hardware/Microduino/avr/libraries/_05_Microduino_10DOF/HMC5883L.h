@@ -36,6 +36,7 @@ THE SOFTWARE.
 #define _HMC5883L_H_
 
 #include "I2Cdev.h"
+#include "Wire.h"
 
 #define HMC5883L_ADDRESS            0x1E // this device only has one address
 #define HMC5883L_DEFAULT_ADDRESS    0x1E
@@ -102,10 +103,12 @@ THE SOFTWARE.
 
 class HMC5883L {
     public:
+		int16_t xOffset, yOffset, zOffset;
+	
         HMC5883L();
         HMC5883L(uint8_t address);
         
-        void initialize();
+        bool begin();
         bool testConnection();
 
         // CONFIG_A register
@@ -125,10 +128,22 @@ class HMC5883L {
         void setMode(uint8_t mode);
 
         // DATA* registers
+        void getRaw(int16_t *x, int16_t *y, int16_t *z);
+        int16_t getRawX();
+        int16_t getRawY();
+        int16_t getRawZ();
+
         void getHeading(int16_t *x, int16_t *y, int16_t *z);
         int16_t getHeadingX();
         int16_t getHeadingY();
-        int16_t getHeadingZ();
+        int16_t getHeadingZ();	
+
+		void getMagneto(float *mx, float *my, float *mz);
+		float getMagnetoX();
+		float getMagnetoY();
+		float getMagnetoZ();	
+
+		void getDegrees(float *dx, float *dy, float *dz);		
 
         // STATUS register
         bool getLockStatus();
@@ -138,11 +153,16 @@ class HMC5883L {
         uint8_t getIDA();
         uint8_t getIDB();
         uint8_t getIDC();
+		
+		void calibrateMag(uint8_t calThreshold);
 
     private:
         uint8_t devAddr;
         uint8_t buffer[6];
         uint8_t mode;
+		float magGain;
+		
+		float calculateDegrees(int16_t x, int16_t y);
 };
 
 #endif /* _HMC5883L_H_ */

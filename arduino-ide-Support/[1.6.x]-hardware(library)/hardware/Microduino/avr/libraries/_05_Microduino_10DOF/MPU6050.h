@@ -978,10 +978,39 @@ class MPU6050 {
             void dmpOverrideQuaternion(long *q);
             uint16_t dmpGetFIFOPacketSize();
         #endif
+		
+		#ifdef MPU6050_INCLUDE_MICRODUINO
+		
+            uint8_t begin(uint8_t _mode);
+            void gyroPrepare(int16_t* offset);
+			void getMotionRaw6(float* ax, float* ay, float* az, float* gx, float* gy, float* gz);
+            void getAccelerationRaw(float* ax, float* ay, float* az);
+			float getAccelerationRawX();
+			float getAccelerationRawY();
+			float getAccelerationRawZ();
+			void getRotationRaw(float* gx, float* gy, float* gz);
+			float getRotationRawX();
+			float getRotationRawY();
+			float getRotationRawZ();
+			
+			bool getQuaternion(Quaternion *q, float mx, float my, float mz);
+			bool getQuaternion(Quaternion *q);
+			bool getYawPitchRoll(float* _ypr, float mx, float my, float mz);
+			bool getYawPitchRoll(float* _ypr);
+			uint8_t check();
+        #endif
 
     private:
         uint8_t devAddr;
         uint8_t buffer[14];
+		
+		#ifdef MPU6050_INCLUDE_MICRODUINO
+			uint8_t mode;
+			boolean imuReady = false;
+			int16_t gyroOffset[3];
+			float acc[3], accSmooth[3], gyro[3];
+			Quaternion 	q;
+		#endif
 };
 
 #endif /* _MPU6050_H_ */

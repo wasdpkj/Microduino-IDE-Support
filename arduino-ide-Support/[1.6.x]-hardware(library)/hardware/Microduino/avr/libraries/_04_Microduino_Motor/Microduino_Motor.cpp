@@ -57,8 +57,19 @@ void Motor::Driver(int16_t _motor_driver)	{
     digitalWrite(channel_B, LOW);
   }
   else	{
+#if defined(__AVR_ATmega128RFA1__)
+  if(channel_B>=4 && channel_B <=10){
+    analogWrite(channel_B, abs(_motor_driver));
+    digitalWrite(channel_A, LOW);
+  }
+  else{
+    analogWrite(channel_A, 255 + _motor_driver);
+    digitalWrite(channel_B, HIGH);	  
+  }
+#else
     analogWrite(channel_A, 255 + _motor_driver);
     digitalWrite(channel_B, HIGH);
+#endif
   }
 }
 
