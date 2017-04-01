@@ -119,6 +119,22 @@ void twi_setAddress(uint8_t address)
 }
 
 /* 
+ * Function twi_setClock
+ * Desc     sets twi bit rate
+ * Input    Clock Frequency
+ * Output   none
+ */
+void twi_setFrequency(uint32_t frequency)
+{
+  TWBR = ((F_CPU / frequency) - 16) / 2;
+  
+  /* twi bit rate formula from atmega128 manual pg 204
+  SCL Frequency = CPU Clock Frequency / (16 + (2 * TWBR))
+  note: TWBR should be 10 or higher for master mode
+  It is 72 for a 16mhz Wiring board with 100kHz TWI */
+}
+
+/* 
  * Function twi_readFrom
  * Desc     attempts to become twi bus master and read a
  *          series of bytes from a device on the bus
@@ -165,7 +181,7 @@ uint8_t twi_readFrom(uint8_t address, uint8_t* data, uint8_t length, uint8_t sen
     // We need to remove ourselves from the repeated start state before we enable interrupts,
     // since the ISR is ASYNC, and we could get confused if we hit the ISR before cleaning
     // up. Also, don't enable the START interrupt. There may be one pending from the 
-    // repeated start that we sent outselves, and that would really confuse things.
+    // repeated start that we sent ourselves, and that would really confuse things.
     twi_inRepStart = false;			// remember, we're dealing with an ASYNC ISR
     do {
       TWDR = twi_slarw;
@@ -288,7 +304,7 @@ uint8_t twi_transmit(const uint8_t* data, uint8_t length)
   uint8_t i;
 
   // ensure data will fit into buffer
-  if(TWI_BUFFER_LENGTH < length){
+  if(TWI_BUFFER_LENGTH < (twi_txBufferLength+length)){
     return 1;
   }
   
@@ -298,10 +314,10 @@ uint8_t twi_transmit(const uint8_t* data, uint8_t length)
   }
   
   // set length and copy data into tx buffer
-  twi_txBufferLength = length;
   for(i = 0; i < length; ++i){
-    twi_txBuffer[i] = data[i];
+    twi_txBuffer[twi_txBufferLength+i] = data[i];
   }
+  twi_txBufferLength += length;
   
   return 0;
 }

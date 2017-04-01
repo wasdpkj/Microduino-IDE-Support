@@ -48,7 +48,7 @@ http://arduiniana.org.
 // Statics
 //
 SoftwareSerial *SoftwareSerial::active_object = 0;
-char SoftwareSerial::_receive_buffer[_SS_MAX_RX_BUFF]; 
+uint8_t SoftwareSerial::_receive_buffer[_SS_MAX_RX_BUFF]; 
 volatile uint8_t SoftwareSerial::_receive_buffer_tail = 0;
 volatile uint8_t SoftwareSerial::_receive_buffer_head = 0;
 
@@ -270,7 +270,7 @@ void SoftwareSerial::setTX(uint8_t tx)
 {
   // First write, then set output. If we do this the other way around,
   // the pin would be output low for a short while before switching to
-  // output hihg. Now, it is input with pullup for a short while, which
+  // output high. Now, it is input with pullup for a short while, which
   // is fine. With inverse logic, either order is fine.
   digitalWrite(tx, _inverse_logic ? LOW : HIGH);
   pinMode(tx, OUTPUT);

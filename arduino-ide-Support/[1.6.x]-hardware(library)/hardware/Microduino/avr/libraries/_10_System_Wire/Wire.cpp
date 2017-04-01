@@ -23,7 +23,7 @@ extern "C" {
   #include <stdlib.h>
   #include <string.h>
   #include <inttypes.h>
-  #include "twi.h"
+  #include "utility/twi.h"
 }
 
 #include "Wire.h"
@@ -80,9 +80,9 @@ void TwoWire::end(void)
   twi_disable();
 }
 
-void TwoWire::setClock(uint32_t frequency)
+void TwoWire::setClock(uint32_t clock)
 {
-  TWBR = ((F_CPU / frequency) - 16) / 2;
+  twi_setFrequency(clock);
 }
 
 uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity, uint32_t iaddress, uint8_t isize, uint8_t sendStop)
@@ -169,7 +169,7 @@ void TwoWire::beginTransmission(int address)
 uint8_t TwoWire::endTransmission(uint8_t sendStop)
 {
   // transmit buffer (blocking)
-  int8_t ret = twi_writeTo(txAddress, txBuffer, txBufferLength, 1, sendStop);
+  uint8_t ret = twi_writeTo(txAddress, txBuffer, txBufferLength, 1, sendStop);
   // reset tx buffer iterator vars
   txBufferIndex = 0;
   txBufferLength = 0;
