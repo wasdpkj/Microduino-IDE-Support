@@ -26,6 +26,10 @@ All text above must be included in any redistribution
  #include "WProgram.h"
 #endif
 
+
+#include "SoftwareSerial.h"
+
+
 #define CONFIG_DEFAULT 0
 #define CONFIG_SAVE 1
 
@@ -34,10 +38,10 @@ All text above must be included in any redistribution
 #define UPDATE_4HZ 2
 #define UPDATE_5HZ 3
 
-#define GPS_SBAS 1
-#define BEIDOU_SBAS 2
-#define QZSS_SBAS 3
-#define GLONASS_SBAS 4
+#define GPS_SBAS 		0
+#define BEIDOU_SBAS	 	1
+#define QZSS_SBAS 		2
+#define GLONASS_SBAS	3
 
 #define CONTINUOUS 0
 #define POWERSAVE 1
@@ -50,6 +54,7 @@ class Adafruit_GPS {
  public:
   void begin(uint16_t baud); 
 
+  Adafruit_GPS(SoftwareSerial *ser); // Constructor when using SoftwareSerial
   Adafruit_GPS(HardwareSerial *ser); // Constructor when using HardwareSerial
 
   char *lastNMEA(void);
@@ -77,17 +82,18 @@ class Adafruit_GPS {
   uint16_t LOCUS_serial, LOCUS_records;
   uint8_t LOCUS_type, LOCUS_mode, LOCUS_config, LOCUS_interval, LOCUS_distance, LOCUS_speed, LOCUS_status, LOCUS_percent;
   
-  void set_config(int set_config);
-  void set_updata(int _set_updata);
-  void set_baud(int _set_baud);
-  void set_cnssmode(int _set_cnssmode);
-  void set_powermode(int _set_powermode);
+  void set_config(uint8_t set_config);
+  void set_updata(uint8_t _set_updata);
+  void set_baud(uint16_t _set_baud);
+  void set_cnssmode(uint8_t _set_cnssmode);
+  void set_powermode(uint8_t _set_powermode);
 
  private:
   boolean paused;
   
   uint8_t parseResponse(char *response);
-  HardwareSerial *gpsHwSerial;
+  SoftwareSerial *gpsSwSerial;
+  HardwareSerial *gpsHwSerial;	
 };
 
 

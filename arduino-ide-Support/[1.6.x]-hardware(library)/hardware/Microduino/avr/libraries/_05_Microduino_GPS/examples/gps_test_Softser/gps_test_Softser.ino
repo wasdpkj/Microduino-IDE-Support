@@ -1,5 +1,7 @@
 #include <Adafruit_GPS.h>
-Adafruit_GPS GPS(&Serial1);
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(2, 3); // RX, TX
+Adafruit_GPS GPS(&mySerial);
 
 void setup() {
   Serial.begin(115200);
@@ -9,10 +11,10 @@ void setup() {
 void loop() {
   if (Serial.available()) {
     char c = Serial.read();
-    Serial1.write(c);
+    mySerial.write(c);
   }
-  if (Serial1.available()) {
-    char c = Serial1.read();
+  if (mySerial.available()) {
+    char c = mySerial.read();
     Serial.write(c);
   }
 }

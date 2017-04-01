@@ -1,5 +1,6 @@
 #include <Adafruit_GPS.h>
-Adafruit_GPS GPS(&Serial1);
+SoftwareSerial mySerial(2, 3); // RX, TX
+Adafruit_GPS GPS(&mySerial);
 
 // Set GPSECHO to 'false' to turn off echoing the GPS data to the Serial console
 // Set to 'true' if you want to debug and listen to the raw GPS sentences
