@@ -1,4 +1,7 @@
 Microduino Arduino IDE 配置包历史：
+*2017年4月1日，更新GPS库：_05_Microduino_GPS，支持软串口
+*2017年3月30日，更新Motor库：_04_Microduino_Motor，自动识别PWM接口
+*2017年3月8日，更新AudioPro新库：_06_Microduino_AudioPro_VS1053
 *2016年5月12日，给所有核心硬件支持包添加了digitalPinToInterrupt函数，Core核心库更新为1.6.9。
 *2016年3月21日，更新了DotMatrix库，修正了几个BUG，支持了24bit的BMP显示。
 *2016年2月03日，更新了AM2321库问题，支持负数温度值；在Adafruit_VS1053库中添加了playBuffer函数用以播放对应长度的音乐数据。
@@ -40,4 +43,3 @@ Microduino Arduino IDE 配置包历史：
 **Microduino Core（Atmega168PA@16M,5V）（已支持，未测试）
 **Microduino Core（Atmega168PA@8M,3.3V）（已支持，已测试）
 **核心为Arduino IDE 1.03对应核心文件。
-、
