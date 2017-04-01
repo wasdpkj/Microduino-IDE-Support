@@ -1,6 +1,7 @@
 
 
-/* Copyright (c) 2010, Peter Barrett  
+/* Copyright (c) 2010, Peter Barrett
+** Sleep/Wakeup support added by Michael Dreher
 **  
 ** Permission to use, copy, modify, and/or distribute this software for  
 ** any purpose with or without fee is hereby granted, provided that the  
@@ -255,7 +256,9 @@ u8 USB_SendSpace(u8 ep)
 	LockEP lock(ep);
 	if (!ReadWriteAllowed())
 		return 0;
-	return USB_EP_SIZE - FifoByteCount();
+	// subtract 1 from the EP size to never send a full packet,
+	// this avoids dealing with ZLP's in USB_Send
+	return USB_EP_SIZE - 1 - FifoByteCount();
 }
 
 //	Blocking Send of data to an endpoint
@@ -263,6 +266,11 @@ int USB_Send(u8 ep, const void* d, int len)
 {
 	if (!_usbConfiguration)
 		return -1;
+
+	if (_usbSuspendState & (1<<SUSPI)) {
+		//send a remote wakeup
+		UDCON |= (1 << RMWKUP);
+	}
 
 	int r = len;
 	const u8* data = (const u8*)d;
@@ -391,7 +399,7 @@ bool SendControl(u8 d)
 	}
 	_cmark++;
 	return true;
-};
+}
 
 //	Clipped by _cmark/_cend
 int USB_SendControl(u8 flags, const void* d, int len)
@@ -731,7 +739,7 @@ static inline void USB_ClockEnable()
 ISR(USB_GEN_vect)
 {
 	u8 udint = UDINT;
-	UDINT = UDINT &= ~((1<<EORSTI) | (1<<SOFI)); // clear the IRQ flags for the IRQs which are handled here, except WAKEUPI and SUSPI (see below)
+	UDINT &= ~((1<<EORSTI) | (1<<SOFI)); // clear the IRQ flags for the IRQs which are handled here, except WAKEUPI and SUSPI (see below)
 
 	//	End of Reset
 	if (udint & (1<<EORSTI))

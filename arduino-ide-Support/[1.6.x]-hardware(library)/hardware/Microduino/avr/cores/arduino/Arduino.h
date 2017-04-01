@@ -63,23 +63,31 @@ void yield(void);
 #define FALLING 2
 #define RISING 3
 
-#if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__) || defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-#define DEFAULT 0
-#define EXTERNAL 1
-#define INTERNAL 2
+#if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
+  #define DEFAULT 0
+  #define EXTERNAL 1
+  #define INTERNAL1V1 2
+  #define INTERNAL INTERNAL1V1
+#elif defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
+  #define DEFAULT 0
+  #define EXTERNAL 4
+  #define INTERNAL1V1 8
+  #define INTERNAL INTERNAL1V1
+  #define INTERNAL2V56 9
+  #define INTERNAL2V56_EXTCAP 13
 #else  
 #if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__)
-#define INTERNAL1V1 2
-#define INTERNAL2V56 3
+  #define INTERNAL1V1 2
+  #define INTERNAL2V56 3
 #elif defined(__AVR_ATmega128RFA1__)
-#define INTERNAL_16		3 // Sets reference to 1 LSB precision 1.6V
-#define INTERNAL_15		2 // Sets reference to 1.5V
-#define INTERNAL		INTERNAL_16
+  #define INTERNAL_16		3 // Sets reference to 1 LSB precision 1.6V
+  #define INTERNAL_15		2 // Sets reference to 1.5V
+  #define INTERNAL		INTERNAL_16
 #else
-#define INTERNAL 3
+  #define INTERNAL 3
 #endif
-#define DEFAULT 1
-#define EXTERNAL 0
+  #define DEFAULT 1
+  #define EXTERNAL 0
 #endif
 
 // undefine stdlib's abs if encountered
