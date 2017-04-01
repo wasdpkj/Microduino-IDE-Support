@@ -31,7 +31,7 @@ SoftwareSerial mySerial(4, 5); // RX, TX
 
 void setup() {
   // Open serial communications and wait for port to open:
-  Serial.begin(9600);
+  Serial.begin(57600);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
@@ -40,7 +40,7 @@ void setup() {
   Serial.println("Goodnight moon!");
 
   // set the data rate for the SoftwareSerial port
-  mySerial.begin(9600);
+  mySerial.begin(4800);
   mySerial.println("Hello, world?");
 }
 
