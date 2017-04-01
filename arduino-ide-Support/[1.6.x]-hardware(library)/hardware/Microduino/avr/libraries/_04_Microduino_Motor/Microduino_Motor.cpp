@@ -5,8 +5,7 @@ static motor_t motors[10];                          // static array of key struc
 uint8_t MotorCount = 0;                                     // the total number of attached keys
 
 Motor::Motor(uint8_t _motor_pinA, uint8_t _motor_pinB) {
-  if ( MotorCount < 10)
-  {
+  if ( MotorCount < 10){
     this->motorIndex = MotorCount++;                    // assign a key index to this instance
     if (_motor_pinA < NUM_DIGITAL_PINS && _motor_pinB < NUM_DIGITAL_PINS) {
       pinMode( _motor_pinA, OUTPUT) ;
@@ -14,6 +13,9 @@ Motor::Motor(uint8_t _motor_pinA, uint8_t _motor_pinB) {
 
       pinMode( _motor_pinB, OUTPUT) ;
       motors[this->motorIndex].Pin.nbr_B = _motor_pinB;
+	  
+	  this->_pinApwm = digitalPinHasPWM(_motor_pinA);
+	  this->_pinBpwm = digitalPinHasPWM(_motor_pinB);
 	  
 	  this->fix=1;
     }
@@ -53,23 +55,24 @@ void Motor::Driver(int16_t _motor_driver)	{
     digitalWrite(channel_B, LOW);
   }
   else if (_motor_driver > 0)	{
-    analogWrite(channel_A, _motor_driver);
-    digitalWrite(channel_B, LOW);
+	if(this->_pinApwm){
+	  analogWrite(channel_A, _motor_driver);
+      digitalWrite(channel_B, LOW);		
+	}
+	else{
+      analogWrite(channel_B, 255 - _motor_driver);
+      digitalWrite(channel_A, HIGH);	  		
+	}
   }
   else	{
-#if defined(__AVR_ATmega128RFA1__)
-  if(channel_B>=4 && channel_B <=10){
-    analogWrite(channel_B, abs(_motor_driver));
-    digitalWrite(channel_A, LOW);
-  }
-  else{
-    analogWrite(channel_A, 255 + _motor_driver);
-    digitalWrite(channel_B, HIGH);	  
-  }
-#else
-    analogWrite(channel_A, 255 + _motor_driver);
-    digitalWrite(channel_B, HIGH);
-#endif
+	if(this->_pinBpwm){
+	  analogWrite(channel_B, abs(_motor_driver));
+      digitalWrite(channel_A, LOW);		
+	}
+	else{
+      analogWrite(channel_A, 255 + _motor_driver);
+      digitalWrite(channel_B, HIGH);	  		
+	}
   }
 }
 

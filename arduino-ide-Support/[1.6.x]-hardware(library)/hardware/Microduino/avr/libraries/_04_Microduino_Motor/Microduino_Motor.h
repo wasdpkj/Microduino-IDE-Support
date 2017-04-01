@@ -27,6 +27,8 @@ private:
     uint8_t motorIndex;               // index into the channel data for this key
 	float fix;
 	int16_t _motor_vol;
+	uint8_t _pinApwm;
+	uint8_t _pinBpwm;
 };
 
 #endif
