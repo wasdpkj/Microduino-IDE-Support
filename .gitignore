@@ -1,2 +1,2 @@
 *.db
-/arduino-ide-Support/*.zip
+/arduino-ide-Support/[1.6.x]-hardware(library)/hardware/Microduino/avr/*.zip
