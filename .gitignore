@@ -1,1 +1,2 @@
 *.db
+/arduino-ide-Support/*.zip
