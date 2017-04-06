@@ -5,7 +5,7 @@
 Rtc_Pcf8563 rtc;
 /* set a time to start with.
  * year, month, weekday, day, hour, minute, second */
-DateTime dateTime = {2016, 6, 3, 1, 15, 30, 40};
+DateTime dateTime = {2017, 6, 3, 1, 15, 30, 40};
 /* a flag for the interrupt */
 volatile int alarmFlag=0;
 long timer=millis();
@@ -28,7 +28,7 @@ void setup()
   rtc.enableAlarmInt();
   Serial.println("debug set alarm");
 
-  /* setup int on pin 2 of arduino */
+  /* setup int on pin 2 of arduino ,pin 2 (interrupt 0), */
   attachInterrupt(0, blink, FALLING);
 }
 
@@ -59,3 +59,4 @@ void clrAlarm()
   alarmFlag=0;
   attachInterrupt(0, blink, FALLING);
 }
+
