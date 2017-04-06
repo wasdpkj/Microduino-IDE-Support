@@ -22,7 +22,8 @@
 */
 /**************************************************************************/
 
-#include <Microduino_PN532_I2C.h>
+#include <Wire.h>
+#include <Adafruit_NFCShield_I2C.h>
 
 #define IRQ                     (2)
 
@@ -45,14 +46,15 @@
 static const uint8_t KEY_DEFAULT_KEYAB[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
 // Create an instance of the NFCShield_I2C class
-Microduino_PN532_I2C nfc(IRQ);
+Adafruit_NFCShield_I2C nfc(IRQ);
 
 void setup(void) {
   Serial.begin(115200);
   Serial.println("Looking for PN532...");
 
-  uint32_t versiondata = nfc.begin();
+  nfc.begin();
 
+  uint32_t versiondata = nfc.getFirmwareVersion();
   if (! versiondata) {
     Serial.print("Didn't find PN53x board");
     while (1); // halt
@@ -63,6 +65,8 @@ void setup(void) {
   Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC); 
   Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
   
+  // configure board to read RFID tags
+  nfc.SAMConfig();
 }
 
 void loop(void) {
