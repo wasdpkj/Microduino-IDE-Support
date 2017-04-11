@@ -11,26 +11,24 @@
 #ifndef WidgetSD_h
 #define WidgetSD_h
 
-#include <Blynk/BlynkApi.h>
+#include <Blynk/BlynkWidgetBase.h>
 
 class WidgetSD
+    : public BlynkWidgetBase
 {
 public:
-    WidgetSD() {}
-    void setVPin(int vPin) {}
+    WidgetSD(uint8_t vPin = -1) : BlynkWidgetBase(vPin) {}
     void onWrite(BlynkReq& request, const BlynkParam& param);
-private:
 };
 
 #include <SD.h>
-
-void WidgetSD::onWrite(BlynkReq& request, const BlynkParam& param)
+void WidgetSD::onWrite(BlynkReq BLYNK_UNUSED &request, const BlynkParam& param)
 {
     const char* cmd = param[0].asStr();
     if (!strcmp(cmd, "ls")) {
         if (File dir = SD.open(param[1].asStr())) {
             while (File entry = dir.openNextFile()) {
-                char mem[32] = "";
+                char mem[32];
                 BlynkParam result(mem, 0, sizeof(mem));
                 result.add(entry.name());
                 if (entry.isDirectory()) {
@@ -43,7 +41,7 @@ void WidgetSD::onWrite(BlynkReq& request, const BlynkParam& param)
             }
             dir.close();
         }
-    }  else if (!strcmp(cmd, "get")) {	// dc dc dc dc d[l|e]
+    }  else if (!strcmp(cmd, "get")) { // dc dc dc dc d[l|e]
         if (File f = SD.open(param[1].asStr())) {
             if (!f.isDirectory()) {
                 char mem[32] = "dc";

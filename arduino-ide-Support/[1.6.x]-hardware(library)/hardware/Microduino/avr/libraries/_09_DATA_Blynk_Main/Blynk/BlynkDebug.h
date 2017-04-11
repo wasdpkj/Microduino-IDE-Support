@@ -35,9 +35,33 @@
 
 #if defined(ARDUINO)
     #if ARDUINO >= 100
-        #include "Arduino.h"
+        #include <Arduino.h>
     #else
-        #include "WProgram.h"
+        #include <WProgram.h>
+    #endif
+#endif
+
+#if defined(LINUX)
+    #if defined(RASPBERRY)
+        #include <wiringPi.h>
+    #else
+        #define _POSIX_C_SOURCE 200809L
+        #include <time.h>
+        #include <unistd.h>
+
+        static inline
+        void delay(unsigned long ms)
+        {
+            usleep(ms * 1000);
+        }
+
+        static
+        millis_time_t millis()
+        {
+            struct timespec ts;
+            clock_gettime(CLOCK_MONOTONIC, &ts );
+            return ( ts.tv_sec * 1000 + ts.tv_nsec / 1000000L );
+        }
     #endif
 #endif
 
@@ -45,16 +69,15 @@
     #define BLYNK_NO_YIELD
 #endif
 
-// General defines
-
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-#define COUNT_OF(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
-#define BLYNK_ATTR_PACKED __attribute__ ((__packed__))
-#define BLYNK_NORETURN __attribute__ ((noreturn))
-
-// Causes problems on some platforms
-#define BLYNK_FORCE_INLINE inline //__attribute__((always_inline))
+#if !defined(BLYNK_RUN_YIELD)
+    #if defined(BLYNK_NO_YIELD)
+        #define BLYNK_RUN_YIELD() {}
+    #elif defined(SPARK) || defined(PARTICLE)
+        #define BLYNK_RUN_YIELD() { Particle.process(); }
+    #else
+        #define BLYNK_RUN_YIELD() { ::delay(0); }
+    #endif
+#endif
 
 #if defined(__AVR__)
     #include <avr/pgmspace.h>
@@ -68,8 +91,12 @@
     #define BLYNK_PSTR(s) s
 #endif
 
-#ifndef LED_BUILTIN
-# define LED_BUILTIN 2
+#ifdef ARDUINO_AVR_DIGISPARK
+    typedef fstr_t __FlashStringHelper;
+#endif
+
+#if defined(BLYNK_DEBUG_ALL) && !(__cplusplus >= 201103L || defined(__GXX_EXPERIMENTAL_CXX0X__))
+    #warning "Compiler features not enabled -> please contact yor board vendor to enable c++0x"
 #endif
 
 // Diagnostic defines
@@ -122,12 +149,12 @@ void BlynkFatal() BLYNK_NORETURN;
         }
 
 #ifdef BLYNK_DEBUG
-		#include <ctype.h>
+        #include <ctype.h>
         #define BLYNK_DBG_BREAK()    { for(;;); }
         #define BLYNK_ASSERT(expr)   { if(!(expr)) { BLYNK_LOG2(BLYNK_F("Assertion failed: "), BLYNK_F(#expr)); BLYNK_DBG_BREAK() } }
 
         static
-		void BLYNK_DBG_DUMP(const char* msg, const void* addr, size_t len) {
+        void BLYNK_DBG_DUMP(const char* msg, const void* addr, size_t len) {
             if (len) {
                 BLYNK_LOG_TIME();
                 BLYNK_PRINT.print(msg);
@@ -136,7 +163,7 @@ void BlynkFatal() BLYNK_NORETURN;
                 bool prev_print = true;
                 while (l2--) {
                     const uint8_t c = *octets++ & 0xFF;
-                    if (isprint(c)) {
+                    if (c >= 32 && c < 127) {
                         if (!prev_print) { BLYNK_PRINT.print(']'); }
                         BLYNK_PRINT.print((char)c);
                         prev_print = true;
@@ -147,7 +174,10 @@ void BlynkFatal() BLYNK_NORETURN;
                         prev_print = false;
                     }
                 }
-                BLYNK_PRINT.println(prev_print?"":"]");
+                if (!prev_print) {
+                    BLYNK_PRINT.print(']');
+                }
+                BLYNK_PRINT.println();
             }
         }
 #endif
@@ -156,7 +186,7 @@ void BlynkFatal() BLYNK_NORETURN;
         #include <stdio.h>
         #include <stdarg.h>
 
-        static
+        BLYNK_UNUSED
         void blynk_dbg_print(const char* BLYNK_PROGMEM fmt, ...)
         {
             va_list ap;
@@ -164,7 +194,7 @@ void BlynkFatal() BLYNK_NORETURN;
             char buff[128];
             BLYNK_PRINT.print('[');
             BLYNK_PRINT.print(millis());
-            BLYNK_PRINT.print(F("] "));
+            BLYNK_PRINT.print(BLYNK_F("] "));
 #if defined(__AVR__)
             vsnprintf_P(buff, sizeof(buff), fmt, ap);
 #else
@@ -202,7 +232,7 @@ void BlynkFatal() BLYNK_NORETURN;
 
     #else
 
-        #warning Could not detect platform
+        #warning "Cannot detect platform"
 
     #endif
 

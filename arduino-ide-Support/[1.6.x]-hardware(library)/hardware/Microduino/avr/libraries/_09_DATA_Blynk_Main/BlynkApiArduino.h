@@ -26,10 +26,10 @@ millis_time_t BlynkApi<Proto>::getMillis()
 // TODO: Remove workaround for Intel Curie
 // https://forum.arduino.cc/index.php?topic=391836.0
 #ifdef ARDUINO_ARCH_ARC32
-	noInterrupts();
-	uint64_t t =  millis();
-	interrupts();
-	return t;
+    noInterrupts();
+    uint64_t t = millis();
+    interrupts();
+    return t;
 #else
     return millis();
 #endif
@@ -49,8 +49,8 @@ void BlynkApi<Proto>::sendInfo()
 {
     static const char profile[] BLYNK_PROGMEM =
         BLYNK_PARAM_KV("ver"    , BLYNK_VERSION)
-        BLYNK_PARAM_KV("h-beat" , TOSTRING(BLYNK_HEARTBEAT))
-        BLYNK_PARAM_KV("buff-in", TOSTRING(BLYNK_MAX_READBYTES))
+        BLYNK_PARAM_KV("h-beat" , BLYNK_TOSTRING(BLYNK_HEARTBEAT))
+        BLYNK_PARAM_KV("buff-in", BLYNK_TOSTRING(BLYNK_MAX_READBYTES))
 #ifdef BLYNK_INFO_DEVICE
         BLYNK_PARAM_KV("dev"    , BLYNK_INFO_DEVICE)
 #endif
@@ -67,9 +67,9 @@ void BlynkApi<Proto>::sendInfo()
 #ifdef BLYNK_HAS_PROGMEM
     char mem[profile_len];
     memcpy_P(mem, profile, profile_len);
-    static_cast<Proto*>(this)->sendCmd(BLYNK_CMD_HARDWARE_INFO, 0, mem, profile_len);
+    static_cast<Proto*>(this)->sendCmd(BLYNK_CMD_INTERNAL, 0, mem, profile_len);
 #else
-    static_cast<Proto*>(this)->sendCmd(BLYNK_CMD_HARDWARE_INFO, 0, profile, profile_len);
+    static_cast<Proto*>(this)->sendCmd(BLYNK_CMD_INTERNAL, 0, profile, profile_len);
 #endif
     return;
 }
@@ -85,12 +85,8 @@ void BlynkApi<Proto>::processCmd(const void* buff, size_t len)
     if (it >= param.end())
         return;
     const char* cmd = it.asStr();
-#if defined(MPIDE)
     uint16_t cmd16;
     memcpy(&cmd16, cmd, sizeof(cmd16));
-#else
-    const uint16_t cmd16 = *(uint16_t*)cmd;
-#endif
     if (++it >= param.end())
         return;
 
@@ -100,7 +96,9 @@ void BlynkApi<Proto>::processCmd(const void* buff, size_t len)
                          analogInputToDigitalPin(atoi(it.asStr()+1)) :
                          it.asInt();
 #else
-    #warning "analogInputToDigitalPin not defined => Named analog pins will not work"
+    #if defined(BLYNK_DEBUG_ALL)
+        #pragma message "analogInputToDigitalPin not defined"
+    #endif
     const uint8_t pin = it.asInt();
 #endif
 
@@ -161,6 +159,10 @@ void BlynkApi<Proto>::processCmd(const void* buff, size_t len)
         rsp.add(analogRead(pin));
         static_cast<Proto*>(this)->sendCmd(BLYNK_CMD_HARDWARE, 0, rsp.getBuffer(), rsp.getLength()-1);
     } break;
+
+// TODO: Remove workaround for ESP32
+#if !defined(ESP32)
+
     case BLYNK_HW_AW: {
         // Should be 1 parameter (value)
         if (++it >= param.end())
@@ -171,6 +173,8 @@ void BlynkApi<Proto>::processCmd(const void* buff, size_t len)
 #endif
         analogWrite(pin, it.asInt());
     } break;
+
+#endif // TODO: Remove workaround for ESP32
 
 #endif
 

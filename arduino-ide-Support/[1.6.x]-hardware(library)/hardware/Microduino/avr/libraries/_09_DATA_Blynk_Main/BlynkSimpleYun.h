@@ -11,13 +11,9 @@
 #ifndef BlynkSimpleYun_h
 #define BlynkSimpleYun_h
 
-#ifndef BLYNK_INFO_DEVICE
-#define BLYNK_INFO_DEVICE  "Arduino Yun"
-#endif
-
 #include <Blynk/BlynkProtocol.h>
 #include <Adapters/BlynkArduinoClient.h>
-#include <YunClient.h>
+#include <BridgeClient.h>
 
 typedef BlynkArduinoClient BlynkArduinoClientYun;
 
@@ -31,19 +27,19 @@ public:
     {}
 
     void config(const char* auth,
-            	const char* domain = BLYNK_DEFAULT_DOMAIN,
+                const char* domain = BLYNK_DEFAULT_DOMAIN,
                 uint16_t    port   = BLYNK_DEFAULT_PORT)
     {
-    	Base::begin(auth);
-    	this->conn.begin(domain, port);
+        Base::begin(auth);
+        this->conn.begin(domain, port);
     }
 
     void config(const char* auth,
-            	IPAddress   ip,
+                IPAddress   ip,
                 uint16_t    port = BLYNK_DEFAULT_PORT)
     {
-    	Base::begin(auth);
-    	this->conn.begin(ip, port);
+        Base::begin(auth);
+        this->conn.begin(ip, port);
     }
 
     void begin(const char* auth,
@@ -52,7 +48,8 @@ public:
     {
         BLYNK_LOG1(BLYNK_F("Bridge init..."));
         Bridge.begin();
-    	config(auth, domain, port);
+        config(auth, domain, port);
+        while(this->connect() != true) {}
     }
 
     void begin(const char* auth,
@@ -61,12 +58,13 @@ public:
     {
         BLYNK_LOG1(BLYNK_F("Bridge init..."));
         Bridge.begin();
-    	config(auth, ip, port);
+        config(auth, ip, port);
+        while(this->connect() != true) {}
     }
 
 };
 
-static YunClient _blynkYunClient;
+static BridgeClient _blynkYunClient;
 static BlynkArduinoClient _blynkTransport(_blynkYunClient);
 BlynkYun Blynk(_blynkTransport);
 

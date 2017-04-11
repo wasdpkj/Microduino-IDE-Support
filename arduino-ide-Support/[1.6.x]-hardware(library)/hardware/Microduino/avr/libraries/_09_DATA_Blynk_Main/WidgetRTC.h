@@ -11,52 +11,44 @@
 #ifndef WidgetRTC_h
 #define WidgetRTC_h
 
-#include <Blynk/BlynkApi.h>
+#include <Blynk/BlynkWidgetBase.h>
+#include <Blynk/BlynkTemplates.h>
+#include <TimeLib.h>
 
 class WidgetRTC
+    : public BlynkSingleton<WidgetRTC>
 {
 public:
     WidgetRTC() {}
-    void setVPin(int vPin) { mPin = vPin; }
-    void onWrite(BlynkReq& request, const BlynkParam& param);
     void begin();
-    static uint8_t mPin;
+
+private:
+    static time_t requestTimeSync();
 };
 
-#ifndef WidgetRTC_h_NO_IMPL
-
-#include <TimeLib.h>
-
-namespace WidgetRTC_impl {
-
 // This is called by Time library when it needs time sync
-static
-time_t requestTimeSync()
+time_t WidgetRTC::requestTimeSync()
 {
-    Blynk.syncVirtual(WidgetRTC::mPin); // Request RTC widget update from the server
-    return 0;                // Tell the Time library that we'll set it later
-}
-
+    // Request RTC widget update from the server
+    Blynk.sendInternal("rtc", "sync");
+    // Tell the Time library that we'll set it later
+    return 0;
 }
 
 inline
 void WidgetRTC::begin()
 {
-    setSyncProvider(WidgetRTC_impl::requestTimeSync);
+    setSyncProvider(requestTimeSync);
 }
 
-inline
-void WidgetRTC::onWrite(BlynkReq& request, const BlynkParam& param)
-{
+BLYNK_WRITE(InternalPinRTC) {
     const unsigned long DEFAULT_TIME = 1357041600; // Jan 1 2013
     unsigned long blynkTime = param.asLong();
 
-    if ( blynkTime >= DEFAULT_TIME) {   // Check the integer is a valid time (greater than Jan 1 2013)
+    if (blynkTime >= DEFAULT_TIME) {    // Check the integer is a valid time (greater than Jan 1 2013)
         setTime(blynkTime);             // Sync Time library clock to the value received from Blynk
         BLYNK_LOG1(BLYNK_F("Time sync: OK"));
     }
 }
-
-#endif
 
 #endif
