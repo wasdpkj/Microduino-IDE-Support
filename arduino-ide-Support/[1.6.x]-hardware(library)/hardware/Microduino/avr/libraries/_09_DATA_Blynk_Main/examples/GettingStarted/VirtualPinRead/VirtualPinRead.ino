@@ -40,10 +40,10 @@ char auth[] = "YourAuthToken";
 char ssid[] = "YourNetworkName";
 char pass[] = "YourPassword";
 
-// Hardware Serial on Mega, Leonardo, Micro...
+// Hardware Serial on Core+, CoreUSB, CoreRF...
 #define EspSerial Serial1
 
-// or Software Serial on Uno, Nano...
+// or Software Serial on Core
 //#include <SoftwareSerial.h>
 //SoftwareSerial EspSerial(2, 3); // RX, TX
 
