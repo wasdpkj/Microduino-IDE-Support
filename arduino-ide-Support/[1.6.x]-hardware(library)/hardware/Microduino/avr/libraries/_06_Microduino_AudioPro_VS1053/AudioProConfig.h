@@ -91,7 +91,17 @@ unverified at this time.
 #define MP3_XCS             A3 //Control Chip Select Pin (for accessing SPI Control/Status registers)
 #define MP3_XDCS            A2 //Data Chip Select / BSYNC Pin
 #define MP3_DREQ            3 //Data Request Pin: Player asks for more data
-#define MP3_DREQINT        	1 // There is no IRQ used on Seeduino
+
+#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || defined (__AVR_ATmega328__) || defined(__AVR_ATmega8__) 
+#define MP3_DREQINT        	1 // There is no IRQ used on Core
+#elif (defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__))  && defined(CORE_MICRODUINO)
+#define MP3_DREQINT        	1 // There is no IRQ used on Core+
+#elif  defined(__AVR_ATmega32U4__)  && defined(CORE_MICRODUINO)
+#define MP3_DREQINT        	-1 // There is no IRQ used on CoreUSB
+#elif defined(__AVR_ATmega128RFA1__)  && defined(CORE_MICRODUINO)
+#define MP3_DREQINT        	3 // There is no IRQ used on CoreRF
+#endif
+
 #define MP3_RESET           -1 //Reset is active low
 #define SD_SEL              7 //select pin for SD card
 

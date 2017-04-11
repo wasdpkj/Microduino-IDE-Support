@@ -1838,6 +1838,71 @@ uint16_t AudioPro::ReadRegister (uint8_t addressbyte){
   return resultvalue.word;
 }
 
+
+void AudioPro::sciWrite(uint8_t addr, uint16_t data) {
+  cs_low(); //Select control
+
+  //SCI consists of instruction byte, address byte, and 16-bit data word.
+  SPI.transfer(0x02); //Write instruction
+  SPI.transfer(addr);
+  SPI.transfer(data >> 8);
+  SPI.transfer(data & 0xFF);
+  cs_high(); //Deselect Control
+}
+
+uint16_t AudioPro::sciRead(uint8_t addr) {
+  union twobyte resultvalue;
+
+  cs_low(); //Select control
+  SPI.setClockDivider(spi_Read_Rate); // correct the clock speed as from cs_low()
+
+  //SCI consists of instruction byte, address byte, and 16-bit data word.
+  SPI.transfer(0x03);  //Read instruction
+  SPI.transfer(addr);
+
+  resultvalue.byte[1] = SPI.transfer(0xFF); //Read the first byte
+  while(!digitalRead(MP3_DREQ)) ; //Wait for DREQ to go high indicating command is complete
+  resultvalue.byte[0] = SPI.transfer(0xFF); //Read the second byte
+  while(!digitalRead(MP3_DREQ)) ; //Wait for DREQ to go high indicating command is complete
+
+  cs_high(); //Deselect Control
+ 
+  return resultvalue.word;
+}
+
+void AudioPro::GPIO_pinMode(uint8_t i, uint8_t dir) {
+  if (i > 7) return;
+
+  sciWrite(0x07, 0xC017);
+  uint16_t ddr = sciRead(0x06);
+
+  if (dir == INPUT)
+    ddr &= ~_BV(i);
+  if (dir == OUTPUT)
+    ddr |= _BV(i);
+
+  sciWrite(0x07, 0xC017);
+  sciWrite(0x06, ddr);
+}
+
+
+void AudioPro::GPIO_digitalWrite(uint8_t i, uint8_t val) {
+  if (i > 7) return;
+
+  sciWrite(0x07, 0xC019);
+  uint16_t pins = sciRead(0x06);
+
+  if (val == LOW)
+    pins &= ~_BV(i);
+  if (val == HIGH)
+    pins |= _BV(i);
+
+  sciWrite(0x07, 0xC019);
+  sciWrite(0x06, pins);
+}
+/*
+*/
+
 //------------------------------------------------------------------------------
 /**
  * \brief Read a VS10xx WRAM Location

@@ -75,6 +75,9 @@ void setup() {
     }
   Webplayer.setVolume(80,80); // commit new volume  Serial.println(FreeRam());
 
+  Webplayer.GPIO_pinMode(4, OUTPUT);
+  Webplayer.GPIO_digitalWrite(4, LOW);
+
 }
 
 //------------------------------------------------------------------------------
