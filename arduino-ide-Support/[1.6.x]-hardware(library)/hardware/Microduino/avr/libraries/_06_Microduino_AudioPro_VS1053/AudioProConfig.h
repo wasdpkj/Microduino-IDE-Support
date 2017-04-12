@@ -94,11 +94,11 @@ unverified at this time.
 
 #if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || defined (__AVR_ATmega328__) || defined(__AVR_ATmega8__) 
 #define MP3_DREQINT        	1 // There is no IRQ used on Core
-#elif (defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__))  && defined(CORE_MICRODUINO)
+#elif (defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__))
 #define MP3_DREQINT        	1 // There is no IRQ used on Core+
-#elif  defined(__AVR_ATmega32U4__)  && defined(CORE_MICRODUINO)
+#elif  defined(__AVR_ATmega32U4__)
 #define MP3_DREQINT        	-1 // There is no IRQ used on CoreUSB
-#elif defined(__AVR_ATmega128RFA1__)  && defined(CORE_MICRODUINO)
+#elif defined(__AVR_ATmega128RFA1__)
 #define MP3_DREQINT        	3 // There is no IRQ used on CoreRF
 #endif
 
