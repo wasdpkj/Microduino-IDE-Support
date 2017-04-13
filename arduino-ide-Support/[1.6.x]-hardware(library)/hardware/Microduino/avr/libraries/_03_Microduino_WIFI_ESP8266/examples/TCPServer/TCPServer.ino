@@ -1,3 +1,7 @@
+//This example is just for Microduino/mCookie Core+/CoreRF
+//If you want to use the Microduino/mCookie Core for this example,you should change the Serial  port
+//More information please visit https://wiki.microduino.cn/index.php/MCookie-WiFi/zh
+
 /**
  * @example TCPServer.ino
  * @brief The TCPServer demo of library WeeESP8266. 
