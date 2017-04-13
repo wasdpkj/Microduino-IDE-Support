@@ -1,4 +1,4 @@
-//This example is for Microduino/mCookie Core/CoreUSB
+//This example is for Microduino/mCookie Core/CoreUSB/Core+/CoreRF
 //More information please visit https://wiki.microduino.cn/index.php/MCookie-GPS
 
 #include <Adafruit_GPS.h>
