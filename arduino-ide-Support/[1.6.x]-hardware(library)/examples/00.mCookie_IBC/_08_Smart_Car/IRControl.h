@@ -34,64 +34,40 @@ uint8_t mode = MODE_OFF;
 uint8_t colorNum = 0;
 
 
-//------------Infrared Receiver Function-------------//
-uint8_t recvRemote(uint32_t recvCode)
+//------------Receiving Infrared Signals from Remote Control-------------//
+void recvParse(uint32_t recvCode)
 {
-    uint8_t cmd = CMD_OK;
-    switch(recvCode){
-       case BUTTON_A:
-          motorCoast();
-          setAllLed(COLOR_RED);
-          tone(PIN_BUZZER, TONE_DO);
-          delay(300); 
-          setAllLed(COLOR_NONE);
-          noTone(PIN_BUZZER);
-          mode = MODE_A;
-          break;
-       case BUTTON_B:
-          motorCoast();
-          setAllLed(COLOR_RED);
-          tone(PIN_BUZZER, TONE_DO);
-          delay(300);
-          setAllLed(COLOR_GREEN);
-          tone(PIN_BUZZER, TONE_RE);
-          delay(300);
-          setAllLed(COLOR_NONE);
-          noTone(PIN_BUZZER);
-          mode = MODE_B;
-          break;
-       case BUTTON_C:
-          motorCoast();
-          setAllLed(COLOR_RED);
-          tone(PIN_BUZZER, TONE_DO);
-          delay(300);
-          setAllLed(COLOR_GREEN);
-          tone(PIN_BUZZER, TONE_RE);
-          delay(300);
-          setAllLed(COLOR_BLUE);
-          tone(PIN_BUZZER, TONE_MI);
-          delay(300);
-          setAllLed(COLOR_NONE);
-          noTone(PIN_BUZZER);
-          mode = MODE_C;
-          break;
-       case BUTTON_UP:
-          cmd = CMD_UP;
-          break;
-       case BUTTON_DOWN:
-          cmd = CMD_DOWN;
-          break;
-       case BUTTON_LEFT:
-          cmd = CMD_LEFT;
-          break;
-       case BUTTON_RIGHT:
-          cmd = CMD_RIGHT;
-          break;
-       case BUTTON_OK:
-          cmd = CMD_OK;
-          break;
-       default:
-          break;
-   }
-   return cmd;
+  switch(recvCode)
+  {
+     case BUTTON_A:
+        mode = MODE_A;
+        break;
+     case BUTTON_B:
+        mode = MODE_B;
+        break;
+     case BUTTON_C:
+        mode = MODE_C;
+        break;
+     case BUTTON_D:
+        mode = MODE_D;
+        break;
+     case BUTTON_E:
+        mode = MODE_E;
+        break;
+     case BUTTON_LEFT:
+        colorNum--;
+        if(colorNum<3)
+           colorNum = 9;
+        break;
+     case BUTTON_RIGHT:
+        colorNum++;
+        if(colorNum>9)
+           colorNum = 3;
+        break;
+     case BUTTON_POWER:
+        mode = MODE_OFF;
+        break;
+     default:
+        break;
+  }
 }

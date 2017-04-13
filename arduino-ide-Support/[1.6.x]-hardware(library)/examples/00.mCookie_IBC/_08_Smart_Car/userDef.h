@@ -21,6 +21,3 @@
                             //the Motor spin in the other direction. Note: 255 is very fast. Be careful!
 
 #define STEER          40   //How quickly the Smart Car turns. Max value is 255. 
-
-#define tackforward 40
-#define tacksteer 30

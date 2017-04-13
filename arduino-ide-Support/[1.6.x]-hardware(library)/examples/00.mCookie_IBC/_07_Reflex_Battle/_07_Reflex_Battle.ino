@@ -65,41 +65,159 @@
   Visit us at http://www.microduino.cc/ and click the chatbox in the lower right to submit
   a question. We'll get back to you as soon as possible.
 */
+
 #include <Microduino_Key.h>
 #include "colorLed.h"
+#include "music.h"
 #include "userDef.h"
-#include "game.h"
+
+Key keyA(PIN_KEYA, INPUT);
+Key keyB(PIN_KEYB, INPUT);
+
+uint32_t ledTimer;
+uint8_t scoreA, scoreB;
+int8_t score;
+uint8_t ledX, ledY;
+bool playStatus;
 
 void setup() {
   Serial.begin(9600);
   strip.begin();
   strip.setBrightness(BRIGHT_MAX);
+  randomSeed(80);
+  soundInit();
 #if DEBUG
   Serial.println("**************START************");
 #endif
 }
 
 void loop() {
-  if (playStatus)           //Are you in the middle of a game?
+  if (playStatus)//Are you in the middle of a game?
   {
     int8_t scoreCache = score;
     score = updateScore();  //Calculate difference of points.
-    playReset();
     if (abs(score) >= SCORE_MAX)  //Game ends.
     {
       playStatus = false;
-      playgo = true;
+      playIndex = 0;
     }
     else if (score != scoreCache)
-      ledScore(score);//Blink the difference of points.
+    {
+      ledScore(score);  //Blink the difference of points.
+    }
     updateLed();//Flash the new LED color.
   }
-  else if (!playgo)
+  else if (!playSound(10))//Play game over music.
   {
-    ledBreath(COLOR_INDIGO, 3);
-    playReset();
+    noTone(PIN_BUZZER);
+    ledBreath(COLOR_GREEN, 15);
+    if (playReset())
+      playStatus = true;
   }
-  else if (!playStatus)
-    gameOver();
-  delay(15);
+}
+
+//--------------Flash a New LED Color-----------------//
+void updateLed()
+{
+  if (millis() > ledTimer)
+  {
+    if (ledX == 0 || ledY == 0)
+    {
+      ledX = random(5,9);
+      ledY = random(5,9);
+      ledTimer = millis() + random(LED_INTERVAL - 200, LED_INTERVAL);//Flash for a certain amount of time.
+    }
+    else
+    {
+      ledX = 0;
+      ledY = 0;
+      ledTimer = millis() + LED_INTERVAL / 2;   //Stay dark for a certain amount of time.
+    }
+    setLed(ledX, 0);
+    setLed(ledY, 1);
+  }
+}
+
+void soundInit()
+{
+  setAllLed(COLOR_RED);
+  tone(PIN_BUZZER, 1000);
+  delay(500);
+  setAllLed(COLOR_NONE);
+  noTone(PIN_BUZZER);
+  delay(500);
+  setAllLed(COLOR_RED);
+  tone(PIN_BUZZER, 1000);
+  delay(500);
+  setAllLed(COLOR_NONE);
+  noTone(PIN_BUZZER);
+  delay(500);
+  setAllLed(COLOR_GREEN);
+  tone(PIN_BUZZER, 1500);
+  delay(500);
+  noTone(PIN_BUZZER);
+  setAllLed(COLOR_NONE);
+}
+//---------------Blink the Difference of Points-----------------//
+void ledScore(int8_t _score)
+{
+  setAllLed(COLOR_NONE);
+  if (_score > 0)
+    ledBlinkNum(_score, COLOR_COLD, 0, 300);
+  else if (_score < 0)
+    ledBlinkNum(abs(_score), COLOR_COLD, 1, 300);
+}
+//---------------Calculate the Scores-----------------//
+int8_t updateScore()
+{
+  if (keyA.read() == SHORT_PRESS)
+  {
+    setLed(COLOR_NONE, 1);
+    if (ledX == ledY && ledX > 0)
+    {
+      tone(PIN_BUZZER, 500, 300);
+      scoreA++;
+      ledBlinkNum(1, COLOR_GREEN, 0, 600);
+    }
+    else
+    {
+      tone(PIN_BUZZER, 1000, 300);
+      scoreB++;
+      ledBlinkNum(1, COLOR_RED, 0, 600);
+    }
+    ledX = 0;
+    ledY = 0;
+  }
+  else if (keyB.read() == SHORT_PRESS)
+  {
+    setLed(COLOR_NONE, 0);
+    if (ledX == ledY && ledX > 0)
+    {
+      tone(PIN_BUZZER, 500, 300);
+      scoreB++;
+      ledBlinkNum(1, COLOR_GREEN, 1, 600);
+    }
+    else
+    {
+      tone(PIN_BUZZER, 1000, 300);
+      scoreA++;
+      ledBlinkNum(1, COLOR_RED, 1, 600);
+    }
+    ledX = 0;
+    ledY = 0;
+  }
+  return (scoreA - scoreB);
+}
+
+bool playReset()
+{
+  if (keyA.read() == LONG_PRESS || keyB.read() == LONG_PRESS)
+  {
+    scoreA = 0;
+    scoreB = 0;
+    soundInit();
+    return true;
+  }
+  else
+    return false;
 }
