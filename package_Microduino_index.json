@@ -6,20 +6,20 @@
       "websiteURL": "https://github.com/wasdpkj/Microduino-IDE-Support",
       "email": "pankejia@microduino.cc",
       "help": {
-        "online": "https://www.microduino.cn"
+        "online": "https://www.microduino.cc"
       },
       "platforms": [
         {
           "name": "Microduino",
           "architecture": "avr",
-          "version": "1.6.10",
+          "version": "1.6.12",
           "category": "Contributed",
           "help": {
-            "online": ""
+			"online": "https://www.microduino.cc"
           },
           "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/Microduino-ide-Support.zip",
           "archiveFileName": "Microduino-ide-Support.zip",
-          "checksum": "SHA-256:DA548D8873404B7766AEF267C01DBC2A82958A8D3FCB818FFBA333C90D2B2615",
+          "checksum": "SHA-256:62B89C2AE38374F68343EC00DCF060F8FBC520BAFF0117AF7D42CEEF6849A9C8",
           "size": "5525156",
           "boards": [
             {"name": "ATmega168pa"},
