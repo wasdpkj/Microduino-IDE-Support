@@ -21,3 +21,6 @@
                             //注意：设置255时，风车转动较快，注意安全！
 
 #define STEER          40   //小车的转弯速度. 最快是255. 
+
+#define tackforward 40
+#define tacksteer 30

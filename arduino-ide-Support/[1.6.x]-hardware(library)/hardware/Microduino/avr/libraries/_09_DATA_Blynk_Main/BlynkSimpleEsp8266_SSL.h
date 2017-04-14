@@ -15,10 +15,6 @@
 #error This code is intended to run on the ESP8266 platform! Please check your Tools->Board setting.
 #endif
 
-#ifndef BLYNK_INFO_DEVICE
-#define BLYNK_INFO_DEVICE  "ESP8266"
-#endif
-
 #define BLYNK_DEFAULT_FINGERPRINT "FD C0 7D 8D 47 97 F7 E3 07 05 D3 4E E3 BB 8E 3D C0 EA BE 1C"
 
 #include <BlynkApiArduino.h>
@@ -29,26 +25,25 @@
 
 template <typename Client>
 class BlynkArduinoClientSecure
-	: public BlynkArduinoClientGen<Client>
+    : public BlynkArduinoClientGen<Client>
 {
 public:
-	BlynkArduinoClientSecure(Client& client)
-		: BlynkArduinoClientGen<Client>(client)
-		, fingerprint(NULL)
-	{}
+    BlynkArduinoClientSecure(Client& client)
+        : BlynkArduinoClientGen<Client>(client)
+        , fingerprint(NULL)
+    {}
 
-	void setFingerprint(const char* fp) { fingerprint = fp; }
+    void setFingerprint(const char* fp) { fingerprint = fp; }
 
     bool connect() {
         if (BlynkArduinoClientGen<Client>::connect()) {
-          // TODO: Enable when https://github.com/esp8266/Arduino/issues/1285 is closed
-		  /*if (fingerprint && !this->client.verify(fingerprint, this->domain)) {
-			  BLYNK_LOG1(BLYNK_F("Certificate doesn't match"));
-			  return false;
-		  } else {
-			  BLYNK_LOG1(BLYNK_F("Certificate OK"));
-		  }*/
-		  return true;
+          if (fingerprint && !this->client->verify(fingerprint, this->domain)) {
+              BLYNK_LOG1(BLYNK_F("Certificate doesn't match"));
+              return false;
+          } else {
+              BLYNK_LOG1(BLYNK_F("Certificate OK"));
+          }
+          return true;
         }
         return false;
     }
@@ -72,9 +67,9 @@ public:
         BLYNK_LOG2(BLYNK_F("Connecting to "), ssid);
         WiFi.mode(WIFI_STA);
         if (pass && strlen(pass)) {
-        	WiFi.begin(ssid, pass);
+            WiFi.begin(ssid, pass);
         } else {
-        	WiFi.begin(ssid);
+            WiFi.begin(ssid);
         }
         while (WiFi.status() != WL_CONNECTED) {
             ::delay(500);
@@ -88,7 +83,7 @@ public:
     void config(const char* auth,
                 const char* domain = BLYNK_DEFAULT_DOMAIN,
                 uint16_t    port   = BLYNK_DEFAULT_PORT_SSL,
-				const char* fingerprint = BLYNK_DEFAULT_FINGERPRINT)
+                const char* fingerprint = BLYNK_DEFAULT_FINGERPRINT)
     {
         Base::begin(auth);
         this->conn.begin(domain, port);
@@ -96,9 +91,9 @@ public:
     }
 
     void config(const char* auth,
-            	IPAddress   ip,
+                IPAddress   ip,
                 uint16_t    port = BLYNK_DEFAULT_PORT_SSL,
-				const char* fingerprint = BLYNK_DEFAULT_FINGERPRINT)
+                const char* fingerprint = BLYNK_DEFAULT_FINGERPRINT)
     {
         Base::begin(auth);
         this->conn.begin(ip, port);
@@ -110,10 +105,11 @@ public:
                const char* pass,
                const char* domain = BLYNK_DEFAULT_DOMAIN,
                uint16_t    port   = BLYNK_DEFAULT_PORT_SSL,
-			   const char* fingerprint = BLYNK_DEFAULT_FINGERPRINT)
+               const char* fingerprint = BLYNK_DEFAULT_FINGERPRINT)
     {
         connectWiFi(ssid, pass);
         config(auth, domain, port, fingerprint);
+        while(this->connect() != true) {}
     }
 
     void begin(const char* auth,
@@ -121,10 +117,11 @@ public:
                const char* pass,
                IPAddress   ip,
                uint16_t    port   = BLYNK_DEFAULT_PORT_SSL,
-			   const char* fingerprint = BLYNK_DEFAULT_FINGERPRINT)
+               const char* fingerprint = BLYNK_DEFAULT_FINGERPRINT)
     {
         connectWiFi(ssid, pass);
         config(auth, ip, port, fingerprint);
+        while(this->connect() != true) {}
     }
 
 };

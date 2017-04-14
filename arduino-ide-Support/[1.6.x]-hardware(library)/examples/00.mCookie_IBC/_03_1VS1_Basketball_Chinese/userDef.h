@@ -17,3 +17,6 @@
 #define DOCK_MAX     500     //灰度传感器的最小触发值。增大该值后，意味着你需要颜色更深的物体去触发灰度传感器
                              
 #define SCORE_MAX    5       //判断游戏获胜的分差，默认为5分，即当一方得分比另一方得分多5分时，得分多者获胜！
+
+#define leftColor   6     //左灯颜色
+#define rightColor   9    //右灯颜色

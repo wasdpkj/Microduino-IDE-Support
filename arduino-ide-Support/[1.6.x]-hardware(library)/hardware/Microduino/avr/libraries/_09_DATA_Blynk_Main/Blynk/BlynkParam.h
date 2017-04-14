@@ -33,10 +33,13 @@ public:
         const char* asString() const    { return ptr; }
         int         asInt() const       { return atoi(ptr); }
         long        asLong() const      { return atol(ptr); }
+        //long long   asLongLong() const  { return atoll(ptr); }
 #ifndef BLYNK_NO_FLOAT
         double      asDouble() const    { return atof(ptr); }
+        float       asFloat() const     { return atof(ptr); }
 #endif
         bool isValid() const            { return ptr != NULL; }
+        bool isEmpty() const            { return *ptr == '\0'; }
 
         bool operator <  (const iterator& it) const { return ptr < it.ptr; }
         bool operator >= (const iterator& it) const { return ptr >= it.ptr; }
@@ -64,9 +67,12 @@ public:
     const char* asString() const    { return buff; }
     int         asInt() const       { return atoi(buff); }
     long        asLong() const      { return atol(buff); }
+    //long long   asLongLong() const  { return atoll(buff); }
 #ifndef BLYNK_NO_FLOAT
     double      asDouble() const    { return atof(buff); }
+    float       asFloat() const     { return atof(buff); }
 #endif
+    bool isEmpty() const            { return *buff == '\0'; }
 
     iterator begin() const { return iterator(buff); }
     iterator end() const   { return iterator(buff+len); }
@@ -82,6 +88,8 @@ public:
     void add(unsigned int value);
     void add(long value);
     void add(unsigned long value);
+    void add(long long value);
+    void add(unsigned long long value);
 #ifndef BLYNK_NO_FLOAT
     void add(float value);
     void add(double value);
@@ -90,8 +98,21 @@ public:
     void add(const void* b, size_t l);
 #if defined(ARDUINO) || defined(SPARK) || defined(PARTICLE)
     void add(const String& str);
-    void add(String& str);
+#if defined(BLYNK_HAS_PROGMEM)
+    void add(const __FlashStringHelper* str);
 #endif
+#endif
+
+    template<typename T, typename... Args>
+    void add_multi(T last) {
+        add(last);
+    }
+
+    template<typename T, typename... Args>
+    void add_multi(T head, Args... tail) {
+        add(head);
+        add_multi(tail...);
+    }
 
     template <typename TV>
     void add_key(const char* key, const TV& val) {
@@ -99,10 +120,23 @@ public:
         add(val);
     }
 
-private:
-    char*	buff;
-    size_t	len;
-    size_t	buff_size;
+protected:
+    char*    buff;
+    size_t   len;
+    size_t   buff_size;
+};
+
+
+class BlynkParamAllocated
+    : public BlynkParam
+{
+public:
+    BlynkParamAllocated(size_t size)
+        : BlynkParam(malloc(size), 0, size)
+    {}
+    ~BlynkParamAllocated() {
+        free(buff);
+    }
 };
 
 inline
@@ -150,31 +184,42 @@ void BlynkParam::add(const char* str)
 inline
 void BlynkParam::add(const String& str)
 {
+#if defined(ARDUINO_AVR_DIGISPARK) \
+    || defined(__ARDUINO_X86__) \
+    || defined(__RFduino__)
+
     size_t len = str.length()+1;
     char buff[len];
-#if defined(ARDUINO_AVR_DIGISPARK)
     const_cast<String&>(str).toCharArray(buff, len);
+    add(buff, len);
 #else
-    str.toCharArray(buff, len);
+    add(str.c_str());
 #endif
-    BlynkParam::add(buff, len);
 }
 
+#if defined(BLYNK_HAS_PROGMEM)
+
 inline
-void BlynkParam::add(String& str)
+void BlynkParam::add(const __FlashStringHelper* ifsh)
 {
-    size_t len = str.length()+1;
-    char buff[len];
-    str.toCharArray(buff, len);
-    BlynkParam::add(buff, len);
+    PGM_P p = reinterpret_cast<PGM_P>(ifsh);
+    size_t l = strlen_P(p) + 1;
+    if (len + l > buff_size)
+        return;
+    memcpy_P(buff+len, p, l);
+    len += l;
+    buff[len] = '\0';
 }
+
+#endif
+
 #endif
 
 #if defined(__AVR__) || defined (ARDUINO_ARCH_ARC32)
 
     #include <stdlib.h>
 
-	inline
+    inline
     void BlynkParam::add(int value)
     {
         char str[2 + 8 * sizeof(value)];
@@ -182,7 +227,7 @@ void BlynkParam::add(String& str)
         add(str);
     }
 
-	inline
+    inline
     void BlynkParam::add(unsigned int value)
     {
         char str[1 + 8 * sizeof(value)];
@@ -190,7 +235,7 @@ void BlynkParam::add(String& str)
         add(str);
     }
 
-	inline
+    inline
     void BlynkParam::add(long value)
     {
         char str[2 + 8 * sizeof(value)];
@@ -198,8 +243,24 @@ void BlynkParam::add(String& str)
         add(str);
     }
 
-	inline
+    inline
     void BlynkParam::add(unsigned long value)
+    {
+        char str[1 + 8 * sizeof(value)];
+        ultoa(value, str, 10);
+        add(str);
+    }
+
+    inline
+    void BlynkParam::add(long long value)  // TODO: this currently adds just a long
+    {
+        char str[2 + 8 * sizeof(value)];
+        ltoa(value, str, 10);
+        add(str);
+    }
+
+    inline
+    void BlynkParam::add(unsigned long long value) // TODO: this currently adds just a long
     {
         char str[1 + 8 * sizeof(value)];
         ultoa(value, str, 10);
@@ -208,7 +269,7 @@ void BlynkParam::add(String& str)
 
 #ifndef BLYNK_NO_FLOAT
 
-	inline
+    inline
     void BlynkParam::add(float value)
     {
         char str[33];
@@ -216,11 +277,11 @@ void BlynkParam::add(String& str)
         add(str);
     }
 
-	inline
+    inline
     void BlynkParam::add(double value)
     {
         char str[33];
-        dtostrf(value, 5, 3, str);
+        dtostrf(value, 5, 7, str);
         add(str);
     }
 #endif
@@ -229,37 +290,49 @@ void BlynkParam::add(String& str)
 
     #include <stdio.h>
 
-	inline
+    inline
     void BlynkParam::add(int value)
     {
         len += snprintf(buff+len, buff_size-len, "%i", value)+1;
     }
 
-	inline
+    inline
     void BlynkParam::add(unsigned int value)
     {
         len += snprintf(buff+len, buff_size-len, "%u", value)+1;
     }
 
-	inline
+    inline
     void BlynkParam::add(long value)
     {
         len += snprintf(buff+len, buff_size-len, "%li", value)+1;
     }
 
-	inline
+    inline
     void BlynkParam::add(unsigned long value)
     {
         len += snprintf(buff+len, buff_size-len, "%lu", value)+1;
+    }
+
+    inline
+    void BlynkParam::add(long long value)
+    {
+        len += snprintf(buff+len, buff_size-len, "%lli", value)+1;
+    }
+
+    inline
+    void BlynkParam::add(unsigned long long value)
+    {
+        len += snprintf(buff+len, buff_size-len, "%llu", value)+1;
     }
 
 #ifndef BLYNK_NO_FLOAT
 
 #if defined(ESP8266)
 
-	extern char* dtostrf_internal(double number, signed char width, unsigned char prec, char *s);
+    extern char* dtostrf_internal(double number, signed char width, unsigned char prec, char *s);
 
-	inline
+    inline
     void BlynkParam::add(float value)
     {
         char str[33];
@@ -267,26 +340,26 @@ void BlynkParam::add(String& str)
         add(str);
     }
 
-	inline
+    inline
     void BlynkParam::add(double value)
     {
         char str[33];
-        dtostrf_internal(value, 5, 3, str);
+        dtostrf_internal(value, 5, 7, str);
         add(str);
     }
 
 #else
 
-	inline
+    inline
     void BlynkParam::add(float value)
     {
         len += snprintf(buff+len, buff_size-len, "%2.3f", value)+1;
     }
 
-	inline
+    inline
     void BlynkParam::add(double value)
     {
-        len += snprintf(buff+len, buff_size-len, "%2.3f", value)+1;
+        len += snprintf(buff+len, buff_size-len, "%2.7f", value)+1;
     }
 
 #endif

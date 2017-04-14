@@ -8,8 +8,8 @@
  *
  */
 
-#ifndef BlynkSerial_h
-#define BlynkSerial_h
+#ifndef BlynkStream_h
+#define BlynkStream_h
 
 #ifndef BLYNK_INFO_CONNECTION
 #define BLYNK_INFO_CONNECTION "Serial"
@@ -18,72 +18,23 @@
 #include <BlynkApiArduino.h>
 #include <Blynk/BlynkProtocol.h>
 
-template <class T>
-class BlynkTransportSerial
+class BlynkTransportStream
 {
 public:
-    BlynkTransportSerial(T& stream)
-        : stream(stream), conn(0)
+    BlynkTransportStream()
+        : stream(NULL), conn(0)
     {}
 
-    void begin(uint32_t baud) {
-        stream.begin(baud);
+    // IP redirect not available
+    void begin(char BLYNK_UNUSED *h, uint16_t BLYNK_UNUSED p) {}
+
+    void begin(Stream& s) {
+        stream = &s;
     }
 
     bool connect() {
         BLYNK_LOG1(BLYNK_F("Connecting..."));
-        return conn = true;
-    }
-    void disconnect() { conn = false; }
-
-    size_t read(void* buf, size_t len) {
-        return stream.readBytes((char*)buf, len);
-    }
-    size_t write(const void* buf, size_t len) {
-        return stream.write((const uint8_t*)buf, len);
-    }
-
-    bool connected() { return conn; }
-    int available() { return stream.available(); }
-
-protected:
-    T&     stream;
-    bool   conn;
-};
-
-template <class T>
-class BlynkTransportSerialChecked
-    : public BlynkTransportSerial<T>
-{
-public:
-    BlynkTransportSerialChecked(T& stream)
-        : BlynkTransportSerial<T>(stream)
-    {}
-
-    void begin(uint32_t baud) {
-        this->stream.begin(baud);
-        while (!this->stream) {
-            // wait for serial port to connect. Needed for Leonardo only
-        }
-    }
-
-    int connected() { return this->conn && this->stream; }
-};
-
-template <class T>
-class BlynkTransportDigisparkCDC
-{
-public:
-    BlynkTransportDigisparkCDC(T& stream)
-        : stream(stream), conn(0)
-    {}
-
-    void begin(uint32_t baud) {
-        stream.begin();
-    }
-
-    bool connect() {
-        BLYNK_LOG1(BLYNK_F("Connecting..."));
+        stream->flush();
         return conn = true;
     }
     void disconnect() { conn = false; }
@@ -91,42 +42,55 @@ public:
     size_t read(void* buf, size_t len) {
         char* beg = (char*)buf;
         char* end = beg + len;
-        while (beg < end) {
-            int c = stream.read();
+        millis_time_t startMillis = millis();
+        while ((beg < end) && (millis() - startMillis < BLYNK_TIMEOUT_MS)) {
+            int c = stream->read();
             if (c < 0)
-                break;
+                continue;
             *beg++ = (char)c;
         }
-        return len;
+        return beg-(char*)buf;
     }
     size_t write(const void* buf, size_t len) {
-        stream.write((const uint8_t*)buf, len);
+        stream->write((const uint8_t*)buf, len);
         return len;
     }
 
     bool connected() { return conn; }
-    int available() { return stream.available(); }
+    int available() { return stream->available(); }
 
 protected:
-    T&     stream;
-    bool   conn;
+    Stream* stream;
+    bool    conn;
 };
 
-template <class T>
-class BlynkSerial
-    : public BlynkProtocol<T>
+class BlynkStream
+    : public BlynkProtocol<BlynkTransportStream>
 {
-    typedef BlynkProtocol<T> Base;
+    typedef BlynkProtocol<BlynkTransportStream> Base;
 public:
-    BlynkSerial(T& transp)
+    BlynkStream(BlynkTransportStream& transp)
         : Base(transp)
     {}
 
-    void begin(const char* auth, uint32_t baud = 9600) {
+    void config(Stream&     stream,
+                const char* auth)
+    {
         Base::begin(auth);
-        this->conn.begin(baud);
+        this->conn.begin(stream);
     }
 
+    void begin(Stream& stream, const char* auth) {
+        config(stream, auth);
+        while(this->connect() != true) {}
+    }
+
+    // Please use Blynk.begin(Stream, "auth")
+    BLYNK_DEPRECATED
+    void begin(const char* auth, Stream& stream) {
+        config(stream, auth);
+        while(this->connect() != true) {}
+    }
 };
 
 #endif

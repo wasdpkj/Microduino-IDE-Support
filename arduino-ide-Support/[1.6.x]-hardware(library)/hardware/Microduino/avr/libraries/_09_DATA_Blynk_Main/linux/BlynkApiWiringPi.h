@@ -45,8 +45,8 @@ void BlynkApi<Proto>::sendInfo()
 {
     static const char profile[] BLYNK_PROGMEM =
         BLYNK_PARAM_KV("ver"    , BLYNK_VERSION)
-        BLYNK_PARAM_KV("h-beat" , TOSTRING(BLYNK_HEARTBEAT))
-        BLYNK_PARAM_KV("buff-in", TOSTRING(BLYNK_MAX_READBYTES))
+        BLYNK_PARAM_KV("h-beat" , BLYNK_TOSTRING(BLYNK_HEARTBEAT))
+        BLYNK_PARAM_KV("buff-in", BLYNK_TOSTRING(BLYNK_MAX_READBYTES))
 #ifdef BLYNK_INFO_DEVICE
         BLYNK_PARAM_KV("dev"    , BLYNK_INFO_DEVICE)
 #endif
@@ -64,7 +64,7 @@ void BlynkApi<Proto>::sendInfo()
     BlynkParam profile_dyn(mem_dyn, 0, sizeof(mem_dyn));
     profile_dyn.add_key("conn", "Socket");
 
-    static_cast<Proto*>(this)->sendCmd(BLYNK_CMD_HARDWARE_INFO, 0, profile, profile_len, profile_dyn.getBuffer(), profile_dyn.getLength());
+    static_cast<Proto*>(this)->sendCmd(BLYNK_CMD_INTERNAL, 0, profile, profile_len, profile_dyn.getBuffer(), profile_dyn.getLength());
     return;
 }
 
@@ -79,12 +79,22 @@ void BlynkApi<Proto>::processCmd(const void* buff, size_t len)
     if (it >= param.end())
         return;
     const char* cmd = it.asStr();
-    const uint16_t cmd16 = *(uint16_t*)cmd;
-
+    uint16_t cmd16;
+    memcpy(&cmd16, cmd, sizeof(cmd16));
     if (++it >= param.end())
         return;
 
+#if defined(analogInputToDigitalPin)
+    // Good! Analog pins can be referenced on this device by name.
+    const uint8_t pin = (it.asStr()[0] == 'A') ?
+                         analogInputToDigitalPin(atoi(it.asStr()+1)) :
+                         it.asInt();
+#else
+    #if defined(BLYNK_DEBUG_ALL)
+        #pragma message "analogInputToDigitalPin not defined"
+    #endif
     const uint8_t pin = it.asInt();
+#endif
 
     switch(cmd16) {
 

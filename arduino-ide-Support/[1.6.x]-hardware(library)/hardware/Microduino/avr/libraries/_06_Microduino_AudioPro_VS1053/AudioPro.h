@@ -722,6 +722,11 @@ class AudioPro {
     int8_t setVUmeter(int8_t);
     int16_t getVUlevel();
     void playMIDInote(const uint8_t*, uint32_t);
+		
+	void GPIO_digitalWrite(uint8_t i, uint8_t val);
+	boolean GPIO_digitalRead(uint8_t i);
+	void GPIO_pinMode(uint8_t i, uint8_t dir);
+ 	
 
   private:
     static SdFile track;
@@ -742,6 +747,9 @@ class AudioPro {
     static void disableRefill();
     void getBitRateFromMP3File(char*);
     uint8_t VSLoadUserCode(char*);
+	
+	uint16_t sciRead(uint8_t);
+	static void sciWrite(uint8_t, uint16_t);	
 
     //Create the variables to be used by SdFat Library
 

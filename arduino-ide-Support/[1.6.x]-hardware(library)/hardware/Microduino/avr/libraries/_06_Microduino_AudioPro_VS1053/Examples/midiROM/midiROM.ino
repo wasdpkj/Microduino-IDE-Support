@@ -33,6 +33,8 @@ void setup() {
     }
   }
   midiPlayer.setVolume(10, 10);
+  midiPlayer.GPIO_pinMode(4, OUTPUT);
+  midiPlayer.GPIO_digitalWrite(4, LOW);
   Serial.println(F("pleast input 'a' or 'm' to play the midi file:."));
 }
 

@@ -10,13 +10,13 @@
 #ifndef WidgetLCD_h
 #define WidgetLCD_h
 
-#include <Blynk/BlynkApi.h>
+#include <Blynk/BlynkWidgetBase.h>
 
 class WidgetLCD
+    : public BlynkWidgetBase
 {
 public:
-    WidgetLCD(uint8_t pin) : mPin(pin) {}
-    void setVPin(int vPin) { mPin = vPin; }
+    WidgetLCD(uint8_t vPin) : BlynkWidgetBase(vPin) {}
 
     void clear() {
         Blynk.virtualWrite(mPin, "clr");
@@ -24,7 +24,7 @@ public:
 
     template<typename T>
     void print(int x, int y, const T& str) {
-        char mem[64] = "";
+        char mem[BLYNK_MAX_SENDBYTES];
         BlynkParam cmd(mem, 0, sizeof(mem));
         cmd.add("p");
         cmd.add(x);
@@ -33,8 +33,6 @@ public:
         Blynk.virtualWrite(mPin, cmd);
     }
 
-private:
-    uint8_t mPin;
 };
 
 #endif

@@ -15,10 +15,6 @@
 #error This code is intended to run on the ESP8266 platform! Please check your Tools->Board setting.
 #endif
 
-#ifndef BLYNK_INFO_DEVICE
-#define BLYNK_INFO_DEVICE  "ESP8266"
-#endif
-
 #include <BlynkApiArduino.h>
 #include <Blynk/BlynkProtocol.h>
 #include <Adapters/BlynkArduinoClient.h>
@@ -38,9 +34,9 @@ public:
         BLYNK_LOG2(BLYNK_F("Connecting to "), ssid);
         WiFi.mode(WIFI_STA);
         if (pass && strlen(pass)) {
-        	WiFi.begin(ssid, pass);
+            WiFi.begin(ssid, pass);
         } else {
-        	WiFi.begin(ssid);
+            WiFi.begin(ssid);
         }
         while (WiFi.status() != WL_CONNECTED) {
             ::delay(500);
@@ -48,7 +44,7 @@ public:
         BLYNK_LOG1(BLYNK_F("Connected to WiFi"));
 
         IPAddress myip = WiFi.localIP();
-        BLYNK_LOG_IP(BLYNK_F("IP: "), myip);
+        BLYNK_LOG_IP("IP: ", myip);
     }
 
     void config(const char* auth,
@@ -60,7 +56,7 @@ public:
     }
 
     void config(const char* auth,
-            	IPAddress   ip,
+                IPAddress   ip,
                 uint16_t    port = BLYNK_DEFAULT_PORT)
     {
         Base::begin(auth);
@@ -75,6 +71,7 @@ public:
     {
         connectWiFi(ssid, pass);
         config(auth, domain, port);
+        while(this->connect() != true) {}
     }
 
     void begin(const char* auth,
@@ -85,6 +82,7 @@ public:
     {
         connectWiFi(ssid, pass);
         config(auth, ip, port);
+        while(this->connect() != true) {}
     }
 
 };

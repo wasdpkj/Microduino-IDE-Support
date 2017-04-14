@@ -27,6 +27,8 @@ void setup() {
   midiPlayer.setVolume(0, 0);
   midiPlayer.midiSetBank(0, VS1053_BANK_DEFAULT);
   midiPlayer.midiSetInstrument(0, 11);
+  midiPlayer.GPIO_pinMode(4, OUTPUT);
+  midiPlayer.GPIO_digitalWrite(4, LOW);
   
 
 }
