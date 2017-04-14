@@ -20,18 +20,18 @@
 */
 #include "ESP8266.h"
 
-#define UARTSPEED  19200
-
 uint16_t baud_data[5] = {9600, 19200, 38400, 57600, 115200};
 
 //CoreUSB UART Port: [Serial1] [D0,D1]
 #if defined(__AVR_ATmega32U4__)
 #define EspSerial Serial1
+#define UARTSPEED  115200
 #endif
 
 //Core+ UART Port: [Serial1] [D2,D3]
 #if defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega644P__) || defined(__AVR_ATmega128RFA1__)
 #define EspSerial Serial1
+#define UARTSPEED  115200
 #endif
 
 
@@ -40,6 +40,7 @@ uint16_t baud_data[5] = {9600, 19200, 38400, 57600, 115200};
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(2, 3); /* RX:D3, TX:D2 */
 #define EspSerial mySerial
+#define UARTSPEED  19200
 #endif
 
 
@@ -64,7 +65,7 @@ void setup(void)
 
     wifi.setUart(UARTSPEED, DEFAULT_PATTERN);
   }
-  
+
   EspSerial.begin(UARTSPEED);
   delay(100);
   while (EspSerial.available() > 0) {
