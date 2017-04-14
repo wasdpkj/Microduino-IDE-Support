@@ -1,4 +1,6 @@
 Microduino Arduino IDE 配置包历史：
+
+*2017年4月14日，更新WIFI库：_03_Microduino_WIFI_ESP8266，支持软串口
 *2017年4月1日，更新GPS库：_05_Microduino_GPS，支持软串口
 *2017年3月30日，更新Motor库：_04_Microduino_Motor，自动识别PWM接口
 *2017年3月8日，更新AudioPro新库：_06_Microduino_AudioPro_VS1053

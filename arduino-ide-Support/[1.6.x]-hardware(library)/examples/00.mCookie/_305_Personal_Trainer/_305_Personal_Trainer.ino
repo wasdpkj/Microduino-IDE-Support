@@ -1,32 +1,30 @@
-#include <Rtc_Pcf8563.h>
-
-Rtc_Pcf8563 rtc;//初始化实时时钟
-
-#include "U8glib.h"
-
-U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE);//定义OLED连接方式
-
-#define setFont_L u8g.setFont(u8g_font_7x13)
-#define setFont_M u8g.setFont(u8g_font_fixed_v0r)
-#define setFont_S u8g.setFont(u8g_font_fixed_v0r)
-
-#define setFont_SS u8g.setFont(u8g_font_fub25n)
-
 #include "Wire.h"
-
-// I2Cdev and MPU6050 must be installed as libraries, or else the .cpp/.h files
-// for both classes must be in the include path of your project
+#include "U8glib.h"
+#include <Rtc_Pcf8563.h>
 #include "I2Cdev.h"
 #include "MPU6050.h"
 
-MPU6050 accelgyro;
-
 #define buzzer_pin 6
+
+Rtc_Pcf8563 rtc;//初始化实时时钟
+/* set a time to start with.
+   year, month, weekday, day, hour, minute, second */
+DateTime dateTime = {2017, 6, 3, 1, 15, 30, 40};
 
 #define set_time_hour 22
 #define set_time_min 20
 
-int Sport_num = 8;
+U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE);//定义OLED连接方式
+#define setFont_L u8g.setFont(u8g_font_7x13)
+#define setFont_M u8g.setFont(u8g_font_fixed_v0r)
+#define setFont_S u8g.setFont(u8g_font_fixed_v0r)
+#define setFont_SS u8g.setFont(u8g_font_fub25n)
+
+#define init_draw 10  //主界面刷新时间
+
+// I2Cdev and MPU6050 must be installed as libraries, or else the .cpp/.h files
+// for both classes must be in the include path of your project
+MPU6050 accelgyro;
 
 int16_t ax, ay, az;
 int16_t gx, gy, gz;
@@ -35,7 +33,7 @@ int16_t change_gx;
 boolean sport_en, sport_change, sport_num;
 boolean time_en, time_change;
 
-#define init_draw 10  //主界面刷新时间
+int Sport_num = 8;
 
 unsigned long timer_draw, timer_0;
 
@@ -52,12 +50,14 @@ void setup() {
   Serial.println("Testing device connections...");
   Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
 
-  setRtcTime(15, 8, 22, 6, 22, 19, 50);
+  rtc.begin();
+  rtc.clearAll();
+  rtc.setDateTime(dateTime);
 }
 
 void loop() {
-  rtc.formatDate(RTCC_DATE_US);
-  rtc.formatTime(RTCC_TIME_HMS);
+  rtc.formatDate();
+  rtc.formatTime();
 
   // read raw accel/gyro measurements from device
   accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
@@ -86,19 +86,19 @@ void loop() {
   //Serial.println(change_gx);
   if (change_gx > 80 && !sport_en)
     sport_en = true;
-  else if (change_gx <= 10&&!sport_num)
+  else if (change_gx <= 10 && !sport_num)
   {
     timer_0 = millis();
     sport_num = true;
   }
   if (sport_num)
   {
-    if (millis()-timer_0 > 1000)
+    if (millis() - timer_0 > 1000)
     {
       change_gx = (abs(gx) + abs(gy) + abs(gz)) / 3;
       if (change_gx <= 10)
       {
-        sport_num= false;
+        sport_num = false;
         sport_en = false;
         timer_0 = millis();
       }
@@ -154,7 +154,7 @@ void draw()
   {
     setFont_L;
     u8g.setPrintPos(4, 16);
-    u8g.print(rtc.formatDate(RTCC_DATE_US));
+    u8g.print(rtc.formatDate());
     u8g.print("    ");
     switch (rtc.getWeekday()) {
       case 1:
@@ -215,12 +215,4 @@ void draw()
     u8g.setPrintPos(50, 49);
     u8g.print(Sport_num);
   }
-}
-
-void setRtcTime (byte _year, byte _month, byte _day, byte _week, byte _hour, byte _minute, byte _sec)
-{
-  //clear out all the registers
-  rtc.initClock();
-  rtc.setDate(_day, _week, _month, 0, _year);
-  rtc.setTime(_hour, _minute, _sec);
 }
