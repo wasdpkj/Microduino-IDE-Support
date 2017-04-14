@@ -23,11 +23,6 @@
 
 #include "Arduino.h"
 
-//#define ESP8266_USE_SOFTWARE_SERIAL
-
-#ifdef ESP8266_USE_SOFTWARE_SERIAL
-#include "SoftwareSerial.h"
-#endif
 
 #define  VERSION_18   		0X18
 #define  VERSION_22   		0X22
@@ -45,39 +40,16 @@
 class ESP8266 {
  public:
 
-#ifdef ESP8266_USE_SOFTWARE_SERIAL
     /*
      * Constuctor. 
      *
-     * @param uart - an reference of SoftwareSerial object. 
      * @param baud - the buad rate to communicate with ESP8266(default:9600). 
      *
      * @warning parameter baud depends on the AT firmware. 9600 is an common value. 
      */
-#if (USER_SEL_VERSION == VERSION_22)
-    ESP8266(SoftwareSerial &uart, uint32_t baud = 115200);
-#elif (USER_SEL_VERSION == VERSION_18)
-    ESP8266(SoftwareSerial &uart, uint32_t baud = 9600);
-#endif  /* #if(USER_SEL_VERSION==VERSION_22) */
-
-#else /* HardwareSerial */
-    /*
-     * Constuctor. 
-     *
-     * @param uart - an reference of HardwareSerial object. 
-     * @param baud - the buad rate to communicate with ESP8266(default:9600). 
-     *
-     * @warning parameter baud depends on the AT firmware. 9600 is an common value. 
-     */
-#if (USER_SEL_VERSION == VERSION_22)
-    ESP8266(HardwareSerial &uart, uint32_t baud = 115200);
-#elif (USER_SEL_VERSION == VERSION_18)
-    ESP8266(HardwareSerial &uart, uint32_t baud = 9600);
-#endif /* #if(USER_SEL_VERSION == VERSION_22) */
-
-
-#endif /* #ifdef ESP8266_USE_SOFTWARE_SERIAL */
+    ESP8266(Stream* uart = &Serial);
     
+    Stream* getUart() { return m_puart; }
     
     /** 
      * Verify ESP8266 whether live or not. 
@@ -724,11 +696,7 @@ class ESP8266 {
      * +IPD,id,len:data
      */
     
-#ifdef ESP8266_USE_SOFTWARE_SERIAL
-    SoftwareSerial *m_puart; /* The UART to communicate with ESP8266 */
-#else
-    HardwareSerial *m_puart; /* The UART to communicate with ESP8266 */
-#endif
+    Stream *m_puart; /* The UART to communicate with ESP8266 */
 };
 
 #endif /* #ifndef __ESP8266_H__ */

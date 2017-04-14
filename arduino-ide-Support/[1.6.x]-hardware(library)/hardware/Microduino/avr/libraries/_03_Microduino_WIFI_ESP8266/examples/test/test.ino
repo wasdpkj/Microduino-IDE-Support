@@ -22,17 +22,40 @@
 
 #include "ESP8266.h"
 
-#define SSID        "ITEAD"
-#define PASSWORD    "12345678"
+//CoreUSB UART Port: [Serial1] [D0,D1]
+#if defined(__AVR_ATmega32U4__)
+#define EspSerial Serial1
+#endif
 
-ESP8266 wifi(Serial1,115200);
+//Core+ UART Port: [Serial1] [D2,D3]
+#if defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega644P__) || defined(__AVR_ATmega128RFA1__)
+#define EspSerial Serial1
+#endif
+
+
+//Core UART Port: [SoftSerial] [D2,D3]
+#if defined (__AVR_ATmega168__) || defined (__AVR_ATmega328__) || defined (__AVR_ATmega328P__)
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(2, 3); /* RX:D3, TX:D2 */
+#define EspSerial mySerial
+#endif
+
+
+#define SSID        "Makermodule"
+#define PASSWORD    "microduino"
+
+ESP8266 wifi(&EspSerial);
 
 void setup(void)
 {
-    Serial.begin(115200);
-//while (!Serial); // wait for Leonardo enumeration, others continue immediately
-    Serial.print("setup begin\r\n");
-    if(wifi.setUart(115200,2)){
+	Serial.begin(115200);
+	while (!Serial); // wait for Leonardo enumeration, others continue immediately
+	Serial.print("setup begin\r\n");
+  
+	EspSerial.begin(115200);
+	delay(10);
+
+	if(wifi.setUart(115200,2)){
     Serial.println("set uart is ok ");
     }
     else{
