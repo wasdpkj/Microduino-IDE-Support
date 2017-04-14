@@ -1,5 +1,3 @@
-//Serial port 0 communicates with serial port 1
-
 void setup() {
   Serial.begin(115200);
   Serial1.begin(115200);

@@ -66,8 +66,8 @@
   a question. We'll get back to you as soon as possible.
 */
 
-#include "IRControl.h"
 #include "motor.h"
+#include "IRControl.h"
 #include "userDef.h"
 
 uint8_t remoteCmd;
@@ -133,67 +133,4 @@ void loop() {
          break;   
   }
   motorUpdate(leftSpeed, rightSpeed);
-}
-
-
-//------------Infrared Receiver Function-------------//
-uint8_t recvRemote(uint32_t recvCode)
-{
-    uint8_t cmd = CMD_OK;
-    switch(recvCode){
-       case BUTTON_A:
-          motorCoast();
-          setAllLed(COLOR_RED);
-          tone(PIN_BUZZER, TONE_DO);
-          delay(300); 
-          setAllLed(COLOR_NONE);
-          noTone(PIN_BUZZER);
-          mode = MODE_A;
-          break;
-       case BUTTON_B:
-          motorCoast();
-          setAllLed(COLOR_RED);
-          tone(PIN_BUZZER, TONE_DO);
-          delay(300);
-          setAllLed(COLOR_GREEN);
-          tone(PIN_BUZZER, TONE_RE);
-          delay(300);
-          setAllLed(COLOR_NONE);
-          noTone(PIN_BUZZER);
-          mode = MODE_B;
-          break;
-       case BUTTON_C:
-          motorCoast();
-          setAllLed(COLOR_RED);
-          tone(PIN_BUZZER, TONE_DO);
-          delay(300);
-          setAllLed(COLOR_GREEN);
-          tone(PIN_BUZZER, TONE_RE);
-          delay(300);
-          setAllLed(COLOR_BLUE);
-          tone(PIN_BUZZER, TONE_MI);
-          delay(300);
-          setAllLed(COLOR_NONE);
-          noTone(PIN_BUZZER);
-          mode = MODE_C;
-          break;
-       case BUTTON_UP:
-          cmd = CMD_UP;
-          break;
-       case BUTTON_DOWN:
-          cmd = CMD_DOWN;
-          break;
-       case BUTTON_LEFT:
-          cmd = CMD_LEFT;
-          break;
-       case BUTTON_RIGHT:
-          cmd = CMD_RIGHT;
-          break;
-       case BUTTON_OK:
-          cmd = CMD_OK;
-          break;
-       default:
-          break;
-   }
-   return cmd;
 }

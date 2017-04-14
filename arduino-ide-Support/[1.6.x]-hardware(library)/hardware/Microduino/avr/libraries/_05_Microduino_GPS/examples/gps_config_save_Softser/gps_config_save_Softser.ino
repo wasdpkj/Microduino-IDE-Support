@@ -1,6 +1,3 @@
-//This example is for Microduino/mCookie Core/CoreUSB/Core+/CoreRF
-//More information please visit https://wiki.microduino.cn/index.php/MCookie-GPS
-
 #include <Adafruit_GPS.h>
 SoftwareSerial mySerial(2, 3); // RX, TX
 Adafruit_GPS GPS(&mySerial);
