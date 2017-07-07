@@ -52,7 +52,7 @@ All text above must be included in any redistribution
 
 class Adafruit_GPS {
  public:
-  void begin(uint16_t baud); 
+  void begin(uint32_t baud); 
 
   Adafruit_GPS(SoftwareSerial *ser); // Constructor when using SoftwareSerial
   Adafruit_GPS(HardwareSerial *ser); // Constructor when using HardwareSerial
@@ -84,7 +84,7 @@ class Adafruit_GPS {
   
   void set_config(uint8_t set_config);
   void set_updata(uint8_t _set_updata);
-  void set_baud(uint16_t _set_baud);
+  void set_baud(uint32_t _set_baud);
   void set_cnssmode(uint8_t _set_cnssmode);
   void set_powermode(uint8_t _set_powermode);
 
@@ -94,6 +94,8 @@ class Adafruit_GPS {
   uint8_t parseResponse(char *response);
   SoftwareSerial *gpsSwSerial;
   HardwareSerial *gpsHwSerial;	
+  
+  void rx_empty(void);
 };
 
 

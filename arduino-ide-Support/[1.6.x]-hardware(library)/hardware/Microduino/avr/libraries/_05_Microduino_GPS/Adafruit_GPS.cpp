@@ -57,62 +57,37 @@ void Adafruit_GPS::common_init(void) {
                                          speed = angle = magvariation = HDOP = 0.0; // float
 }
 
-void Adafruit_GPS::begin(uint16_t baud) {
+void Adafruit_GPS::begin(uint32_t baud) {
+  uint32_t _baud[5]={9600,19200,38400,57600,115200};
+
   if (gpsHwSerial) {
-    gpsHwSerial->begin(4800);
-    delay(20);
+	for(int _n=0;_n<5;_n++){
+    gpsHwSerial->begin(_baud[_n]);
     set_baud(baud);
-
-    gpsHwSerial->begin(9600);
-    delay(20);
-    set_baud(baud);
-
-    gpsHwSerial->begin(19200);
-    delay(20);
-    set_baud(baud);
-
-    gpsHwSerial->begin(38400);
-    delay(20);
-    set_baud(baud);
-
-    gpsHwSerial->begin(57600);
-    delay(20);
-    set_baud(baud);
-
-    gpsHwSerial->begin(115200);
-    delay(20);
-    set_baud(baud);
-
+  }
     gpsHwSerial->begin(baud);
-    delay(20);
   }
   else {
-    gpsSwSerial->begin(4800);
-    delay(20);
+	for(int _n=0;_n<5;_n++){
+    gpsSwSerial->begin(_baud[_n]);
     set_baud(baud);
-
-    gpsSwSerial->begin(9600);
-    delay(20);
-    set_baud(baud);
-
-    gpsSwSerial->begin(19200);
-    delay(20);
-    set_baud(baud);
-
-    gpsSwSerial->begin(38400);
-    delay(20);
-    set_baud(baud);
-
-    gpsSwSerial->begin(57600);
-    delay(20);
-    set_baud(baud);
-
-    gpsSwSerial->begin(115200);
-    delay(20);
-    set_baud(baud);
+  }
 
     gpsSwSerial->begin(baud);
-    delay(20);
+  }
+    delay(10);
+}
+
+void Adafruit_GPS::rx_empty(void) {
+  if (gpsHwSerial) {
+	while (gpsHwSerial->available() > 0) {
+		gpsHwSerial->read();
+	}
+  }
+  else{
+	while (gpsSwSerial->available() > 0) {
+		gpsSwSerial->read();
+	}	  
   }
 }
 
@@ -174,7 +149,7 @@ void Adafruit_GPS::set_updata(uint8_t _set_updata) {
   delay(50);
 }
 
-void Adafruit_GPS::set_baud(uint16_t _set_baud) {
+void Adafruit_GPS::set_baud(uint32_t _set_baud) {
   byte UBLOX_SET_BAUD_9600[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0xD0, 0x08, 0x00, 0x00, 0x80, 0x25, 0x00, 0x00, 0x07, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xA2, 0xB5};
   byte UBLOX_SET_BAUD_19200[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0xD0, 0x08, 0x00, 0x00, 0x00, 0x4B, 0x00, 0x00, 0x07, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x48, 0x57};
   byte UBLOX_SET_BAUD_38400[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0xD0, 0x08, 0x00, 0x00, 0x00, 0x96, 0x00, 0x00, 0x07, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x93, 0x90};
