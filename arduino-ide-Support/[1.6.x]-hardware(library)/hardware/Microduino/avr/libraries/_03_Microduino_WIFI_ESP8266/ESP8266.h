@@ -34,6 +34,8 @@
 
 #define  USER_SEL_VERSION         VERSION_22
 
+#define WifiInit(Y,B)  {uint32_t baud_data[5] = {9600, 19200, 38400, 57600, 115200};for (int a = 0; a < 5; a++) { Y.begin(baud_data[a]);delay(100);while (Y.available() > 0) {Y.read();}wifi.setUart(B, DEFAULT_PATTERN);}Y.begin(B); delay(100); while (Y.available() > 0) { Y.read();}}
+
 /**
  * Provide an easy-to-use way to manipulate ESP8266. 
  */
