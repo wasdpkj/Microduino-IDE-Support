@@ -674,7 +674,7 @@ bool ESP8266::eATSETUART(uint32_t baudrate,uint8_t pattern)
     m_puart->print(0);
     m_puart->print(F(","));
     m_puart->println(0);
-    if(recvFind("OK",100)){
+    if(recvFind("OK",5000)){
     return true;
     }
     else{
@@ -1349,4 +1349,307 @@ bool ESP8266::sATCIPSTO(uint32_t timeout)
     m_puart->println(timeout);
     return recvFind("OK");
 }
+
+
+///////////////////////////////////Microduino///////////////////////////////////////
+
+
+String ESP8266::getMqttJson(void) {
+	if (m_puart->available() > 0) {
+		return m_puart->readStringUntil('\n');
+	}
+	return "";
+}
+
+
+String ESP8266::getMVersion(void) {
+	String version;
+	rx_empty();
+	m_puart->println("AT+GMR");
+	version = recvString("OK");
+	return version;
+}
+
+String ESP8266::queryWiFiInfo(void) {
+	String wifiInfo;
+	rx_empty();
+	m_puart->println("AT+CWJAP_DEF?");
+	wifiInfo = recvString("OK");
+	return wifiInfo;
+}
+
+String ESP8266::getStationMac(void) {
+
+	String mac;
+	rx_empty();
+	m_puart->println("AT+CIPSTAMAC_CUR?");
+
+	recvFindAndFilter("OK", "+CIPSTAMAC_CUR:", "\r\n\r\nOK", mac);
+	return mac.substring(1,mac.length()-1);
+}
+
+String ESP8266::getMLocalIP(void) {
+	String list;
+	rx_empty();
+	m_puart->println("AT+CIFSR");
+	list = recvString("OK");
+	return list;
+}
+
+bool ESP8266::mqttSetServer(String server, uint16_t port) {
+	String data;
+	data = "AT+MQTSETSER=\"";
+	data += server;
+	data += "\",";
+	data += port;
+	rx_empty();
+	m_puart->println(data);
+
+	data = recvString("OK");
+	if (data.indexOf("OK") != -1) {
+		return true;
+	}
+	return false;
+
+}
+
+bool ESP8266::mqttConnect(String id, String user, String pass) {
+	String data;
+	data = "AT+MQTCON=\"";
+	data += id;
+	data += "\",\"";
+	data += user;
+	data += "\",\"";
+	data += pass;
+	data += "\"";
+
+	rx_empty();
+	m_puart->println(data);
+
+	data = recvString("OK", "MQTT: Connected");
+	if (data.indexOf("OK") != -1 || data.indexOf("MQTT: Connected") != -1) {
+		return true;
+	}
+	return false;
+
+}
+
+bool ESP8266::mqttDisconnect() {
+	String data;
+	data = "AT+MQTDISCON";
+
+	rx_empty();
+	m_puart->println(data);
+
+	data = recvString("OK", "MQTT: Disconnected");
+	if (data.indexOf("OK") != -1 || data.indexOf("MQTT: Disconnected") != -1) {
+		return true;
+	}
+	return false;
+
+}
+
+
+bool ESP8266::mqttSetDiveceIDToken(String deviceID, String DeviceToken) {
+	String data;
+	data = "AT+MQTIDTOKEN=\"";
+	data += deviceID;
+	data += "\",\"";
+	data += DeviceToken;
+	data += "\"";
+
+	rx_empty();
+	m_puart->println(data);
+
+	data = recvString("OK");
+	if (data.indexOf("OK") != -1 ) {
+		return true;
+	}
+	return false;
+
+}
+
+
+bool ESP8266::mqttSetSubscrib(String topic) {
+	String data;
+	data = "AT+MQTSUBS=\"";
+	data += topic;
+	data += "\"";
+
+	rx_empty();
+	m_puart->println(data);
+
+	data = recvString("OK");
+	if (data.indexOf("OK") != -1 ) {
+		return true;
+	}
+	return false;
+}
+
+bool ESP8266::mqttPublish(String topic, String jsonData, bool returnStat) {
+	String data;
+	data = "AT+MQTPUB=\"";
+	data += topic;
+	data += "\",\"";
+	data += jsonData;
+	data += "\"";
+
+	if(returnStat) {
+		rx_empty();
+		m_puart->println(data);
+
+		data = recvString("OK");
+		if (data.indexOf("OK") != -1 ) {
+			return true;
+		}
+		return false;
+	}
+	return true;
+
+}
+
+bool ESP8266::mqttPublishM(String jsonData, bool returnStat) {
+	String data;
+	data = "AT+MQTPUBM=\"";
+	data += jsonData;
+	data += "\"";
+
+	if(returnStat) {
+		rx_empty();
+		m_puart->println(data);
+
+		data = recvString("OK");
+		if (data.indexOf("OK") != -1 ) {
+			return true;
+		}
+		return false;
+	}
+	return true;
+}
+
+
+
+bool ESP8266::mqttPubOneNet(String topic,unsigned char header[3], String jsonData, bool returnStat) {
+
+	//AT+MQTPUB="$dp","0x03_0x00_0x12{"temperature":33}"
+	//41 54 2b 4d 51 54 50 55 42 3d 22 24 64 70 22 2c 22 03 00 12 7b 22 74 65 6d 70 65 72 61 74 75 72 65 22 3a 33 33 7d 22
+
+	String data;
+	data = "AT+MQTPUB=\"";
+	data += topic;
+	data += "\",\"";
+
+
+	if(returnStat) {
+		rx_empty();
+
+		m_puart->write(data.c_str());
+		m_puart->write(header[0]);
+		m_puart->write(header[1]);
+		m_puart->write(header[2]);
+		m_puart->write(jsonData.c_str());
+		m_puart->println("\"");
+
+		data = recvString("OK");
+		if (data.indexOf("OK") != -1 ) {
+			return true;
+		}
+		return false;
+	}
+	return true;
+
+}
+
+
+bool ESP8266::setAutoConnect(bool state) {
+	String data;
+	data = "AT+CWAUTOCONN=";
+	if(state) {
+		data += 1;
+	} else {
+		data += 0;
+	}
+
+	rx_empty();
+	m_puart->println(data);
+
+	data = recvString("OK");
+	if (data.indexOf("OK") != -1) {
+		return true;
+	}
+	return false;
+
+}
+
+
+bool ESP8266::smartConfiger(bool state) {
+	String data;
+
+	if(state) {
+		data="AT+CWSTARTSMART";
+	} else {
+		data="AT+CWSTOPSMART";
+	}
+
+	rx_empty();
+	m_puart->println(data);
+
+	data = recvString("OK");
+	if (data.indexOf("OK") != -1) {
+		return true;
+	}
+	return false;
+
+}
+
+bool ESP8266::mqttSetTopic(String topic) {
+	String data;
+	data = "AT+MQTSETTOPIC=\"";
+	data += topic;
+	data += "\"";
+
+	rx_empty();
+	m_puart->println(data);
+
+	data = recvString("OK");
+	if (data.indexOf("OK") != -1 ) {
+		return true;
+	}
+	return false;
+}
+
+bool ESP8266::mqttSetMessage(String message) {
+	String data;
+	data = "AT+MQTSETMESSAGE=\"";
+	data += message;
+	data += "\"";
+
+	rx_empty();
+	m_puart->println(data);
+
+	data = recvString("OK");
+	if (data.indexOf("OK") != -1 ) {
+		return true;
+	}
+	return false;
+}
+
+bool ESP8266::mqttPub() {
+	String data;
+	data = "AT+MQTPUB";
+
+	rx_empty();
+	m_puart->println(data);
+
+	data = recvString("OK");
+
+	if (data.indexOf("OK") != -1) {
+		return true;
+	}
+	return false;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////
+
 
