@@ -4,6 +4,29 @@
 #include <SHT2x.h>
 #include <U8glib.h>
 
+
+
+/**
+**CoreUSB UART Port: [Serial1] [D0,D1]
+**Core+ UART Port: [Serial1] [D2,D3]
+**/
+#if defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega644P__) || defined(__AVR_ATmega128RFA1__)
+#define EspSerial Serial1
+#define UARTSPEED  115200
+#endif
+
+/**
+**Core UART Port: [SoftSerial] [D2,D3]
+**/
+#if defined (__AVR_ATmega168__) || defined (__AVR_ATmega328__) || defined (__AVR_ATmega328P__)
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(2, 3); /* RX:D2, TX:D3 */
+
+#define EspSerial mySerial
+#define UARTSPEED  19200
+#endif
+
+
 #define SSID        "your ssid"
 #define PASSWORD    "your pass"
 #define HOST_NAME   "api.heclouds.com"
@@ -73,14 +96,19 @@ String jsonToSend;
 String postString;
 
 
-ESP8266 wifi(&Serial1);
+ESP8266 wifi(&EspSerial);
 
 void setup(void) {
-	Serial1.begin(115200);
 	Serial.begin(115200);
 
 	pinMode(stateLEDPin,OUTPUT);
 	digitalWrite(stateLEDPin,LOW);
+
+	while (!Serial); // wait for Leonardo enumeration, others continue immediately
+  	Serial.print("setup begin\r\n");
+  	delay(100);
+
+  	WifiInit(EspSerial, UARTSPEED);
 
 	Serial.print("FW Microduino Version:");
 	Serial.println(wifi.getMVersion().c_str());

@@ -674,7 +674,7 @@ bool ESP8266::eATSETUART(uint32_t baudrate,uint8_t pattern)
     m_puart->print(0);
     m_puart->print(F(","));
     m_puart->println(0);
-    if(recvFind("OK",5000)){
+    if(recvFind("OK",100)){
     return true;
     }
     else{
