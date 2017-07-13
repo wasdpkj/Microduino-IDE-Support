@@ -5,10 +5,16 @@
 #include <hidboot.h>
 #include <usbhub.h>
 
+// Satisfy IDE, which only needs to see the include statment in the ino.
+#ifdef dobogusinclude
+#include <spi4teensy3.h>
+#include <SPI.h>
+#endif
+
 USB Usb;
 USBHub Hub1(&Usb);
-USBHub Hub2(&Usb);     
-HIDBoot<HID_PROTOCOL_KEYBOARD> Keyboard(&Usb);
+USBHub Hub2(&Usb);
+HIDBoot<USB_HID_PROTOCOL_KEYBOARD> HidKeyboard(&Usb);
 
 ADK adk(&Usb,"Circuits@Home, ltd.",
             "USB Host Shield",
@@ -20,22 +26,22 @@ ADK adk(&Usb,"Circuits@Home, ltd.",
 
 class KbdRptParser : public KeyboardReportParser
 {
- 
+
 protected:
-	virtual void OnKeyDown	(uint8_t mod, uint8_t key);
-	virtual void OnKeyPressed(uint8_t key);
+	void OnKeyDown	(uint8_t mod, uint8_t key);
+	void OnKeyPressed(uint8_t key);
 };
- 
-void KbdRptParser::OnKeyDown(uint8_t mod, uint8_t key)	
+
+void KbdRptParser::OnKeyDown(uint8_t mod, uint8_t key)
 {
     uint8_t c = OemToAscii(mod, key);
- 
+
     if (c)
         OnKeyPressed(c);
 }
- 
+
 /* what to do when symbol arrives */
-void KbdRptParser::OnKeyPressed(uint8_t key)	
+void KbdRptParser::OnKeyPressed(uint8_t key)
 {
 const char* new_line = "\n";
 uint8_t rcode;
@@ -44,36 +50,46 @@ uint8_t keylcl;
  if( adk.isReady() == false ) {
    return;
  }
-  
+
   keylcl = key;
- 
+
   if( keylcl == 0x13 ) {
     rcode = adk.SndData( strlen( new_line ), (uint8_t *)new_line );
+    if (rcode && rcode != hrNAK) {
+      Serial.print(F("\r\nData send: "));
+      Serial.print(rcode, HEX);
+    }
   }
   else {
     rcode = adk.SndData( 1, &keylcl );
-  }    
-  
+    if (rcode && rcode != hrNAK) {
+      Serial.print(F("\r\nData send: "));
+      Serial.print(rcode, HEX);
+    }
+  }
+
   Serial.print((char) keylcl );
-  Serial.print(" : ");  
+  Serial.print(" : ");
   Serial.println( keylcl, HEX );
 };
- 
+
 KbdRptParser Prs;
- 
+
 void setup()
 {
   Serial.begin(115200);
+#if !defined(__MIPSEL__)
   while (!Serial); // Wait for serial port to connect - used on Leonardo, Teensy and other boards with built-in USB CDC serial connection
+#endif
   Serial.println("\r\nADK demo start");
-        
+
   if (Usb.Init() == -1) {
     Serial.println("OSCOKIRQ failed to assert");
     while(1); //halt
   }//if (Usb.Init() == -1...
-        
-  Keyboard.SetReportParser(0, (HIDReportParser*)&Prs);
-  
+
+  HidKeyboard.SetReportParser(0, &Prs);
+
   delay( 200 );
 }
 

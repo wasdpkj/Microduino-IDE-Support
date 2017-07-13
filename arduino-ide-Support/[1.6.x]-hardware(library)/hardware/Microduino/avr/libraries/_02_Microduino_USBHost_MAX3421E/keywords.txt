@@ -20,7 +20,12 @@ USBHub	KEYWORD1
 BTD	KEYWORD1
 
 ####################################################
-# Syntax Coloring Map For PS3 Bluetooth/USB Library
+# Methods and Functions (KEYWORD2)
+####################################################
+Task	KEYWORD2
+
+####################################################
+# Syntax Coloring Map For PS3/PS4 Bluetooth/USB Library
 ####################################################
 
 ####################################################
@@ -29,12 +34,17 @@ BTD	KEYWORD1
 
 PS3BT	KEYWORD1
 PS3USB	KEYWORD1
+PS4BT	KEYWORD1
+PS4USB	KEYWORD1
 
 ####################################################
 # Methods and Functions (KEYWORD2)
 ####################################################
 setBdaddr	KEYWORD2
+getBdaddr	KEYWORD2
 setMoveBdaddr	KEYWORD2
+getMoveBdaddr	KEYWORD2
+getMoveCalibration	KEYWORD2
 
 getButtonPress	KEYWORD2
 getButtonClick	KEYWORD2
@@ -44,7 +54,7 @@ getSensor	KEYWORD2
 getAngle	KEYWORD2
 get9DOFValues	KEYWORD2
 getStatus	KEYWORD2
-getStatusString	KEYWORD2
+printStatusString	KEYWORD2
 getTemperature	KEYWORD2
 disconnect	KEYWORD2
 
@@ -54,6 +64,7 @@ setRumbleOn	KEYWORD2
 setLedOff	KEYWORD2
 setLedOn	KEYWORD2
 setLedToggle	KEYWORD2
+setLedFlash	KEYWORD2
 moveSetBulb	KEYWORD2
 moveSetRumble	KEYWORD2
 
@@ -66,9 +77,19 @@ PS3NavigationConnected	KEYWORD2
 isReady	KEYWORD2
 watingForConnection	KEYWORD2
 
+isTouching	KEYWORD2
+getX	KEYWORD2
+getY	KEYWORD2
+getTouchCounter	KEYWORD2
+
+getUsbStatus    KEYWORD2
+getAudioStatus  KEYWORD2
+getMicStatus    KEYWORD2
+
 ####################################################
 # Constants and enums (LITERAL1)
 ####################################################
+OFF	LITERAL1
 LED1	LITERAL1
 LED2	LITERAL1
 LED3	LITERAL1
@@ -85,6 +106,7 @@ Green	LITERAL1
 Blue	LITERAL1
 Yellow	LITERAL1
 Lightblue	LITERAL1
+Purple  LITERAL1
 Purble	LITERAL1
 White	LITERAL1
 Off	LITERAL1
@@ -109,6 +131,10 @@ PS	LITERAL1
 MOVE	LITERAL1
 T	LITERAL1
 
+SHARE	LITERAL1
+OPTIONS	LITERAL1
+TOUCHPAD	LITERAL1
+
 LeftHatX	LITERAL1
 LeftHatY	LITERAL1
 RightHatX	LITERAL1
@@ -117,6 +143,8 @@ RightHatY	LITERAL1
 aX	LITERAL1
 aY	LITERAL1
 aZ	LITERAL1
+gX	LITERAL1
+gY	LITERAL1
 gZ	LITERAL1
 aXmove	LITERAL1
 aYmove	LITERAL1
@@ -165,6 +193,7 @@ RumbleLow	LITERAL1
 ####################################################
 
 XBOXUSB	KEYWORD1
+XBOXONE	KEYWORD1
 XBOXOLD	KEYWORD1
 XBOXRECV	KEYWORD1
 
@@ -180,6 +209,7 @@ buttonChanged	KEYWORD2
 
 XboxReceiverConnected	KEYWORD2
 Xbox360Connected	KEYWORD2
+XboxOneConnected	KEYWORD2
 
 ####################################################
 # Constants and enums (LITERAL1)
@@ -220,8 +250,7 @@ SPP	KEYWORD1
 ####################################################
 
 connected	KEYWORD2
-printNumber	KEYWORD2
-printNumberln	KEYWORD2
+discard	KEYWORD2
 
 ####################################################
 # Syntax Coloring Map For Wiimote Library
@@ -241,6 +270,7 @@ wiimoteConnected	KEYWORD2
 nunchuckConnected	KEYWORD2
 motionPlusConnected	KEYWORD2
 wiiUProControllerConnected	KEYWORD2
+wiiBalanceBoardConnected	KEYWORD2
 setRumbleToggle	KEYWORD2
 getPitch	KEYWORD2
 getRoll	KEYWORD2
@@ -253,6 +283,9 @@ PAIR	KEYWORD2
 statusRequest	KEYWORD2
 getBatteryLevel	KEYWORD2
 getWiiState	KEYWORD2
+getWeight	KEYWORD2
+getTotalWeight	KEYWORD2
+getWeightRaw	KEYWORD2
 
 ####################################################
 # Constants and enums (LITERAL1)
@@ -271,6 +304,10 @@ ZL	LITERAL1
 ZR	LITERAL1
 HatX	LITERAL1
 HatY	LITERAL1
+TopRight	LITERAL1
+BotRight	LITERAL1
+TopLeft	LITERAL1
+BotLeft	LITERAL1
 
 ####################################################
 # Methods and Functions for the IR Camera
@@ -290,3 +327,46 @@ getIRs3	KEYWORD2
 getIRx4	KEYWORD2
 getIRy4	KEYWORD2
 getIRs4	KEYWORD2
+
+####################################################
+# Syntax Coloring Map For BTHID Library
+####################################################
+
+####################################################
+# Datatypes (KEYWORD1)
+####################################################
+
+BTHID	KEYWORD1
+
+####################################################
+# Methods and Functions (KEYWORD2)
+####################################################
+SetReportParser	KEYWORD2
+setProtocolMode	KEYWORD2
+
+####################################################
+# Syntax Coloring Map For PS Buzz Library
+####################################################
+
+####################################################
+# Datatypes (KEYWORD1)
+####################################################
+
+PSBuzz	KEYWORD1
+
+####################################################
+# Methods and Functions (KEYWORD2)
+####################################################
+
+setLedOnAll	KEYWORD2
+setLedOffAll	KEYWORD2
+
+####################################################
+# Constants and enums (LITERAL1)
+####################################################
+
+RED	LITERAL1
+YELLOW	LITERAL1
+GREEN	LITERAL1
+ORANGE	LITERAL1
+BLUE	LITERAL1

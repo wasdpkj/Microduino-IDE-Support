@@ -36,12 +36,12 @@ public:
                 byteTotal = 0;
         };
 
-        virtual void Parse(const LEN_TYPE len, const uint8_t *pbuf, const OFFSET_TYPE &offset);
+        void Parse(const LEN_TYPE len, const uint8_t *pbuf, const OFFSET_TYPE &offset);
 };
 
 template <class BASE_CLASS, class LEN_TYPE, class OFFSET_TYPE>
 void HexDumper<BASE_CLASS, LEN_TYPE, OFFSET_TYPE>::Parse(const LEN_TYPE len, const uint8_t *pbuf, const OFFSET_TYPE &offset) {
-        if(UsbDEBUGlvl >= 0x80) {  // Fully bypass this block of code if we do not debug.
+        if(UsbDEBUGlvl >= 0x80) { // Fully bypass this block of code if we do not debug.
                 for(LEN_TYPE j = 0; j < len; j++, byteCount++, byteTotal++) {
                         if(!byteCount) {
                                 PrintHex<OFFSET_TYPE > (byteTotal, 0x80);

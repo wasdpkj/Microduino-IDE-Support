@@ -19,13 +19,11 @@
 #define _xboxold_h_
 
 #include "Usb.h"
+#include "usbhid.h"
 #include "controllerEnums.h"
 
 /* Data Xbox taken from descriptors */
 #define EP_MAXPKTSIZE       32 // Max size for data via USB
-
-/* Endpoint types */
-#define EP_INTERRUPT        0x03
 
 /* Names we give to the 3 Xbox pipes */
 #define XBOX_CONTROL_PIPE    0
@@ -41,10 +39,6 @@
 #define XBOX_OLD_PID2                           0x0285 // Original Microsoft Xbox controller (Japan)
 #define XBOX_OLD_PID3                           0x0287 // Microsoft Microsoft Xbox Controller S
 #define XBOX_OLD_PID4                           0x0289 // Smaller Microsoft Xbox controller (US)
-
-// Used in control endpoint header for HID Commands
-#define bmREQ_HID_OUT USB_SETUP_HOST_TO_DEVICE|USB_SETUP_TYPE_CLASS|USB_SETUP_RECIPIENT_INTERFACE
-#define HID_REQUEST_SET_REPORT      0x09
 
 #define XBOX_MAX_ENDPOINTS   3
 
@@ -65,17 +59,17 @@ public:
          * @param  lowspeed Speed of the device.
          * @return          0 on success.
          */
-        virtual uint8_t Init(uint8_t parent, uint8_t port, bool lowspeed);
+        uint8_t Init(uint8_t parent, uint8_t port, bool lowspeed);
         /**
          * Release the USB device.
          * @return 0 on success.
          */
-        virtual uint8_t Release();
+        uint8_t Release();
         /**
          * Poll the USB Input endpoins and run the state machines.
          * @return 0 on success.
          */
-        virtual uint8_t Poll();
+        uint8_t Poll();
 
         /**
          * Get the device address.
@@ -99,25 +93,24 @@ public:
          * @param  pid The device's PID.
          * @return     Returns true if the device's VID and PID matches this driver.
          */
-        virtual boolean VIDPIDOK(uint16_t vid, uint16_t pid) {
+        virtual bool VIDPIDOK(uint16_t vid, uint16_t pid) {
                 return ((vid == XBOX_VID || vid == MADCATZ_VID || vid == JOYTECH_VID) && (pid == XBOX_OLD_PID1 || pid == XBOX_OLD_PID2 || pid == XBOX_OLD_PID3 || pid == XBOX_OLD_PID4));
         };
         /**@}*/
 
         /** @name Xbox Controller functions */
         /**
-         * getButtonPress(Button b) will return true as long as the button is held down.
+         * getButtonPress(ButtonEnum b) will return true as long as the button is held down.
          *
-         * While getButtonClick(Button b) will only return it once.
+         * While getButtonClick(ButtonEnum b) will only return it once.
          *
-         * So you instance if you need to increase a variable once you would use getButtonClick(Button b),
-         * but if you need to drive a robot forward you would use getButtonPress(Button b).
-         * @param  b          ::Button to read.
-         * @return            getButtonClick(Button b) will return a bool, but getButtonPress(Button b)
-         * will return a byte if reading ::L2 or ::R2.
+         * So you instance if you need to increase a variable once you would use getButtonClick(ButtonEnum b),
+         * but if you need to drive a robot forward you would use getButtonPress(ButtonEnum b).
+         * @param  b          ::ButtonEnum to read.
+         * @return            getButtonClick(ButtonEnum b) will return a bool, while getButtonPress(ButtonEnum b) will return a byte if reading ::L2 or ::R2.
          */
-        uint8_t getButtonPress(Button b);
-        bool getButtonClick(Button b);
+        uint8_t getButtonPress(ButtonEnum b);
+        bool getButtonClick(ButtonEnum b);
         /**@}*/
 
         /** @name Xbox Controller functions */
@@ -126,7 +119,7 @@ public:
          * @param  a          Either ::LeftHatX, ::LeftHatY, ::RightHatX or ::RightHatY.
          * @return            Returns a signed 16-bit integer.
          */
-        int16_t getAnalogHat(AnalogHat a);
+        int16_t getAnalogHat(AnalogHatEnum a);
 
         /** Turn rumble off the controller. */
         void setRumbleOff() {

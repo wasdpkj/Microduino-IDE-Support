@@ -8,7 +8,7 @@ oldButtons(0) {
                 oldPad[i] = 0xD;
 }
 
-void JoystickReportParser::Parse(HID *hid, bool is_rpt_id, uint8_t len, uint8_t *buf) {
+void JoystickReportParser::Parse(USBHID *hid, bool is_rpt_id, uint8_t len, uint8_t *buf) {
         bool match = true;
 
         // Checking if there are changes in report since the method was last called
@@ -43,29 +43,28 @@ void JoystickReportParser::Parse(HID *hid, bool is_rpt_id, uint8_t len, uint8_t 
                 for (uint8_t i = 0; i < 0x0C; i++) {
                         uint16_t mask = (0x0001 << i);
 
-                        if (((mask & changes) > 0) && joyEvents)
+                        if (((mask & changes) > 0) && joyEvents) {
                                 if ((buttons & mask) > 0)
                                         joyEvents->OnButtonDn(i + 1);
                                 else
                                         joyEvents->OnButtonUp(i + 1);
+                        }
                 }
                 oldButtons = buttons;
         }
 }
 
 void JoystickEvents::OnGamePadChanged(const GamePadEventData *evt) {
-        Serial.print("KEY: ");
-        Serial.print((evt->X));
-//        PrintHex<uint8_t > (evt->X, 0x80);
-        Serial.print("\tX: ");
-        Serial.print(evt->Y);
-//        PrintHex<uint8_t > (evt->Y, 0x80);
-        Serial.print("\tY: ");
-        Serial.print(evt->Z1);
-
-        Serial.print("\tZ: ");
-        Serial.print(evt->Z2);
-
+        Serial.print("X1: ");
+        PrintHex<uint8_t > (evt->X, 0x80);
+        Serial.print("\tY1: ");
+        PrintHex<uint8_t > (evt->Y, 0x80);
+        Serial.print("\tX2: ");
+        PrintHex<uint8_t > (evt->Z1, 0x80);
+        Serial.print("\tY2: ");
+        PrintHex<uint8_t > (evt->Z2, 0x80);
+        Serial.print("\tRz: ");
+        PrintHex<uint8_t > (evt->Rz, 0x80);
         Serial.println("");
 }
 

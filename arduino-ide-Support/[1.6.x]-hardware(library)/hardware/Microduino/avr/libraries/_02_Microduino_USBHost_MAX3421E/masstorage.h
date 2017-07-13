@@ -1,3 +1,20 @@
+/* Copyright (C) 2011 Circuits At Home, LTD. All rights reserved.
+
+This software may be distributed and modified under the terms of the GNU
+General Public License version 2 (GPL2) as published by the Free Software
+Foundation and appearing in the file GPL2.TXT included in the packaging of
+this file. Please note that GPL2 Section 2[b] requires that all works based
+on this software must also be made publicly available under the terms of
+the GPL2 ("Copyleft").
+
+Contact information
+-------------------
+
+Circuits At Home, LTD
+Web      :  http://www.circuitsathome.com
+e-mail   :  support@circuitsathome.com
+ */
+
 #if !defined(__MASSTORAGE_H__)
 #define __MASSTORAGE_H__
 
@@ -12,35 +29,35 @@
 #define bmREQ_MASSIN        USB_SETUP_DEVICE_TO_HOST|USB_SETUP_TYPE_CLASS|USB_SETUP_RECIPIENT_INTERFACE
 
 // Mass Storage Subclass Constants
-#define MASS_SUBCLASS_SCSI_NOT_REPORTED 0x00	// De facto use
-#define MASS_SUBCLASS_RBC		0x01
-#define MASS_SUBCLASS_ATAPI		0x02	// MMC-5 (ATAPI)
-#define MASS_SUBCLASS_OBSOLETE1		0x03	// Was QIC-157
-#define MASS_SUBCLASS_UFI		0x04	// Specifies how to interface Floppy Disk Drives to USB
-#define MASS_SUBCLASS_OBSOLETE2		0x05	// Was SFF-8070i
-#define MASS_SUBCLASS_SCSI		0x06	// SCSI Transparent Command Set
-#define MASS_SUBCLASS_LSDFS		0x07	// Specifies how host has to negotiate access before trying SCSI
-#define MASS_SUBCLASS_IEEE1667		0x08
+#define MASS_SUBCLASS_SCSI_NOT_REPORTED 0x00    // De facto use
+#define MASS_SUBCLASS_RBC               0x01
+#define MASS_SUBCLASS_ATAPI             0x02    // MMC-5 (ATAPI)
+#define MASS_SUBCLASS_OBSOLETE1         0x03    // Was QIC-157
+#define MASS_SUBCLASS_UFI               0x04    // Specifies how to interface Floppy Disk Drives to USB
+#define MASS_SUBCLASS_OBSOLETE2         0x05    // Was SFF-8070i
+#define MASS_SUBCLASS_SCSI              0x06    // SCSI Transparent Command Set
+#define MASS_SUBCLASS_LSDFS             0x07    // Specifies how host has to negotiate access before trying SCSI
+#define MASS_SUBCLASS_IEEE1667          0x08
 
 // Mass Storage Class Protocols
-#define MASS_PROTO_CBI			0x00	// CBI (with command completion interrupt)
-#define MASS_PROTO_CBI_NO_INT		0x01	// CBI (without command completion interrupt)
-#define MASS_PROTO_OBSOLETE		0x02
-#define MASS_PROTO_BBB			0x50	// Bulk Only Transport
-#define MASS_PROTO_UAS			0x62
+#define MASS_PROTO_CBI                  0x00    // CBI (with command completion interrupt)
+#define MASS_PROTO_CBI_NO_INT           0x01    // CBI (without command completion interrupt)
+#define MASS_PROTO_OBSOLETE             0x02
+#define MASS_PROTO_BBB                  0x50    // Bulk Only Transport
+#define MASS_PROTO_UAS                  0x62
 
 // Request Codes
-#define MASS_REQ_ADSC			0x00
-#define MASS_REQ_GET			0xFC
-#define MASS_REQ_PUT			0xFD
-#define MASS_REQ_GET_MAX_LUN		0xFE
-#define MASS_REQ_BOMSR			0xFF	// Bulk-Only Mass Storage Reset
+#define MASS_REQ_ADSC                   0x00
+#define MASS_REQ_GET                    0xFC
+#define MASS_REQ_PUT                    0xFD
+#define MASS_REQ_GET_MAX_LUN            0xFE
+#define MASS_REQ_BOMSR                  0xFF    // Bulk-Only Mass Storage Reset
 
-#define MASS_CBW_SIGNATURE		0x43425355
-#define MASS_CSW_SIGNATURE		0x53425355
+#define MASS_CBW_SIGNATURE              0x43425355
+#define MASS_CSW_SIGNATURE              0x53425355
 
 #define MASS_CMD_DIR_OUT                0 // (0 << 7)
-#define MASS_CMD_DIR_IN			0x80 //(1 << 7)
+#define MASS_CMD_DIR_IN                 0x80 //(1 << 7)
 
 /*
  * Reference documents from T10 (http://www.t10.org)
@@ -50,21 +67,21 @@
  */
 
 /* Group 1 commands (CDB's here are should all be 6-bytes) */
-#define SCSI_CMD_TEST_UNIT_READY	0x00
-#define SCSI_CMD_REQUEST_SENSE		0x03
-#define SCSI_CMD_FORMAT_UNIT		0x04
-#define SCSI_CMD_READ_6			0x08
-#define SCSI_CMD_WRITE_6		0x0A
-#define SCSI_CMD_INQUIRY		0x12
+#define SCSI_CMD_TEST_UNIT_READY        0x00
+#define SCSI_CMD_REQUEST_SENSE          0x03
+#define SCSI_CMD_FORMAT_UNIT            0x04
+#define SCSI_CMD_READ_6                 0x08
+#define SCSI_CMD_WRITE_6                0x0A
+#define SCSI_CMD_INQUIRY                0x12
 #define SCSI_CMD_MODE_SELECT_6          0x15
-#define SCSI_CMD_MODE_SENSE_6		0x1A
-#define SCSI_CMD_START_STOP_UNIT	0x1B
+#define SCSI_CMD_MODE_SENSE_6           0x1A
+#define SCSI_CMD_START_STOP_UNIT        0x1B
 #define SCSI_CMD_PREVENT_REMOVAL        0x1E
 /* Group 2 Commands (CDB's here are 10-bytes) */
 #define SCSI_CMD_READ_FORMAT_CAPACITIES 0x23
-#define SCSI_CMD_READ_CAPACITY_10	0x25
-#define SCSI_CMD_READ_10		0x28
-#define SCSI_CMD_WRITE_10		0x2A
+#define SCSI_CMD_READ_CAPACITY_10       0x25
+#define SCSI_CMD_READ_10                0x28
+#define SCSI_CMD_WRITE_10               0x2A
 #define SCSI_CMD_SEEK_10                0x2B
 #define SCSI_CMD_ERASE_10               0x2C
 #define SCSI_CMD_WRITE_AND_VERIFY_10    0x2E
@@ -122,42 +139,42 @@
 #define SCSI_CMD_READ_ALL_SUBCODES      0xDF /* Vendor unique */
 
 /* SCSI error codes */
-#define SCSI_S_NOT_READY		0x02
-#define SCSI_S_MEDIUM_ERROR		0x03
-#define SCSI_S_ILLEGAL_REQUEST		0x05
-#define SCSI_S_UNIT_ATTENTION		0x06
+#define SCSI_S_NOT_READY                0x02
+#define SCSI_S_MEDIUM_ERROR             0x03
+#define SCSI_S_ILLEGAL_REQUEST          0x05
+#define SCSI_S_UNIT_ATTENTION           0x06
 #define SCSI_ASC_LBA_OUT_OF_RANGE       0x21
 #define SCSI_ASC_MEDIA_CHANGED          0x28
 #define SCSI_ASC_MEDIUM_NOT_PRESENT     0x3A
 
 /* USB error codes */
-#define MASS_ERR_SUCCESS		0x00
-#define MASS_ERR_PHASE_ERROR		0x02
-#define MASS_ERR_UNIT_NOT_READY		0x03
-#define MASS_ERR_UNIT_BUSY		0x04
-#define MASS_ERR_STALL			0x05
-#define MASS_ERR_CMD_NOT_SUPPORTED	0x06
-#define MASS_ERR_INVALID_CSW		0x07
-#define MASS_ERR_NO_MEDIA		0x08
+#define MASS_ERR_SUCCESS                0x00
+#define MASS_ERR_PHASE_ERROR            0x02
+#define MASS_ERR_UNIT_NOT_READY         0x03
+#define MASS_ERR_UNIT_BUSY              0x04
+#define MASS_ERR_STALL                  0x05
+#define MASS_ERR_CMD_NOT_SUPPORTED      0x06
+#define MASS_ERR_INVALID_CSW            0x07
+#define MASS_ERR_NO_MEDIA               0x08
 #define MASS_ERR_BAD_LBA                0x09
 #define MASS_ERR_MEDIA_CHANGED          0x0A
 #define MASS_ERR_DEVICE_DISCONNECTED    0x11
-#define MASS_ERR_UNABLE_TO_RECOVER	0x12	// Reset recovery error
-#define MASS_ERR_INVALID_LUN		0x13
-#define MASS_ERR_WRITE_STALL    	0x14
+#define MASS_ERR_UNABLE_TO_RECOVER      0x12    // Reset recovery error
+#define MASS_ERR_INVALID_LUN            0x13
+#define MASS_ERR_WRITE_STALL            0x14
 #define MASS_ERR_READ_NAKS              0x15
 #define MASS_ERR_WRITE_NAKS             0x16
 #define MASS_ERR_WRITE_PROTECTED        0x17
 #define MASS_ERR_NOT_IMPLEMENTED        0xFD
-#define MASS_ERR_GENERAL_SCSI_ERROR	0xFE
-#define MASS_ERR_GENERAL_USB_ERROR	0xFF
-#define MASS_ERR_USER			0xA0	// For subclasses to define their own error codes
+#define MASS_ERR_GENERAL_SCSI_ERROR     0xFE
+#define MASS_ERR_GENERAL_USB_ERROR      0xFF
+#define MASS_ERR_USER                   0xA0    // For subclasses to define their own error codes
 
-#define MASS_TRANS_FLG_CALLBACK         0x01	// Callback is involved
-#define MASS_TRANS_FLG_NO_STALL_CHECK   0x02	// STALL condition is not checked
-#define MASS_TRANS_FLG_NO_PHASE_CHECK   0x04	// PHASE_ERROR is not checked
+#define MASS_TRANS_FLG_CALLBACK         0x01    // Callback is involved
+#define MASS_TRANS_FLG_NO_STALL_CHECK   0x02    // STALL condition is not checked
+#define MASS_TRANS_FLG_NO_PHASE_CHECK   0x04    // PHASE_ERROR is not checked
 
-#define MASS_MAX_ENDPOINTS		3
+#define MASS_MAX_ENDPOINTS              3
 
 struct Capacity {
         uint8_t data[8];
@@ -190,12 +207,12 @@ struct CDB6 {
 public:
 
         CDB6(uint8_t _Opcode, uint8_t _LUN, uint32_t LBA, uint8_t _AllocationLength, uint8_t _Control) :
-        Opcode(_Opcode), LUN(_LUN), LBAMSB(BGRAB2(LBA) & 0x1f), LBAHB(BGRAB1(LBA)), LBALB(BGRAB0(LBA)),
+        Opcode(_Opcode), LBAMSB(BGRAB2(LBA) & 0x1f), LUN(_LUN), LBAHB(BGRAB1(LBA)), LBALB(BGRAB0(LBA)),
         AllocationLength(_AllocationLength), Control(_Control) {
         }
 
         CDB6(uint8_t _Opcode, uint8_t _LUN, uint8_t _AllocationLength, uint8_t _Control) :
-        Opcode(_Opcode), LUN(_LUN), LBAMSB(0), LBAHB(0), LBALB(0),
+        Opcode(_Opcode), LBAMSB(0), LUN(_LUN), LBAHB(0), LBALB(0),
         AllocationLength(_AllocationLength), Control(_Control) {
         }
 } __attribute__((packed));
@@ -391,23 +408,27 @@ public:
 
         CommandBlockWrapper(uint32_t tag, uint32_t xflen, uint8_t flgs, uint8_t lu, uint8_t cmdlen, uint8_t cmd) :
         CommandBlockWrapperBase(tag, xflen, flgs),
-        bmReserved1(0), bmReserved2(0), bmCBWLUN(lu), bmCBWCBLength(cmdlen) {
+        bmCBWLUN(lu), bmReserved1(0), bmCBWCBLength(cmdlen), bmReserved2(0) {
                 for(int i = 0; i < 16; i++) CBWCB[i] = 0;
-                ((BASICCDB_t *) CBWCB)->LUN = cmd;
+                // Type punning can cause optimization problems and bugs.
+                // Using reinterpret_cast to a dreinterpretifferent object is the proper way to do this.
+                //(((BASICCDB_t *) CBWCB)->LUN) = cmd;
+                BASICCDB_t *x = reinterpret_cast<BASICCDB_t *>(CBWCB);
+                x->LUN = cmd;
         }
 
         // Wrap for CDB of 6
 
         CommandBlockWrapper(uint32_t tag, uint32_t xflen, CDB6_t *cdb, uint8_t dir) :
         CommandBlockWrapperBase(tag, xflen, dir),
-        bmReserved1(0), bmReserved2(0), bmCBWLUN(cdb->LUN), bmCBWCBLength(6) {
+        bmCBWLUN(cdb->LUN), bmReserved1(0), bmCBWCBLength(6), bmReserved2(0) {
                 memcpy(&CBWCB, cdb, 6);
         }
         // Wrap for CDB of 10
 
         CommandBlockWrapper(uint32_t tag, uint32_t xflen, CDB10_t *cdb, uint8_t dir) :
         CommandBlockWrapperBase(tag, xflen, dir),
-        bmReserved1(0), bmReserved2(0), bmCBWLUN(cdb->LUN), bmCBWCBLength(10) {
+        bmCBWLUN(cdb->LUN), bmReserved1(0), bmCBWCBLength(10), bmReserved2(0) {
                 memcpy(&CBWCB, cdb, 10);
         }
 } __attribute__((packed));
@@ -486,7 +507,7 @@ public:
                 return bTheLUN; // Active LUN
         }
 
-        boolean WriteProtected(uint8_t lun);
+        bool WriteProtected(uint8_t lun);
         uint8_t MediaCTL(uint8_t lun, uint8_t ctl);
         uint8_t Read(uint8_t lun, uint32_t addr, uint16_t bsize, uint8_t blocks, uint8_t *buf);
         uint8_t Read(uint8_t lun, uint32_t addr, uint16_t bsize, uint8_t blocks, USBReadParser *prs);
@@ -498,21 +519,21 @@ public:
         uint16_t GetSectorSize(uint8_t lun);
 
         // USBDeviceConfig implementation
-        virtual uint8_t Init(uint8_t parent, uint8_t port, bool lowspeed);
-        virtual uint8_t ConfigureDevice(uint8_t parent, uint8_t port, bool lowspeed);
+        uint8_t Init(uint8_t parent, uint8_t port, bool lowspeed);
+        uint8_t ConfigureDevice(uint8_t parent, uint8_t port, bool lowspeed);
 
-        virtual uint8_t Release();
-        virtual uint8_t Poll();
+        uint8_t Release();
+        uint8_t Poll();
 
         virtual uint8_t GetAddress() {
                 return bAddress;
         };
 
         // UsbConfigXtracter implementation
-        virtual void EndpointXtract(uint8_t conf, uint8_t iface, uint8_t alt, uint8_t proto, const USB_ENDPOINT_DESCRIPTOR *ep);
+        void EndpointXtract(uint8_t conf, uint8_t iface, uint8_t alt, uint8_t proto, const USB_ENDPOINT_DESCRIPTOR *ep);
 
-        virtual boolean DEVCLASSOK(uint8_t klass) {
-                return(klass == USB_CLASS_MASS_STORAGE);
+        virtual bool DEVCLASSOK(uint8_t klass) {
+                return (klass == USB_CLASS_MASS_STORAGE);
         }
 
         uint8_t SCSITransaction6(CDB6_t *cdb, uint16_t buf_size, void *buf, uint8_t dir);
@@ -530,7 +551,7 @@ private:
         uint8_t ReadCapacity10(uint8_t lun, uint8_t *buf);
         void ClearAllEP();
         void CheckMedia();
-        boolean CheckLUN(uint8_t lun);
+        bool CheckLUN(uint8_t lun);
         uint8_t Page3F(uint8_t lun);
         bool IsValidCBW(uint8_t size, uint8_t *pcbw);
         bool IsMeaningfulCBW(uint8_t size, uint8_t *pcbw);

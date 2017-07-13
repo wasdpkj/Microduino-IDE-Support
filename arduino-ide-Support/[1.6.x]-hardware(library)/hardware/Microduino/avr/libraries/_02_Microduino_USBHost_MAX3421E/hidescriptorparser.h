@@ -17,7 +17,7 @@ e-mail   :  support@circuitsathome.com
 #if !defined(__HIDDESCRIPTORPARSER_H__)
 #define __HIDDESCRIPTORPARSER_H__
 
-#include "hid.h"
+#include "usbhid.h"
 
 class ReportDescParserBase : public USBReadParser {
 public:
@@ -101,7 +101,7 @@ protected:
         MultiValueBuffer theBuffer;
         MultiByteValueParser valParser;
         ByteSkipper theSkipper;
-        uint8_t varBuffer[sizeof(USB_CONFIGURATION_DESCRIPTOR)];
+        uint8_t varBuffer[sizeof (USB_CONFIGURATION_DESCRIPTOR)];
 
         uint8_t itemParseState; // Item parser state variable
         uint8_t itemSize; // Item size
@@ -111,6 +111,7 @@ protected:
 
         uint16_t totalSize; // Report size in bits
 
+        // Method should be defined here if virtual.
         virtual uint8_t ParseItem(uint8_t **pp, uint16_t *pcntdn);
 
         UsagePageFunc pfUsage;
@@ -132,7 +133,7 @@ public:
                 theSkipper.Initialize(&theBuffer);
         };
 
-        virtual void Parse(const uint16_t len, const uint8_t *pbuf, const uint16_t &offset);
+        void Parse(const uint16_t len, const uint8_t *pbuf, const uint16_t &offset);
 
         enum {
                 enErrorSuccess = 0
@@ -156,6 +157,7 @@ class ReportDescParser2 : public ReportDescParserBase {
         uint8_t bLen; // Report length
 
 protected:
+        // Method should be defined here if virtual.
         virtual uint8_t ParseItem(uint8_t **pp, uint16_t *pcntdn);
 
 public:
@@ -167,7 +169,8 @@ public:
 
 class UniversalReportParser : public HIDReportParser {
 public:
-        virtual void Parse(HID *hid, bool is_rpt_id, uint8_t len, uint8_t *buf);
+        // Method should be defined here if virtual.
+        virtual void Parse(USBHID *hid, bool is_rpt_id, uint8_t len, uint8_t *buf);
 };
 
 #endif // __HIDDESCRIPTORPARSER_H__
