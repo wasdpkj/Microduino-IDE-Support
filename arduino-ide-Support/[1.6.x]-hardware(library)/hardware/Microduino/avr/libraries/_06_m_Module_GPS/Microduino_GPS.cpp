@@ -1,3 +1,8 @@
+// 源自Adafruit_GPS库
+// 修订：@老潘orz  wasdpkj@hotmail.com
+// 支持GPS模块：Microduino_GPS（NEO6M、NEOM8N）
+// 支持自适应波特率
+
 /***********************************
   This is our GPS library
 

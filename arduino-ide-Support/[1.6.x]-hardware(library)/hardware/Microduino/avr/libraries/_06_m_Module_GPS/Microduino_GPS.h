@@ -1,20 +1,18 @@
+// 源自Adafruit_GPS库
+// 修订：@老潘orz  wasdpkj@hotmail.com
+// 支持GPS模块：Microduino_GPS（NEO6M、NEOM8N）
+// 支持自适应波特率
+
 /***********************************
-This is the Adafruit GPS library - the ultimate GPS library
-for the ultimate GPS module!
+  This is our GPS library
 
-Tested and works great with the Adafruit Ultimate GPS module
-using MTK33x9 chipset
-    ------> http://www.adafruit.com/products/746
-Pick one up today at the Adafruit electronics shop 
-and help support open source hardware & software! -ada
+  Adafruit invests time and resources providing this open source code,
+  please support Adafruit and open-source hardware by purchasing
+  products from Adafruit!
 
-Adafruit invests time and resources providing this open source code, 
-please support Adafruit and open-source hardware by purchasing 
-products from Adafruit!
-
-Written by Limor Fried/Ladyada  for Adafruit Industries.  
-BSD license, check license.txt for more information
-All text above must be included in any redistribution
+  Written by Limor Fried/Ladyada for Adafruit Industries.
+  BSD license, check license.txt for more information
+  All text above must be included in any redistribution
 ****************************************/
 
 #ifndef _MICRODUINO_GPS_H_
