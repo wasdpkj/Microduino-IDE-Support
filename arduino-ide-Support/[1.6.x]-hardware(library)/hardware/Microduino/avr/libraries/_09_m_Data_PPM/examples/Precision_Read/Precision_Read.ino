@@ -19,13 +19,13 @@
 
 PPM PPM;
 
-#define INPUT_PIN 2
+#define INPUT_PIN 2	//必须为中断脚
 
 uint16_t value[4];
 
 void setup () {
   Serial.begin(115200);
-  PPM.beginRead(INPUT_PIN); //引脚
+  PPM.beginRead(INPUT_PIN); //必须为中断脚
 }
 
 void loop () {
