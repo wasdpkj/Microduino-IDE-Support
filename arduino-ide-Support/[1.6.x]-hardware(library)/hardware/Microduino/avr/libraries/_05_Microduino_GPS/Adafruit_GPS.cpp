@@ -57,62 +57,37 @@ void Adafruit_GPS::common_init(void) {
                                          speed = angle = magvariation = HDOP = 0.0; // float
 }
 
-void Adafruit_GPS::begin(uint16_t baud) {
+void Adafruit_GPS::begin(uint32_t baud) {
+  uint32_t _baud[5] = {9600, 19200, 38400, 57600, 115200};
+
   if (gpsHwSerial) {
-    gpsHwSerial->begin(4800);
-    delay(20);
-    set_baud(baud);
-
-    gpsHwSerial->begin(9600);
-    delay(20);
-    set_baud(baud);
-
-    gpsHwSerial->begin(19200);
-    delay(20);
-    set_baud(baud);
-
-    gpsHwSerial->begin(38400);
-    delay(20);
-    set_baud(baud);
-
-    gpsHwSerial->begin(57600);
-    delay(20);
-    set_baud(baud);
-
-    gpsHwSerial->begin(115200);
-    delay(20);
-    set_baud(baud);
-
+    for (int _n = 0; _n < 5; _n++) {
+      gpsHwSerial->begin(_baud[_n]);
+      set_baud(baud);
+    }
     gpsHwSerial->begin(baud);
-    delay(20);
   }
   else {
-    gpsSwSerial->begin(4800);
-    delay(20);
-    set_baud(baud);
-
-    gpsSwSerial->begin(9600);
-    delay(20);
-    set_baud(baud);
-
-    gpsSwSerial->begin(19200);
-    delay(20);
-    set_baud(baud);
-
-    gpsSwSerial->begin(38400);
-    delay(20);
-    set_baud(baud);
-
-    gpsSwSerial->begin(57600);
-    delay(20);
-    set_baud(baud);
-
-    gpsSwSerial->begin(115200);
-    delay(20);
-    set_baud(baud);
+    for (int _n = 0; _n < 5; _n++) {
+      gpsSwSerial->begin(_baud[_n]);
+      set_baud(baud);
+    }
 
     gpsSwSerial->begin(baud);
-    delay(20);
+  }
+  delay(10);
+}
+
+void Adafruit_GPS::rx_empty(void) {
+  if (gpsHwSerial) {
+    while (gpsHwSerial->available() > 0) {
+      gpsHwSerial->read();
+    }
+  }
+  else {
+    while (gpsSwSerial->available() > 0) {
+      gpsSwSerial->read();
+    }
   }
 }
 
@@ -174,29 +149,45 @@ void Adafruit_GPS::set_updata(uint8_t _set_updata) {
   delay(50);
 }
 
-void Adafruit_GPS::set_baud(uint16_t _set_baud) {
+void Adafruit_GPS::set_baud(uint32_t _set_baud) {
   byte UBLOX_SET_BAUD_9600[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0xD0, 0x08, 0x00, 0x00, 0x80, 0x25, 0x00, 0x00, 0x07, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xA2, 0xB5};
   byte UBLOX_SET_BAUD_19200[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0xD0, 0x08, 0x00, 0x00, 0x00, 0x4B, 0x00, 0x00, 0x07, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x48, 0x57};
   byte UBLOX_SET_BAUD_38400[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0xD0, 0x08, 0x00, 0x00, 0x00, 0x96, 0x00, 0x00, 0x07, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x93, 0x90};
   byte UBLOX_SET_BAUD_57600[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0xD0, 0x08, 0x00, 0x00, 0x00, 0xE1, 0x00, 0x00, 0x07, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xDE, 0xC9};
   byte UBLOX_SET_BAUD_115200[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0xD0, 0x08, 0x00, 0x00, 0x00, 0xC2, 0x01, 0x00, 0x07, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC0, 0x7E};
 
+  byte BD_SET_BAUD_9600[] = {0x24, 0x50, 0x43, 0x41, 0x53, 0x30, 0x31, 0x2c, 0x31 ,0x2A ,0x31 ,0x44 ,0x0D ,0x0A};//$PCAS01,1*1D\r\n
+  byte BD_SET_BAUD_19200[] = {0x24, 0x50, 0x43, 0x41, 0x53, 0x30, 0x31, 0x2c, 0x32 ,0x2A ,0x31 ,0x45 ,0x0D ,0x0A};//$PCAS01,2*1E\r\n
+  byte BD_SET_BAUD_38400[] = {0x24, 0x50, 0x43, 0x41, 0x53, 0x30, 0x31, 0x2c, 0x33 ,0x2A ,0x31 ,0x46 ,0x0D ,0x0A};//$PCAS01,3*1F\r\n
+  byte BD_SET_BAUD_57600[] = {0x24, 0x50, 0x43, 0x41, 0x53, 0x30, 0x31, 0x2c, 0x34 ,0x2A ,0x31 ,0x38 ,0x0D ,0x0A};//$PCAS01,4*18\r\n
+  byte BD_SET_BAUD_115200[] = {0x24, 0x50, 0x43, 0x41, 0x53, 0x30, 0x31, 0x2c, 0x35 ,0x2A ,0x31 ,0x39,0x0D ,0x0A};//$PCAS01,5*19\r\n
   if (gpsHwSerial) {
     switch (_set_baud) {
       case 9600:
         gpsHwSerial->write(UBLOX_SET_BAUD_9600, 28);
+        delay(50);
+        gpsHwSerial->write(BD_SET_BAUD_9600, 14);
         break;
       case 19200:
         gpsHwSerial->write(UBLOX_SET_BAUD_19200, 28);
+        delay(50);
+        gpsHwSerial->write(BD_SET_BAUD_19200, 14);
         break;
       case 38400:
         gpsHwSerial->write(UBLOX_SET_BAUD_38400, 28);
+        delay(50);
+        gpsHwSerial->write(BD_SET_BAUD_38400, 14);
+
         break;
       case 57600:
         gpsHwSerial->write(UBLOX_SET_BAUD_57600, 28);
+        delay(50);
+        gpsHwSerial->write(BD_SET_BAUD_57600, 14);
         break;
       case 115200:
         gpsHwSerial->write(UBLOX_SET_BAUD_115200, 28);
+        delay(50);
+        gpsHwSerial->write(BD_SET_BAUD_115200, 14);
         break;
     }
   }
@@ -204,18 +195,29 @@ void Adafruit_GPS::set_baud(uint16_t _set_baud) {
     switch (_set_baud) {
       case 9600:
         gpsSwSerial->write(UBLOX_SET_BAUD_9600, 28);
+        delay(50);
+        gpsSwSerial->write(BD_SET_BAUD_9600, 14);
         break;
       case 19200:
         gpsSwSerial->write(UBLOX_SET_BAUD_19200, 28);
+        delay(50);
+        gpsSwSerial->write(BD_SET_BAUD_19200, 14);
         break;
       case 38400:
         gpsSwSerial->write(UBLOX_SET_BAUD_38400, 28);
+        delay(50);
+        gpsSwSerial->write(BD_SET_BAUD_38400, 14);
+
         break;
       case 57600:
         gpsSwSerial->write(UBLOX_SET_BAUD_57600, 28);
+        delay(50);
+        gpsSwSerial->write(BD_SET_BAUD_57600, 14);
         break;
       case 115200:
         gpsSwSerial->write(UBLOX_SET_BAUD_115200, 28);
+        delay(50);
+        gpsSwSerial->write(BD_SET_BAUD_115200, 14);
         break;
     }
   }
@@ -229,7 +231,6 @@ void Adafruit_GPS::set_cnssmode(uint8_t _set_cnssmode) {
     {0xB5, 0x62, 0x06, 0x3E, 0x2C, 0x00, 0x00, 0x00, 0x20, 0x05, 0x00, 0x08, 0x10, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01, 0x03, 0x00, 0x01, 0x00, 0x01, 0x01, 0x03, 0x08, 0x10, 0x00, 0x00, 0x00, 0x01, 0x01, 0x05, 0x00, 0x03, 0x00, 0x01, 0x00, 0x01, 0x01, 0x06, 0x08, 0x0E, 0x00, 0x00, 0x00, 0x01, 0x01, 0xFD, 0x15}, //QZSS+SBAS
     {0xB5, 0x62, 0x06, 0x3E, 0x2C, 0x00, 0x00, 0x00, 0x20, 0x05, 0x00, 0x08, 0x10, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01, 0x03, 0x00, 0x01, 0x00, 0x01, 0x01, 0x03, 0x08, 0x10, 0x00, 0x00, 0x00, 0x01, 0x01, 0x05, 0x00, 0x03, 0x00, 0x00, 0x00, 0x01, 0x01, 0x06, 0x08, 0x0E, 0x00, 0x01, 0x00, 0x01, 0x01, 0xFD, 0x0D} //GLONASS+SBAS
   };
-
 
   if (gpsHwSerial) {
     gpsHwSerial->write(UBLOX_SET_CNSSMODE[_set_cnssmode], 52);
@@ -277,7 +278,7 @@ boolean Adafruit_GPS::parse(char *nmea) {
   }
 
   // look for a few common sentences
-  if (strstr(nmea, "$GPGGA")) {
+  if (strstr(nmea, "$GPGGA")||strstr(nmea, "$BDGGA")) {
     // found GGA
     char *p = nmea;
     // get time
@@ -326,7 +327,7 @@ boolean Adafruit_GPS::parse(char *nmea) {
     geoidheight = atof(p);
     return true;
   }
-  if (strstr(nmea, "$GPRMC")) {
+  if (strstr(nmea, "$GPRMC")||strstr(nmea, "$BDRMC")) {
     // found RMC
     char *p = nmea;
 

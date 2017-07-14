@@ -1,12 +1,22 @@
-/*
- * File:   settings.h
- * Author: xxxajk
- *
- * Created on September 23, 2013, 12:00 AM
+/* Copyright (C) 2011 Circuits At Home, LTD. All rights reserved.
+
+This software may be distributed and modified under the terms of the GNU
+General Public License version 2 (GPL2) as published by the Free Software
+Foundation and appearing in the file GPL2.TXT included in the packaging of
+this file. Please note that GPL2 Section 2[b] requires that all works based
+on this software must also be made publicly available under the terms of
+the GPL2 ("Copyleft").
+
+Contact information
+-------------------
+
+Circuits At Home, LTD
+Web      :  http://www.circuitsathome.com
+e-mail   :  support@circuitsathome.com
  */
 
 #ifndef USB_HOST_SHIELD_SETTINGS_H
-#define	USB_HOST_SHIELD_SETTINGS_H
+#define USB_HOST_SHIELD_SETTINGS_H
 #include "macros.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -38,6 +48,13 @@
 #define USE_XMEM_SPI_LOCK 0
 
 ////////////////////////////////////////////////////////////////////////////////
+// Wii IR camera
+////////////////////////////////////////////////////////////////////////////////
+
+/* Set this to 1 to activate code for the Wii IR camera */
+#define ENABLE_WII_IR_CAMERA 0
+
+////////////////////////////////////////////////////////////////////////////////
 // MASS STORAGE
 ////////////////////////////////////////////////////////////////////////////////
 // <<<<<<<<<<<<<<<< IMPORTANT >>>>>>>>>>>>>>>
@@ -48,32 +65,116 @@
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
+// Set to 1 to use the faster spi4teensy3 driver.
+////////////////////////////////////////////////////////////////////////////////
+#ifndef USE_SPI4TEENSY3
+#define USE_SPI4TEENSY3 1
+#endif
+
+// disabled on the Teensy LC as it is incompatible for now
+#if defined(__MKL26Z64__)
+#undef USE_SPI4TEENSY3
+#define USE_SPI4TEENSY3 0
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
 // AUTOMATIC Settings
 ////////////////////////////////////////////////////////////////////////////////
 
 // No user serviceable parts below this line.
 // DO NOT change anything below here unless you are a developer!
 
+#include "version_helper.h"
+
+#if defined(__GNUC__) && defined(__AVR__)
+#ifndef GCC_VERSION
+#define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+#endif
+#if GCC_VERSION < 40602 // Test for GCC < 4.6.2
+#ifdef PROGMEM
+#undef PROGMEM
+#define PROGMEM __attribute__((section(".progmem.data"))) // Workaround for http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34734#c4
+#ifdef PSTR
+#undef PSTR
+#define PSTR(s) (__extension__({static const char __c[] PROGMEM = (s); &__c[0];})) // Copied from pgmspace.h in avr-libc source
+#endif
+#endif
+#endif
+#endif
+
 #if !defined(DEBUG_USB_HOST) && ENABLE_UHS_DEBUGGING
 #define DEBUG_USB_HOST
 #endif
 
-// When will we drop support for the older bug-ridden stuff?
-#if defined(ARDUINO) && ARDUINO >=100
-#include <Arduino.h>
-#else
-#include <WProgram.h>
-// I am not sure what WProgram.h does not include, so these are here. --xxxajk
-#include <pins_arduino.h>
-#include <avr/pgmspace.h>
-#include <avr/io.h>
+#if !defined(WIICAMERA) && ENABLE_WII_IR_CAMERA
+#define WIICAMERA
 #endif
 
-#if USE_XMEM_SPI_LOCK | defined(USE_MULTIPLE_APP_API)
+// To use some other locking (e.g. freertos),
+// define XMEM_ACQUIRE_SPI and XMEM_RELEASE_SPI to point to your lock and unlock.
+// NOTE: NO argument is passed. You have to do this within your routine for
+// whatever you are using to lock and unlock.
+#if !defined(XMEM_ACQUIRE_SPI)
+#if USE_XMEM_SPI_LOCK || defined(USE_MULTIPLE_APP_API)
 #include <xmem.h>
 #else
 #define XMEM_ACQUIRE_SPI() (void(0))
 #define XMEM_RELEASE_SPI() (void(0))
 #endif
+#endif
 
-#endif	/* SETTINGS_H */
+#if !defined(EXT_RAM) && defined(EXT_RAM_STACK) || defined(EXT_RAM_HEAP)
+#include <xmem.h>
+#else
+#define EXT_RAM 0
+#endif
+
+#if defined(CORE_TEENSY) && (defined(__MK20DX128__) || defined(__MK20DX256__) || defined(__MKL26Z64__))
+#define USING_SPI4TEENSY3 USE_SPI4TEENSY3
+#else
+#define USING_SPI4TEENSY3 0
+#endif
+
+#if ((defined(ARDUINO_SAM_DUE) && defined(__SAM3X8E__)) || defined(__ARDUINO_X86__) || ARDUINO >= 10600) && !USING_SPI4TEENSY3
+#include <SPI.h> // Use the Arduino SPI library for the Arduino Due, Intel Galileo 1 & 2, Intel Edison or if the SPI library with transaction is available
+#endif
+#ifdef RBL_NRF51822
+#include <nrf_gpio.h>
+#include <SPI_Master.h>
+#define SPI SPI_Master
+#define MFK_CASTUINT8T (uint8_t) // RBLs return type for sizeof needs casting to uint8_t
+#endif
+#if defined(__PIC32MX__) || defined(__PIC32MZ__)
+#include <../../../../hardware/pic32/libraries/SPI/SPI.h> // Hack to use the SPI library
+#endif
+
+#ifdef STM32F4
+#include "stm32f4xx_hal.h"
+extern SPI_HandleTypeDef SPI_Handle; // Needed to be declared in your main.cpp
+#endif
+
+// Fix defines on Arduino Due
+#ifdef ARDUINO_SAM_DUE
+#ifdef tokSETUP
+#undef tokSETUP
+#endif
+#ifdef tokIN
+#undef tokIN
+#endif
+#ifdef tokOUT
+#undef tokOUT
+#endif
+#ifdef tokINHS
+#undef tokINHS
+#endif
+#ifdef tokOUTHS
+#undef tokOUTHS
+#endif
+#endif
+
+// Set defaults
+#ifndef MFK_CASTUINT8T
+#define MFK_CASTUINT8T
+#endif
+
+#endif /* SETTINGS_H */

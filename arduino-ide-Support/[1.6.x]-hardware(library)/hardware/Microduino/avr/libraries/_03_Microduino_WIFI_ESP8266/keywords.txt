@@ -1,0 +1,95 @@
+#######################################
+# Data types (KEYWORD1)
+#######################################
+ESP8266	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+ESP8266	KEYWORD2
+getUart	KEYWORD2
+kick	KEYWORD2
+restart	KEYWORD2
+getVersion	KEYWORD2
+deepSleep	KEYWORD2
+setEcho	KEYWORD2
+restore	KEYWORD2
+setUart	KEYWORD2
+setOprToStation	KEYWORD2
+getWifiModeList	KEYWORD2
+setOprToSoftAP	KEYWORD2
+setOprToStationSoftAP	KEYWORD2
+getOprMode	KEYWORD2
+getAPList	KEYWORD2
+getNowConecAp	KEYWORD2
+joinAP	KEYWORD2
+leaveAP	KEYWORD2
+setSoftAPParam	KEYWORD2
+getSoftAPParam	KEYWORD2
+getJoinedDeviceIP	KEYWORD2
+getDHCP	KEYWORD2
+setDHCP	KEYWORD2
+setAutoConnect	KEYWORD2
+getStationMac	KEYWORD2
+setStationMac	KEYWORD2
+getStationIp	KEYWORD2
+setStationIp	KEYWORD2
+getAPIp	KEYWORD2
+setAPIp	KEYWORD2
+startSmartConfig	KEYWORD2
+stopSmartConfig	KEYWORD2
+getIPStatus	KEYWORD2
+getLocalIP	KEYWORD2
+enableMUX	KEYWORD2
+disableMUX	KEYWORD2
+createTCP	KEYWORD2
+releaseTCP	KEYWORD2
+registerUDP	KEYWORD2
+unregisterUDP	KEYWORD2
+createTCP	KEYWORD2
+releaseTCP	KEYWORD2
+registerUDP	KEYWORD2
+unregisterUDP	KEYWORD2
+setTCPServerTimeout	KEYWORD2
+startTCPServer	KEYWORD2
+stopTCPServer	KEYWORD2
+setCIPMODE	KEYWORD2
+startServer	KEYWORD2
+stopServer	KEYWORD2
+saveTransLink	KEYWORD2
+setPing	KEYWORD2
+send	KEYWORD2
+sendFromFlash	KEYWORD2
+recv	KEYWORD2
+getMqttJson	KEYWORD2
+getMVersion	KEYWORD2
+queryWiFiInfo	KEYWORD2
+getStationMac	KEYWORD2
+getMLocalIP	KEYWORD2
+mqttSetServer	KEYWORD2
+mqttConnect	KEYWORD2
+mqttDisconnect	KEYWORD2
+mqttSetDiveceIDToken	KEYWORD2
+mqttSetSubscrib	KEYWORD2
+mqttPublish	KEYWORD2
+mqttPublishM	KEYWORD2
+mqttPubOneNet	KEYWORD2
+setAutoConnect	KEYWORD2
+smartConfiger	KEYWORD2
+mqttSetTopic	KEYWORD2
+mqttSetMessage	KEYWORD2
+mqttPub	KEYWORD2
+isMqttConnected	KEYWORD2
+setMqttConnected	KEYWORD2
+isWiFiconnected	KEYWORD2
+setWiFiconnected	KEYWORD2
+
+#######################################
+# Literals (LITERAL1)
+#######################################
+
+# Virtual pins
+VERSION_18	LITERAL1
+VERSION_22	LITERAL1
+DEFAULT_PATTERN	LITERAL1
+USER_SEL_VERSION	LITERAL1

@@ -34,6 +34,8 @@
 
 #define  USER_SEL_VERSION         VERSION_22
 
+#define WifiInit(Y,B)  {uint32_t baud_data[5] = {9600, 19200, 38400, 57600, 115200};for (int a = 0; a < 5; a++) { Y.begin(baud_data[a]);delay(100);while (Y.available() > 0) {Y.read();}wifi.setUart(B, DEFAULT_PATTERN);}Y.begin(B); delay(100); while (Y.available() > 0) { Y.read();}}
+
 /**
  * Provide an easy-to-use way to manipulate ESP8266. 
  */
@@ -598,6 +600,175 @@ class ESP8266 {
      */
     uint32_t recv(uint8_t *coming_mux_id, uint8_t *buffer, uint32_t buffer_size, uint32_t timeout = 1000);
 
+
+    ////////////////////////////////////Microduino//////////////////////////////////////////////
+
+
+	/**
+	 * Get the MQTT json data from mCotton
+	 *
+	 * @return the string json data
+	 */
+	String getMqttJson(void);
+
+	/**
+	 * Get the version of AT Command Set.
+	 *
+	 * @return the string of version.
+	 */
+	String getMVersion(void);
+
+	/**
+	 * query wifi information
+	 *
+	 * @return the string of version.
+	 */
+	String queryWiFiInfo(void);
+
+	/**
+	 * Get station MAC addrress.
+	 *
+	 * @return station MAC.
+	 */
+	String getStationMac(void);
+
+	/**
+	 * Get the IP address of ESP8266.
+	 *
+	 * @return the IP list.
+	 */
+	String getMLocalIP(void);
+
+	/**
+	 * Set mqtt server.
+	 *
+	 * @retval true - success.
+	 * @retval false - failure.
+	 */
+	bool mqttSetServer(String server, uint16_t port);
+
+	/**
+	 * Set mqtt connect.
+	 *
+	 * @retval true - success.
+	 * @retval false - failure.
+	 */
+	bool mqttConnect(String id, String user, String pass);
+
+	/**
+	 * Set mqtt disconnect.
+	 *
+	 * @retval true - success.
+	 * @retval false - failure.
+	 */
+	bool mqttDisconnect();
+
+	/**
+	 * Set mqtt set Device ID, Token.
+	 *
+	 * @retval true - success.
+	 * @retval false - failure.
+	 */
+	bool mqttSetDiveceIDToken(String deviceID, String DeviceToken);
+
+	/**
+	 * Set mqtt set Subscrib topic.
+	 *
+	 * @retval true - success.
+	 * @retval false - failure.
+	 */
+	bool mqttSetSubscrib(String topic);
+
+
+	/**
+	 * Set mqtt publish.
+	 *
+	 * @retval true - success.
+	 * @retval false - failure.
+	 */
+	bool mqttPublish(String topic, String jsonData, bool returnStat=true);
+
+	/**
+	 * Set mqtt publish single.
+	 *
+	 * @retval true - success.
+	 * @retval false - failure.
+	 */
+	bool mqttPublishM(String jsonData, bool returnStat=true);
+
+
+	/**
+	 * Set mqtt publish for oneNet.
+	 *
+	 * @retval true - success.
+	 * @retval false - failure.
+	 */
+	bool mqttPubOneNet(String topic, unsigned char header[3], String jsonData, bool returnStat=true);
+
+	/**
+	 * Set Auto Connect
+	 *
+	 * @retval true - success.
+	 * @retval false - failure.
+	 */
+	bool setAutoConnect(bool stat);
+
+	/**
+	 * Set smartconfiger
+	 *
+	 * @retval true - success.
+	 * @retval false - failure.
+	 */
+	bool smartConfiger(bool stat);
+
+
+	/**
+	 * Set mqtt publish Topic.
+	 *
+	 * @retval true - success.
+	 * @retval false - failure.
+	 */
+	bool mqttSetTopic(String topic);
+
+	/**
+	 * Set mqtt publish without topic.
+	 *
+	 * @retval true - success.
+	 * @retval false - failure.
+	 */
+	bool mqttSetMessage(String message);
+
+
+	/**
+	 * mqtt publish without anything.
+	 *
+	 * @retval true - success.
+	 * @retval false - failure.
+	 */
+	bool mqttPub();
+
+
+	bool isMqttConnected() const {
+		return _mqttConnected;
+	}
+
+	void setMqttConnected(bool mqttConnected = false) {
+		_mqttConnected = mqttConnected;
+	}
+
+	bool isWiFiconnected() const {
+		return _WiFiconnected;
+	}
+
+	void setWiFiconnected(bool wiFiconnected = false) {
+		_WiFiconnected = wiFiconnected;
+	}
+
+
+	/////////////////////////////////////////////////////////////////////////////////////
+
+
+
  private:
 
     /* 
@@ -691,11 +862,18 @@ class ESP8266 {
     bool eATPING(String ip);
     bool sATCIPSTO(uint32_t timeout);
     
+	//////////////////////////////Microduino///////////////////////////////////////
+    bool _WiFiconnected=false;
+    bool _mqttConnected=false;
+    ///////////////////////////////////////////////////////////////////////////////
+
+
+
     /*
      * +IPD,len:data
      * +IPD,id,len:data
      */
-    
+
     Stream *m_puart; /* The UART to communicate with ESP8266 */
 };
 

@@ -13,7 +13,7 @@ Contact information
 Circuits At Home, LTD
 Web      :  http://www.circuitsathome.com
 e-mail   :  support@circuitsathome.com
-*/
+ */
 
 /* Google ADK interface support header */
 
@@ -27,8 +27,8 @@ e-mail   :  support@circuitsathome.com
 #define ADB_PID   0x2D01
 
 #define XOOM  //enables repeating getProto() and getConf() attempts
-              //necessary for slow devices such as Motorola XOOM
-              //defined by default, can be commented out to save memory
+//necessary for slow devices such as Motorola XOOM
+//defined by default, can be commented out to save memory
 
 /* requests */
 
@@ -96,9 +96,9 @@ public:
 
 
         // USBDeviceConfig implementation
-        virtual uint8_t ConfigureDevice(uint8_t parent, uint8_t port, bool lowspeed);
-        virtual uint8_t Init(uint8_t parent, uint8_t port, bool lowspeed);
-        virtual uint8_t Release();
+        uint8_t ConfigureDevice(uint8_t parent, uint8_t port, bool lowspeed);
+        uint8_t Init(uint8_t parent, uint8_t port, bool lowspeed);
+        uint8_t Release();
 
         virtual uint8_t Poll() {
                 return 0;
@@ -112,29 +112,29 @@ public:
                 return ready;
         };
 
-        virtual boolean VIDPIDOK(uint16_t vid, uint16_t pid) {
+        virtual bool VIDPIDOK(uint16_t vid, uint16_t pid) {
                 return (vid == ADK_VID && (pid == ADK_PID || pid == ADB_PID));
         };
 
         //UsbConfigXtracter implementation
-        virtual void EndpointXtract(uint8_t conf, uint8_t iface, uint8_t alt, uint8_t proto, const USB_ENDPOINT_DESCRIPTOR *ep);
+        void EndpointXtract(uint8_t conf, uint8_t iface, uint8_t alt, uint8_t proto, const USB_ENDPOINT_DESCRIPTOR *ep);
 }; //class ADK : public USBDeviceConfig ...
 
 /* get ADK protocol version */
 
 /* returns 2 bytes in *adkproto */
 inline uint8_t ADK::getProto(uint8_t* adkproto) {
-        return( pUsb->ctrlReq(bAddress, 0, bmREQ_ADK_GET, ADK_GETPROTO, 0, 0, 0, 2, 2, adkproto, NULL));
+        return ( pUsb->ctrlReq(bAddress, 0, bmREQ_ADK_GET, ADK_GETPROTO, 0, 0, 0, 2, 2, adkproto, NULL));
 }
 
 /* send ADK string */
 inline uint8_t ADK::sendStr(uint8_t index, const char* str) {
-        return( pUsb->ctrlReq(bAddress, 0, bmREQ_ADK_SEND, ADK_SENDSTR, 0, 0, index, strlen(str) + 1, strlen(str) + 1, (uint8_t*) str, NULL));
+        return ( pUsb->ctrlReq(bAddress, 0, bmREQ_ADK_SEND, ADK_SENDSTR, 0, 0, index, strlen(str) + 1, strlen(str) + 1, (uint8_t*)str, NULL));
 }
 
 /* switch to accessory mode */
 inline uint8_t ADK::switchAcc(void) {
-        return( pUsb->ctrlReq(bAddress, 0, bmREQ_ADK_SEND, ADK_ACCSTART, 0, 0, 0, 0, 0, NULL, NULL));
+        return ( pUsb->ctrlReq(bAddress, 0, bmREQ_ADK_SEND, ADK_ACCSTART, 0, 0, 0, 0, 0, NULL, NULL));
 }
 
 #endif // _ADK_H_
