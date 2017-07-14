@@ -1,0 +1,94 @@
+#######################################
+# Data types (KEYWORD1)
+#######################################
+U8GLIB	KEYWORD1
+U8GLIB_SSD1306_128X64	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+U8GLIB	KEYWORD2
+begin	KEYWORD2
+setPrintPos	KEYWORD2
+getU8g	KEYWORD2
+write	KEYWORD2
+undoRotation	KEYWORD2
+setRot90	KEYWORD2
+setRot180	KEYWORD2
+setRot270	KEYWORD2
+undoScale	KEYWORD2
+setScale2x2	KEYWORD2
+firstPage	KEYWORD2
+nextPage	KEYWORD2
+setContrast	KEYWORD2
+sleepOn	KEYWORD2
+sleepOff	KEYWORD2
+setColorEntry	KEYWORD2
+setHiColor	KEYWORD2
+setHiColorByRGB	KEYWORD2
+setRGB	KEYWORD2
+setColorIndex	KEYWORD2
+getColorIndex	KEYWORD2
+setDefaultForegroundColor	KEYWORD2
+setDefaultBackgroundColor	KEYWORD2
+setDefaultMidColor	KEYWORD2
+getWidth	KEYWORD2
+getHeight	KEYWORD2
+getMode	KEYWORD2
+drawPixel	KEYWORD2
+drawHLine	KEYWORD2
+drawVLine	KEYWORD2
+drawLine	KEYWORD2
+drawFrame	KEYWORD2
+drawRFrame	KEYWORD2
+drawBox	KEYWORD2
+drawRBox	KEYWORD2
+drawCircle	KEYWORD2
+drawDisc	KEYWORD2
+drawEllipse	KEYWORD2
+drawFilledEllipse	KEYWORD2
+drawTriangle	KEYWORD2
+drawBitmap	KEYWORD2
+drawBitmapP	KEYWORD2
+drawXBM	KEYWORD2
+drawXBMP	KEYWORD2
+setFont	KEYWORD2
+getFontAscent	KEYWORD2
+getFontDescent	KEYWORD2
+getFontLineSpacing	KEYWORD2
+drawStr	KEYWORD2
+drawStr90	KEYWORD2
+drawStr180	KEYWORD2
+drawStr270	KEYWORD2
+drawStrP	KEYWORD2
+drawStr90P	KEYWORD2
+drawStr180P	KEYWORD2
+drawStr270P	KEYWORD2
+setFontPosBaseline	KEYWORD2
+setFontPosBottom	KEYWORD2
+setFontPosCenter	KEYWORD2
+setFontPosTop	KEYWORD2
+setFontRefHeightText	KEYWORD2
+setFontRefHeightExtendedText	KEYWORD2
+setFontRefHeightAll	KEYWORD2
+setFontLineSpacingFactor	KEYWORD2
+getStrPixelWidth	KEYWORD2
+getStrPixelWidthP	KEYWORD2
+getStrWidth	KEYWORD2
+getStrWidthP	KEYWORD2
+setHardwareBackup	KEYWORD2
+setCursorFont	KEYWORD2
+setCursorStyle	KEYWORD2
+setCursorPos	KEYWORD2
+setCursorColor	KEYWORD2
+enableCursor	KEYWORD2
+disableCursor	KEYWORD2
+drawCursor	KEYWORD2
+setVirtualScreenDimension	KEYWORD2
+addToVirtualScreen	KEYWORD2
+U8GLIB_SSD1306_128X64	KEYWORD2
+
+#######################################
+# Literals (LITERAL1)
+#######################################
+

@@ -1,0 +1,34 @@
+#######################################
+# Syntax Coloring Map For Light
+####################################### 
+# Datatypes (KEYWORD1)
+#######################################
+
+Light_D1	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin					KEYWORD2
+enableAutoGain			KEYWORD2
+setIntegrationTime		KEYWORD2
+setGain					KEYWORD2
+getBroadbandIr			KEYWORD2
+calculateLux			KEYWORD2
+getLuminosity			KEYWORD2
+	
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+TSL2561_ADDR_LOW	LITERAL1
+TSL2561_ADDR_FLOAT	LITERAL1
+TSL2561_ADDR_HIGH	LITERAL1
+
+TSL2561_INTEGRATIONTIME_13MS	LITERAL1
+TSL2561_INTEGRATIONTIME_101MS	LITERAL1
+TSL2561_INTEGRATIONTIME_402MS	LITERAL1
+
+TSL2561_GAIN_1X	LITERAL1
+TSL2561_GAIN_16X	LITERAL1

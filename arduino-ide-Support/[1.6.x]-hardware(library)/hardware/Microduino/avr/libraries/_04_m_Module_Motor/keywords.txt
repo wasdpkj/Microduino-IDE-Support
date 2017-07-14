@@ -1,0 +1,29 @@
+#######################################
+# 
+####################################### 
+# Datatypes (KEYWORD1)
+#######################################
+
+MotorPlus	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin		KEYWORD2
+setSpeed1	KEYWORD2
+setSpeed2	KEYWORD2
+setSpeed	KEYWORD2
+Brake		KEYWORD2
+	
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+FREE	LITERAL1
+BRAKE	LITERAL1
+SLEEP	LITERAL1
+MOTOR_ADDR1	LITERAL1
+MOTOR_ADDR2	LITERAL1
+MOTOR_ADDR3	LITERAL1
+MOTOR_ADDR4	LITERAL1

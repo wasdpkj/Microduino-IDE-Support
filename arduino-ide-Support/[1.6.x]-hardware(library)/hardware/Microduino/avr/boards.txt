@@ -83,65 +83,6 @@ mddevice.menu.cpu.8MHzatmega328.bootloader.extended_fuses=0x05
 mddevice.menu.cpu.8MHzatmega328.bootloader.file=optiboot/optiboot_micro_328p_8m.hex
 
 
-##Microduino Core (168pa)
-##############################################################
-
-## ATmega168 16M
-## -------------------------------------------------
-mddevice.menu.cpu.16MHzatmega168=Microduino/mCookie-Core (168pa)@16M,5V
-
-mddevice.menu.cpu.16MHzatmega168.upload.tool=avrdude
-mddevice.menu.cpu.16MHzatmega168.upload.protocol=arduino
-
-mddevice.menu.cpu.16MHzatmega168.upload.maximum_size=15872
-mddevice.menu.cpu.16MHzatmega168.upload.maximum_data_size=1024
-mddevice.menu.cpu.16MHzatmega168.upload.speed=115200
-
-mddevice.menu.cpu.16MHzatmega168.build.board=AVR_PRO
-mddevice.menu.cpu.16MHzatmega168.build.core=arduino
-mddevice.menu.cpu.16MHzatmega168.build.variant=standard
-
-mddevice.menu.cpu.16MHzatmega168.build.mcu=atmega168p
-mddevice.menu.cpu.16MHzatmega168.build.f_cpu=16000000L
-
-mddevice.menu.cpu.16MHzatmega168.bootloader.tool=avrdude
-mddevice.menu.cpu.16MHzatmega168.bootloader.unlock_bits=0x3F
-mddevice.menu.cpu.16MHzatmega168.bootloader.lock_bits=0x0F
-
-mddevice.menu.cpu.16MHzatmega168.bootloader.low_fuses=0xFF
-mddevice.menu.cpu.16MHzatmega168.bootloader.high_fuses=0xDD
-mddevice.menu.cpu.16MHzatmega168.bootloader.extended_fuses=0x04
-mddevice.menu.cpu.16MHzatmega168.bootloader.file=optiboot/optiboot_micro_168pa_16m.hex
-
-
-## ATmega168 8M
-## --------------------------------------------------
-mddevice.menu.cpu.8MHzatmega168=Microduino/mCookie-Core (168pa)@8M,3.3V
-
-mddevice.menu.cpu.8MHzatmega168.upload.tool=avrdude
-mddevice.menu.cpu.8MHzatmega168.upload.protocol=arduino
-
-mddevice.menu.cpu.8MHzatmega168.upload.maximum_size=15872
-mddevice.menu.cpu.8MHzatmega168.upload.maximum_data_size=1024
-mddevice.menu.cpu.8MHzatmega168.upload.speed=57600
-
-mddevice.menu.cpu.8MHzatmega168.build.board=AVR_PRO
-mddevice.menu.cpu.8MHzatmega168.build.core=arduino
-mddevice.menu.cpu.8MHzatmega168.build.variant=standard
-
-mddevice.menu.cpu.8MHzatmega168.build.mcu=atmega168p
-mddevice.menu.cpu.8MHzatmega168.build.f_cpu=8000000L
-
-mddevice.menu.cpu.8MHzatmega168.bootloader.tool=avrdude
-mddevice.menu.cpu.8MHzatmega168.bootloader.unlock_bits=0x3F
-mddevice.menu.cpu.8MHzatmega168.bootloader.lock_bits=0x0F
-
-mddevice.menu.cpu.8MHzatmega168.bootloader.low_fuses=0xE2
-mddevice.menu.cpu.8MHzatmega168.bootloader.high_fuses=0xDD
-mddevice.menu.cpu.8MHzatmega168.bootloader.extended_fuses=0x04
-mddevice.menu.cpu.8MHzatmega168.bootloader.file=optiboot/optiboot_micro_168pa_8m.hex
-
-
 ##Microduino Core+ (644pa)
 ##############################################################
 

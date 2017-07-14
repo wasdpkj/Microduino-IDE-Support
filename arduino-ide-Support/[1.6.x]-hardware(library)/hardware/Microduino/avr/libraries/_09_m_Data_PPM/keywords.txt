@@ -1,0 +1,24 @@
+#######################################
+# Syntax Coloring Map For Microduino_Protocol
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+PPM	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+Read			KEYWORD2
+Write			KEYWORD2
+beginWrite		KEYWORD2
+beginRead		KEYWORD2
+getChannel		KEYWORD2
+setFix			KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+#######################################

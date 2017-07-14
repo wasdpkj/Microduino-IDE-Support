@@ -1,0 +1,100 @@
+#######################################
+
+# Syntax Coloring Map For Microduino_ColorLED
+
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Microduino_ColorLED     KEYWORD1
+
+####################################### 
+
+# Class
+
+#######################################
+
+
+
+ColorLED	KEYWORD1
+
+
+
+#######################################
+
+# Methods and Functions 
+
+#######################################	
+
+
+setPixelColor	KEYWORD2
+
+setPin		KEYWORD2
+
+setBrightness	KEYWORD2
+
+numPixels	KEYWORD2
+
+getPixelColor	KEYWORD2
+
+Color		KEYWORD2
+
+show		KEYWORD2
+
+
+clear		KEYWORD2
+
+updateLength	KEYWORD2
+
+updateType	KEYWORD2
+
+getPixels	KEYWORD2
+
+getBrightness	KEYWORD2
+
+getPin		KEYWORD2
+
+canShow		KEYWORD2
+
+clear		KEYWORD2
+
+
+
+
+#######################################
+
+# Constants
+
+#######################################
+
+
+NEO_COLMASK	LITERAL1
+
+NEO_SPDMASK	LITERAL1
+
+NEO_KHZ800	LITERAL1
+
+NEO_KHZ400	LITERAL1
+
+NEO_GRB		LITERAL1
+
+NEO_RGB		LITERAL1
+
+NEO_RGBW	LITERAL1
+
+COLOR_NONE	LITERAL1
+COLOR_BLACK	LITERAL1
+COLOR_WHITE	LITERAL1
+COLOR_RED	LITERAL1
+COLOR_ORANGE	LITERAL1
+COLOR_YELLOW	LITERAL1
+COLOR_GREEN	LITERAL1
+COLOR_CYAN	LITERAL1
+COLOR_BLUE	LITERAL1
+COLOR_PURPLE	LITERAL1
+COLOR_WARM	LITERAL1
+COLOR_COLD	LITERAL1
+
+
+

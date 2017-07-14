@@ -1,0 +1,41 @@
+#######################################
+# Data types (KEYWORD1)
+#######################################
+LinerCCD	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+LinerCCD	KEYWORD2
+setCCDPixs	KEYWORD2
+setExposed	KEYWORD2
+reqestPixls	KEYWORD2
+caculateMaxMinPix	KEYWORD2
+adjustContrastAlgorithm	KEYWORD2
+adConAlgorithm	KEYWORD2
+pixlArray	KEYWORD2
+getPixsCommand	KEYWORD2
+setPixs_pixsCommand	KEYWORD2
+getLightPin	KEYWORD2
+setLightPin	KEYWORD2
+
+getPixsNum	KEYWORD2
+setPixsNum	KEYWORD2
+getTimes	KEYWORD2
+setTimes	KEYWORD2
+getMinPix	KEYWORD2
+setMinPix	KEYWORD2
+getMin2Max	KEYWORD2
+getLight	KEYWORD2
+setLight	KEYWORD2
+
+
+#pixl Times
+PIXEL2	LITERAL1
+PIXEL4	LITERAL1
+PIXEL8	LITERAL1
+PIXEL16	LITERAL1
+PIXEL32	LITERAL1
+PIXEL64	LITERAL1
+PIXEL128	LITERAL1
+

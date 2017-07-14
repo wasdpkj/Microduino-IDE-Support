@@ -1,0 +1,36 @@
+#######################################
+# Syntax Coloring Map For NFC
+####################################### 
+# Datatypes (KEYWORD1)
+#######################################
+
+NFC	  	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+setPassiveActivationRetries		KEYWORD2
+readPassiveTargetID			KEYWORD2
+inListPassiveTarget			KEYWORD2
+inDataExchange				KEYWORD2
+mifareclassic_IsFirstBlock	KEYWORD2
+mifareclassic_IsTrailerBlock	KEYWORD2
+mifareclassic_AuthenticateBlock	KEYWORD2
+mifareclassic_ReadDataBlock		KEYWORD2
+mifareclassic_WriteDataBlock	KEYWORD2
+mifareclassic_FormatNDEF		KEYWORD2
+mifareclassic_WriteNDEFURI		KEYWORD2
+mifareultralight_ReadPage		KEYWORD2
+mifareultralight_WritePage		KEYWORD2
+
+		
+#######################################
+# Constants (LITERAL1)
+#######################################
+PN532_MIFARE_ISO14443A	LITERAL1
+PN532_FELICA_212		LITERAL1
+PN532_FELICA_424		LITERAL1
+PN532_ISO14443_3B		LITERAL1
+PN532_JEWEL_TAG			LITERAL1

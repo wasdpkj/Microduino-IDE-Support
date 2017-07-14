@@ -1,0 +1,63 @@
+#######################################
+# Syntax Coloring Map For RTC
+####################################### 
+# Datatypes (KEYWORD1)
+#######################################
+
+RTC		KEYWORD1
+AT24Cxx	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin		KEYWORD2
+read		KEYWORD2
+write		KEYWORD2
+readStr		KEYWORD2
+writeStr	KEYWORD2
+
+clearStatus KEYWORD2
+clearAll	KEYWORD2
+setTime		KEYWORD2
+getTime		KEYWORD2
+setDate		KEYWORD2
+getDate 	KEYWORD2
+setDateTime	KEYWORD2
+getDateTime	KEYWORD2
+setAlarm	KEYWORD2
+disableAlarm	KEYWORD2
+setSquareWave	KEYWORD2
+disableSquareWave	KEYWORD2
+setTimerFreq	KEYWORD2
+disableTimer	KEYWORD2
+enableAlarmInt	KEYWORD2
+disableAlarmInt	KEYWORD2
+clearAlarmInt	KEYWORD2
+enableTimerInt	KEYWORD2
+disableTimerInt  KEYWORD2
+clearTimerInt  KEYWORD2
+isAlarmed KEYWORD2
+isCountdown  KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+EN_NONE		LITERAL1
+EN_MINUTE	LITERAL1
+EN_HOUR		LITERAL1
+EN_DAY		LITERAL1
+EN_WEEKDAY	LITERAL1
+
+SQW_DISABLE	LITERAL1
+SQW_32KHZ	LITERAL1
+SQW_1024HZ	LITERAL1
+SQW_32HZ	LITERAL1
+SQW_1HZ		LITERAL1
+
+TIM_DISABLE	LITERAL1
+TIM_4096HZ	LITERAL1
+TIM_64HZ	LITERAL1
+TIM_1HZ		LITERAL1
+TIM_1_60HZ	LITERAL1
