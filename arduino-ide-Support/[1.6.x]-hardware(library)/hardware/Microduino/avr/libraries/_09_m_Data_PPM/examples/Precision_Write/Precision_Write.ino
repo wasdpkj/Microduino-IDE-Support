@@ -1,7 +1,18 @@
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
+
+// 版权所有：
+// @老潘orz  wasdpkj@hotmail.com
+// ==============
+
 /*
-  PPM精确发送例程
-  数值范围1000到2000
-  中点为1500
+*PPM接收例程
+*PPM是航模中较常用的一个协议，通过一个I/O口，可以以50hz的频率收发8通道的数据
+详见：https://github.com/wasdpkj/Microduino-IDE-Support/tree/master/arduino-ide-Support/%5B1.6.x%5D-hardware(library)/hardware/Microduino/avr/libraries/_09_m_Data_PPM/PPM.png
+*PPM接收到的数据，有效数值范围为1000到2000
+*其中中点为1500
+*PPM发送引脚可以是任意引脚
+*本例程作用：将10bit精度的4通道数据，通过8通道PPM发送出去
 */
 
 #include <Microduino_PPM.h>
