@@ -39,20 +39,9 @@
 /* uncomment the following line to support displays larger than 240x240 */
 //#define U8G_16BIT 1
 
-/* comment the following line to generate more compact but interrupt unsafe code */
-#define U8G_INTERRUPT_SAFE 1
-
 
 #include <stddef.h>
-
-#ifdef __18CXX
-typedef unsigned char uint8_t;
-typedef signed char int8_t;
-typedef unsigned short uint16_t;
-typedef signed short int16_t;
-#else
 #include <stdint.h>
-#endif
 
 #if defined(__AVR__)
 #include <avr/pgmspace.h>
@@ -119,28 +108,6 @@ typedef uint8_t u8g_fntpgm_uint8_t;
 
 #endif
   
-/*===============================================================*/
-/* interrupt safe code */
-#if defined(U8G_INTERRUPT_SAFE)
-#  if defined(__AVR__)
-extern uint8_t global_SREG_backup;	/* u8g_state.c */
-#    define U8G_ATOMIC_START()		do { global_SREG_backup = SREG; cli(); } while(0)
-#    define U8G_ATOMIC_END()			SREG = global_SREG_backup
-#    define U8G_ATOMIC_OR(ptr, val) 	do { uint8_t tmpSREG = SREG; cli(); (*(ptr) |= (val)); SREG = tmpSREG; } while(0)
-#    define U8G_ATOMIC_AND(ptr, val) 	do { uint8_t tmpSREG = SREG; cli(); (*(ptr) &= (val)); SREG = tmpSREG; } while(0)
-#  else
-#    define U8G_ATOMIC_OR(ptr, val) (*(ptr) |= (val))
-#    define U8G_ATOMIC_AND(ptr, val) (*(ptr) &= (val))
-#    define U8G_ATOMIC_START()
-#    define U8G_ATOMIC_END()
-#  endif /* __AVR__ */
-#else
-#  define U8G_ATOMIC_OR(ptr, val) (*(ptr) |= (val))
-#  define U8G_ATOMIC_AND(ptr, val) (*(ptr) &= (val))
-#  define U8G_ATOMIC_START()
-#  define U8G_ATOMIC_END()
-#endif /* U8G_INTERRUPT_SAFE */
-  
   
 /*===============================================================*/
 /* forward */
@@ -202,288 +169,16 @@ struct _u8g_dev_t
 /*===============================================================*/
 /* device list */
 
-/* Size: 128x64 SDL, u8g_dev_sdl.c */
-extern u8g_dev_t u8g_dev_sdl_1bit;
-extern u8g_dev_t u8g_dev_sdl_1bit_h;
-extern u8g_dev_t u8g_dev_sdl_2bit;
-extern u8g_dev_t u8g_dev_sdl_2bit_double_mem;
-extern u8g_dev_t u8g_dev_sdl_8bit;
-extern u8g_dev_t u8g_dev_sdl_hicolor;
-extern u8g_dev_t u8g_dev_sdl_fullcolor;
-int u8g_sdl_get_key(void);
-
-/* Size: 70x30 monochrom, stdout */
-extern u8g_dev_t u8g_dev_stdout;
-
-/* Size: monochrom, writes "u8g.pbm" */
-extern u8g_dev_t u8g_dev_pbm;
-extern u8g_dev_t u8g_dev_pbm_8h1;
-extern u8g_dev_t u8g_dev_pbm_8h2;	/* grayscale simulation */
-
-/* Size: 128x64 monochrom, no output, used for performance measure */
-extern u8g_dev_t u8g_dev_gprof;
-
-/* Display: EA DOGS102, Size: 102x64 monochrom */
-extern u8g_dev_t u8g_dev_uc1701_dogs102_sw_spi;
-extern u8g_dev_t u8g_dev_uc1701_dogs102_hw_spi;
-
-extern u8g_dev_t u8g_dev_uc1701_dogs102_2x_sw_spi;
-extern u8g_dev_t u8g_dev_uc1701_dogs102_2x_hw_spi;
-
-/* Display: Mini12864 (dealextreme), Size: 128x64 monochrom */
-extern u8g_dev_t u8g_dev_uc1701_mini12864_sw_spi;
-extern u8g_dev_t u8g_dev_uc1701_mini12864_hw_spi;
-
-extern u8g_dev_t u8g_dev_uc1701_mini12864_2x_sw_spi;
-extern u8g_dev_t u8g_dev_uc1701_mini12864_2x_hw_spi;
-
-/* Display: EA DOGM132, Size: 128x32 monochrom */
-extern u8g_dev_t u8g_dev_st7565_dogm132_sw_spi;
-extern u8g_dev_t u8g_dev_st7565_dogm132_hw_spi;
-
-/* Display: EA DOGM128, Size: 128x64 monochrom */
-extern u8g_dev_t u8g_dev_st7565_dogm128_sw_spi;
-extern u8g_dev_t u8g_dev_st7565_dogm128_hw_spi;
-extern u8g_dev_t u8g_dev_st7565_dogm128_parallel;
-
-extern u8g_dev_t u8g_dev_st7565_dogm128_2x_sw_spi;
-extern u8g_dev_t u8g_dev_st7565_dogm128_2x_hw_spi;
-extern u8g_dev_t u8g_dev_st7565_dogm128_2x_parallel;
-
-/* Display: Topway LM6059 128x64 (Adafruit) */
-extern u8g_dev_t u8g_dev_st7565_lm6059_sw_spi;
-extern u8g_dev_t u8g_dev_st7565_lm6059_hw_spi;
-extern u8g_dev_t u8g_dev_st7565_lm6059_2x_sw_spi;
-extern u8g_dev_t u8g_dev_st7565_lm6059_2x_hw_spi;
-/* Display: Topway LM6063 128x64 */
-extern u8g_dev_t u8g_dev_st7565_lm6063_sw_spi;
-extern u8g_dev_t u8g_dev_st7565_lm6063_hw_spi;
-extern u8g_dev_t u8g_dev_st7565_lm6063_2x_sw_spi;
-extern u8g_dev_t u8g_dev_st7565_lm6063_2x_hw_spi;
-/* Display: Newhaven NHD-C12864 */
-extern u8g_dev_t u8g_dev_st7565_nhd_c12864_sw_spi;
-extern u8g_dev_t u8g_dev_st7565_nhd_c12864_hw_spi;
-extern u8g_dev_t u8g_dev_st7565_nhd_c12864_2x_sw_spi;
-extern u8g_dev_t u8g_dev_st7565_nhd_c12864_2x_hw_spi;
-
-/* Display: Newhaven NHD-C12832 */
-extern u8g_dev_t u8g_dev_st7565_nhd_c12832_sw_spi;
-extern u8g_dev_t u8g_dev_st7565_nhd_c12832_hw_spi;
-extern u8g_dev_t u8g_dev_st7565_nhd_c12832_parallel;
-extern u8g_dev_t u8g_dev_st7565_nhd_c12832_hw_usart_spi;
-
-/* Display: Displaytech 64128N */
-extern u8g_dev_t u8g_dev_st7565_64128n_sw_spi;
-extern u8g_dev_t u8g_dev_st7565_64128n_hw_spi;
-extern u8g_dev_t u8g_dev_st7565_64128n_parallel;
-
-extern u8g_dev_t u8g_dev_st7565_64128n_2x_sw_spi;
-extern u8g_dev_t u8g_dev_st7565_64128n_2x_hw_spi;
-extern u8g_dev_t u8g_dev_st7565_64128n_2x_parallel;
-
-/* Display: LCD-AG-C128032R-DIW W/KK E6 PBF */
-extern u8g_dev_t u8g_dev_uc1601_c128032_sw_spi;
-extern u8g_dev_t u8g_dev_uc1601_c128032_hw_spi;
-
-extern u8g_dev_t u8g_dev_uc1601_c128032_2x_sw_spi;
-extern u8g_dev_t u8g_dev_uc1601_c128032_2x_hw_spi;
-
-/* East Rising/buy-display.com ERC24064-1 */
-extern u8g_dev_t u8g_dev_uc1608_240x64_sw_spi;
-extern u8g_dev_t u8g_dev_uc1608_240x64_hw_spi;
-
-extern u8g_dev_t u8g_dev_uc1608_240x64_2x_sw_spi;
-extern u8g_dev_t u8g_dev_uc1608_240x64_2x_hw_spi;
-
-/* dfrobot 128x64 Graphic LCD (SKU:FIT0021) */
-extern u8g_dev_t u8g_dev_st7920_128x64_sw_spi;
-extern u8g_dev_t u8g_dev_st7920_128x64_hw_spi;
-extern u8g_dev_t u8g_dev_st7920_128x64_8bit;
-extern u8g_dev_t u8g_dev_st7920_128x64_custom;
-
-extern u8g_dev_t u8g_dev_st7920_128x64_4x_sw_spi;
-extern u8g_dev_t u8g_dev_st7920_128x64_4x_hw_spi;
-extern u8g_dev_t u8g_dev_st7920_128x64_4x_8bit;
-extern u8g_dev_t u8g_dev_st7920_128x64_4x_custom;
-
-/* NHD-19232WG */
-extern u8g_dev_t u8g_dev_st7920_192x32_sw_spi;
-extern u8g_dev_t u8g_dev_st7920_192x32_hw_spi;
-extern u8g_dev_t u8g_dev_st7920_192x32_8bit;
-
-extern u8g_dev_t u8g_dev_st7920_192x32_4x_sw_spi;
-extern u8g_dev_t u8g_dev_st7920_192x32_4x_hw_spi;
-extern u8g_dev_t u8g_dev_st7920_192x32_4x_8bit;
-
-/* CrystalFontz CFAG20232 */
-extern u8g_dev_t u8g_dev_st7920_202x32_sw_spi;
-extern u8g_dev_t u8g_dev_st7920_202x32_hw_spi;
-extern u8g_dev_t u8g_dev_st7920_202x32_8bit;
-
-extern u8g_dev_t u8g_dev_st7920_202x32_4x_sw_spi;
-extern u8g_dev_t u8g_dev_st7920_202x32_4x_hw_spi;
-extern u8g_dev_t u8g_dev_st7920_202x32_4x_8bit;
-
-/* LC7981 160x80 display */
-extern u8g_dev_t u8g_dev_lc7981_160x80_8bit;
-/* LC7981 240x64 display */
-extern u8g_dev_t u8g_dev_lc7981_240x64_8bit;
-/* LC7981 240x128 display */
-extern u8g_dev_t u8g_dev_lc7981_240x128_8bit;
-/* LC7981 320x64 display */
-extern u8g_dev_t u8g_dev_lc7981_320x64_8bit;
-
-/* T6963, all t6963 devices have double page (2x) */
-extern u8g_dev_t u8g_dev_t6963_240x128_8bit;
-extern u8g_dev_t u8g_dev_t6963_128x128_8bit;
-extern u8g_dev_t u8g_dev_t6963_240x64_8bit;
-extern u8g_dev_t u8g_dev_t6963_128x64_8bit;
-
-/* Display: EA DOGXL160, Size: 160x104 monochrom & gray level */
-extern u8g_dev_t u8g_dev_uc1610_dogxl160_bw_sw_spi;
-extern u8g_dev_t u8g_dev_uc1610_dogxl160_bw_hw_spi;
-extern u8g_dev_t u8g_dev_uc1610_dogxl160_gr_sw_spi;
-extern u8g_dev_t u8g_dev_uc1610_dogxl160_gr_hw_spi;
-
-extern u8g_dev_t u8g_dev_uc1610_dogxl160_2x_bw_sw_spi;
-extern u8g_dev_t u8g_dev_uc1610_dogxl160_2x_bw_hw_spi;
-extern u8g_dev_t u8g_dev_uc1610_dogxl160_2x_gr_sw_spi;
-extern u8g_dev_t u8g_dev_uc1610_dogxl160_2x_gr_hw_spi;
-
-/* Display: Generic KS0108b, Size: 128x64 monochrom */
-extern u8g_dev_t u8g_dev_ks0108_128x64;         /* official Arduino Library interface */
-extern u8g_dev_t u8g_dev_ks0108_128x64_fast;    /* faster, but uses private tables from the Arduino Library */
-
-/* Nokia 84x48 Display with PCD8544 */
-extern u8g_dev_t u8g_dev_pcd8544_84x48_sw_spi;
-extern u8g_dev_t u8g_dev_pcd8544_84x48_hw_spi;
-extern u8g_dev_t u8g_dev_tls8204_84x48_sw_spi;
-
-/* Nokia 96x65 Display with PCF8812 */
-extern u8g_dev_t u8g_dev_pcf8812_96x65_sw_spi;
-extern u8g_dev_t u8g_dev_pcf8812_96x65_hw_spi;
-
-/* NHD-2.7-12864UCY3 OLED Display with SSD1325 Controller */
-extern u8g_dev_t u8g_dev_ssd1325_nhd27oled_bw_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1325_nhd27oled_bw_hw_spi;
-extern u8g_dev_t u8g_dev_ssd1325_nhd27oled_bw_parallel;
-extern u8g_dev_t u8g_dev_ssd1325_nhd27oled_gr_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1325_nhd27oled_gr_hw_spi;
-
-extern u8g_dev_t u8g_dev_ssd1325_nhd27oled_2x_bw_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1325_nhd27oled_2x_bw_hw_spi;
-extern u8g_dev_t u8g_dev_ssd1325_nhd27oled_2x_bw_parallel;
-extern u8g_dev_t u8g_dev_ssd1325_nhd27oled_2x_gr_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1325_nhd27oled_2x_gr_hw_spi;
 
 /* LY120 OLED with SSD1327 Controller (tested with Seeedstudio module) */
-extern u8g_dev_t u8g_dev_ssd1327_96x96_gr_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1327_96x96_gr_hw_spi;
 extern u8g_dev_t u8g_dev_ssd1327_96x96_gr_i2c;
 
-extern u8g_dev_t u8g_dev_ssd1327_96x96_2x_gr_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1327_96x96_2x_gr_hw_spi;
 extern u8g_dev_t u8g_dev_ssd1327_96x96_2x_gr_i2c;
 
-/* NHD-3.12-25664 OLED Display with SSD1322 Controller */
-extern u8g_dev_t u8g_dev_ssd1322_nhd31oled_bw_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1322_nhd31oled_bw_hw_spi;
-extern u8g_dev_t u8g_dev_ssd1322_nhd31oled_bw_parallel;
-extern u8g_dev_t u8g_dev_ssd1322_nhd31oled_2x_bw_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1322_nhd31oled_2x_bw_hw_spi;
-
-extern u8g_dev_t u8g_dev_ssd1322_nhd31oled_gr_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1322_nhd31oled_gr_hw_spi;
-extern u8g_dev_t u8g_dev_ssd1322_nhd31oled_gr_parallel;
-extern u8g_dev_t u8g_dev_ssd1322_nhd31oled_2x_gr_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1322_nhd31oled_2x_gr_hw_spi;
-
 /* OLED 128x64 Display with SSD1306 Controller */
-extern u8g_dev_t u8g_dev_ssd1306_128x64_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1306_128x64_hw_spi;
 extern u8g_dev_t u8g_dev_ssd1306_128x64_i2c;
 
-extern u8g_dev_t u8g_dev_ssd1306_adafruit_128x64_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1306_adafruit_128x64_hw_spi;
-extern u8g_dev_t u8g_dev_ssd1306_adafruit_128x64_i2c;
-
-extern u8g_dev_t u8g_dev_ssd1306_128x64_2x_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1306_128x64_2x_hw_spi;
 extern u8g_dev_t u8g_dev_ssd1306_128x64_2x_i2c;
-
-/* OLED 128x64 Display with SH1106 Controller */
-extern u8g_dev_t u8g_dev_sh1106_128x64_sw_spi;
-extern u8g_dev_t u8g_dev_sh1106_128x64_hw_spi;
-extern u8g_dev_t u8g_dev_sh1106_128x64_i2c;
-
-extern u8g_dev_t u8g_dev_sh1106_128x64_2x_sw_spi;
-extern u8g_dev_t u8g_dev_sh1106_128x64_2x_hw_spi;
-extern u8g_dev_t u8g_dev_sh1106_128x64_2x_i2c;
-
-/* OLED 128x64 Display with SSD1309 Controller */
-extern u8g_dev_t u8g_dev_ssd1309_128x64_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1309_128x64_hw_spi;
-extern u8g_dev_t u8g_dev_ssd1309_128x64_i2c;
-
-/* OLED 128x32 Display with SSD1306 Controller */
-extern u8g_dev_t u8g_dev_ssd1306_128x32_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1306_128x32_hw_spi;
-extern u8g_dev_t u8g_dev_ssd1306_128x32_i2c;
-
-extern u8g_dev_t u8g_dev_ssd1306_128x32_2x_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1306_128x32_2x_hw_spi;
-extern u8g_dev_t u8g_dev_ssd1306_128x32_2x_i2c;
-
-/* OLED 60x32 Display with LD7032 Controller */
-extern u8g_dev_t u8g_dev_ld7032_60x32_sw_spi;
-extern u8g_dev_t u8g_dev_ld7032_60x32_hw_spi;
-extern u8g_dev_t u8g_dev_ld7032_60x32_parallel;
-
-/* experimental 65K TFT with st7687 controller */
-extern u8g_dev_t u8g_dev_st7687_c144mvgd_sw_spi;
-extern u8g_dev_t u8g_dev_st7687_c144mvgd_8bit;
-
-/* SBN1661/SED1520 display with 122x32 */
-extern u8g_dev_t u8g_dev_sbn1661_122x32;
-
-/* flip disc matrix */
-extern u8g_dev_t u8g_dev_flipdisc_2x7;
-void u8g_SetFlipDiscCallback(u8g_t *u8g, void (*cb)(uint8_t id, uint8_t page, uint8_t width, uint8_t *row1, uint8_t *row2));
-
-/* ILI9325D based TFT */
-extern u8g_dev_t u8g_dev_ili9325d_320x240_8bit;
-
-
-/* SSD1351 OLED (breakout board from http://www.kickstarter.com/projects/ilsoftltd/colour-oled-breakout-board) */
-extern u8g_dev_t u8g_dev_ssd1351_128x128_332_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1351_128x128_332_hw_spi;
-extern u8g_dev_t u8g_dev_ssd1351_128x128_4x_332_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1351_128x128_4x_332_hw_spi;
-extern u8g_dev_t u8g_dev_ssd1351_128x128_idx_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1351_128x128_idx_hw_spi;
-extern u8g_dev_t u8g_dev_ssd1351_128x128_hicolor_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1351_128x128_hicolor_hw_spi;
-extern u8g_dev_t u8g_dev_ssd1351_128x128_4x_hicolor_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1351_128x128_4x_hicolor_hw_spi;
-
-/* SSD1351 OLED (Freetronics, GPIOs set to high level) */
-extern u8g_dev_t u8g_dev_ssd1351_128x128gh_332_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1351_128x128gh_332_hw_spi;
-extern u8g_dev_t u8g_dev_ssd1351_128x128gh_4x_332_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1351_128x128gh_4x_332_hw_spi;
-extern u8g_dev_t u8g_dev_ssd1351_128x128gh_hicolor_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1351_128x128gh_hicolor_hw_spi;
-extern u8g_dev_t u8g_dev_ssd1351_128x128gh_4x_hicolor_sw_spi;
-extern u8g_dev_t u8g_dev_ssd1351_128x128gh_4x_hicolor_hw_spi;
-
-/* HT1632 */
-extern u8g_dev_t u8g_dev_ht1632_24x16;
-
-/* A2 Micro Printer */
-extern u8g_dev_t u8g_dev_a2_micro_printer_384x240;
-extern u8g_dev_t u8g_dev_a2_micro_printer_192x120_ds;
-extern u8g_dev_t u8g_dev_a2_micro_printer_192x360_ds;
-extern u8g_dev_t u8g_dev_a2_micro_printer_192x720_ds;
 
 /* u8g_virtual_screen.c  */
 extern u8g_dev_t u8g_dev_vs;
@@ -503,8 +198,6 @@ struct _u8g_dev_arg_pixel_t
 };
 /* typedef struct _u8g_dev_arg_pixel_t u8g_dev_arg_pixel_t; */ /* forward decl */
 
-/* range for r,g,b: 0..255 */
-#define U8G_GET_HICOLOR_BY_RGB(r,g,b) (((uint16_t)((r)&0x0f8))<<8)|(((uint16_t)((g)&0x0fc))<<3)|(((uint16_t)((b)>>3)))
 
 struct _u8g_dev_arg_bbx_t
 {
@@ -536,7 +229,7 @@ struct _u8g_dev_arg_irgb_t
 #define U8G_DEV_MSG_SLEEP_OFF            17
 
 #define U8G_DEV_MSG_PAGE_FIRST                  20
-#define U8G_DEV_MSG_PAGE_NEXT                    21
+#define U8G_DEV_MSG_PAGE_NEXT                   21
 
 /* arg: u8g_dev_arg_bbx_t * */
 /* new algorithm with U8G_DEV_MSG_GET_PAGE_BOX makes this msg obsolete */
@@ -552,18 +245,18 @@ struct _u8g_dev_arg_irgb_t
 
 /* arg: u8g_dev_arg_pixel_t * */
 #define U8G_DEV_MSG_SET_TPIXEL				44
-#define U8G_DEV_MSG_SET_4TPIXEL			45
+#define U8G_DEV_MSG_SET_4TPIXEL				45
 
-#define U8G_DEV_MSG_SET_PIXEL                           50
-#define U8G_DEV_MSG_SET_8PIXEL                          59
+#define U8G_DEV_MSG_SET_PIXEL               50
+#define U8G_DEV_MSG_SET_8PIXEL              59
 
-#define U8G_DEV_MSG_SET_COLOR_ENTRY                60
+#define U8G_DEV_MSG_SET_COLOR_ENTRY         60
 
-#define U8G_DEV_MSG_SET_XY_CB                           61
+#define U8G_DEV_MSG_SET_XY_CB               61
 
-#define U8G_DEV_MSG_GET_WIDTH                           70
-#define U8G_DEV_MSG_GET_HEIGHT                           71
-#define U8G_DEV_MSG_GET_MODE                  72
+#define U8G_DEV_MSG_GET_WIDTH               70
+#define U8G_DEV_MSG_GET_HEIGHT              71
+#define U8G_DEV_MSG_GET_MODE                72
 
 /*===============================================================*/
 /* device modes */
@@ -571,13 +264,7 @@ struct _u8g_dev_arg_irgb_t
 
 #define U8G_MODE_UNKNOWN     0
 #define U8G_MODE_BW     U8G_MODE(0, 0, 1)
-#define U8G_MODE_GRAY2BIT     U8G_MODE(0, 0, 2)
-#define U8G_MODE_R3G3B2  U8G_MODE(0, 1, 8)
 #define U8G_MODE_INDEX  U8G_MODE(1, 1, 8)
-/* hicolor is R5G6B5 */
-#define U8G_MODE_HICOLOR  U8G_MODE(0, 1, 16)
-/* truecolor  */
-#define U8G_MODE_TRUECOLOR  U8G_MODE(0, 1, 24)
 
 
 #define U8G_MODE_GET_BITS_PER_PIXEL(mode) ((mode)&31)
@@ -610,137 +297,16 @@ struct _u8g_dev_arg_irgb_t
 
 /* com driver */
 uint8_t u8g_com_null_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);               /* u8g_com_null.c */
-uint8_t u8g_com_arduino_std_sw_spi_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);        /* u8g_com_arduino_std_sw_spi.c */
-uint8_t u8g_com_arduino_hw_usart_spi_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);      /* u8g_com_atmega_hw_usart_spi.c */
-uint8_t u8g_com_arduino_sw_spi_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);        /* u8g_com_arduino_sw_spi.c */
-uint8_t u8g_com_arduino_hw_spi_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);          /* u8g_com_arduino_hw_spi.c */
-uint8_t u8g_com_arduino_ATtiny85_std_hw_spi_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);          /* u8g_arduino_ATTiny85_std_hw_spi.c */
-uint8_t u8g_com_arduino_st7920_spi_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);  /* u8g_com_arduino_st7920_spi.c */
-uint8_t u8g_com_arduino_st7920_custom_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr); /* u8g_com_arduino_st7920_custom.c */
-uint8_t u8g_com_arduino_st7920_hw_spi_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);  /* u8g_com_arduino_st7920_hw_spi.c */
-uint8_t u8g_com_arduino_parallel_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);           /* u8g_com_arduino_parallel.c */
-uint8_t u8g_com_arduino_fast_parallel_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);      /* u8g_com_arduino_fast_parallel.c */
-uint8_t u8g_com_arduino_port_d_wr_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);       /* u8g_com_arduino_port_d_wr.c */
-uint8_t u8g_com_arduino_no_en_parallel_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);	/* u8g_com_arduino_no_en_parallel.c */		
 uint8_t u8g_com_arduino_ssd_i2c_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);		/* u8g_com_arduino_ssd_i2c.c */
-uint8_t u8g_com_arduino_t6963_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);			/* u8g_com_arduino_t6963.c */
-
-
-uint8_t u8g_com_atmega_hw_spi_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);      /* u8g_com_atmega_hw_spi.c */
-uint8_t u8g_com_atmega_sw_spi_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);      /* u8g_com_atmega_sw_spi.c */
-uint8_t u8g_com_atmega_st7920_sw_spi_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);	/* u8g_com_atmega_st7920_spi.c */
-uint8_t u8g_com_atmega_st7920_hw_spi_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);
-uint8_t u8g_com_atmega_parallel_fn(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr);    /* u8g_com_atmega_parallel.c */
 
 
 /* 
   Translation of system specific com drives to generic com names
   At the moment, the following generic com drives are available
-  U8G_COM_HW_SPI
-  U8G_COM_SW_SPI
-  U8G_COM_PARALLEL
-  U8G_COM_T6963
-  U8G_COM_FAST_PARALLEL
   U8G_COM_SSD_I2C
   
-defined(__18CXX) || defined(__PIC32MX)  
-
 */
-/* ==== HW SPI, Arduino ====*/
-#if defined(ARDUINO)
-#if defined(__AVR__)
 
-#if defined(__AVR_ATtiny85__)
-#define U8G_COM_HW_SPI u8g_com_arduino_ATtiny85_std_hw_spi_fn
-#define U8G_COM_ST7920_HW_SPI u8g_com_null_fn
-#else
-
-#define U8G_COM_HW_SPI u8g_com_arduino_hw_spi_fn
-#if defined(__AVR_ATmega32U4__)
-#define U8G_COM_HW_USART_SPI u8g_com_arduino_hw_usart_spi_fn
-#endif /* __AVR_ATmega32U4__ */
-#define U8G_COM_ST7920_HW_SPI u8g_com_arduino_st7920_hw_spi_fn
-#endif /* __AVR_ATtiny85__ */
-
-#elif defined(__18CXX) || defined(__PIC32MX)
-#define U8G_COM_HW_SPI u8g_com_null_fn
-#define U8G_COM_ST7920_HW_SPI u8g_com_null_fn
-#elif defined(__SAM3X8E__)   /* Arduino Due */
-#define U8G_COM_HW_SPI u8g_com_arduino_hw_spi_fn
-#define U8G_COM_ST7920_HW_SPI u8g_com_null_fn
-#endif
-#endif
-/* ==== HW SPI, not Arduino ====*/
-#ifndef U8G_COM_HW_SPI
-#if defined(__AVR__)
-#define U8G_COM_HW_SPI u8g_com_atmega_hw_spi_fn
-#define U8G_COM_ST7920_HW_SPI u8g_com_atmega_st7920_hw_spi_fn
-#endif
-#endif
-#ifndef U8G_COM_HW_SPI
-#define U8G_COM_HW_SPI u8g_com_null_fn
-#define U8G_COM_ST7920_HW_SPI u8g_com_null_fn
-#endif
-
-#ifndef U8G_COM_HW_USART_SPI
-#define U8G_COM_HW_USART_SPI u8g_com_null_fn
-#endif
-
-
-/* ==== SW SPI, Arduino ====*/
-#if defined(ARDUINO)
-#if defined(__AVR__)
-#define U8G_COM_SW_SPI u8g_com_arduino_sw_spi_fn
-#define U8G_COM_ST7920_SW_SPI u8g_com_arduino_st7920_spi_fn
-#elif defined(__18CXX) || defined(__PIC32MX)
-#define U8G_COM_SW_SPI u8g_com_arduino_sw_spi_fn
-#define U8G_COM_ST7920_SW_SPI u8g_com_arduino_st7920_spi_fn
-#elif defined(__SAM3X8E__)   /* Arduino Due */
-//#define U8G_COM_SW_SPI u8g_com_arduino_std_sw_spi_fn
-#define U8G_COM_SW_SPI u8g_com_arduino_sw_spi_fn
-#define U8G_COM_ST7920_SW_SPI u8g_com_arduino_st7920_spi_fn
-#elif defined(__arm__)   /* Teensy */
-#define U8G_COM_SW_SPI u8g_com_arduino_std_sw_spi_fn
-#define U8G_COM_ST7920_SW_SPI u8g_com_arduino_st7920_spi_fn
-#endif
-#endif
-
-#ifndef U8G_COM_SW_SPI
-/* ==== SW SPI, not Arduino ====*/
-#if defined(__AVR__)
-#define U8G_COM_SW_SPI u8g_com_atmega_sw_spi_fn
-#define U8G_COM_ST7920_SW_SPI u8g_com_atmega_st7920_sw_spi_fn
-#endif
-#endif
-#ifndef U8G_COM_SW_SPI
-#define U8G_COM_SW_SPI u8g_com_null_fn
-#define U8G_COM_ST7920_SW_SPI u8g_com_null_fn
-#endif
-
-/* ==== Parallel iinterface, Arduino ====*/
-#if defined(ARDUINO)
-#if defined(__AVR__)
-#define U8G_COM_PARALLEL u8g_com_arduino_parallel_fn
-#define U8G_COM_FAST_PARALLEL u8g_com_arduino_fast_parallel_fn
-#define U8G_COM_T6963  u8g_com_arduino_t6963_fn
-#else /* Arduino Due, Chipkit PIC32 */
-#define U8G_COM_PARALLEL u8g_com_arduino_parallel_fn
-#define U8G_COM_FAST_PARALLEL u8g_com_arduino_parallel_fn
-#define U8G_COM_T6963  u8g_com_null_fn
-#endif
-#endif
-#ifndef U8G_COM_PARALLEL
-#if defined(__AVR__)
-#define U8G_COM_PARALLEL u8g_com_atmega_parallel_fn
-#define U8G_COM_FAST_PARALLEL u8g_com_atmega_parallel_fn
-#define U8G_COM_T6963  u8g_com_null_fn
-#endif
-#endif
-#ifndef U8G_COM_PARALLEL
-#define U8G_COM_PARALLEL u8g_com_null_fn
-#define U8G_COM_FAST_PARALLEL u8g_com_null_fn
-#define U8G_COM_T6963  u8g_com_null_fn
-#endif
 
 #if defined(ARDUINO)
 #if defined(__AVR__)
@@ -1061,14 +627,7 @@ void u8g_UpdateDimension(u8g_t *u8g);
 uint8_t u8g_Begin(u8g_t *u8g);				/* reset device, put it into default state and call u8g_UpdateDimension() */
 uint8_t u8g_Init(u8g_t *u8g, u8g_dev_t *dev);   /* only usefull if the device only as hardcoded ports */
 uint8_t u8g_InitComFn(u8g_t *u8g, u8g_dev_t *dev, u8g_com_fnptr com_fn);	/* Init procedure for anything which is not Arduino or AVR (e.g. ARM, but not Due, which is Arduino) */
-uint8_t u8g_InitSPI(u8g_t *u8g, u8g_dev_t *dev, uint8_t sck, uint8_t mosi, uint8_t cs, uint8_t a0, uint8_t reset);
-uint8_t u8g_InitHWSPI(u8g_t *u8g, u8g_dev_t *dev, uint8_t cs, uint8_t a0, uint8_t reset);
 uint8_t u8g_InitI2C(u8g_t *u8g, u8g_dev_t *dev, uint8_t options);	/* use U8G_I2C_OPT_NONE as options */
-uint8_t u8g_Init8BitFixedPort(u8g_t *u8g, u8g_dev_t *dev, uint8_t en, uint8_t cs, uint8_t di, uint8_t rw, uint8_t reset);
-uint8_t u8g_Init8Bit(u8g_t *u8g, u8g_dev_t *dev, uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3, uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7, 
-  uint8_t en, uint8_t cs1, uint8_t cs2, uint8_t di, uint8_t rw, uint8_t reset);
-uint8_t u8g_InitRW8Bit(u8g_t *u8g, u8g_dev_t *dev, uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3, uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7, 
-  uint8_t cs, uint8_t a0, uint8_t wr, uint8_t rd, uint8_t reset);
 void u8g_FirstPage(u8g_t *u8g);
 uint8_t u8g_NextPage(u8g_t *u8g);
 uint8_t u8g_SetContrast(u8g_t *u8g, uint8_t contrast);
@@ -1121,7 +680,6 @@ void u8g_SetDefaultMidColor(u8g_t *u8g);
 
 
 void u8g_state_dummy_cb(uint8_t msg);
-void u8g_backup_spi(uint8_t msg);		/* backup SPI state controller */
 /* backward compatible definition */
 #define u8g_backup_avr_spi u8g_backup_spi
 
@@ -1397,512 +955,28 @@ void u8g_MicroDelay(void);
 /* delay by 10 microseconds */
 void u8g_10MicroDelay(void);
 
-/*===============================================================*/
-/* chessengine.c */
-#define CHESS_KEY_NONE 0
-#define CHESS_KEY_NEXT 1
-#define CHESS_KEY_PREV 2
-#define CHESS_KEY_SELECT 3
-#define CHESS_KEY_BACK 4
-
-void chess_Init(u8g_t *u8g, uint8_t empty_body_color);
-void chess_Draw(void);
-void chess_Step(uint8_t keycode);
 
 /*===============================================================*/
 /* font definitions */
-extern const u8g_fntpgm_uint8_t u8g_font_m2icon_5[] U8G_FONT_SECTION("u8g_font_m2icon_5");
-extern const u8g_fntpgm_uint8_t u8g_font_m2icon_7[] U8G_FONT_SECTION("u8g_font_m2icon_7");
-extern const u8g_fntpgm_uint8_t u8g_font_m2icon_9[] U8G_FONT_SECTION("u8g_font_m2icon_9");
-
-extern const u8g_fntpgm_uint8_t u8g_font_u8glib_4[] U8G_FONT_SECTION("u8g_font_u8glib_4");
-extern const u8g_fntpgm_uint8_t u8g_font_u8glib_4r[] U8G_FONT_SECTION("u8g_font_u8glib_4r");
+extern const u8g_fntpgm_uint8_t u8g_font_timB18[] U8G_FONT_SECTION("u8g_font_timB18");
+extern const u8g_fntpgm_uint8_t u8g_font_timB14[] U8G_FONT_SECTION("u8g_font_timB14");
+extern const u8g_fntpgm_uint8_t u8g_font_timB10[] U8G_FONT_SECTION("u8g_font_timB10");
 
 
-extern const u8g_fntpgm_uint8_t u8g_font_6x12_75r[] U8G_FONT_SECTION("u8g_font_6x12_75r");
-extern const u8g_fntpgm_uint8_t u8g_font_6x13_75r[] U8G_FONT_SECTION("u8g_font_6x13_75r");
-extern const u8g_fntpgm_uint8_t u8g_font_7x13_75r[] U8G_FONT_SECTION("u8g_font_7x13_75r");
-extern const u8g_fntpgm_uint8_t u8g_font_8x13_75r[] U8G_FONT_SECTION("u8g_font_8x13_75r");
-extern const u8g_fntpgm_uint8_t u8g_font_9x15_75r[] U8G_FONT_SECTION("u8g_font_9x15_75r");
-extern const u8g_fntpgm_uint8_t u8g_font_9x18_75r[] U8G_FONT_SECTION("u8g_font_9x18_75r");
-extern const u8g_fntpgm_uint8_t u8g_font_cu12_75r[] U8G_FONT_SECTION("u8g_font_cu12_75r");
-extern const u8g_fntpgm_uint8_t u8g_font_unifont_75r[] U8G_FONT_SECTION("u8g_font_unifont_75r");
-extern const u8g_fntpgm_uint8_t u8g_font_10x20_75r[] U8G_FONT_SECTION("u8g_font_10x20_75r");
-
-extern const u8g_fntpgm_uint8_t u8g_font_10x20_67_75[] U8G_FONT_SECTION("u8g_font_10x20_67_75");
-extern const u8g_fntpgm_uint8_t u8g_font_10x20_78_79[] U8G_FONT_SECTION("u8g_font_10x20_78_79");
-extern const u8g_fntpgm_uint8_t u8g_font_10x20[] U8G_FONT_SECTION("u8g_font_10x20");
-extern const u8g_fntpgm_uint8_t u8g_font_10x20r[] U8G_FONT_SECTION("u8g_font_10x20r");
-extern const u8g_fntpgm_uint8_t u8g_font_4x6[] U8G_FONT_SECTION("u8g_font_4x6");
-extern const u8g_fntpgm_uint8_t u8g_font_4x6r[] U8G_FONT_SECTION("u8g_font_4x6r");
-//extern const u8g_fntpgm_uint8_t u8g_font_4x6n[] U8G_FONT_SECTION("u8g_font_4x6n");
 extern const u8g_fntpgm_uint8_t u8g_font_5x7[] U8G_FONT_SECTION("u8g_font_5x7");
-extern const u8g_fntpgm_uint8_t u8g_font_5x7r[] U8G_FONT_SECTION("u8g_font_5x7r");
-extern const u8g_fntpgm_uint8_t u8g_font_5x8[] U8G_FONT_SECTION("u8g_font_5x8");
-extern const u8g_fntpgm_uint8_t u8g_font_5x8r[] U8G_FONT_SECTION("u8g_font_5x8r");
 extern const u8g_fntpgm_uint8_t u8g_font_6x10[] U8G_FONT_SECTION("u8g_font_6x10");
-extern const u8g_fntpgm_uint8_t u8g_font_6x10r[] U8G_FONT_SECTION("u8g_font_6x10r");
-extern const u8g_fntpgm_uint8_t u8g_font_6x12_67_75[] U8G_FONT_SECTION("u8g_font_6x12_67_75");
-extern const u8g_fntpgm_uint8_t u8g_font_6x12_78_79[] U8G_FONT_SECTION("u8g_font_6x12_78_79");
-extern const u8g_fntpgm_uint8_t u8g_font_6x12[] U8G_FONT_SECTION("u8g_font_6x12");
-extern const u8g_fntpgm_uint8_t u8g_font_6x12r[] U8G_FONT_SECTION("u8g_font_6x12r");
-extern const u8g_fntpgm_uint8_t u8g_font_6x13_67_75[] U8G_FONT_SECTION("u8g_font_6x13_67_75");
-extern const u8g_fntpgm_uint8_t u8g_font_6x13_78_79[] U8G_FONT_SECTION("u8g_font_6x13_78_79");
-extern const u8g_fntpgm_uint8_t u8g_font_6x13B[] U8G_FONT_SECTION("u8g_font_6x13B");
-extern const u8g_fntpgm_uint8_t u8g_font_6x13Br[] U8G_FONT_SECTION("u8g_font_6x13Br");
-extern const u8g_fntpgm_uint8_t u8g_font_6x13[] U8G_FONT_SECTION("u8g_font_6x13");
-extern const u8g_fntpgm_uint8_t u8g_font_6x13r[] U8G_FONT_SECTION("u8g_font_6x13r");
-extern const u8g_fntpgm_uint8_t u8g_font_6x13O[] U8G_FONT_SECTION("u8g_font_6x13O");
-extern const u8g_fntpgm_uint8_t u8g_font_6x13Or[] U8G_FONT_SECTION("u8g_font_6x13Or");
-extern const u8g_fntpgm_uint8_t u8g_font_7x13_67_75[] U8G_FONT_SECTION("u8g_font_7x13_67_75");
-extern const u8g_fntpgm_uint8_t u8g_font_7x13_78_79[] U8G_FONT_SECTION("u8g_font_7x13_78_79");
-extern const u8g_fntpgm_uint8_t u8g_font_7x13B[] U8G_FONT_SECTION("u8g_font_7x13B");
-extern const u8g_fntpgm_uint8_t u8g_font_7x13Br[] U8G_FONT_SECTION("u8g_font_7x13Br");
 extern const u8g_fntpgm_uint8_t u8g_font_7x13[] U8G_FONT_SECTION("u8g_font_7x13");
-extern const u8g_fntpgm_uint8_t u8g_font_7x13r[] U8G_FONT_SECTION("u8g_font_7x13r");
-extern const u8g_fntpgm_uint8_t u8g_font_7x13O[] U8G_FONT_SECTION("u8g_font_7x13O");
-extern const u8g_fntpgm_uint8_t u8g_font_7x13Or[] U8G_FONT_SECTION("u8g_font_7x13Or");
-extern const u8g_fntpgm_uint8_t u8g_font_7x14B[] U8G_FONT_SECTION("u8g_font_7x14B");
-extern const u8g_fntpgm_uint8_t u8g_font_7x14Br[] U8G_FONT_SECTION("u8g_font_7x14Br");
-extern const u8g_fntpgm_uint8_t u8g_font_7x14[] U8G_FONT_SECTION("u8g_font_7x14");
-extern const u8g_fntpgm_uint8_t u8g_font_7x14r[] U8G_FONT_SECTION("u8g_font_7x14r");
-extern const u8g_fntpgm_uint8_t u8g_font_8x13_67_75[] U8G_FONT_SECTION("u8g_font_8x13_67_75");
-extern const u8g_fntpgm_uint8_t u8g_font_8x13B[] U8G_FONT_SECTION("u8g_font_8x13B");
-extern const u8g_fntpgm_uint8_t u8g_font_8x13Br[] U8G_FONT_SECTION("u8g_font_8x13Br");
-extern const u8g_fntpgm_uint8_t u8g_font_8x13[] U8G_FONT_SECTION("u8g_font_8x13");
-extern const u8g_fntpgm_uint8_t u8g_font_8x13r[] U8G_FONT_SECTION("u8g_font_8x13r");
-extern const u8g_fntpgm_uint8_t u8g_font_8x13O[] U8G_FONT_SECTION("u8g_font_8x13O");
-extern const u8g_fntpgm_uint8_t u8g_font_8x13Or[] U8G_FONT_SECTION("u8g_font_8x13Or");
-
-extern const u8g_fntpgm_uint8_t u8g_font_9x15_67_75[] U8G_FONT_SECTION("u8g_font_9x15_67_75");
-extern const u8g_fntpgm_uint8_t u8g_font_9x15_78_79[] U8G_FONT_SECTION("u8g_font_9x15_78_79");
-extern const u8g_fntpgm_uint8_t u8g_font_9x15B[] U8G_FONT_SECTION("u8g_font_9x15B");
-extern const u8g_fntpgm_uint8_t u8g_font_9x15Br[] U8G_FONT_SECTION("u8g_font_9x15Br");
 extern const u8g_fntpgm_uint8_t u8g_font_9x15[] U8G_FONT_SECTION("u8g_font_9x15");
-extern const u8g_fntpgm_uint8_t u8g_font_9x15r[] U8G_FONT_SECTION("u8g_font_9x15r");
-
-extern const u8g_fntpgm_uint8_t u8g_font_9x18_67_75[] U8G_FONT_SECTION("u8g_font_9x18_67_75");
-extern const u8g_fntpgm_uint8_t u8g_font_9x18_78_79[] U8G_FONT_SECTION("u8g_font_9x18_78_79");
-extern const u8g_fntpgm_uint8_t u8g_font_9x18B[] U8G_FONT_SECTION("u8g_font_9x18B");
-extern const u8g_fntpgm_uint8_t u8g_font_9x18[] U8G_FONT_SECTION("u8g_font_9x18");
-extern const u8g_fntpgm_uint8_t u8g_font_9x18Br[] U8G_FONT_SECTION("u8g_font_9x18Br");
-extern const u8g_fntpgm_uint8_t u8g_font_9x18r[] U8G_FONT_SECTION("u8g_font_9x18r");
-
-extern const u8g_fntpgm_uint8_t u8g_font_cursor[] U8G_FONT_SECTION("u8g_font_cursor");
-extern const u8g_fntpgm_uint8_t u8g_font_cursorr[] U8G_FONT_SECTION("u8g_font_cursorr");
-extern const u8g_fntpgm_uint8_t u8g_font_micro[] U8G_FONT_SECTION("u8g_font_micro");
-
-extern const u8g_fntpgm_uint8_t u8g_font_cu12_67_75[] U8G_FONT_SECTION("u8g_font_cu12_67_75");
-extern const u8g_fntpgm_uint8_t u8g_font_cu12_78_79[] U8G_FONT_SECTION("u8g_font_cu12_78_79");
-extern const u8g_fntpgm_uint8_t u8g_font_cu12[] U8G_FONT_SECTION("u8g_font_cu12");
-
-/* 
-  Free-Universal Bold 
-  r: Reduced char set (codes 32 - 128)
-  n: Numbers (codes 42 - 57)
-  no char: Full set (codes 32 - 255)
-*/
-
-extern const u8g_fntpgm_uint8_t u8g_font_fub11[] U8G_FONT_SECTION("u8g_font_fub11");
-extern const u8g_fntpgm_uint8_t u8g_font_fub11r[] U8G_FONT_SECTION("u8g_font_fub11r");
-extern const u8g_fntpgm_uint8_t u8g_font_fub11n[] U8G_FONT_SECTION("u8g_font_fub11n");
-extern const u8g_fntpgm_uint8_t u8g_font_fub14[] U8G_FONT_SECTION("u8g_font_fub14");
-extern const u8g_fntpgm_uint8_t u8g_font_fub14r[] U8G_FONT_SECTION("u8g_font_fub14r");
-extern const u8g_fntpgm_uint8_t u8g_font_fub14n[] U8G_FONT_SECTION("u8g_font_fub14n");
-extern const u8g_fntpgm_uint8_t u8g_font_fub17[] U8G_FONT_SECTION("u8g_font_fub17");
-extern const u8g_fntpgm_uint8_t u8g_font_fub17r[] U8G_FONT_SECTION("u8g_font_fub17r");
-extern const u8g_fntpgm_uint8_t u8g_font_fub17n[] U8G_FONT_SECTION("u8g_font_fub17n");
-extern const u8g_fntpgm_uint8_t u8g_font_fub20[] U8G_FONT_SECTION("u8g_font_fub20");
-extern const u8g_fntpgm_uint8_t u8g_font_fub20r[] U8G_FONT_SECTION("u8g_font_fub20r");
-extern const u8g_fntpgm_uint8_t u8g_font_fub20n[] U8G_FONT_SECTION("u8g_font_fub20n");
-extern const u8g_fntpgm_uint8_t u8g_font_fub25[] U8G_FONT_SECTION("u8g_font_fub25");
-extern const u8g_fntpgm_uint8_t u8g_font_fub25r[] U8G_FONT_SECTION("u8g_font_fub25r");
-extern const u8g_fntpgm_uint8_t u8g_font_fub25n[] U8G_FONT_SECTION("u8g_font_fub25n");
-extern const u8g_fntpgm_uint8_t u8g_font_fub30[] U8G_FONT_SECTION("u8g_font_fub30");
-extern const u8g_fntpgm_uint8_t u8g_font_fub30r[] U8G_FONT_SECTION("u8g_font_fub30r");
-extern const u8g_fntpgm_uint8_t u8g_font_fub30n[] U8G_FONT_SECTION("u8g_font_fub30n");
-extern const u8g_fntpgm_uint8_t u8g_font_fub35n[] U8G_FONT_SECTION("u8g_font_fub35n");
-extern const u8g_fntpgm_uint8_t u8g_font_fub42n[] U8G_FONT_SECTION("u8g_font_fub42n");
-extern const u8g_fntpgm_uint8_t u8g_font_fub49n[] U8G_FONT_SECTION("u8g_font_fub49n");
-
-/* 
-  Free-Universal Regular
-  r: Reduced char set (codes 32 - 128)
-  n: Numbers (codes 42 - 57)
-  no char: Full set (codes 32 - 255)
-*/
-
-extern const u8g_fntpgm_uint8_t u8g_font_fur11[] U8G_FONT_SECTION("u8g_font_fur11");
-extern const u8g_fntpgm_uint8_t u8g_font_fur11r[] U8G_FONT_SECTION("u8g_font_fur11r");
-extern const u8g_fntpgm_uint8_t u8g_font_fur11n[] U8G_FONT_SECTION("u8g_font_fur11n");
-extern const u8g_fntpgm_uint8_t u8g_font_fur14[] U8G_FONT_SECTION("u8g_font_fur14");
-extern const u8g_fntpgm_uint8_t u8g_font_fur14r[] U8G_FONT_SECTION("u8g_font_fur14r");
-extern const u8g_fntpgm_uint8_t u8g_font_fur14n[] U8G_FONT_SECTION("u8g_font_fur14n");
-extern const u8g_fntpgm_uint8_t u8g_font_fur17[] U8G_FONT_SECTION("u8g_font_fur17");
-extern const u8g_fntpgm_uint8_t u8g_font_fur17r[] U8G_FONT_SECTION("u8g_font_fur17r");
-extern const u8g_fntpgm_uint8_t u8g_font_fur17n[] U8G_FONT_SECTION("u8g_font_fur17n");
-extern const u8g_fntpgm_uint8_t u8g_font_fur20[] U8G_FONT_SECTION("u8g_font_fur20");
-extern const u8g_fntpgm_uint8_t u8g_font_fur20r[] U8G_FONT_SECTION("u8g_font_fur20r");
-extern const u8g_fntpgm_uint8_t u8g_font_fur20n[] U8G_FONT_SECTION("u8g_font_fur20n");
-extern const u8g_fntpgm_uint8_t u8g_font_fur25[] U8G_FONT_SECTION("u8g_font_fur25");
-extern const u8g_fntpgm_uint8_t u8g_font_fur25r[] U8G_FONT_SECTION("u8g_font_fur25r");
-extern const u8g_fntpgm_uint8_t u8g_font_fur25n[] U8G_FONT_SECTION("u8g_font_fur25n");
-extern const u8g_fntpgm_uint8_t u8g_font_fur30[] U8G_FONT_SECTION("u8g_font_fur30");
-extern const u8g_fntpgm_uint8_t u8g_font_fur30r[] U8G_FONT_SECTION("u8g_font_fur30r");
-extern const u8g_fntpgm_uint8_t u8g_font_fur30n[] U8G_FONT_SECTION("u8g_font_fur30n");
-extern const u8g_fntpgm_uint8_t u8g_font_fur35n[] U8G_FONT_SECTION("u8g_font_fur35n");
-extern const u8g_fntpgm_uint8_t u8g_font_fur42n[] U8G_FONT_SECTION("u8g_font_fur42n");
-extern const u8g_fntpgm_uint8_t u8g_font_fur49n[] U8G_FONT_SECTION("u8g_font_fur49n");
-
-/* 
-  Gentium Bold
-  r: Reduced char set (codes 32 - 128)
-  n: Numbers (codes 42 - 57)
-  no char: Full set (codes 32 - 255)
-*/
-
-extern const u8g_fntpgm_uint8_t u8g_font_gdb11[] U8G_FONT_SECTION("u8g_font_gdb11");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb12[] U8G_FONT_SECTION("u8g_font_gdb12");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb14[] U8G_FONT_SECTION("u8g_font_gdb14");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb17[] U8G_FONT_SECTION("u8g_font_gdb17");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb20[] U8G_FONT_SECTION("u8g_font_gdb20");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb25[] U8G_FONT_SECTION("u8g_font_gdb25");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb30[] U8G_FONT_SECTION("u8g_font_gdb30");
-
-extern const u8g_fntpgm_uint8_t u8g_font_gdb11r[] U8G_FONT_SECTION("u8g_font_gdb11r");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb12r[] U8G_FONT_SECTION("u8g_font_gdb12r");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb14r[] U8G_FONT_SECTION("u8g_font_gdb14r");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb17r[] U8G_FONT_SECTION("u8g_font_gdb17r");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb20r[] U8G_FONT_SECTION("u8g_font_gdb20r");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb25r[] U8G_FONT_SECTION("u8g_font_gdb25r");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb30r[] U8G_FONT_SECTION("u8g_font_gdb30r");
-
-extern const u8g_fntpgm_uint8_t u8g_font_gdb11n[] U8G_FONT_SECTION("u8g_font_gdb11n");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb12n[] U8G_FONT_SECTION("u8g_font_gdb12n");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb14n[] U8G_FONT_SECTION("u8g_font_gdb14n");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb17n[] U8G_FONT_SECTION("u8g_font_gdb17n");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb20n[] U8G_FONT_SECTION("u8g_font_gdb20n");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb25n[] U8G_FONT_SECTION("u8g_font_gdb25n");
-extern const u8g_fntpgm_uint8_t u8g_font_gdb30n[] U8G_FONT_SECTION("u8g_font_gdb30n");
-
-/* 
-  Gentium Regular
-  r: Reduced char set (codes 32 - 128)
-  n: Numbers (codes 42 - 57)
-  no char: Full set (codes 32 - 255)
-*/
-
-extern const u8g_fntpgm_uint8_t u8g_font_gdr9[] U8G_FONT_SECTION("u8g_font_gdr9");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr10[] U8G_FONT_SECTION("u8g_font_gdr10");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr11[] U8G_FONT_SECTION("u8g_font_gdr11");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr12[] U8G_FONT_SECTION("u8g_font_gdr12");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr14[] U8G_FONT_SECTION("u8g_font_gdr14");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr17[] U8G_FONT_SECTION("u8g_font_gdr17");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr20[] U8G_FONT_SECTION("u8g_font_gdr20");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr25[] U8G_FONT_SECTION("u8g_font_gdr25");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr30[] U8G_FONT_SECTION("u8g_font_gdr30");
-
-extern const u8g_fntpgm_uint8_t u8g_font_gdr9r[] U8G_FONT_SECTION("u8g_font_gdr9r");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr10r[] U8G_FONT_SECTION("u8g_font_gdr10r");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr11r[] U8G_FONT_SECTION("u8g_font_gdr11r");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr12r[] U8G_FONT_SECTION("u8g_font_gdr12r");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr14r[] U8G_FONT_SECTION("u8g_font_gdr14r");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr17r[] U8G_FONT_SECTION("u8g_font_gdr17r");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr20r[] U8G_FONT_SECTION("u8g_font_gdr20r");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr25r[] U8G_FONT_SECTION("u8g_font_gdr25r");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr30r[] U8G_FONT_SECTION("u8g_font_gdr30r");
-
-extern const u8g_fntpgm_uint8_t u8g_font_gdr9n[] U8G_FONT_SECTION("u8g_font_gdr9n");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr10n[] U8G_FONT_SECTION("u8g_font_gdr10n");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr11n[] U8G_FONT_SECTION("u8g_font_gdr11n");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr12n[] U8G_FONT_SECTION("u8g_font_gdr12n");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr14n[] U8G_FONT_SECTION("u8g_font_gdr14n");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr17n[] U8G_FONT_SECTION("u8g_font_gdr17n");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr20n[] U8G_FONT_SECTION("u8g_font_gdr20n");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr25n[] U8G_FONT_SECTION("u8g_font_gdr25n");
-extern const u8g_fntpgm_uint8_t u8g_font_gdr30n[] U8G_FONT_SECTION("u8g_font_gdr30n");
-
-/* 
-  Old-Standard Bold
-  r: Reduced char set (codes 32 - 128)
-  n: Numbers (codes 42 - 57)
-  no char: Full set (codes 32 - 255)
-*/
-
-extern const u8g_fntpgm_uint8_t u8g_font_osb18[] U8G_FONT_SECTION("u8g_font_osb18");
-extern const u8g_fntpgm_uint8_t u8g_font_osb21[] U8G_FONT_SECTION("u8g_font_osb21");
-extern const u8g_fntpgm_uint8_t u8g_font_osb26[] U8G_FONT_SECTION("u8g_font_osb26");
-extern const u8g_fntpgm_uint8_t u8g_font_osb29[] U8G_FONT_SECTION("u8g_font_osb29");
-extern const u8g_fntpgm_uint8_t u8g_font_osb35[] U8G_FONT_SECTION("u8g_font_osb35");
-
-extern const u8g_fntpgm_uint8_t u8g_font_osb18r[] U8G_FONT_SECTION("u8g_font_osb18r");
-extern const u8g_fntpgm_uint8_t u8g_font_osb21r[] U8G_FONT_SECTION("u8g_font_osb21r");
-extern const u8g_fntpgm_uint8_t u8g_font_osb26r[] U8G_FONT_SECTION("u8g_font_osb26r");
-extern const u8g_fntpgm_uint8_t u8g_font_osb29r[] U8G_FONT_SECTION("u8g_font_osb29r");
-extern const u8g_fntpgm_uint8_t u8g_font_osb35r[] U8G_FONT_SECTION("u8g_font_osb35r");
-
-extern const u8g_fntpgm_uint8_t u8g_font_osb18n[] U8G_FONT_SECTION("u8g_font_osb18n");
-extern const u8g_fntpgm_uint8_t u8g_font_osb21n[] U8G_FONT_SECTION("u8g_font_osb21n");
-extern const u8g_fntpgm_uint8_t u8g_font_osb26n[] U8G_FONT_SECTION("u8g_font_osb26n");
-extern const u8g_fntpgm_uint8_t u8g_font_osb29n[] U8G_FONT_SECTION("u8g_font_osb29n");
-extern const u8g_fntpgm_uint8_t u8g_font_osb35n[] U8G_FONT_SECTION("u8g_font_osb35n");
-
-/* 
-  Old-Standard Regular
-  r: Reduced char set (codes 32 - 128)
-  n: Numbers (codes 42 - 57)
-  no char: Full set (codes 32 - 255)
-*/
-
-extern const u8g_fntpgm_uint8_t u8g_font_osr18[] U8G_FONT_SECTION("u8g_font_osr18");
-extern const u8g_fntpgm_uint8_t u8g_font_osr21[] U8G_FONT_SECTION("u8g_font_osr21");
-extern const u8g_fntpgm_uint8_t u8g_font_osr26[] U8G_FONT_SECTION("u8g_font_osr26");
-extern const u8g_fntpgm_uint8_t u8g_font_osr29[] U8G_FONT_SECTION("u8g_font_osr29");
-extern const u8g_fntpgm_uint8_t u8g_font_osr35[] U8G_FONT_SECTION("u8g_font_osr35");
-
-extern const u8g_fntpgm_uint8_t u8g_font_osr18r[] U8G_FONT_SECTION("u8g_font_osr18r");
-extern const u8g_fntpgm_uint8_t u8g_font_osr21r[] U8G_FONT_SECTION("u8g_font_osr21r");
-extern const u8g_fntpgm_uint8_t u8g_font_osr26r[] U8G_FONT_SECTION("u8g_font_osr26r");
-extern const u8g_fntpgm_uint8_t u8g_font_osr29r[] U8G_FONT_SECTION("u8g_font_osr29r");
-extern const u8g_fntpgm_uint8_t u8g_font_osr35r[] U8G_FONT_SECTION("u8g_font_osr35r");
-
-extern const u8g_fntpgm_uint8_t u8g_font_osr18n[] U8G_FONT_SECTION("u8g_font_osr18n");
-extern const u8g_fntpgm_uint8_t u8g_font_osr21n[] U8G_FONT_SECTION("u8g_font_osr21n");
-extern const u8g_fntpgm_uint8_t u8g_font_osr26n[] U8G_FONT_SECTION("u8g_font_osr26n");
-extern const u8g_fntpgm_uint8_t u8g_font_osr29n[] U8G_FONT_SECTION("u8g_font_osr29n");
-extern const u8g_fntpgm_uint8_t u8g_font_osr35n[] U8G_FONT_SECTION("u8g_font_osr35n");
-
-//extern const u8g_fntpgm_uint8_t u8g_font_osr41[] U8G_FONT_SECTION("u8g_font_osr41");
-
-/* GNU unifont */
-
-extern const u8g_fntpgm_uint8_t u8g_font_unifont_18_19[] U8G_FONT_SECTION("u8g_font_unifont_18_19");
-extern const u8g_fntpgm_uint8_t u8g_font_unifont_72_73[] U8G_FONT_SECTION("u8g_font_unifont_72_73");
-extern const u8g_fntpgm_uint8_t u8g_font_unifont_67_75[] U8G_FONT_SECTION("u8g_font_unifont_67_75");
-extern const u8g_fntpgm_uint8_t u8g_font_unifont_76[] U8G_FONT_SECTION("u8g_font_unifont_76");
-extern const u8g_fntpgm_uint8_t u8g_font_unifont_77[] U8G_FONT_SECTION("u8g_font_unifont_77");
-extern const u8g_fntpgm_uint8_t u8g_font_unifont_78_79[] U8G_FONT_SECTION("u8g_font_unifont_78_79");
-extern const u8g_fntpgm_uint8_t u8g_font_unifont_86[] U8G_FONT_SECTION("u8g_font_unifont_86");
-extern const u8g_fntpgm_uint8_t u8g_font_unifont[] U8G_FONT_SECTION("u8g_font_unifont");
-extern const u8g_fntpgm_uint8_t u8g_font_unifontr[] U8G_FONT_SECTION("u8g_font_unifontr");
-extern const u8g_fntpgm_uint8_t u8g_font_unifont_0_8[] U8G_FONT_SECTION("u8g_font_unifont_0_8");
-extern const u8g_fntpgm_uint8_t u8g_font_unifont_2_3[] U8G_FONT_SECTION("u8g_font_unifont_2_3");
-extern const u8g_fntpgm_uint8_t u8g_font_unifont_4_5[] U8G_FONT_SECTION("u8g_font_unifont_4_5");
-extern const u8g_fntpgm_uint8_t u8g_font_unifont_8_9[] U8G_FONT_SECTION("u8g_font_unifont_8_9");
-extern const u8g_fntpgm_uint8_t u8g_font_unifont_12_13[] U8G_FONT_SECTION("u8g_font_unifont_12_13");
 
 
-/* 04b fonts */
-
-extern const u8g_fntpgm_uint8_t u8g_font_04b_03b[] U8G_FONT_SECTION("u8g_font_04b_03b"); 
-extern const u8g_fntpgm_uint8_t u8g_font_04b_03bn[] U8G_FONT_SECTION("u8g_font_04b_03bn");
-extern const u8g_fntpgm_uint8_t u8g_font_04b_03br[] U8G_FONT_SECTION("u8g_font_04b_03br");
-extern const u8g_fntpgm_uint8_t u8g_font_04b_03[] U8G_FONT_SECTION("u8g_font_04b_03");
-extern const u8g_fntpgm_uint8_t u8g_font_04b_03n[] U8G_FONT_SECTION("u8g_font_04b_03n");
-extern const u8g_fntpgm_uint8_t u8g_font_04b_03r[] U8G_FONT_SECTION("u8g_font_04b_03r");
-extern const u8g_fntpgm_uint8_t u8g_font_04b_24[] U8G_FONT_SECTION("u8g_font_04b_24");
-extern const u8g_fntpgm_uint8_t u8g_font_04b_24n[] U8G_FONT_SECTION("u8g_font_04b_24n");
-extern const u8g_fntpgm_uint8_t u8g_font_04b_24r[] U8G_FONT_SECTION("u8g_font_04b_24r");
-
-/* orgdot fonts */
-
-extern const u8g_fntpgm_uint8_t u8g_font_orgv01[] U8G_FONT_SECTION("u8g_font_orgv01");
-extern const u8g_fntpgm_uint8_t u8g_font_orgv01r[] U8G_FONT_SECTION("u8g_font_orgv01r");
-extern const u8g_fntpgm_uint8_t u8g_font_orgv01n[] U8G_FONT_SECTION("u8g_font_orgv01n");
-
-extern const u8g_fntpgm_uint8_t u8g_font_fixed_v0[] U8G_FONT_SECTION("u8g_font_fixed_v0");
 extern const u8g_fntpgm_uint8_t u8g_font_fixed_v0r[] U8G_FONT_SECTION("u8g_font_fixed_v0r");
-extern const u8g_fntpgm_uint8_t u8g_font_fixed_v0n[] U8G_FONT_SECTION("u8g_font_fixed_v0n");
 
-extern const u8g_fntpgm_uint8_t u8g_font_tpssb[] U8G_FONT_SECTION("u8g_font_tpssb");
-extern const u8g_fntpgm_uint8_t u8g_font_tpssbr[] U8G_FONT_SECTION("u8g_font_tpssbr");
-extern const u8g_fntpgm_uint8_t u8g_font_tpssbn[] U8G_FONT_SECTION("u8g_font_tpssbn");
 
-extern const u8g_fntpgm_uint8_t u8g_font_tpss[] U8G_FONT_SECTION("u8g_font_tpss");
-extern const u8g_fntpgm_uint8_t u8g_font_tpssr[] U8G_FONT_SECTION("u8g_font_tpssr");
-extern const u8g_fntpgm_uint8_t u8g_font_tpssn[] U8G_FONT_SECTION("u8g_font_tpssn");
+extern const u8g_fntpgm_uint8_t u8g_font_chikitar[] U8G_FONT_SECTION("u8g_font_chikitar");
+
 
 /* contributed */
-
 extern const u8g_fntpgm_uint8_t u8g_font_freedoomr25n[] U8G_FONT_SECTION("u8g_font_freedoomr25n");
-extern const u8g_fntpgm_uint8_t u8g_font_freedoomr10r[] U8G_FONT_SECTION("u8g_font_freedoomr10r");
-
-/* adobe X11 */
-extern const u8g_fntpgm_uint8_t u8g_font_courB08[] U8G_FONT_SECTION("u8g_font_courB08");
-extern const u8g_fntpgm_uint8_t u8g_font_courB08r[] U8G_FONT_SECTION("u8g_font_courB08r");
-extern const u8g_fntpgm_uint8_t u8g_font_courB10[] U8G_FONT_SECTION("u8g_font_courB10");
-extern const u8g_fntpgm_uint8_t u8g_font_courB10r[] U8G_FONT_SECTION("u8g_font_courB10r");
-extern const u8g_fntpgm_uint8_t u8g_font_courB12[] U8G_FONT_SECTION("u8g_font_courB12");
-extern const u8g_fntpgm_uint8_t u8g_font_courB12r[] U8G_FONT_SECTION("u8g_font_courB12r");
-extern const u8g_fntpgm_uint8_t u8g_font_courB14[] U8G_FONT_SECTION("u8g_font_courB14");
-extern const u8g_fntpgm_uint8_t u8g_font_courB14r[] U8G_FONT_SECTION("u8g_font_courB14r");
-extern const u8g_fntpgm_uint8_t u8g_font_courB18[] U8G_FONT_SECTION("u8g_font_courB18");
-extern const u8g_fntpgm_uint8_t u8g_font_courB18r[] U8G_FONT_SECTION("u8g_font_courB18r");
-extern const u8g_fntpgm_uint8_t u8g_font_courB24[] U8G_FONT_SECTION("u8g_font_courB24");
-extern const u8g_fntpgm_uint8_t u8g_font_courB24r[] U8G_FONT_SECTION("u8g_font_courB24r");
-extern const u8g_fntpgm_uint8_t u8g_font_courB24n[] U8G_FONT_SECTION("u8g_font_courB24n");
-
-extern const u8g_fntpgm_uint8_t u8g_font_courR08[] U8G_FONT_SECTION("u8g_font_courR08");
-extern const u8g_fntpgm_uint8_t u8g_font_courR08r[] U8G_FONT_SECTION("u8g_font_courR08r");
-extern const u8g_fntpgm_uint8_t u8g_font_courR10[] U8G_FONT_SECTION("u8g_font_courR10");
-extern const u8g_fntpgm_uint8_t u8g_font_courR10r[] U8G_FONT_SECTION("u8g_font_courR10r");
-extern const u8g_fntpgm_uint8_t u8g_font_courR12[] U8G_FONT_SECTION("u8g_font_courR12");
-extern const u8g_fntpgm_uint8_t u8g_font_courR12r[] U8G_FONT_SECTION("u8g_font_courR12r");
-extern const u8g_fntpgm_uint8_t u8g_font_courR14[] U8G_FONT_SECTION("u8g_font_courR14");
-extern const u8g_fntpgm_uint8_t u8g_font_courR14r[] U8G_FONT_SECTION("u8g_font_courR14r");
-extern const u8g_fntpgm_uint8_t u8g_font_courR18[] U8G_FONT_SECTION("u8g_font_courR18");
-extern const u8g_fntpgm_uint8_t u8g_font_courR18r[] U8G_FONT_SECTION("u8g_font_courR18r");
-extern const u8g_fntpgm_uint8_t u8g_font_courR24[] U8G_FONT_SECTION("u8g_font_courR24");
-extern const u8g_fntpgm_uint8_t u8g_font_courR24r[] U8G_FONT_SECTION("u8g_font_courR24r");
-extern const u8g_fntpgm_uint8_t u8g_font_courR24n[] U8G_FONT_SECTION("u8g_font_courR24n");
-
-extern const u8g_fntpgm_uint8_t u8g_font_helvB08[] U8G_FONT_SECTION("u8g_font_helvB08");
-extern const u8g_fntpgm_uint8_t u8g_font_helvB08r[] U8G_FONT_SECTION("u8g_font_helvB08r");
-extern const u8g_fntpgm_uint8_t u8g_font_helvB10[] U8G_FONT_SECTION("u8g_font_helvB10");
-extern const u8g_fntpgm_uint8_t u8g_font_helvB10r[] U8G_FONT_SECTION("u8g_font_helvB10r");
-extern const u8g_fntpgm_uint8_t u8g_font_helvB12[] U8G_FONT_SECTION("u8g_font_helvB12");
-extern const u8g_fntpgm_uint8_t u8g_font_helvB12r[] U8G_FONT_SECTION("u8g_font_helvB12r");
-extern const u8g_fntpgm_uint8_t u8g_font_helvB14[] U8G_FONT_SECTION("u8g_font_helvB14");
-extern const u8g_fntpgm_uint8_t u8g_font_helvB14r[] U8G_FONT_SECTION("u8g_font_helvB14r");
-extern const u8g_fntpgm_uint8_t u8g_font_helvB18[] U8G_FONT_SECTION("u8g_font_helvB18");
-extern const u8g_fntpgm_uint8_t u8g_font_helvB18r[] U8G_FONT_SECTION("u8g_font_helvB18r");
-extern const u8g_fntpgm_uint8_t u8g_font_helvB24[] U8G_FONT_SECTION("u8g_font_helvB24");
-extern const u8g_fntpgm_uint8_t u8g_font_helvB24r[] U8G_FONT_SECTION("u8g_font_helvB24r");
-extern const u8g_fntpgm_uint8_t u8g_font_helvB24n[] U8G_FONT_SECTION("u8g_font_helvB24n");
-
-extern const u8g_fntpgm_uint8_t u8g_font_helvR08[] U8G_FONT_SECTION("u8g_font_helvR08");
-extern const u8g_fntpgm_uint8_t u8g_font_helvR08r[] U8G_FONT_SECTION("u8g_font_helvR08r");
-extern const u8g_fntpgm_uint8_t u8g_font_helvR10[] U8G_FONT_SECTION("u8g_font_helvR10");
-extern const u8g_fntpgm_uint8_t u8g_font_helvR10r[] U8G_FONT_SECTION("u8g_font_helvR10r");
-extern const u8g_fntpgm_uint8_t u8g_font_helvR12[] U8G_FONT_SECTION("u8g_font_helvR12");
-extern const u8g_fntpgm_uint8_t u8g_font_helvR12r[] U8G_FONT_SECTION("u8g_font_helvR12r");
-extern const u8g_fntpgm_uint8_t u8g_font_helvR14[] U8G_FONT_SECTION("u8g_font_helvR14");
-extern const u8g_fntpgm_uint8_t u8g_font_helvR14r[] U8G_FONT_SECTION("u8g_font_helvR14r");
-extern const u8g_fntpgm_uint8_t u8g_font_helvR18[] U8G_FONT_SECTION("u8g_font_helvR18");
-extern const u8g_fntpgm_uint8_t u8g_font_helvR18r[] U8G_FONT_SECTION("u8g_font_helvR18r");
-extern const u8g_fntpgm_uint8_t u8g_font_helvR24[] U8G_FONT_SECTION("u8g_font_helvR24");
-extern const u8g_fntpgm_uint8_t u8g_font_helvR24r[] U8G_FONT_SECTION("u8g_font_helvR24r");
-extern const u8g_fntpgm_uint8_t u8g_font_helvR24n[] U8G_FONT_SECTION("u8g_font_helvR24n");
-
-extern const u8g_fntpgm_uint8_t u8g_font_ncenB08[] U8G_FONT_SECTION("u8g_font_ncenB08");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenB08r[] U8G_FONT_SECTION("u8g_font_ncenB08r");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenB10[] U8G_FONT_SECTION("u8g_font_ncenB10");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenB10r[] U8G_FONT_SECTION("u8g_font_ncenB10r");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenB12[] U8G_FONT_SECTION("u8g_font_ncenB12");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenB12r[] U8G_FONT_SECTION("u8g_font_ncenB12r");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenB14[] U8G_FONT_SECTION("u8g_font_ncenB14");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenB14r[] U8G_FONT_SECTION("u8g_font_ncenB14r");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenB18[] U8G_FONT_SECTION("u8g_font_ncenB18");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenB18r[] U8G_FONT_SECTION("u8g_font_ncenB18r");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenB24[] U8G_FONT_SECTION("u8g_font_ncenB24");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenB24r[] U8G_FONT_SECTION("u8g_font_ncenB24r");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenB24n[] U8G_FONT_SECTION("u8g_font_ncenB24n");
-
-extern const u8g_fntpgm_uint8_t u8g_font_ncenR08[] U8G_FONT_SECTION("u8g_font_ncenR08");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenR08r[] U8G_FONT_SECTION("u8g_font_ncenR08r");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenR10[] U8G_FONT_SECTION("u8g_font_ncenR10");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenR10r[] U8G_FONT_SECTION("u8g_font_ncenR10r");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenR12[] U8G_FONT_SECTION("u8g_font_ncenR12");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenR12r[] U8G_FONT_SECTION("u8g_font_ncenR12r");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenR14[] U8G_FONT_SECTION("u8g_font_ncenR14");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenR14r[] U8G_FONT_SECTION("u8g_font_ncenR14r");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenR18[] U8G_FONT_SECTION("u8g_font_ncenR18");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenR18r[] U8G_FONT_SECTION("u8g_font_ncenR18r");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenR24[] U8G_FONT_SECTION("u8g_font_ncenR24");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenR24r[] U8G_FONT_SECTION("u8g_font_ncenR24r");
-extern const u8g_fntpgm_uint8_t u8g_font_ncenR24n[] U8G_FONT_SECTION("u8g_font_ncenR24n");
-
-extern const u8g_fntpgm_uint8_t u8g_font_symb08[] U8G_FONT_SECTION("u8g_font_symb08");
-extern const u8g_fntpgm_uint8_t u8g_font_symb08r[] U8G_FONT_SECTION("u8g_font_symb08r");
-extern const u8g_fntpgm_uint8_t u8g_font_symb10[] U8G_FONT_SECTION("u8g_font_symb10");
-extern const u8g_fntpgm_uint8_t u8g_font_symb10r[] U8G_FONT_SECTION("u8g_font_symb10r");
-extern const u8g_fntpgm_uint8_t u8g_font_symb12[] U8G_FONT_SECTION("u8g_font_symb12");
-extern const u8g_fntpgm_uint8_t u8g_font_symb12r[] U8G_FONT_SECTION("u8g_font_symb12r");
-extern const u8g_fntpgm_uint8_t u8g_font_symb14[] U8G_FONT_SECTION("u8g_font_symb14");
-extern const u8g_fntpgm_uint8_t u8g_font_symb14r[] U8G_FONT_SECTION("u8g_font_symb14r");
-extern const u8g_fntpgm_uint8_t u8g_font_symb18[] U8G_FONT_SECTION("u8g_font_symb18");
-extern const u8g_fntpgm_uint8_t u8g_font_symb18r[] U8G_FONT_SECTION("u8g_font_symb18r");
-extern const u8g_fntpgm_uint8_t u8g_font_symb24[] U8G_FONT_SECTION("u8g_font_symb24");
-extern const u8g_fntpgm_uint8_t u8g_font_symb24r[] U8G_FONT_SECTION("u8g_font_symb24r");
-
-extern const u8g_fntpgm_uint8_t u8g_font_timB08[] U8G_FONT_SECTION("u8g_font_timB08");
-extern const u8g_fntpgm_uint8_t u8g_font_timB08r[] U8G_FONT_SECTION("u8g_font_timB08r");
-extern const u8g_fntpgm_uint8_t u8g_font_timB10[] U8G_FONT_SECTION("u8g_font_timB10");
-extern const u8g_fntpgm_uint8_t u8g_font_timB10r[] U8G_FONT_SECTION("u8g_font_timB10r");
-extern const u8g_fntpgm_uint8_t u8g_font_timB12[] U8G_FONT_SECTION("u8g_font_timB12");
-extern const u8g_fntpgm_uint8_t u8g_font_timB12r[] U8G_FONT_SECTION("u8g_font_timB12r");
-extern const u8g_fntpgm_uint8_t u8g_font_timB14[] U8G_FONT_SECTION("u8g_font_timB14");
-extern const u8g_fntpgm_uint8_t u8g_font_timB14r[] U8G_FONT_SECTION("u8g_font_timB14r");
-extern const u8g_fntpgm_uint8_t u8g_font_timB18[] U8G_FONT_SECTION("u8g_font_timB18");
-extern const u8g_fntpgm_uint8_t u8g_font_timB18r[] U8G_FONT_SECTION("u8g_font_timB18r");
-extern const u8g_fntpgm_uint8_t u8g_font_timB24[] U8G_FONT_SECTION("u8g_font_timB24");
-extern const u8g_fntpgm_uint8_t u8g_font_timB24r[] U8G_FONT_SECTION("u8g_font_timB24r");
-extern const u8g_fntpgm_uint8_t u8g_font_timB24n[] U8G_FONT_SECTION("u8g_font_timB24n");
-
-extern const u8g_fntpgm_uint8_t u8g_font_timR08[] U8G_FONT_SECTION("u8g_font_timR08");
-extern const u8g_fntpgm_uint8_t u8g_font_timR08r[] U8G_FONT_SECTION("u8g_font_timR08r");
-extern const u8g_fntpgm_uint8_t u8g_font_timR10[] U8G_FONT_SECTION("u8g_font_timR10");
-extern const u8g_fntpgm_uint8_t u8g_font_timR10r[] U8G_FONT_SECTION("u8g_font_timR10r");
-extern const u8g_fntpgm_uint8_t u8g_font_timR12[] U8G_FONT_SECTION("u8g_font_timR12");
-extern const u8g_fntpgm_uint8_t u8g_font_timR12r[] U8G_FONT_SECTION("u8g_font_timR12r");
-extern const u8g_fntpgm_uint8_t u8g_font_timR14[] U8G_FONT_SECTION("u8g_font_timR14");
-extern const u8g_fntpgm_uint8_t u8g_font_timR14r[] U8G_FONT_SECTION("u8g_font_timR14r");
-extern const u8g_fntpgm_uint8_t u8g_font_timR18[] U8G_FONT_SECTION("u8g_font_timR18");
-extern const u8g_fntpgm_uint8_t u8g_font_timR18r[] U8G_FONT_SECTION("u8g_font_timR18r");
-extern const u8g_fntpgm_uint8_t u8g_font_timR24[] U8G_FONT_SECTION("u8g_font_timR24");
-extern const u8g_fntpgm_uint8_t u8g_font_timR24r[] U8G_FONT_SECTION("u8g_font_timR24r");
-extern const u8g_fntpgm_uint8_t u8g_font_timR24n[] U8G_FONT_SECTION("u8g_font_timR24n");
-
-/* fontstruct */
-
-extern const u8g_fntpgm_uint8_t u8g_font_p01type[] U8G_FONT_SECTION("u8g_font_p01type");
-extern const u8g_fntpgm_uint8_t u8g_font_p01typer[] U8G_FONT_SECTION("u8g_font_p01typer");
-extern const u8g_fntpgm_uint8_t u8g_font_p01typen[] U8G_FONT_SECTION("u8g_font_p01typen");
-
-extern const u8g_fntpgm_uint8_t u8g_font_lucasfont_alternate[] U8G_FONT_SECTION("u8g_font_lucasfont_alternate");
-extern const u8g_fntpgm_uint8_t u8g_font_lucasfont_alternater[] U8G_FONT_SECTION("u8g_font_lucasfont_alternater");
-extern const u8g_fntpgm_uint8_t u8g_font_lucasfont_alternaten[] U8G_FONT_SECTION("u8g_font_lucasfont_alternaten");
-
-extern const u8g_fntpgm_uint8_t u8g_font_chikita[] U8G_FONT_SECTION("u8g_font_chikita");
-extern const u8g_fntpgm_uint8_t u8g_font_chikitar[] U8G_FONT_SECTION("u8g_font_chikitar");
-extern const u8g_fntpgm_uint8_t u8g_font_chikitan[] U8G_FONT_SECTION("u8g_font_chikitan");
-
-extern const u8g_fntpgm_uint8_t u8g_font_pixelle_micro[] U8G_FONT_SECTION("u8g_font_pixelle_micro");
-extern const u8g_fntpgm_uint8_t u8g_font_pixelle_micror[] U8G_FONT_SECTION("u8g_font_pixelle_micror");
-extern const u8g_fntpgm_uint8_t u8g_font_pixelle_micron[] U8G_FONT_SECTION("u8g_font_pixelle_micron");
-
-extern const u8g_fntpgm_uint8_t u8g_font_trixel_square[] U8G_FONT_SECTION("u8g_font_trixel_square");
-extern const u8g_fntpgm_uint8_t u8g_font_trixel_squarer[] U8G_FONT_SECTION("u8g_font_trixel_squarer");
-extern const u8g_fntpgm_uint8_t u8g_font_trixel_squaren[] U8G_FONT_SECTION("u8g_font_trixel_squaren");
-
-extern const u8g_fntpgm_uint8_t u8g_font_robot_de_niro[] U8G_FONT_SECTION("u8g_font_robot_de_niro");
-extern const u8g_fntpgm_uint8_t u8g_font_robot_de_niror[] U8G_FONT_SECTION("u8g_font_robot_de_niror");
-extern const u8g_fntpgm_uint8_t u8g_font_robot_de_niron[] U8G_FONT_SECTION("u8g_font_robot_de_niron");
-
-extern const u8g_fntpgm_uint8_t u8g_font_baby[] U8G_FONT_SECTION("u8g_font_baby");
-extern const u8g_fntpgm_uint8_t u8g_font_babyr[] U8G_FONT_SECTION("u8g_font_babyr");
-extern const u8g_fntpgm_uint8_t u8g_font_babyn[] U8G_FONT_SECTION("u8g_font_babyn");
-
-extern const u8g_fntpgm_uint8_t u8g_font_blipfest_07[] U8G_FONT_SECTION("u8g_font_blipfest_07");
-extern const u8g_fntpgm_uint8_t u8g_font_blipfest_07r[] U8G_FONT_SECTION("u8g_font_blipfest_07r");
-extern const u8g_fntpgm_uint8_t u8g_font_blipfest_07n[] U8G_FONT_SECTION("u8g_font_blipfest_07n");
-
-/* profont */
-
-extern const u8g_fntpgm_uint8_t u8g_font_profont10[] U8G_FONT_SECTION("u8g_font_profont10");
-extern const u8g_fntpgm_uint8_t u8g_font_profont10r[] U8G_FONT_SECTION("u8g_font_profont10r");
-extern const u8g_fntpgm_uint8_t u8g_font_profont11[] U8G_FONT_SECTION("u8g_font_profont11");
-extern const u8g_fntpgm_uint8_t u8g_font_profont11r[] U8G_FONT_SECTION("u8g_font_profont11r");
-extern const u8g_fntpgm_uint8_t u8g_font_profont12[] U8G_FONT_SECTION("u8g_font_profont12");
-extern const u8g_fntpgm_uint8_t u8g_font_profont12r[] U8G_FONT_SECTION("u8g_font_profont12r");
-extern const u8g_fntpgm_uint8_t u8g_font_profont15[] U8G_FONT_SECTION("u8g_font_profont15");
-extern const u8g_fntpgm_uint8_t u8g_font_profont15r[] U8G_FONT_SECTION("u8g_font_profont15r");
-extern const u8g_fntpgm_uint8_t u8g_font_profont17[] U8G_FONT_SECTION("u8g_font_profont17");
-extern const u8g_fntpgm_uint8_t u8g_font_profont17r[] U8G_FONT_SECTION("u8g_font_profont17r");
-extern const u8g_fntpgm_uint8_t u8g_font_profont22[] U8G_FONT_SECTION("u8g_font_profont22");
-extern const u8g_fntpgm_uint8_t u8g_font_profont22r[] U8G_FONT_SECTION("u8g_font_profont22r");
-extern const u8g_fntpgm_uint8_t u8g_font_profont29[] U8G_FONT_SECTION("u8g_font_profont29");
-extern const u8g_fntpgm_uint8_t u8g_font_profont29r[] U8G_FONT_SECTION("u8g_font_profont29r");
 
 
 #ifdef __cplusplus

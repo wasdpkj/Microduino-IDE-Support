@@ -40,12 +40,12 @@
 */
 
 
-#include "U8glib.h"
+#include <U8glib.h>
 
 // setup u8g object, please remove comment from one of the following constructor calls
 // IMPORTANT NOTE: The complete list of supported devices is here: http://code.google.com/p/u8glib/wiki/device
 
-U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE);	// HW SPI Com: CS = 10, A0 = 9 (Hardware Pins are  SCK = 13 and MOSI = 11)
+U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE);
 
 
 #define KEY_NONE 0

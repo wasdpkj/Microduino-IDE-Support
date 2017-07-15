@@ -39,12 +39,12 @@
 */
 
 
-#include "U8glib.h"
+#include <U8glib.h>
 
 // setup u8g object, please remove comment from one of the following constructor calls
 // IMPORTANT NOTE: The complete list of supported devices is here: http://code.google.com/p/u8glib/wiki/device
 
-U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE);	// HW SPI Com: CS = 10, A0 = 9 (Hardware Pins are  SCK = 13 and MOSI = 11)
+U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE);
 
 
 void draw(void) {
@@ -67,13 +67,7 @@ void setup(void) {
   // set SPI backup if required
   //u8g.setHardwareBackup(u8g_backup_avr_spi);
 
-  // assign default color value
-  if ( u8g.getMode() == U8G_MODE_R3G3B2 ) 
-    u8g.setColorIndex(255);     // white
-  else if ( u8g.getMode() == U8G_MODE_GRAY2BIT )
-    u8g.setColorIndex(3);         // max intensity
-  else if ( u8g.getMode() == U8G_MODE_BW )
-    u8g.setColorIndex(1);         // pixel on
+  u8g.setColorIndex(1);         // pixel on
 }
 
 void loop(void) {

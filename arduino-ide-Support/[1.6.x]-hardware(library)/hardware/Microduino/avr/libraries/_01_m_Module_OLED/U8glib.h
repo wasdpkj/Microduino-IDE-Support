@@ -115,11 +115,6 @@ class U8GLIB : public Print
     void sleepOn(void) { u8g_SleepOn(&u8g); }
     void sleepOff(void) { u8g_SleepOff(&u8g); }
     
-    /* graphic primitives */
-    void setColorEntry(uint8_t color_index, uint8_t r, uint8_t g, uint8_t b) { u8g_SetColorEntry(&u8g, color_index, r, g, b); }
-    void setHiColor(uint16_t  rgb) { u8g_SetHiColor(&u8g, rgb); }
-    void setHiColorByRGB(uint8_t r, uint8_t g, uint8_t b) { u8g_SetHiColorByRGB(&u8g, r, g, b); }
-    void setRGB(uint8_t r, uint8_t g, uint8_t b) { u8g_SetRGB(&u8g, r, g, b); }
     
     void setColorIndex(uint8_t color_index) { u8g_SetColorIndex(&u8g, color_index); }
     uint8_t getColorIndex(void) { return u8g_GetColorIndex(&u8g); }
@@ -229,12 +224,6 @@ class U8GLIB : public Print
 class U8GLIB_SSD1306_128X64 : public U8GLIB 
 {
   public:
-    U8GLIB_SSD1306_128X64(uint8_t sck, uint8_t mosi, uint8_t cs, uint8_t a0, uint8_t reset = U8G_PIN_NONE) 
-      : U8GLIB(&u8g_dev_ssd1306_128x64_sw_spi, sck, mosi, cs, a0, reset)
-      { }
-    U8GLIB_SSD1306_128X64(uint8_t cs, uint8_t a0, uint8_t reset = U8G_PIN_NONE) 
-      : U8GLIB(&u8g_dev_ssd1306_128x64_hw_spi, cs, a0, reset)
-      { }
     U8GLIB_SSD1306_128X64(uint8_t options = U8G_I2C_OPT_NONE) 
       : U8GLIB(&u8g_dev_ssd1306_128x64_i2c, options)
       { }

@@ -37,7 +37,7 @@
 */
 
 
-#include "U8glib.h"
+#include <U8glib.h>
 
 // use this serial interface
 #define PRINTER_SERIAL Serial
@@ -55,7 +55,7 @@ uint8_t u8g_com_uart(u8g_t *u8g, uint8_t msg, uint8_t arg_val, void *arg_ptr) {
 
 // setup u8g object, please remove comment from one of the following constructor calls
 
-U8GLIB u8g(&u8g_dev_a2_micro_printer_192x720_ds, (u8g_com_fnptr)u8g_com_uart);
+U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE);
 
 
 
