@@ -52,6 +52,7 @@ U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE);
   u8g_font_6x10
   u8g_font_7x13
   u8g_font_9x15
+  u8g_font_unifont
   u8g_font_fixed_v0r
   u8g_font_chikitar
   number:

@@ -955,6 +955,17 @@ void u8g_MicroDelay(void);
 /* delay by 10 microseconds */
 void u8g_10MicroDelay(void);
 
+/*===============================================================*/
+/* chessengine.c */
+#define CHESS_KEY_NONE 0
+#define CHESS_KEY_NEXT 1
+#define CHESS_KEY_PREV 2
+#define CHESS_KEY_SELECT 3
+#define CHESS_KEY_BACK 4
+
+void chess_Init(u8g_t *u8g, uint8_t empty_body_color);
+void chess_Draw(void);
+void chess_Step(uint8_t keycode);
 
 /*===============================================================*/
 /* font definitions */
@@ -973,6 +984,9 @@ extern const u8g_fntpgm_uint8_t u8g_font_fixed_v0r[] U8G_FONT_SECTION("u8g_font_
 
 
 extern const u8g_fntpgm_uint8_t u8g_font_chikitar[] U8G_FONT_SECTION("u8g_font_chikitar");
+
+
+extern const u8g_fntpgm_uint8_t u8g_font_unifont[] U8G_FONT_SECTION("u8g_font_unifont");
 
 
 /* contributed */

@@ -52,7 +52,7 @@ void draw(void) {
   // graphic commands to redraw the complete screen should be placed here  
   
   // assign default font
-  u8g.setFont(u8g_font_unifont);
+  u8g.setFont(u8g_font_6x10);
   
   // pointer to strings in flash memory can be stored in a special type
   const __FlashStringHelper *flash_ptr;
