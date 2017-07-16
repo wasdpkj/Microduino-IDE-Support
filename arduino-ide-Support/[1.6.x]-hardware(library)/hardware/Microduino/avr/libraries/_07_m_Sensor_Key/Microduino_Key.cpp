@@ -11,21 +11,24 @@ void DigitalKey::begin(uint8_t _mode){
 	if(_mode == INPUT || _mode == INPUT_PULLUP){
 		pinMode(pin, _mode);
 	}
+	keyCache = true;
+	keyVal = false;
+	keyTimer = 0;
 }
 
 
 uint8_t DigitalKey::readVal(){ // return the value as degrees
 
     keyCache = keyVal; //缓存作判断用
-    keyVal = digitalRead(pin); //触发时
+    keyVal = !digitalRead(pin); //触发时
 
-    if(keyCache && !keyVal)
+    if(!keyCache && keyVal)
 		return KEY_PRESSING;
-	else if(!keyCache && keyVal)
+	else if(keyCache && !keyVal)
 		return KEY_RELEASING;
-	else if(keyCache && keyVal)
-		return KEY_RELEASED;
 	else if(!keyCache && !keyVal)
+		return KEY_RELEASED;
+	else if(keyCache && keyVal)
 		return KEY_PRESSED;
 }
 
@@ -44,7 +47,7 @@ uint8_t DigitalKey::readEvent(){ // return the value as degrees
       else
         return NOT_PRESS;
     }
-    else if (keyBuf == KEY_RELEASED) {  //按下松开后
+    else if (keyBuf == KEY_RELEASING) {  //按下松开后
       keyTimer = 0;
       return SHORT_PRESS;
     }
@@ -65,21 +68,24 @@ void AnalogKey::begin(uint8_t _mode){
 	if(_mode == INPUT || _mode == INPUT_PULLUP){
 		pinMode(pin, _mode);
 	}
+	keyCache = true;
+	keyVal = false;
+	keyTimer = 0;
 }
 
 uint8_t AnalogKey::readVal(uint16_t _min, uint16_t _max){ // return the value as degrees
 
-    uint16_t keyBuf = analogRead(pin);
 	keyCache = keyVal; 
-    keyVal = !(keyBuf>=_min && keyBuf<_max);
+    uint16_t keyBuf = analogRead(pin);
+    keyVal = (keyBuf>=_min && keyBuf<_max);
 
-    if(keyCache && !keyVal)
+    if(!keyCache && keyVal)
 		return KEY_PRESSING;
-	else if(!keyCache && keyVal)
+	else if(keyCache && !keyVal)
 		return KEY_RELEASING;
-	else if(keyCache && keyVal)
-		return KEY_RELEASED;
 	else if(!keyCache && !keyVal)
+		return KEY_RELEASED;
+	else if(keyCache && keyVal)
 		return KEY_PRESSED;
 }
 
@@ -98,7 +104,7 @@ uint8_t AnalogKey::readEvent(uint16_t _min, uint16_t _max){ // return the value 
       else
         return NOT_PRESS;
     }
-    else if (keyBuf == KEY_RELEASED) {  //按下松开后
+    else if (keyBuf == KEY_RELEASING) {  //按下松开后
       keyTimer = 0;
       return SHORT_PRESS;
     }
