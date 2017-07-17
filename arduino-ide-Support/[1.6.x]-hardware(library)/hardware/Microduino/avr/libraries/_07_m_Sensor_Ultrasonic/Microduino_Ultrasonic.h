@@ -1,9 +1,23 @@
-/*
-    Microduino_Ultrasonic.h
+/*********************************************************
+//  LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
 
-    Created on: 2017/6/20
-        Author: cuiwenjing
-*/
+//  版权所有：
+//  @小崔  cuiwenjing@microduino.cc
+
+// 支持Microduino_Sensor_Ultrasonic
+
+// Microduino wiki:
+// http://wiki.microduino.cn
+
+// E-mail:
+// Wenjing Cui
+// cuiwenjing@microduino.cc
+
+// Weibo:
+// @路蝶-6
+
+//日期：2017.06
+*********************************************************/
 
 #ifndef ULTRASONIC_H_
 #define ULTRASONIC_H_
