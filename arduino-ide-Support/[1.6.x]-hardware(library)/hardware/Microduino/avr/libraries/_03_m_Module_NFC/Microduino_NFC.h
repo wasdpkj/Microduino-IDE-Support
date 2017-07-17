@@ -1,12 +1,18 @@
-/**************************************************************************/
-/*! 
-    @file     Microduino_PN532_I2C.cpp
-    @author   Microduino_SY
-	
-	I2C Driver for NXP's PN532 NFC/13.56MHz RFID Transceiver
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
 
-*/
-/**************************************************************************/
+// 版权所有：
+// @Microduino_sy  shenyang@microduino.com
+// ==============
+
+// Microduino-IDE
+// ==============
+// Microduino Getting start:
+// http://www.microduino.cc/download/
+
+// ==============
+// Microduino wiki:
+// http://wiki.microduino.cc
 
 #ifndef _MICRODUINO_NFC_H_
 #define _MICRODUINO_NFC_H_
