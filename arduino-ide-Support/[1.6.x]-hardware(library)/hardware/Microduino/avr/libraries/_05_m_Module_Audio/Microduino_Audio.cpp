@@ -1,10 +1,21 @@
-// 
-// JQ6500 audio library for Arduino
-//
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
 
-#include "Microduino_Audio.h"
-#include "JQ6500_def.h"
-#include <SoftwareSerial.h>
+// 版权所有：
+// @Microduino_sy  shenyang@microduino.com
+// ==============
+
+// Microduino-IDE
+// ==============
+// Microduino Getting start:
+// http://www.microduino.cc/download/
+
+// ==============
+// Microduino wiki:
+// http://wiki.microduino.cc
+
+#include <Microduino_Audio.h>
+
 
 Audio::Audio(SoftwareSerial *ser) {
     common_init();
@@ -18,19 +29,22 @@ Audio::Audio(HardwareSerial *ser) {
 
 void Audio::common_init(void){
 	audioSwSerial = NULL;
-	audioHwSerial = NULL;
-	
+	audioHwSerial = NULL;	
 }
 
-void Audio::begin(uint16_t _baud){
-	baud = _baud;
-	if(audioSwSerial) audioSwSerial->begin(baud);
-	else			  audioHwSerial->begin(baud);
-	delay(100);
+void Audio::begin(uint8_t device, uint8_t mode, uint8_t vol){
+	if(audioSwSerial) 
+		audioSwSerial->begin(9600);
+	else			  
+		audioHwSerial->begin(9600);
+	reset();
+	setDevice(device);
+	setMode(mode);
+	setVolumn(vol);
 }
+
 
 void Audio::sendCommand(uint8_t cmd, uint8_t *buf, uint16_t len){
-	int i = 0;
 	sendBuffer[0] = STX;
 	sendBuffer[1] = len+2;
 	sendBuffer[2] = cmd;
@@ -44,42 +58,40 @@ void Audio::sendCommand(uint8_t cmd, uint8_t *buf, uint16_t len){
 	delay(160);
 }
 
-void Audio::next(){
+void Audio::nextMusic(){
 	sendCommand(CMD_NEXT, NULL, 0);
 }
 
-void Audio::prev(){
+void Audio::prevMusic(){
 	sendCommand(CMD_PREV, NULL, 0);
 }
 
-void Audio::choose(uint16_t num){
-	cmdBuffer[0] = num>>8;
-	cmdBuffer[1] = num&0xFF;
-	sendCommand(CMD_CHOOSE, cmdBuffer, 2);
+void Audio::chooseMusic(uint16_t num){
+	uint8_t buffer[2];
+	buffer[0] = num>>8;
+	buffer[1] = num&0xFF;
+	sendCommand(CMD_CHOOSE, buffer, 2);
 }
 
-void Audio::volUp(){
+void Audio::volumnUp(){
 	sendCommand(CMD_UP, NULL, 0);
 }
 
-void Audio::volDown(){
+void Audio::volumnDown(){
 	sendCommand(CMD_DOWN, NULL, 0);
 }
 
-void Audio::volumn(uint8_t vol){
-	cmdBuffer[0] = vol;
-	sendCommand(CMD_VOL, cmdBuffer, 1);
+void Audio::setVolumn(uint8_t vol){
+	sendCommand(CMD_VOL, &vol, 1);
 }
 
-void Audio::eq(uint8_t eq){
-	cmdBuffer[0] = eq;
-	sendCommand(CMD_EQ, cmdBuffer, 1);	
+void Audio::setEq(uint8_t eq){
+	sendCommand(CMD_EQ, &eq, 1);	
 }
 
 void Audio::setDevice(uint8_t device){
-	cmdBuffer[0] = device;
-	sendCommand(CMD_DEVICE, cmdBuffer, 1);
-	delay(1500);	
+	sendCommand(CMD_DEVICE, &device, 1);
+//	delay(1500);	
 }
 
 void Audio::sleep(){	
@@ -88,41 +100,31 @@ void Audio::sleep(){
 
 void Audio::reset(){
 	sendCommand(CMD_RESET, NULL, 0);
-	delay(1500);	
+	delay(500);	
 }
 
-void Audio::play(){
+void Audio::playMusic(){
 	sendCommand(CMD_PLAY, NULL, 0);
 }
 
-void Audio::pause(){
+void Audio::pauseMusic(){
 	sendCommand(CMD_PAUSE, NULL, 0);
 }
 
 void Audio::folder(uint8_t temp){
-	cmdBuffer[0] = temp;
-	sendCommand(CMD_FOLDER, cmdBuffer, 1);
+	sendCommand(CMD_FOLDER, &temp, 1);
 }
 
 void Audio::setMode(uint8_t temp){
-	cmdBuffer[0] = temp;
-	sendCommand(CMD_MODE, cmdBuffer, 1);
+	sendCommand(CMD_MODE, &temp, 1);
 }
 
 void Audio::chooseFile(uint8_t folder, uint8_t file){
-	cmdBuffer[0] = folder;
-	cmdBuffer[1] = file;
-	sendCommand(CMD_FILE, cmdBuffer, 2);
+	uint8_t buffer[2];
+	buffer[0] = folder;
+	buffer[1] = file;
+	sendCommand(CMD_FILE, buffer, 2);
 }
-
-void Audio::init(uint8_t device, uint8_t mode, uint8_t vol){
-	begin(9600);
-	reset();
-	setDevice(device);
-	setMode(mode);
-	volumn(vol);
-}
-
 
 uint16_t Audio::dataParse(){
 	uint16_t sum = 0;
@@ -158,8 +160,7 @@ uint16_t Audio::queryNum(uint8_t cmd){
 		audioSwSerial->stopListening();
 		audioSwSerial->listen();
 	}else{
-		audioHwSerial->end();
-		audioHwSerial->begin(baud);
+		audioHwSerial->flush();
 	}
 	sendCommand(cmd, NULL, 0);	
 	return dataParse();	
@@ -197,12 +198,10 @@ String Audio::queryName(){
 		audioSwSerial->stopListening();
 		audioSwSerial->listen();
 	}else{
-		audioHwSerial->end();
-		audioHwSerial->begin(baud);
+		audioHwSerial->flush();
 	}
 	sendCommand(QUERY_NAME, NULL, 0);	
 	if(audioSwSerial){
-		
 		while(audioSwSerial->available()){
 			temp = audioSwSerial->read();
 			nameCache += temp;

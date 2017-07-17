@@ -1,7 +1,18 @@
-// 
-// JQ6500 audio library for Arduino
-// VERSION: 0.1.0
-//
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
+
+// 版权所有：
+// @Microduino_sy  shenyang@microduino.com
+// ==============
+
+// Microduino-IDE
+// ==============
+// Microduino Getting start:
+// http://www.microduino.cc/download/
+
+// ==============
+// Microduino wiki:
+// http://wiki.microduino.cc
 
 #ifndef __MICRODUINO_AUDIO_H__
 #define __MICRODUINO_AUDIO_H__
@@ -14,7 +25,7 @@
 #endif
 
 #include <SoftwareSerial.h>
-#include "JQ6500_def.h"
+#include <JQ6500_def.h>
  
 #define AUDIO_VERSION "0.1.0"
 
@@ -59,23 +70,22 @@ public:
 	Audio(SoftwareSerial *ser);
 	Audio(HardwareSerial *ser);
 	
-	void begin(uint16_t baud);
-	void next();
-	void prev();
-	void choose(uint16_t num);
-	void volUp();
-	void volDown();
-	void volumn(uint8_t vol);
-	void eq(uint8_t eq);
+	void begin(uint8_t device, uint8_t mode, uint8_t vol);
+	void nextMusic();
+	void prevMusic();
+	void chooseMusic(uint16_t num);
+	void volumnUp();
+	void volumnDown();
+	void setVolumn(uint8_t vol);
+	void setEq(uint8_t eq);
 	void setDevice(uint8_t device);
 	void sleep();
 	void reset();
-	void play();
-	void pause();
+	void playMusic();
+	void pauseMusic();
 	void folder(uint8_t temp);
 	void setMode(uint8_t temp);
 	void chooseFile(uint8_t folder, uint8_t file);
-	void init(uint8_t device, uint8_t mode, uint8_t vol);
 	
 	uint16_t queryTF();
 	uint16_t queryTFFile();
@@ -86,9 +96,7 @@ public:
 	String queryName();
 	
 private:
-	uint16_t baud;
 	uint8_t sendBuffer[8];
-	uint8_t cmdBuffer[8];
 
 	SoftwareSerial *audioSwSerial;
 	HardwareSerial *audioHwSerial;

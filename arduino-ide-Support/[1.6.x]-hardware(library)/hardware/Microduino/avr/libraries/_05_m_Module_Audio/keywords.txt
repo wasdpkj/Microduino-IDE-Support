@@ -1,33 +1,31 @@
 #######################################
-# Syntax Coloring Map For JQ6500
+# Syntax Coloring Map For Audio
 ####################################### 
 # Datatypes (KEYWORD1)
 #######################################
 
-JQ6500	KEYWORD1
-AudioSerial	KEYWORD1
+Audio	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
 begin	KEYWORD2
-next	KEYWORD2
-prev	KEYWORD2
-choose	KEYWORD2
-volUp	KEYWORD2
-volDown	KEYWORD2
-volumn	KEYWORD2
-eq		KEYWORD2
+nextMusic	KEYWORD2
+prevMusic	KEYWORD2
+chooseMusic	KEYWORD2
+volumnUp	KEYWORD2
+volumnDown	KEYWORD2
+setVolumn	KEYWORD2
+setEq		KEYWORD2
 setDevice	KEYWORD2
 sleep	KEYWORD2
 reset   KEYWORD2
-play    KEYWORD2
-pause   KEYWORD2
+playMusic    KEYWORD2
+pauseMusic   KEYWORD2
 folder  KEYWORD2
 setMode KEYWORD2
 chooseFile	KEYWORD2
-init		KEYWORD2
 queryTF		KEYWORD2
 queryTFFile	KEYWORD2
 queryFlash	KEYWORD2
@@ -35,9 +33,6 @@ queryFlashFile	KEYWORD2
 queryTotalTime	KEYWORD2
 queryPlayTime	KEYWORD2
 queryName	KEYWORD2
-
-
-
 	
 #######################################
 # Constants (LITERAL1)
