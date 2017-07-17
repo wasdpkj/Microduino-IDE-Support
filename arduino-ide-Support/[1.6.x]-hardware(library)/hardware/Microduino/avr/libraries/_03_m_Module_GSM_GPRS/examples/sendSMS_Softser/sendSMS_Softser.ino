@@ -1,4 +1,7 @@
 /**************************************************************
+  Microduino_GSM_GPRS模块维基网址:
+  https://wiki.microduino.cn/index.php/Microduino-Module_GPRS/zh
+
   本示例给出了使用GSM模块的一些方法：
   1、获取设备的信号强度（SignalQuality）
   2、获取设备的身份辨识码（IMEI）
@@ -53,4 +56,3 @@ void setup() {
 void loop() {
 
 }
-
