@@ -1,3 +1,10 @@
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
+
+// 版权所有：
+// @Machine  maxing@microduino.cc
+// ==============
+
 #include <Microduino_Dust.h>
 
 SoftwareSerial mySerial(4, -1); // RX, TX

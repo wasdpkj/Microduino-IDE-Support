@@ -1,3 +1,27 @@
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
+
+// 版权所有：
+// @Machine  maxing@microduino.cc
+// ==============
+
+// Microduino-IDE
+// ==============
+// Microduino Getting start:
+// http://www.microduino.cc/download/
+
+// Microduino IDE Support：
+// https://github.com/wasdpkj/Microduino-IDE-Support/
+
+// ==============
+// Microduino wiki:
+// http://wiki.microduino.cc
+
+// ==============
+// E-mail:
+// Machine
+// maxing@microduino.cc
+
 #ifndef __MICRODUINO_DUST_H__
 #define __MICRODUINO_DUST_H__
 
