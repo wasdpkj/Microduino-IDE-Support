@@ -1,9 +1,23 @@
- /*
-    Microduino_Motor.cpp
+/*********************************************************
+//  LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
 
-    Created on: 2017/3/24
-        Author: cuiwenjing
-*/
+//  版权所有：
+//  @小崔  cuiwenjing@microduino.cc
+
+// 支持Microduino_MotorPlus
+
+// Microduino wiki:
+// http://wiki.microduino.cn
+
+// E-mail:
+// Wenjing Cui
+// cuiwenjing@microduino.cc
+
+// Weibo:
+// @路蝶-6
+
+//日期：2017.06
+*********************************************************/
 
 #include "Microduino_MotorPlus.h"
 

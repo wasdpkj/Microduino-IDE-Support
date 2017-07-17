@@ -5,6 +5,7 @@
 #######################################
 
 MotorPlus	KEYWORD1
+Motor	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -27,3 +28,7 @@ MOTOR_ADDR1	LITERAL1
 MOTOR_ADDR2	LITERAL1
 MOTOR_ADDR3	LITERAL1
 MOTOR_ADDR4	LITERAL1
+MOTOR0_PINA	LITERAL1
+MOTOR0_PINB	LITERAL1
+MOTOR1_PINA	LITERAL1
+MOTOR1_PINB	LITERAL1

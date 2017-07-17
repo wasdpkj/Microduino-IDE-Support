@@ -1,3 +1,20 @@
+/*********************************************************
+//  LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+
+//  版权所有：
+//  @沈阳
+
+// 支持Microduino_MotorPlus
+
+// Microduino wiki:
+// http://wiki.microduino.cn
+
+// E-mail:
+// shenyang@microduino.cc
+
+//日期：2017.06
+*********************************************************/
+
 #ifndef _MICRODUINO_MOTOR_H_
 #define _MICRODUINO_MOTOR_H_
 
@@ -30,6 +47,8 @@ class Motor {
   
 	uint8_t pinA;
 	uint8_t pinB;
+	uint8_t _pinApwm;
+	uint8_t _pinBpwm;
 };
 
 #endif
