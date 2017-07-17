@@ -1,44 +1,31 @@
-/*
- Copyright (C) 2011 James Coliz, Jr. <maniacbug@ymail.com>
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
 
- This program is free software; you can redistribute it and/or
- modify it under the terms of the GNU General Public License
- version 2 as published by the Free Software Foundation.
- */
 
 /**
- * Example: Network topology, and pinging across a tree/mesh network
+ * Example: nRF24网络协议
  *
- * Using this sketch, each node will send a ping to every other node in the network every few seconds. 
- * The RF24Network library will route the message across the mesh to the correct node.
+ * 在这里例程中，每个节点会每隔一段时间以此轮询其他节点 
+ * 使用RF24Network库，可以引导nRF24网络中的数据发送到指定的节点
  *
- * This sketch is greatly complicated by the fact that at startup time, each
- * node (including the base) has no clue what nodes are alive.  So,
- * each node builds an array of nodes it has heard about.  The base
- * periodically sends out its whole known list of nodes to everyone.
  *
- * To see the underlying frames being relayed, compile RF24Network with
+ * 如果想了解RF24Network库底层的运行机制，可以在RF24Network_config.h文件中使用
  * #define SERIAL_DEBUG.
  *
- * Update: The logical node address of each node is set below, and are grouped in twos for demonstration.
- * Number 0 is the master node. Numbers 1-2 represent the 2nd layer in the tree (02,05).
- * Number 3 (012) is the first child of number 1 (02). Number 4 (015) is the first child of number 2.
- * Below that are children 5 (022) and 6 (025), and so on as shown below 
- * The tree below represents the possible network topology with the addresses defined lower down
+ * RF24Network组网的机制如下.
+ * 地址 00 是主节点. 地址 02，05 表示 网络中的第二层节点， 是主节点的子节点.
+ * 地址 012 是 02节点的子节点.  地址 015 是 05节点的子节点.
+ * 
+ * 下面的树状图解释了该网络中节点之间的关系。
  *
- *     Addresses/Topology                            Node Numbers  (To simplify address assignment in this demonstration)
- *             00                  - Master Node         ( 0 )
- *           02  05                - 1st Level children ( 1,2 )
- *    32 22 12    15 25 35 45    - 2nd Level children (7,5,3-4,6,8)
+ *        地址/层级          节点号  (To simplify address assignment in this demonstration)
+ *             00                  - 主节点        ( 0 )
+ *           02  05                - 第一层子节点 ( 1,2 )
+ *    32 22 12    15 25 35 45      - 第二层子节点 (7,5,3-4,6,8)
  *
- * eg:
- * For node 4 (Address 015) to contact node 1 (address 02), it will send through node 2 (address 05) which relays the payload
- * through the master (00), which sends it through to node 1 (02). This seems complicated, however, node 4 (015) can be a very
- * long way away from node 1 (02), with node 2 (05) bridging the gap between it and the master node.
+ * 比如 015节点想要和 02节点通讯, 信号需要依次通过 05节点，00主节点，最后到达 02节点。 
  *
- * To use the sketch, upload it to two or more units and set the NODE_ADDRESS below. If configuring only a few
- * units, set the addresses to 0,1,3,5... to configure all nodes as children to each other. If using many nodes,
- * it is easiest just to increment the NODE_ADDRESS by 1 as the sketch is uploaded to each device.
+ * 需要使用至少2个nRF24模块，并按照以下地址列表进行配置. 
  */
 
 #include <avr/pgmspace.h>
@@ -49,38 +36,38 @@
 ************* Set the Node Address *************************************
 /***********************************************************************/
 
-// These are the Octal addresses that will be assigned
+// 预设的地址
 const uint16_t node_address_set[10] = { 00, 02, 05, 012, 015, 022, 025, 032, 035, 045 };
  
-// 0 = Master
-// 1-2 (02,05)   = Children of Master(00)
-// 3,5 (012,022) = Children of (02)
-// 4,6 (015,025) = Children of (05)
-// 7   (032)     = Child of (02)
-// 8,9 (035,045) = Children of (05)
+// 0 = 主机
+// 1-2 (02,05)   = '00'主机的子节点
+// 3,5 (012,022) = '02'子机的子节点
+// 4,6 (015,025) = '05'子机的子节点
+// 7   (032)     = '02'子机的子节点
+// 8,9 (035,045) = '05'子机的子节点
 
-uint8_t NODE_ADDRESS = 0;  // Use numbers 0 through to select an address from the array
+uint8_t NODE_ADDRESS = 0;  // 通过数字选择对应的节点地址
 
 /***********************************************************************/
 /***********************************************************************/
 
-
-RF24 radio(9,10);                              // CE & CS pins to use (Using 7,8 on Uno,Nano)
+/* 硬件配置: nRF24模块使用SPI通讯外加9脚和10脚 */
+RF24 radio(9,10);                         
 RF24Network network(radio); 
 
-uint16_t this_node;                           // Our node address
+uint16_t this_node;                           // 本机地址
 
-const unsigned long interval = 1000; // ms       // Delay manager to send pings regularly.
+const unsigned long interval = 1000; // ms       // 通讯间隔1000ms
 unsigned long last_time_sent;
 
 
-const short max_active_nodes = 10;            // Array of nodes we are aware of
+const short max_active_nodes = 10;            // 轮询通讯节点的数量
 uint16_t active_nodes[max_active_nodes];
 short num_active_nodes = 0;
 short next_ping_node_index = 0;
 
 
-bool send_T(uint16_t to);                      // Prototypes for functions to send & handle messages
+bool send_T(uint16_t to);                      // 命令发送方法
 bool send_N(uint16_t to);
 void handle_T(RF24NetworkHeader& header);
 void handle_N(RF24NetworkHeader& header);
@@ -92,26 +79,27 @@ void setup(){
   Serial.begin(115200);
   printf_P(PSTR("\n\rRF24Network/examples/meshping/\n\r"));
 
-  this_node = node_address_set[NODE_ADDRESS];            // Which node are we?
+  this_node = node_address_set[NODE_ADDRESS];            //设置本机地址
   
-  SPI.begin();                                           // Bring up the RF network
   radio.begin();
+  // 设置无线射频的发射功率为高功率，设置范围RF24_PA_MAX > RF24_PA_HIGH> RF24_PA_LOW .
   radio.setPALevel(RF24_PA_HIGH);
+  //nRF24网络初始化, 使用频道100，配置本机地址
   network.begin(/*channel*/ 100, /*node address*/ this_node );
 
 }
 
 void loop(){
     
-  network.update();                                      // Pump the network regularly
+	network.update();                                   // 网络更新
 
-   while ( network.available() )  {                      // Is there anything ready for us?
+	while ( network.available() )  {                    // 接收到数据
      
-    RF24NetworkHeader header;                            // If so, take a look at it
+    RF24NetworkHeader header;                           //读取数据
     network.peek(header);
 
     
-      switch (header.type){                              // Dispatch the message to the correct handler.
+      switch (header.type){                              // 根据收到的数据处理相应命令.
         case 'T': handle_T(header); break;
         case 'N': handle_N(header); break;
         default:  printf_P(PSTR("*** WARNING *** Unknown message type %c\n\r"),header.type);
@@ -121,36 +109,33 @@ void loop(){
     }
 
   
-  unsigned long now = millis();                         // Send a ping to the next node every 'interval' ms
-  if ( now - last_time_sent >= interval ){
+  unsigned long now = millis();                         
+  if ( now - last_time_sent >= interval ){		    //发送时间到
     last_time_sent = now;
 
-
-    uint16_t to = 00;                                   // Who should we send to? By default, send to base
-    
-    
-    if ( num_active_nodes ){                            // Or if we have active nodes,
-        to = active_nodes[next_ping_node_index++];      // Send to the next active node
-        if ( next_ping_node_index > num_active_nodes ){ // Have we rolled over?
-	    next_ping_node_index = 0;                   // Next time start at the beginning
-	    to = 00;                                    // This time, send to node 00.
+    uint16_t to = 00;                               //设置发送地址为00
+        
+    if ( num_active_nodes ){                            // 或者有轮询地址
+        to = active_nodes[next_ping_node_index++];      // 设置轮询地址
+        if ( next_ping_node_index > num_active_nodes ){ 
+	    next_ping_node_index = 0;                  
+	    to = 00;                                    
         }
     }
-
     bool ok;
 
     
-    if ( this_node > 00 || to == 00 ){                    // Normal nodes send a 'T' ping
+    if ( this_node > 00 || to == 00 ){                    // 子节点给主节点发送'T'命令
         ok = send_T(to);   
-    }else{                                                // Base node sends the current active nodes out
+    }else{                                                // 主节点给子节点发送'N'命令
         ok = send_N(to);
     }
     
-    if (ok){                                              // Notify us of the result
+    if (ok){                                              // 是否发送成功
         printf_P(PSTR("%lu: APP Send ok\n\r"),millis());
     }else{
         printf_P(PSTR("%lu: APP Send failed\n\r"),millis());
-        last_time_sent -= 100;                            // Try sending at a different time next time
+        last_time_sent -= 100;                            
     }
   }
 
@@ -162,7 +147,7 @@ void loop(){
 }
 
 /**
- * Send a 'T' message, the current time
+ * 发送'T'命令
  */
 bool send_T(uint16_t to)
 {
@@ -176,7 +161,7 @@ bool send_T(uint16_t to)
 }
 
 /**
- * Send an 'N' message, the active node list
+ * 发送'N'命令
  */
 bool send_N(uint16_t to)
 {
@@ -188,8 +173,8 @@ bool send_N(uint16_t to)
 }
 
 /**
- * Handle a 'T' message
- * Add the node to the list of active nodes
+ * 'T'命令处理方法
+ * 添加活跃节点列表
  */
 void handle_T(RF24NetworkHeader& header){
 
@@ -203,7 +188,7 @@ void handle_T(RF24NetworkHeader& header){
 }
 
 /**
- * Handle an 'N' message, the active node list
+ * 'N'命令处理方法
  */
 void handle_N(RF24NetworkHeader& header)
 {
@@ -218,7 +203,7 @@ void handle_N(RF24NetworkHeader& header)
 }
 
 /**
- * Add a particular node to the current list of active nodes
+ * 将节点加入活跃节点列表中
  */
 void add_node(uint16_t node){
   

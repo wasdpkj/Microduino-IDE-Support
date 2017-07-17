@@ -1,36 +1,31 @@
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
+
 /*
- Copyright (C) 2012 James Coliz, Jr. <maniacbug@ymail.com>
+*nRF24 无线网络发送例程
+*
+*向接收器发送数据
 
- This program is free software; you can redistribute it and/or
- modify it under the terms of the GNU General Public License
- version 2 as published by the Free Software Foundation.
- 
- Update 2014 - TMRh20
- */
+*/
 
-/**
- * Simplest possible example of using RF24Network 
- *
- * TRANSMITTER NODE
- * Every 2 seconds, send a payload to the receiver node.
- */
 
 #include <RF24Network.h>
 
-RF24 radio(9,10);                    // nRF24L01(+) radio attached using Getting Started board 
+/* 硬件配置: nRF24模块使用SPI通讯外加9脚和10脚 */
+RF24 radio(9,10);                 
 
 RF24Network network(radio);          // Network uses that radio
 
-const uint16_t this_node = 01;        // Address of our node in Octal format
-const uint16_t other_node = 00;       // Address of the other node in Octal format
+const uint16_t this_node = 01;       // 本机地址
+const uint16_t other_node = 00;      // 接收器的地址
 
-const unsigned long interval = 2000; //ms  // How often to send 'hello world to the other unit
+const unsigned long interval = 2000; //ms  发送间隔2000ms
 
-unsigned long last_sent;             // When did we last send?
-unsigned long packets_sent;          // How many have we sent already
+unsigned long last_sent;             // 记录发送时刻
+unsigned long packets_sent;          // 记录发送次数
 
 
-struct payload_t {                  // Structure of our payload
+struct payload_t {                  // 数据的结构体
   unsigned long ms;
   unsigned long counter;
 };
@@ -40,15 +35,16 @@ void setup(void)
   Serial.begin(115200);
   Serial.println("RF24Network/examples/helloworld_tx/");
   radio.begin();
+  //nRF24网络初始化, 使用频道90，本机地址01
   network.begin(/*channel*/ 90, /*node address*/ this_node);
 }
 
 void loop() {
   
-  network.update();                          // Check the network regularly
+  network.update();                          // 网络更新
 
   
-  unsigned long now = millis();              // If it's time to send a message, send it!
+  unsigned long now = millis();             
   if ( now - last_sent >= interval  )
   {
     last_sent = now;
@@ -56,7 +52,7 @@ void loop() {
     Serial.print("Sending...");
     payload_t payload = { millis(), packets_sent++ };
     RF24NetworkHeader header(/*to node*/ other_node);
-    bool ok = network.write(header,&payload,sizeof(payload));
+    bool ok = network.write(header,&payload,sizeof(payload));	//发送数据
     if (ok)
       Serial.println("ok.");
     else

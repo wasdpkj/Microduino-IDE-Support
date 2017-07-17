@@ -1,18 +1,17 @@
-/** Modification of RF24Mesh_Example_Master.ino by TMRh20 and RF24Mesh_Example_Master_Statics by TMRh20
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
 
+/*
+*nRF24 mesh网络例程
+*
+*这个例程说明网络中的主节点处理子节点发过来的数据并依次给子节点发送数据
 
-   This example sketch shows how to send data to nodes bassed on their ID.
-
-   The nodes can change physical or logical position in the network, and reconnect through different
-   routing nodes as required. The master node manages the address assignments for the individual nodes
-   in a manner similar to DHCP.
-
- **/
+*/
 
 
 #include <RF24Mesh.h>
 
-/***** Configure the chosen CE,CS pins *****/
+/* 硬件配置: nRF24模块使用SPI通讯外加9脚和10脚 */
 RF24 radio(9, 10);
 RF24Network network(radio);
 RF24Mesh mesh(radio, network);
@@ -25,14 +24,13 @@ struct payload_t {
 uint32_t ctr = 0;
 
 
-
 void setup() {
   Serial.begin(115200);
 
-  // Set the nodeID to 0 for the master node
+  // 设置节点ID为0， 即为主节点
   mesh.setNodeID(0);
   Serial.println(mesh.getNodeID());
-  // Connect to the mesh
+  // 连接到mesh网络
   mesh.begin();
 
 }
@@ -41,15 +39,14 @@ uint32_t displayTimer = 0;
 
 void loop() {
 
-  // Call mesh.update to keep the network updated
+  //网络更新， 必须要使用
   mesh.update();
 
-  // In addition, keep the 'DHCP service' running on the master node so addresses will
-  // be assigned to the sensor nodes
+  // 保持'DHCP'服务 主节点必须要使用该方法
   mesh.DHCP();
 
 
-  // Check for incoming data from the sensors
+  //检查是否有收到数据
   if (network.available()) {
     RF24NetworkHeader header;
     network.peek(header);
@@ -71,8 +68,7 @@ void loop() {
   }
 
 
-  // Send each node a message every five seconds
-  // Send a different message to node 1, containing another counter instead of millis()
+  // 每5秒钟给每个节点发送数据
   if (millis() - displayTimer > 5000) {
     ctr++;
     for (int i = 0; i < mesh.addrListTop; i++) {
@@ -80,9 +76,8 @@ void loop() {
       if (mesh.addrList[i].nodeID == 1) {  //Searching for node one from address list
         payload = {ctr % 3, ctr};
       }
-      RF24NetworkHeader header(mesh.addrList[i].address, OCT); //Constructing a header
-      Serial.println( network.write(header, &payload, sizeof(payload)) == 1 ? F("Send OK") : F("Send Fail")); //Sending an message
-
+      RF24NetworkHeader header(mesh.addrList[i].address, OCT); 
+      Serial.println( network.write(header, &payload, sizeof(payload)) == 1 ? F("Send OK") : F("Send Fail")); 
     }
     displayTimer = millis();
   }

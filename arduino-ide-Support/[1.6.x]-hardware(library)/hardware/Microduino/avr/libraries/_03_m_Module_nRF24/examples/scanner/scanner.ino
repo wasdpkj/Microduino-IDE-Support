@@ -1,11 +1,16 @@
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
+
 /*
- Copyright (C) 2011 J. Coliz <maniacbug@ymail.com>
+*nRF24 无线射频强度扫描
+*
+nRF24模块工作在2.4G射频频段，实际有125个工作频道
 
- This program is free software; you can redistribute it and/or
- modify it under the terms of the GNU General Public License
- version 2 as published by the Free Software Foundation.
- */
+这个例子可以测量125个频道的各自信号强度，如果测量到某个频道的信号强度较大
+说明有某个无线设备正在使用该频道，信号强度越大，使用该频道出现信号冲突，数据丢包的概率越大
+建议改用到其他信号强度较弱的频道
 
+*/
 /**
  * Channel scanner
  *
@@ -20,48 +25,32 @@
  
 #include <RF24.h>
 
-//
-// Hardware configuration
-//
-
-// Set up nRF24L01 radio on SPI bus plus pins 9 & 10
-
+/* 硬件配置: nRF24模块使用SPI通讯外加9脚和10脚 */
 RF24 radio(9,10);
 
-//
-// Channel info
-//
-
+//一共有126个射频通道
 const uint8_t num_channels = 126;
 uint8_t values[num_channels];
 
-//
-// Setup
-//
 
 void setup(void)
 {
-  //
-  // Print preamble
-  //
 
   Serial.begin(115200);
   Serial.println(F("\n\rRF24/examples/scanner/"));
 
-  //
-  // Setup and configure rf radio
-  //
 
   radio.begin();
-  radio.setAutoAck(false);
+  radio.setAutoAck(false);			//关闭自动应答
 
-  // Get into standby mode
+  //开始监听无线数据
   radio.startListening();
+ //关闭数据监听
   radio.stopListening();
 
   radio.printDetails();
 
-  // Print out header, high then low digit
+
   int i = 0;
   while ( i < num_channels )
   {
@@ -81,37 +70,37 @@ void setup(void)
 //
 // Loop
 //
-
+//每个射频通道的重复测量次数
 const int num_reps = 100;
 
 void loop(void)
 {
-  // Clear measurement values
+  //清楚所有测量数据
   memset(values,0,sizeof(values));
 
-  // Scan all channels num_reps times
+  // 扫描所有射频通道
   int rep_counter = num_reps;
   while (rep_counter--)
   {
     int i = num_channels;
     while (i--)
     {
-      // Select this channel
+      // 设置射频通道
       radio.setChannel(i);
 
-      // Listen for a little
+      // 监听一会
       radio.startListening();
       delayMicroseconds(128);
       radio.stopListening();
 
-      // Did we get a carrier?
+      // 是否监听到数据
       if ( radio.testCarrier() ){
         ++values[i];
       }
     }
   }
 
-  // Print out channel measurements, clamped to a single hex digit
+  //打印出所有通道的测量数据
   int i = 0;
   while ( i < num_channels )
   {
