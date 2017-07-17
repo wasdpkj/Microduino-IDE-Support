@@ -1,3 +1,23 @@
+//源自Adafruit_NeoPixel库
+//修订：@小崔
+//支持Microduino_ColorLED
+/*修改项：修改类名；
+          增添预定义颜色;
+          增添setOneLED()、setAllLED()函数
+*/
+
+// Microduino wiki:
+// http://wiki.microduino.cn
+
+// E-mail:
+// Wenjing Cui
+// cuiwenjing@microduino.cc
+
+// Weibo:
+// @路蝶-6
+
+//日期：2017.07
+
 /*-------------------------------------------------------------------------
   Arduino library to control a wide variety of WS2811- and WS2812-based RGB
   LED devices such as Adafruit FLORA RGB Smart Pixels and NeoPixel strips.
@@ -1913,6 +1933,32 @@ void ColorLED::setPixelColor(uint16_t n, uint32_t c) {
     p[bOffset] = b;
   }
 }
+
+void ColorLED::setOneLED(uint16_t n, uint32_t c){
+	setPixelColor(n,c);
+}
+
+void ColorLED::setOneLED(uint16_t n, uint8_t r, uint8_t g, uint8_t b){
+	setPixelColor(n,r,g,b);
+}
+
+void ColorLED::setAllLED(uint32_t c){
+	if(c==0){
+		clear();
+	}
+	else{
+		for (int i = 0; i < numLEDs; i++) { 
+	     setPixelColor(i,c);
+        }
+	}
+}
+
+void ColorLED::setAllLED(uint8_t r, uint8_t g, uint8_t b){
+   for (int i = 0; i < numLEDs; i++) { 
+	setPixelColor(i,r,g,b);
+   }
+}
+
 
 // Convert separate R,G,B into packed 32-bit RGB color.
 // Packed format is always RGB, regardless of LED strand color order.

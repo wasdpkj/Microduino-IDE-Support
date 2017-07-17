@@ -1,3 +1,23 @@
+//源自Adafruit_NeoPixel库
+//修订：@小崔
+//支持Microduino_ColorLED
+/*修改项：修改类名；
+          增添预定义颜色;
+          增添setOneLED()、setAllLED()函数
+*/
+
+// Microduino wiki:
+// http://wiki.microduino.cn
+
+// E-mail:
+// Wenjing Cui
+// cuiwenjing@microduino.cc
+
+// Weibo:
+// @路蝶-6
+
+//日期：2017.07
+
 /*--------------------------------------------------------------------
   This file is part of the Adafruit NeoPixel library.
 
@@ -142,6 +162,10 @@ class ColorLED {
     setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b),
     setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w),
     setPixelColor(uint16_t n, uint32_t c),
+	setAllLED(uint32_t c),
+	setAllLED(uint8_t r, uint8_t g, uint8_t b),
+	setOneLED(uint16_t n, uint32_t c),
+	setOneLED(uint16_t n, uint8_t r, uint8_t g, uint8_t b),
     setBrightness(uint8_t),
     clear(),
     updateLength(uint16_t n),

@@ -30,6 +30,8 @@ ColorLED	KEYWORD1
 
 setPixelColor	KEYWORD2
 
+setLED		KEYWORD2
+setAllLED	KEYWORD2
 setPin		KEYWORD2
 
 setBrightness	KEYWORD2

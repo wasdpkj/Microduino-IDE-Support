@@ -1,6 +1,14 @@
 /***************************************
- 本示例给出了更改设置的彩灯级联数的方法
- updateLength(NUMPIXELS)
+  LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+
+  版权所有：
+  @小崔  cuiwenjing@microduino.cc
+
+  ColorLED维基网址:
+  https://wiki.microduino.cn/index.php/Sensor-Color_LED/zh
+
+  本示例给出了更改设置的彩灯级联数的方法
+  updateLength(NUMPIXELS)
  ****************************************/
 
 #include <Microduino_ColorLED.h> //引用彩灯库
