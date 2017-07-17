@@ -1,18 +1,33 @@
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
+
+// 版权所有：
+// @老潘orz  wasdpkj@hotmail.com
+// ==============
+
+/*
+  本例程可以识别Sensor Joystick传感器的【长按】【短按】动作
+  请将碰撞开关传感器连接到A0口进行实验
+*/
+
 #include <Microduino_Key.h>
 
-AnalogKey keyU(A2);
-AnalogKey keyD(A2);
-AnalogKey keyL(A2);
-AnalogKey keyR(A2);
-AnalogKey keyP(A2);
+enum KeyName {
+  UP, DOWN, LEFT, RIGHT, PRESS
+};
+
+AnalogKey keyAnalog[5] {(A0), (A0), (A0), (A0), (A0)};
+
 
 void setup() {
   Serial.begin(9600);
+  for (uint8_t a = 0; a < 5; a++) {
+    keyAnalog[a].begin(INPUT);
+  }
 }
 
 void loop() {
-
-  switch (keyU.readEvent(650, 820)) {
+  switch (keyAnalog[UP].readEvent(700 - 50, 700 + 50)) {
     case SHORT_PRESS:
       Serial.println("KEY UP(analog) SHORT_PRESS");   //短按
       break;
@@ -21,7 +36,7 @@ void loop() {
       break;
   }
 
-  switch (keyD.readEvent(200, 450)) {
+  switch (keyAnalog[DOWN].readEvent(330 - 50, 330 + 50)) {
     case SHORT_PRESS:
       Serial.println("KEY DOWN(analog) SHORT_PRESS");   //短按
       break;
@@ -30,7 +45,7 @@ void loop() {
       break;
   }
 
-  switch (keyL.readEvent(450, 650)) {
+  switch (keyAnalog[LEFT].readEvent(512 - 50, 512 + 50)) {
     case SHORT_PRESS:
       Serial.println("KEY LEFT(analog) SHORT_PRESS");   //短按
       break;
@@ -39,7 +54,7 @@ void loop() {
       break;
   }
 
-  switch (keyR.readEvent(820, 980)) {
+  switch (keyAnalog[RIGHT].readEvent(860 - 50, 860 + 50)) {
     case SHORT_PRESS:
       Serial.println("KEY RIGHT(analog) SHORT_PRESS");   //短按
       break;
@@ -48,7 +63,7 @@ void loop() {
       break;
   }
 
-    switch (keyP.readEvent(0, 100)) {
+  switch (keyAnalog[PRESS].readEvent(0, 50)) {
     case SHORT_PRESS:
       Serial.println("KEY PRESS(analog) SHORT_PRESS");   //短按
       break;
@@ -56,6 +71,5 @@ void loop() {
       Serial.println("KEY PRESS(analog) LONG_PRESS");    //长按
       break;
   }
-
-  delay(15);
+  delay(50);
 }

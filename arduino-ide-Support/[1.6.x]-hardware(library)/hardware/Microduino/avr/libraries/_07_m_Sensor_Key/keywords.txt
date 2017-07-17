@@ -8,6 +8,7 @@
 
 DigitalKey	KEYWORD1
 AnalogKey	KEYWORD1
+VirtualKey	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -21,6 +22,7 @@ readEvent	KEYWORD2
 # Constants (LITERAL1)
 #######################################
 
+PRESS	LITERAL1
 KEY_RELEASED	LITERAL1
 KEY_PRESSED	LITERAL1
 KEY_PRESSING	LITERAL1
