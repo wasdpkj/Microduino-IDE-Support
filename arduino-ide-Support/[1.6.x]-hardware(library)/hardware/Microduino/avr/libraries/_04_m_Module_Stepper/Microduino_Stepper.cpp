@@ -1,7 +1,18 @@
-// Microduino_Stepper.cpp
-//
-// Copyright (C) 2009-2016 Shenyang
-// $Id: Microduino_Stepper.cpp,v 1.00 2016/04/07 $
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
+
+// 版权所有：
+// @Microduino_sy  shenyang@microduino.com
+// ==============
+
+// Microduino-IDE
+// ==============
+// Microduino Getting start:
+// http://www.microduino.cc/download/
+
+// ==============
+// Microduino wiki:
+// http://wiki.microduino.cc
 
 #include <Microduino_Stepper.h>
 
