@@ -1,3 +1,9 @@
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
+
+// 版权所有：
+// @Machine  maxing@microduino.cc
+// ==============
 #include <Sensor_Motion.h>
 
 SoftwareSerial mySerial(4, 5);   // RX, TX
