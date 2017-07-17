@@ -1,8 +1,18 @@
-/**********************************************************************************************
- * Arduino PID Library - Version 2.1.1
- *
- * This Library is licensed under a GPLv3 License
- **********************************************************************************************/
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
+
+// 版权所有：
+// @Microduino_sy  shenyang@microduino.com
+// ==============
+
+// Microduino-IDE
+// ==============
+// Microduino Getting start:
+// http://www.microduino.cc/download/
+
+// ==============
+// Microduino wiki:
+// http://wiki.microduino.cc
 
 #if ARDUINO >= 100
   #include "Arduino.h"
