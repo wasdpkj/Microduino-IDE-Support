@@ -1,3 +1,19 @@
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
+
+// 版权所有：
+// @Microduino_sy  shenyang@microduino.com
+// ==============
+
+// Microduino-IDE
+// ==============
+// Microduino Getting start:
+// http://www.microduino.cc/download/
+
+// ==============
+// Microduino wiki:
+// http://wiki.microduino.cc
+
 #include <Microduino_AT24Cxx.h>
 
 AT24Cxx::AT24Cxx(uint8_t _addr)

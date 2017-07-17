@@ -1,4 +1,18 @@
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
 
+// 版权所有：
+// @Microduino_sy  shenyang@microduino.com
+// ==============
+
+// Microduino-IDE
+// ==============
+// Microduino Getting start:
+// http://www.microduino.cc/download/
+
+// ==============
+// Microduino wiki:
+// http://wiki.microduino.cc
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "Arduino.h"

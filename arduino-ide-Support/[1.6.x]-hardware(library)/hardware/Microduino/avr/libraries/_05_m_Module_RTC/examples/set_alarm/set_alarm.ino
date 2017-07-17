@@ -1,33 +1,47 @@
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
+
+// 版权所有：
+// @Microduino_sy  shenyang@microduino.cc
+// ==============
+
+/*
+* RTC闹钟例程
+*/
+
 #include <Microduino_RTC.h>
 
-/* get a real time clock object */
+
 RTC rtc;
-/* set a time to start with.
- * year, month, weekday, day, hour, minute, second */
+
+/* 设置RTC启动时间
+ * 年, 月, 星期, 日, 时, 分, 秒 */
 DateTime dateTime = {2016, 6, 3, 1, 15, 30, 40};
-/* a flag for the interrupt */
+
+//中断标志位
 volatile uint8_t alarmFlag=0;
 uint32_t timer=millis();
 
-/* the interrupt service routine */
+//中断函数
 void blink(){
   alarmFlag=1;
 }
 
 void setup()
 {
-  pinMode(2, INPUT);           // set pin to input
+  pinMode(2, INPUT);           // 设置中断引脚
   Serial.begin(9600);
-  /* clear out all the registers */
+  //清除所有寄存器
   rtc.begin();
   rtc.clearAll();
   rtc.setDateTime(dateTime);
    
+  //设置分钟报警，每到31分的时候报警
   rtc.setAlarm(31, 0, 0, 0, EN_MINUTE);
   rtc.enableAlarmInt();
   Serial.println("debug set alarm");
 
-  /* setup int on pin 2 of arduino */
+  //设置外部中断，中断号0， 下降沿触发
   attachInterrupt(0, blink, FALLING);
 }
 
@@ -35,7 +49,7 @@ void loop()
 {
   if(millis()-timer>1000)
   {
-    /* each sec update the display */
+    //打印当前时间
     rtc.getDateTime(&dateTime);    
     Serial.print(dateTime.year);
     Serial.print("/");
@@ -54,6 +68,7 @@ void loop()
 
   if (alarmFlag==1){
     Serial.print("Alarm!\r\n");
+	//清除中断
     rtc.clearAlarmInt();   
     detachInterrupt(0);
     alarmFlag=0;
