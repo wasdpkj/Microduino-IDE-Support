@@ -1,3 +1,11 @@
+/*
+*修改者:ray
+*zhanglei@microduino.cc
+*HTTP连接OneNet例子
+*/
+
+
+
 #include <ESP8266.h>
 #include <aJSON.h>
 

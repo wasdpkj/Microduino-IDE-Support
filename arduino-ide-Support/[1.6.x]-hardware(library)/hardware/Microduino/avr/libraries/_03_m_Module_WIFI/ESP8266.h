@@ -18,6 +18,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
+
+/*
+*修改者:ray
+*zhanglei@microduino.cc
+*添加了MQTT的相关AT命令
+*/
+
+
+
+
 #ifndef __ESP8266_H__
 #define __ESP8266_H__
 

@@ -1,3 +1,10 @@
+/*
+*修改者:ray
+*zhanglei@microduino.cc
+*连接mCotton例子
+*/
+
+
 #include <ESP8266.h>
 #include <aJSON.h>
 

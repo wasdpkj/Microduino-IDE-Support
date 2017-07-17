@@ -1,3 +1,10 @@
+/*
+*修改者:ray
+*zhanglei@microduino.cc
+*SmartConfiger例子
+*/
+
+
 #include <EEPROM.h>
 #include <ESP8266.h>
 #include <aJSON.h>

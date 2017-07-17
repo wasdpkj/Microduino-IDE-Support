@@ -18,6 +18,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
+
+
+/*
+*修改者:ray
+*zhanglei@microduino.cc
+*添加了MQTT的相关AT命令
+*/
+
+
 #include "ESP8266.h"
 #include <avr/pgmspace.h>
 
