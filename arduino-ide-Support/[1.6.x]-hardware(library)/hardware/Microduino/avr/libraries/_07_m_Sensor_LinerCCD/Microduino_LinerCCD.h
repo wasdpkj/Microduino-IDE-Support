@@ -1,8 +1,16 @@
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
 /*
  * linerCCD.h
  *
  *  Created on: 2017年1月12日
  *      Author: ray
+ *
+ *	线性CCD
+ *	可设置返回的像素数128,64,32,16,8,4,2
+ *	可设置曝光时间
+ *	调整对比度算法
+ *	计算最大,最小像素值
  */
 
 #ifndef LINERCCD_H_

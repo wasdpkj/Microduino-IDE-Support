@@ -1,3 +1,20 @@
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
+/*
+ *  线性CCD测试示例
+ *  设置128个像素时可用processing上位机sketch___CCD看到效果
+ *
+ *  Created on: 2017年1月12日
+ *      Author: ray
+ *
+ *  线性CCD
+ *  可设置返回的像素数128,64,32,16,8,4,2
+ *  可设置曝光时间
+ *  调整对比度算法
+ *  计算最大,最小像素值
+ */
+
+
 #include <Microduino_LinerCCD.h>
 
 LinerCCD linerCCD;//default light pin on A0
