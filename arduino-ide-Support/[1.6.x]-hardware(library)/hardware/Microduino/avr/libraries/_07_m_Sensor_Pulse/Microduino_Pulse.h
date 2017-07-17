@@ -1,3 +1,23 @@
+/*********************************************************
+//  LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+
+//  版权所有：
+//  @小崔  cuiwenjing@microduino.cc
+
+// 支持Microduino_Sensor_Pulse
+
+// Microduino wiki:
+// http://wiki.microduino.cn
+
+// E-mail:
+// Wenjing Cui
+// cuiwenjing@microduino.cc
+
+// Weibo:
+// @路蝶-6
+
+//日期：2017.07
+*********************************************************/
 
 #ifndef PULSE_H_
 #define PULSE_H_
