@@ -1,22 +1,26 @@
-/*
+// LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+// ==============
 
+// 版权所有：
+// By YLB  yanglibin@microduino.cc
+// ==============
+
+/*
   模块wiki:https://wiki.microduino.cn/index.php/Sensor-Number 
 
   控制4个数码管
-   1.初始化显示每段，a,b,c,d,e,f，h不能通过段控制
+   1.初始化显示每段，a,b,c,d,e,f
    2.初始化设置数码管方向
    3.循环显示数字0-9
    4.熄灭数码管
 
   电路：
-  * 数码管接到核心的4，5引脚
+  -数码管接到核心的4，5引脚
 
   注意：
   Core的A6，A7接口不能用于软串口控制
 
-  2017年7月5日修改
-  By YLB
-
+  2017年7月17日修改
 */
 #include <Microduino_Number.h>
 
