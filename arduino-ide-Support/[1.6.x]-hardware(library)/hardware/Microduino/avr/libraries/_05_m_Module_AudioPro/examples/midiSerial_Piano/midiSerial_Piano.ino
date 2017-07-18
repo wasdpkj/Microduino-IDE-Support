@@ -1,8 +1,9 @@
 /*
-使用前应该先将模块背后的跳线短接，才可进入串口模式
+  使用前应该先将模块背后的跳线短接，才可进入串口模式
 */
 
-#include "Audio.h"
+#include <Microduino_AudioPro.h>
+#include "MIDI.h"
 uint8_t toneNum[12] = {59, 60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77};
 int pin_light[12] = {
   4, 5, 6, 7, 8, 9, A0, A1, SDA, SCL, A6, A7

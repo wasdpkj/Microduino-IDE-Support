@@ -97,7 +97,8 @@ if (int8_t(sd.vol()->fatType()) == 0) {
 }
 #endif
   SPI.begin();
-
+  
+  pinMode(AUDIO_PIN_MIDI,INPUT_PULLUP);
   pinMode(MP3_DREQ, INPUT);
   pinMode(MP3_XCS, OUTPUT);
   pinMode(MP3_XDCS, OUTPUT);
@@ -2057,7 +2058,7 @@ void AudioPro::playMIDInote(const uint8_t *buffer, uint32_t buffsiz) {
  */
 void AudioPro::enableRefill() {
   if(playing_state == playback) {
-    attachInterrupt(MP3_DREQINT, refill, RISING);
+    attachInterrupt(digitalPinToInterrupt(MP3_DREQ), refill, RISING);
   }
 }
 
@@ -2069,7 +2070,7 @@ void AudioPro::enableRefill() {
  * stream buffer, this routine will disable the corresponding service.
  */
 void AudioPro::disableRefill() {
-  detachInterrupt(MP3_DREQINT);
+  detachInterrupt(digitalPinToInterrupt(MP3_DREQ));
 }
 
 //------------------------------------------------------------------------------

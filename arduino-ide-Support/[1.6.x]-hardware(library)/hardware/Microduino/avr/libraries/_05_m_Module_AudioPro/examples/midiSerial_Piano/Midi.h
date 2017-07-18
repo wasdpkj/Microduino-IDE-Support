@@ -1,7 +1,5 @@
-#include "AudioDef.h"
-
 #include <SoftwareSerial.h>
-SoftwareSerial VS1053_MIDI(-1, VS_RX);
+SoftwareSerial VS1053_MIDI(-1, AUDIO_PIN_MIDI);
 
 void midiSetInstrument(uint8_t chan, uint8_t inst) {
   if (chan > 15 || inst > 127) return;  // page 32 has instruments starting with 1 not 0 :(

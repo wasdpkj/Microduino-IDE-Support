@@ -88,10 +88,10 @@ unverified at this time.
 #include <pins_arduino.h>
 
 
+#define AUDIO_PIN_MIDI        	2 // There is no IRQ used on Seeduino
 #define MP3_XCS             A3 //Control Chip Select Pin (for accessing SPI Control/Status registers)
 #define MP3_XDCS            A2 //Data Chip Select / BSYNC Pin
 #define MP3_DREQ            3 //Data Request Pin: Player asks for more data
-#define MP3_DREQINT        	1 // There is no IRQ used on Seeduino
 #define MP3_RESET           -1 //Reset is active low
 #define SD_SEL              7 //select pin for SD card
 
