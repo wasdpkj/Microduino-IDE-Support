@@ -28,10 +28,10 @@ SdFile file;
  * application, such as Serial port and Webplayer objects with .begin.
  */
 void setup() {
-
   Serial.begin(115200);
   Serial.print(F("Free RAM: "));
   Serial.println(FreeRam());
+  delay(200);
 
   // initialize the SD card at SPI_HALF_SPEED to avoid bus errors with
   // breadboards.  use SPI_FULL_SPEED for better performance.

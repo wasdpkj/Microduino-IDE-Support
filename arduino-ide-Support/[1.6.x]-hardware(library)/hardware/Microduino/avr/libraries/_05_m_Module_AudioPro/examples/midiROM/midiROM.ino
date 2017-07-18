@@ -4,9 +4,9 @@
 AudioPro midiPlayer;
 
 void setup() {
- 
   uint8_t result; //result code from some function as to be tested at later time.
   Serial.begin(115200);
+  delay(200);
 
   Serial.print(F("F_CPU = "));
   Serial.println(F_CPU);

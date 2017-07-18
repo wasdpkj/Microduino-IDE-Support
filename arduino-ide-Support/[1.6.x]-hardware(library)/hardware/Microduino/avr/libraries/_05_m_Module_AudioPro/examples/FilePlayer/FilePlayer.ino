@@ -74,12 +74,13 @@ void setup() {
 	
   uint8_t result; //result code from some function as to be tested at later time.
   Serial.begin(115200);
+  delay(200);
 
   Serial.print(F("F_CPU = "));
   Serial.println(F_CPU);
   Serial.print(F("Free RAM = ")); // available in Version 1.0 F() bases the string to into Flash, to use less SRAM.
   Serial.print(FreeRam(), DEC);  // FreeRam() is provided by SdFatUtil.h
-
+  
   //Initialize the SdCard.
   if(!sd.begin(SD_SEL, SPI_FULL_SPEED)) sd.initErrorHalt();
   // depending upon your SdCard environment, SPI_HAVE_SPEED may work better.

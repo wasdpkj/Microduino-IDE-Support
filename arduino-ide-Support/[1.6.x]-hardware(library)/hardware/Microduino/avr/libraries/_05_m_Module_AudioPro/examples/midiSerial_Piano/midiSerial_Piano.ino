@@ -17,6 +17,7 @@ unsigned long time_rst = 0;
 
 void setup() {
   Serial.begin(9600);
+  delay(200);
   for (int a = 0; a < 12; a++) {
     pinMode(pin_light[a], INPUT_PULLUP);
   }

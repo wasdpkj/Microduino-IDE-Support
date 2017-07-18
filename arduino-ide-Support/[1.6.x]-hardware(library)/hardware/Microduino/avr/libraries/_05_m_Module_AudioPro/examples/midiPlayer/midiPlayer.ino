@@ -4,6 +4,7 @@ AudioPro midiPlayer;
 
 void setup() {
   Serial.begin(115200);
+  delay(200);
   
   Serial.print(F("F_CPU = "));
   Serial.println(F_CPU);
