@@ -4,6 +4,9 @@
 
 #include <Microduino_AudioPro.h>
 #include "MIDI.h"
+
+AudioPro MIDIplayer;
+
 uint8_t toneNum[12] = {59, 60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77};
 int pin_light[12] = {
   4, 5, 6, 7, 8, 9, A0, A1, SDA, SCL, A6, A7
@@ -21,7 +24,8 @@ void setup() {
   for (int a = 0; a < 12; a++) {
     pinMode(pin_light[a], INPUT_PULLUP);
   }
-
+  
+  MIDIplayer.amplifierOn();
   VS1053_MIDI.begin(31250);
   // Set volume for left, right channels. lower numbers == louder volume!
   midiSetChannelBank(0, VS1053_BANK_MELODY);

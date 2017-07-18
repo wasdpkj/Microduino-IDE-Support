@@ -63,6 +63,7 @@ uint16_t AudioPro::spi_Write_Rate;
 //buffer for music
 uint8_t  AudioPro::mp3DataBuffer[32];
 
+
 //------------------------------------------------------------------------------
 /**
  * \brief Initialize the MP3 Player shield.
@@ -227,8 +228,7 @@ uint8_t AudioPro::vs_init() {
  // if(VSLoadUserCode("patches.053")) return 6;
 
   delay(100); // just a good idea to let settle.
-  GPIO_pinMode(4, OUTPUT);
-  GPIO_digitalWrite(4, LOW);
+  amplifierOn();
   
   return 0; // indicating all was good.
 }
@@ -300,6 +300,21 @@ uint8_t AudioPro::VSLoadUserCode(char* fileName){
   return 0;
 }
 
+void AudioPro::amplifierOn(){
+  amplifierSta = true;
+  if(!amplifierSta){
+    GPIO_pinMode(4, OUTPUT);
+  }
+  GPIO_digitalWrite(4, LOW);	
+}
+
+void AudioPro::amplifierOff(){
+  amplifierSta = true;
+  if(!amplifierSta){
+    GPIO_pinMode(4, OUTPUT);
+  }
+  GPIO_digitalWrite(4, HIGH);	
+}
 
 void AudioPro::GPIO_pinMode(uint8_t pin, uint8_t dir) {
   if (pin > 7) return;
@@ -1076,7 +1091,7 @@ uint8_t AudioPro::playMP3(char* fileName, uint32_t timecode) {
   //Open the file in read mode.
   if(!track.open(fileName, O_READ)) return 2;
   
-  GPIO_digitalWrite(4, LOW);
+  amplifierOn();
   // find length of arrary at pointer
   int fileNamefileName_length = 0;
   while(*(fileName + fileNamefileName_length))
@@ -1114,6 +1129,7 @@ void AudioPro::stopTrack(){
   if((playing_state != playback) && (playing_state != paused_playback))	  
     return;
 
+  amplifierOff();
   //cancel external interrupt
   disableRefill();
   playing_state = ready;
@@ -1121,7 +1137,6 @@ void AudioPro::stopTrack(){
   track.close(); //Close out this track
 
   flush_cancel(pre); //possible mode of "none" for faster response.
-  GPIO_digitalWrite(4, HIGH);
   //Serial.println(F("Track is done!"));
 }
 

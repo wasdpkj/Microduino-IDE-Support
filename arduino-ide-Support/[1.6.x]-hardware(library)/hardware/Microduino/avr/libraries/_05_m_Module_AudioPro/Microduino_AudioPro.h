@@ -674,6 +674,8 @@ class AudioPro {
     void midiSetInstrument(uint8_t, uint8_t);
 	void noteOn(uint8_t, uint8_t, uint8_t);
 	void noteOff(uint8_t, uint8_t, uint8_t);
+	void amplifierOn();
+	void amplifierOff();
 	void playData(uint8_t *, uint16_t);
 
     void setVolume(uint8_t, uint8_t);
@@ -726,6 +728,7 @@ class AudioPro {
     void playMIDInote(const uint8_t*, uint32_t);
 
   private:
+    bool amplifierSta = false;
     static SdFile track;
 	void GPIO_pinMode(uint8_t pin, uint8_t dir);
 	void GPIO_digitalWrite(uint8_t val);
