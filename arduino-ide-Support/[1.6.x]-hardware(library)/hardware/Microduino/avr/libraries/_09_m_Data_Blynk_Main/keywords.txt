@@ -69,7 +69,7 @@ BLYNK_MAX_READBYTES	KEYWORD2
 EspSerial	KEYWORD3
 
 #######################################
-# Literals (LITERAL1)
+# LITERALs (LITERAL1)
 #######################################
 
 # Virtual pins

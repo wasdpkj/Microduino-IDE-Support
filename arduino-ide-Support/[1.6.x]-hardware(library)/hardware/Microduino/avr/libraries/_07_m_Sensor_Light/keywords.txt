@@ -10,14 +10,14 @@ Light_D1	KEYWORD1
 # Methods and Functions (KEYWORD2)
 #######################################
 
-begin					KEYWORD2
-enableAutoGain			KEYWORD2
-setIntegrationTime		KEYWORD2
-setGain					KEYWORD2
-getBroadbandIr			KEYWORD2
-calculateLux			KEYWORD2
-getLuminosity			KEYWORD2
-	
+begin	KEYWORD2
+enableAutoGain	KEYWORD2
+setIntegrationTime	KEYWORD2
+setGain	KEYWORD2
+getBroadbandIr	KEYWORD2
+calculateLux	KEYWORD2
+getLuminosity	KEYWORD2
+
 #######################################
 # Constants (LITERAL1)
 #######################################

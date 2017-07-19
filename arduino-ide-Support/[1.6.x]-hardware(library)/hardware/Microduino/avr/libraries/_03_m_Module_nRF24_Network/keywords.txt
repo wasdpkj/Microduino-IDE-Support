@@ -1,14 +1,14 @@
 #######################################
 # Data types (KEYWORD1)
 #######################################
-RF24Network		KEYWORD1
+RF24Network	KEYWORD1
 RF24NetworkHeader	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
-begin		KEYWORD2
-update		KEYWORD2
+begin	KEYWORD2
+update	KEYWORD2
 available	KEYWORD2
-peek		KEYWORD2
-read		KEYWORD2
+peek	KEYWORD2
+read	KEYWORD2

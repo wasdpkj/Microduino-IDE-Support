@@ -20,7 +20,7 @@ set_config	KEYWORD2
 set_updata	KEYWORD2
 set_baud	KEYWORD2
 set_cnssmode	KEYWORD2
-set_powermode	KEYWORD2	
+set_powermode	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

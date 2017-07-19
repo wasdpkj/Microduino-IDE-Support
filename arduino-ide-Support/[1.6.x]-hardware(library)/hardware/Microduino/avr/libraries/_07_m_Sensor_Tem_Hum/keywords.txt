@@ -14,25 +14,13 @@ Tem_Hum_S2	KEYWORD1
 # Methods and Functions (KEYWORD2)
 #######################################
 
-begin       KEYWORD2
+begin	KEYWORD2
 getHumidity	KEYWORD2
-getTemperature  KEYWORD2
+getTemperature	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
 #######################################
-
-#define Tem_D1_ADDR_0 0x48
-#define Tem_D1_ADDR_1 0x49
-#define Tem_D1_ADDR_2 0x4A
-#define Tem_D1_ADDR_3 0x4B
-#define Tem_D1_ADDR_4 0x4C
-#define Tem_D1_ADDR_5 0x4D
-#define Tem_D1_ADDR_6 0x4E
-#define Tem_D1_ADDR_7 0x4F
-
-#define Tem_D1_ADDR_DEFAULT	Tem_D1_ADDR_0
-
 
 Tem_D1_ADDR_0	LITERAL1
 Tem_D1_ADDR_1	LITERAL1

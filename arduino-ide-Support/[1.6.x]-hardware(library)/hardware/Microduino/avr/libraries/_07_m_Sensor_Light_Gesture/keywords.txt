@@ -79,7 +79,7 @@ readGesture	KEYWORD2
 
 
 #######################################
-# Literals (LITERAL1)
+# LITERALs (LITERAL1)
 #######################################
 APDS9960_I2C_ADDR	LITERAL1
 

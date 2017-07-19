@@ -11,11 +11,11 @@ Motor	KEYWORD1
 # Methods and Functions (KEYWORD2)
 #######################################
 
-begin		KEYWORD2
+begin	KEYWORD2
 setSpeed1	KEYWORD2
 setSpeed2	KEYWORD2
 setSpeed	KEYWORD2
-Brake		KEYWORD2
+Brake	KEYWORD2
 	
 #######################################
 # Constants (LITERAL1)

@@ -11,11 +11,11 @@ ProtocolZig	KEYWORD1
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
-begin			KEYWORD2
-available		KEYWORD2
-readBytes		KEYWORD2
-readWords		KEYWORD2
-write			KEYWORD2
+begin	KEYWORD2
+available	KEYWORD2
+readBytes	KEYWORD2
+readWords	KEYWORD2
+write	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

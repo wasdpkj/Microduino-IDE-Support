@@ -1,28 +1,28 @@
 #######################################
 # Data types (KEYWORD1)
 #######################################
-RF24Mesh		KEYWORD1
+RF24Mesh	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
-begin		KEYWORD2
-update		KEYWORD2
-write		KEYWORD2
+begin	KEYWORD2
+update	KEYWORD2
+write	KEYWORD2
 setNodeID	KEYWORD2
-DHCP		KEYWORD2
+DHCP	KEYWORD2
 getNodeID	KEYWORD2
 checkConnection	KEYWORD2
 renewAddress	KEYWORD2
 releaseAddress	KEYWORD2
-getAddress		KEYWORD2
-write		KEYWORD2
+getAddress	KEYWORD2
+write	KEYWORD2
 setChannel	KEYWORD2
 setAddress	KEYWORD2
 setStaticAddress	KEYWORD2
 writeAckPayload	KEYWORD2
 txStandBy	KEYWORD2
 available	KEYWORD2
-read		KEYWORD2
+read	KEYWORD2
 openWritingPipe	KEYWORD2
 openReadingPipe	KEYWORD2

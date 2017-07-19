@@ -4,15 +4,15 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-Dust	  	KEYWORD1
+Dust	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
 available	KEYWORD2
-getPM25		KEYWORD2
-	
+getPM25	KEYWORD2
+
 #######################################
 # Constants (LITERAL1)
 #######################################

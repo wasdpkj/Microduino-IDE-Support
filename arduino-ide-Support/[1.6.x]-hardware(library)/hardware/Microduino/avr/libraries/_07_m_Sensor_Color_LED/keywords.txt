@@ -7,7 +7,7 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-Microduino_ColorLED     KEYWORD1
+Microduino_ColorLED	KEYWORD1
 
 ####################################### 
 
@@ -32,7 +32,7 @@ setPixelColor	KEYWORD2
 
 setOneLED	KEYWORD2
 setAllLED	KEYWORD2
-setPin		KEYWORD2
+setPin	KEYWORD2
 
 setBrightness	KEYWORD2
 
@@ -40,12 +40,12 @@ numPixels	KEYWORD2
 
 getPixelColor	KEYWORD2
 
-Color		KEYWORD2
+Color	KEYWORD2
 
-show		KEYWORD2
+show	KEYWORD2
 
 
-clear		KEYWORD2
+clear	KEYWORD2
 
 updateLength	KEYWORD2
 
@@ -55,11 +55,11 @@ getPixels	KEYWORD2
 
 getBrightness	KEYWORD2
 
-getPin		KEYWORD2
+getPin	KEYWORD2
 
-canShow		KEYWORD2
+canShow	KEYWORD2
 
-clear		KEYWORD2
+clear	KEYWORD2
 
 
 
@@ -79,9 +79,9 @@ NEO_KHZ800	LITERAL1
 
 NEO_KHZ400	LITERAL1
 
-NEO_GRB		LITERAL1
+NEO_GRB	LITERAL1
 
-NEO_RGB		LITERAL1
+NEO_RGB	LITERAL1
 
 NEO_RGBW	LITERAL1
 

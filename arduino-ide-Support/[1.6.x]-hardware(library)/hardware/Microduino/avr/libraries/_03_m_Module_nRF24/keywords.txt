@@ -1,45 +1,45 @@
 #######################################
 # Data types (KEYWORD1)
 #######################################
-RF24		KEYWORD1
+RF24	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
-begin		KEYWORD2
+begin	KEYWORD2
 setChannel	KEYWORD2
 getChannel	KEYWORD2
 setAutoAck	KEYWORD2
 setPALevel	KEYWORD2
 enableAckPayload	KEYWORD2
-setRetries		KEYWORD2
+setRetries	KEYWORD2
 setPayloadSize	KEYWORD2
 getPayloadSize	KEYWORD2
 print_details	KEYWORD2
 startListening	KEYWORD2
 stopListening	KEYWORD2
-write		KEYWORD2
+write	KEYWORD2
 writeFast	KEYWORD2
 writeBlocking	KEYWORD2
 writeAckPayload	KEYWORD2
 txStandBy	KEYWORD2
 available	KEYWORD2
-read		KEYWORD2
+read	KEYWORD2
 openWritingPipe	KEYWORD2
 openReadingPipe	KEYWORD2
 
 #######################################
 # Literals (LITERAL1)
 #######################################
-RF24_PA_MIN		LITERAL1
-RF24_PA_LOW		LITERAL1
+RF24_PA_MIN	LITERAL1
+RF24_PA_LOW	LITERAL1
 RF24_PA_HIGH	LITERAL1
-RF24_PA_MAX		LITERAL1
+RF24_PA_MAX	LITERAL1
 
-RF24_1MBPS		LITERAL1
-RF24_2MBPS		LITERAL1
+RF24_1MBPS	LITERAL1
+RF24_2MBPS	LITERAL1
 RF24_250KBPS	LITERAL1
 
 RF24_CRC_DISABLED	LITERAL1
-RF24_CRC_8		LITERAL1
-RF24_CRC_16		LITERAL1
+RF24_CRC_8	LITERAL1
+RF24_CRC_16	LITERAL1

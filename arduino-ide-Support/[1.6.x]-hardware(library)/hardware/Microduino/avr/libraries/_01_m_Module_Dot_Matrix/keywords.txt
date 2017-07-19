@@ -13,36 +13,36 @@ Matrix	KEYWORD1
 # Methods and Functions (KEYWORD2)
 #######################################
 
-clearDisplay			KEYWORD2
-setColor				KEYWORD2
-setBrightness			KEYWORD2
-clearColor				KEYWORD2
-setLed					KEYWORD2
-setLedColor				KEYWORD2
-setLedColorFast			KEYWORD2
-setLedBrightness		KEYWORD2
-setRow					KEYWORD2
-setColumn				KEYWORD2
-writeString				KEYWORD2
-displayChar				KEYWORD2
-getDeviceAddr			KEYWORD2
-setDeviceAddr			KEYWORD2
+clearDisplay	KEYWORD2
+setColor	KEYWORD2
+setBrightness	KEYWORD2
+clearColor	KEYWORD2
+setLed	KEYWORD2
+setLedColor	KEYWORD2
+setLedColorFast	KEYWORD2
+setLedBrightness	KEYWORD2
+setRow	KEYWORD2
+setColumn	KEYWORD2
+writeString	KEYWORD2
+displayChar	KEYWORD2
+getDeviceAddr	KEYWORD2
+setDeviceAddr	KEYWORD2
 getCharArrayPosition	KEYWORD2
-setFastMode				KEYWORD2
-clearFastMode			KEYWORD2
-getStringWidth			KEYWORD2
-getStringHeight			KEYWORD2
-getMatrixNum 			KEYWORD2
-getHeight				KEYWORD2
-getWidth				KEYWORD2
-drawLine				KEYWORD2
-drawCircle				KEYWORD2
-drawDisc				KEYWORD2
-drawFrame				KEYWORD2
-drawRFrame				KEYWORD2
-drawBox					KEYWORD2
-drawRBox				KEYWORD2
-drawBMP					KEYWORD2
+setFastMode	KEYWORD2
+clearFastMode	KEYWORD2
+getStringWidth	KEYWORD2
+getStringHeight	KEYWORD2
+getMatrixNum	KEYWORD2
+getHeight	KEYWORD2
+getWidth	KEYWORD2
+drawLine	KEYWORD2
+drawCircle	KEYWORD2
+drawDisc	KEYWORD2
+drawFrame	KEYWORD2
+drawRFrame	KEYWORD2
+drawBox	KEYWORD2
+drawRBox	KEYWORD2
+drawBMP	KEYWORD2
 
 
 
@@ -50,8 +50,8 @@ drawBMP					KEYWORD2
 #######################################
 # Constants (LITERAL1)
 
-TYPE_S2 KEYWORD1
-TYPE_COLOR KEYWORD1
+TYPE_S2	KEYWORD1
+TYPE_COLOR	KEYWORD1
 
 #######################################
 

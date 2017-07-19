@@ -36,21 +36,21 @@ createIntArray	KEYWORD2
 createFloatArray	KEYWORD2
 createDoubleArray	KEYWORD2
 createStringArray	KEYWORD2
-addItemToArray		KEYWORD2
-addItemToObject		KEYWORD2
+addItemToArray	KEYWORD2
+addItemToObject	KEYWORD2
 addItemReferenceToArray	KEYWORD2
 addItemReferenceToObject	KEYWORD2
-detachItemFromArray		KEYWORD2
-deleteItemFromArray		KEYWORD2
-detachItemFromObject		KEYWORD2
-deleteItemFromObject		KEYWORD2
-replaceItemInArray		KEYWORD2
-replaceItemInObject		KEYWORD2
-addNullToObject			KEYWORD2
-addTrueToObject			KEYWORD2
-addFalseToObject		KEYWORD2
-addNumberToObject		KEYWORD2
-addStringToObject		KEYWORD2
+detachItemFromArray	KEYWORD2
+deleteItemFromArray	KEYWORD2
+detachItemFromObject	KEYWORD2
+deleteItemFromObject	KEYWORD2
+replaceItemInArray	KEYWORD2
+replaceItemInObject	KEYWORD2
+addNullToObject	KEYWORD2
+addTrueToObject	KEYWORD2
+addFalseToObject	KEYWORD2
+addNumberToObject	KEYWORD2
+addStringToObject	KEYWORD2
 
 
 #######################################

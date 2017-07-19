@@ -6,7 +6,7 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-SimpleTimer			KEYWORD1
+SimpleTimer	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)

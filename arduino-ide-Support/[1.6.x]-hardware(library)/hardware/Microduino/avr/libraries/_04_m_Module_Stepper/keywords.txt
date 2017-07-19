@@ -6,7 +6,7 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-Stepper		KEYWORD1
+Stepper	KEYWORD1
 StepServo	KEYWORD1
 
 #######################################
@@ -14,44 +14,44 @@ StepServo	KEYWORD1
 #######################################
 stepperAllEnable	KEYWORD2
 stepperAllDisable	KEYWORD2
-begin				KEYWORD2
-step				KEYWORD2
-setSpeed			KEYWORD2
-setMaxAccel			KEYWORD2
-setMaxSpeed			KEYWORD2
-getSpeed			KEYWORD2
-getMaxAccel         KEYWORD2
-getMaxSpeed         KEYWORD2
-runSpeedToPosition  KEYWORD2
-runSpeed			KEYWORD2
-setCurrentPosition  KEYWORD2
-getTargetPosition   KEYWORD2
-distanceToGo        KEYWORD2
-moveTo              KEYWORD2
-move                KEYWORD2
-runToPosition       KEYWORD2
-runToNewPosition    KEYWORD2
-runDistance         KEYWORD2
-run                 KEYWORD2
-stop                KEYWORD2
-computeNewSpeed		KEYWORD2
-computeStep			KEYWORD2
+begin	KEYWORD2
+step	KEYWORD2
+setSpeed	KEYWORD2
+setMaxAccel	KEYWORD2
+setMaxSpeed	KEYWORD2
+getSpeed	KEYWORD2
+getMaxAccel	KEYWORD2
+getMaxSpeed	KEYWORD2
+runSpeedToPosition	KEYWORD2
+runSpeed	KEYWORD2
+setCurrentPosition	KEYWORD2
+getTargetPosition	KEYWORD2
+distanceToGo	KEYWORD2
+moveTo	KEYWORD2
+move	KEYWORD2
+runToPosition	KEYWORD2
+runToNewPosition	KEYWORD2
+runDistance	KEYWORD2
+run	KEYWORD2
+stop	KEYWORD2
+computeNewSpeed	KEYWORD2
+computeStep	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
 #######################################
-MAX_SPEED			LITERAL1
-TIMER_COMP 			LITERAL1
-MAX_STEPPERS 		LITERAL1
-MINVALID_STEPPER 	LITERAL1
-PIN_EN 				LITERAL1
-PIN_DIRA 			LITERAL1
-PIN_STEPA 			LITERAL1
-PIN_DIRB 			LITERAL1
-PIN_STEPB 			LITERAL1
-PIN_DIRC 			LITERAL1
-PIN_STEPC 			LITERAL1
-PIN_DIRD 			LITERAL1
-PIN_STEPD 			LITERAL1
-DEFAULT_ACCEL		LITERAL1
+MAX_SPEED	LITERAL1
+TIMER_COMP	LITERAL1
+MAX_STEPPERS	LITERAL1
+MINVALID_STEPPER	LITERAL1
+PIN_EN	LITERAL1
+PIN_DIRA	LITERAL1
+PIN_STEPA	LITERAL1
+PIN_DIRB	LITERAL1
+PIN_STEPB	LITERAL1
+PIN_DIRC	LITERAL1
+PIN_STEPC	LITERAL1
+PIN_DIRD	LITERAL1
+PIN_STEPD	LITERAL1
+DEFAULT_ACCEL	LITERAL1
 DEFAULT_MAX_SPEED	LITERAL1
