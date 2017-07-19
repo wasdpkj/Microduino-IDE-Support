@@ -33,16 +33,16 @@ boolean Ultrasonic::begin() {
 }
 
 uint16_t Ultrasonic::requstDistance() { 
-  Wire.requestFrom(UltrasonicAddress, 2);
+  Wire.requestFrom((uint8_t)UltrasonicAddress, (uint8_t)2);
   while (Wire.available())
   {
     if (flag == 0)
     { flag++;
-      first_byte = Wire.read(); // receive a byte as character
+      first_byte = Wire.read(); 
     }
     else if (flag == 1)
     { flag = 0;
-      second_byte = Wire.read(); // receive a byte as character
+      second_byte = Wire.read(); 
       distance = second_byte + (first_byte << 8);
     }
   }
