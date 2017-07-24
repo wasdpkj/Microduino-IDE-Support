@@ -1,366 +1,284 @@
-/**
-\file AudioPro.cpp
+// 源自Adafruit_VS1053库
+// 修订：@老潘orz  wasdpkj@hotmail.com
+// 添加了多种功能和方法
+// 播放速度、音量查询、音量整体设置、立体声模式、差分输出、ROM播放、SD音乐文件列表等
 
-\brief Code file for the audioPro library
-\remarks comments are implemented with Doxygen Markdown format
+/***************************************************
+  This is a library for the Adafruit VS1053 Codec Breakout
 
-*/
+  Designed specifically to work with the Adafruit VS1053 Codec Breakout
+  ----> https://www.adafruit.com/products/1381
+
+  Adafruit invests time and resources providing this open source code,
+  please support Adafruit and open-source hardware by purchasing
+  products from Adafruit!
+
+  Written by Limor Fried/Ladyada for Adafruit Industries.
+  BSD license, all text above must be included in any redistribution
+ ****************************************************/
 
 #include "Microduino_AudioPro.h"
-// inslude the SPI library:
-#include "SPI.h"
-//avr pgmspace library for storing the LUT in program flash instead of sram
-#include <avr/pgmspace.h>
 
-/**
- * \brief bitrate lookup table
- *
- * This is a table to decode the bitrate as per the MP3 file format,
- * as read by the SdCard
- *
- * \note PROGMEM macro forces to Flash space.
- * \warning This consums 190 bytes of flash
- */
-PROGMEM const uint16_t bitrate_table[15][6] = {
-                 { 0,   0,  0,  0,  0,  0}, //0000
-                 { 32, 32, 32, 32,  8,  8}, //0001
-                 { 64, 48, 40, 48, 16, 16}, //0010
-                 { 96, 56, 48, 56, 24, 24}, //0011
-                 {128, 64, 56, 64, 32, 32}, //0100
-                 {160, 80, 64, 80, 40, 40}, //0101
-                 {192, 96, 80, 96, 48, 48}, //0110
-                 {224,112, 96,112, 56, 56}, //0111
-                 {256,128,112,128, 64, 64}, //1000
-                 {288,160,128,144, 80, 80}, //1001
-                 {320,192,160,160, 96, 69}, //1010
-                 {352,224,192,176,112,112}, //1011
-                 {384,256,224,192,128,128}, //1100
-                 {416,320,256,224,144,144}, //1101
-                 {448,384,320,256,160,160}  //1110
-               };
+static AudioPro_FilePlayer *myself;
 
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-/* Initialize static classes and variables
- */
-
-/**
- * \brief Initializer for the instance of the SdCard's static member.
- */
-SdFile   AudioPro::track;
-
-/**
- * \brief Initializer for the instance of the SdCard's static member.
- */
-state_m  AudioPro::playing_state;
-
-/**
- * \brief Initializer for the instance of the SdCard's static member.
- */
-uint16_t AudioPro::spi_Read_Rate;
-uint16_t AudioPro::spi_Write_Rate;
-
-
-//buffer for music
-uint8_t  AudioPro::mp3DataBuffer[32];
-
-
-//------------------------------------------------------------------------------
-/**
- * \brief Initialize the MP3 Player shield.
- *
- * Execute this function before anything else, typically during setup().
- * It will bring the VS10xx out of reset, initialize the connected pins and
- * then ready the VSdsp for playback, with vs_init().
- *
- * \return Any Value other than zero indicates a problem occured.
- * where value indicates specific error
- *
- * \see
- * end() for low power mode
- * \see
- * \ref Error_Codes
- * \warning Will disrupt playback, if issued while playing back.
- * \note The \c SdFat::begin() function is required to be executed prior, as to
- * define the volume for the tracks (aka files) to be operated on.
- */
-uint8_t  AudioPro::begin() {
-
-/*
- This test is to assit in the migration from versions prior to 1.01.00.
- It is not really needed, simply prints an easy error, to better assist.
- If you are using SdFat objects other than "sd" the below may be omitted.
- or whant to save 222 bytes of Flash space.
- */
-#if (0)
-if (int8_t(sd.vol()->fatType()) == 0) {
-  Serial.println(F("If you get this error, you likely do not have a sd.begin in the main sketch, See Trouble Shooting Guide!"));
-  Serial.println(F("http://mpflaga.github.com/Sparkfun-MP3-Player-Shield-Arduino-Library/#Troubleshooting"));
-}
-#endif
-  SPI.begin();
-  
-  pinMode(AUDIO_PIN_MIDI,INPUT_PULLUP);
-  pinMode(MP3_DREQ, INPUT);
-  pinMode(MP3_XCS, OUTPUT);
-  pinMode(MP3_XDCS, OUTPUT);
-  pinMode(MP3_RESET, OUTPUT);
- 
-#if PERF_MON_PIN != -1
-  pinMode(PERF_MON_PIN, OUTPUT);
-  digitalWrite(PERF_MON_PIN,HIGH);
+#ifndef _BV
+#define _BV(x) (1<<(x))
 #endif
 
-  cs_high();  //MP3_XCS, Init Control Select to deselected
-  dcs_high(); //MP3_XDCS, Init Data Select to deselected
-  digitalWrite(MP3_RESET, LOW); //Put VS1053 into hardware reset
-
-  playing_state = initialized;
-
-  return vs_init();
+SIGNAL(TIMER0_COMPA_vect) {
+  myself->feedBuffer();
 }
 
-/**
- * \brief Disables the MP3 Player shield.
- *
- * Places the VS10xx into low power hard reset, after polity closing files
- * after releasing interrupts and or timers.
- *
- * \warning Will stop any playing tracks. Check isPlaying() prior to executing, as not to stop on a track.
- * \note use begin() to reinitialize the VS10xx, for use.
- */
-void AudioPro::end() {
-
-  stopTrack(); // Stop and CLOSE any open tracks.
-  disableRefill(); // shut down specific interrupts
-  cs_high();  //MP3_XCS, Init Control Select to deselected
-  dcs_high(); //MP3_XDCS, Init Data Select to deselected
-
-  // most importantly...
-  digitalWrite(MP3_RESET, LOW); //Put VS1053 into hardware reset
-
-  playing_state = deactivated;
+static void feeder(void) {
+  myself->feedBuffer();
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief Initialize the VS10xx Audio Decoder Chip.
- *
- * Reset and initialize the VS10xx chip's internal registers such as clock
- * for normal operation with the Aduio class's members.
- * Along with uploading corresponding accumilative patch file, if present.
- *
- * \return Any Value other than zero indicates a problem occured.
- * - 0 indicates that upload was successful.
- * - 1 thru 3 are omitted, as not to overlap with other errors.
- * - 4 indicates other than default values were found in the SCI_MODE register.
- * - 5 indicates SCI_CLOCKF did not read back and verify the configured value.
- *
- * \note returned Error codes are typically passed and therefore need to avoid
- * overlap.
- *
- * \see
- * \ref Error_Codes
- */
-uint8_t AudioPro::vs_init() {
+#define VS1053_CONTROL_SPI_SETTING  SPISettings(250000,  MSBFIRST, SPI_MODE0)
+#define VS1053_DATA_SPI_SETTING     SPISettings(8000000, MSBFIRST, SPI_MODE0)
 
-  //Initialize VS1053 chip
 
-  //From section 7.6 of datasheet, max SCI reads are CLKI/7.
-  //Assuming CLKI = 12.288MgHz for Shield and 16.0MgHz for Arduino
-  //The VS1053's internal clock multiplier SCI_CLOCKF:SC_MULT is 1.0x after power up.
-  //For a maximum SPI rate of 1.8MgHz = (CLKI/7) = (12.288/7) the VS1053's default.
+boolean AudioPro_FilePlayer::useInterrupt(uint8_t type) {
+  myself = this;  // oy vey
 
-  //Warning:
-  //Note that spi transfers interleave between SdCard and VS10xx.
-  //Where Sd2Card.cpp sets SPCR & SPSR each and every transfer
-
-  //The SDfatlib using SPI_FULL_SPEED results in an 8MHz spi clock rate,
-  //faster than initial allowed spi rate of 1.8MgHz.
-
-  // set initial mp3's spi to safe rate
-  spi_Read_Rate  = SPI_CLOCK_DIV16;
-  spi_Write_Rate = SPI_CLOCK_DIV16;
-  delay(10);
-
-   //Let's check the status of the VS1053
-  int MP3Mode = ReadRegister(SCI_MODE);
-
-/*
-  Serial.print(F("SCI_Mode (0x4800) = 0x"));
-  Serial.println(MP3Mode, HEX);
-
-  int MP3Status = ReadRegister(SCI_Status);
-  Serial.print(F("SCI_Status (0x48) = 0x"));
-  Serial.println(MP3Status, HEX);
-
-  int MP3Clock = ReadRegister(SCI_CLOCKF);
-  Serial.print(F("SCI_ClockF = 0x"));
-  Serial.println(MP3Clock, HEX);
-  */
-
-  if(MP3Mode != (SM_LINE1 | SM_SDINEW)) return 4;
-
-  //Now that we have the VS1053 up and running, increase the internal clock multiplier and up our SPI rate
-  WriteRegister(SCI_CLOCKF, 0x6000); //Set multiplier to 3.0x
-  //Internal clock multiplier is now 3x.
-  //Therefore, max SPI speed is 52MgHz.
-
-#if (F_CPU == 16000000 )
-  spi_Read_Rate  = SPI_CLOCK_DIV4; //use safe SPI rate of (16MHz / 4 = 4MHz)
-  spi_Write_Rate = SPI_CLOCK_DIV2; //use safe SPI rate of (16MHz / 2 = 8MHz)
-#else
-  // must be 8000000
-  spi_Read_Rate  = SPI_CLOCK_DIV2; //use safe SPI rate of (8MHz / 2 = 4MHz)
-  spi_Write_Rate = SPI_CLOCK_DIV2; //use safe SPI rate of (8MHz / 2 = 4MHz)
-#endif
-
-  delay(10); // settle time
-
-  //test reading after data rate change
-  int MP3Clock = ReadRegister(SCI_CLOCKF);
-  if(MP3Clock != 0x6000) return 5;
-
-  setVolume(40, 40);
-  // one would think the following patch would over write the volume.
-  // But the SCI_VOL register space is not in the VSdsp's WRAM space.
-  // Note to keep an eye on it for future patches.
-
- // if(VSLoadUserCode("patches.053")) return 6;
-
-  delay(100); // just a good idea to let settle.
-  amplifierOn();
-  
-  return 0; // indicating all was good.
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief load VS1xxx with patch or plugin from file on SDcard.
- *
- * \param[out] fileName pointer of a char array (aka string), contianing the filename
- *
- * Loads the VX10xx with filename of the specified patch, if present.
- * This can be used to load various VSdsp apps, patches and plug-in's.
- * Providing many new features and updates not present on the default firmware.
- *
- * The file format of the plugin is raw binary, in VLSI's interleaved and RLE
- * compressed format, as extracted from the source plugin file (.plg).
- * A perl script \c vs_plg_to_bin.pl is provided to convert the .plg
- * file in to the binary filename.053. Where the extension of .053 is a
- * convention to indicate the VSdsp chip version.
- *
- * \note by default all plug-ins are expected to be in the root of the SdCard.
- *
- * \return Any Value other than zero indicates a problem occured.
- * - 0 indicates that upload was successful.
- * - 1 indicates the upload can not be performed while currently streaming music.
- * - 2 indicates that desired file was not found.
- * - 3 indicates that the VSdsp is in reset.
- *
- * \see
- * - \ref Error_Codes
- * - \ref Plug_Ins
- */
-uint8_t AudioPro::VSLoadUserCode(char* fileName){
-
-  union twobyte val;
-  union twobyte addr;
-  union twobyte n;
-
- // if(!digitalRead(MP3_RESET)) return 3;
-  if(isPlaying()) return 1;
-//  if(!digitalRead(MP3_RESET)) return 3;
-
-  //Open the file in read mode.
-  if(!track.open(fileName, O_READ)) return 2;
-  //playing_state = loading;
-  //while(i<size_of_Plugin/sizeof(Plugin[0])) {
-  while(1) {
-    //addr = Plugin[i++];
-    if(!track.read(addr.byte, 2)) break;
-    //n = Plugin[i++];
-    if(!track.read(n.byte, 2)) break;
-    if(n.word & 0x8000U) { /* RLE run, replicate n samples */
-      n.word &= 0x7FFF;
-      //val = Plugin[i++];
-      if(!track.read(val.byte, 2)) break;
-      while(n.word--) {
-        WriteRegister(addr.word, val.word);
-      }
-    } else {           /* Copy run, copy n samples */
-      while(n.word--) {
-        //val = Plugin[i++];
-        if(!track.read(val.byte, 2))   break;
-        WriteRegister(addr.word, val.word);
-      }
-    }
+  // if (type == VS1053_TIMER0_DREQ) {
+  // OCR0A = 0xAF;
+  // TIMSK0 |= _BV(OCIE0A);
+  // return true;
+  // }
+  if (type == _dreq) {
+    SPI.usingInterrupt(digitalPinToInterrupt(_dreq));
+    attachInterrupt(digitalPinToInterrupt(_dreq), feeder, CHANGE);
+    return true;
   }
-  track.close(); //Close out this track
-  //playing_state = ready;
-  return 0;
-}
-
-void AudioPro::amplifierOn(){
-  amplifierSta = true;
-  if(!amplifierSta){
-    GPIO_pinMode(4, OUTPUT);
-  }
-  GPIO_digitalWrite(4, LOW);	
-}
-
-void AudioPro::amplifierOff(){
-  amplifierSta = true;
-  if(!amplifierSta){
-    GPIO_pinMode(4, OUTPUT);
-  }
-  GPIO_digitalWrite(4, HIGH);	
-}
-
-void AudioPro::GPIO_pinMode(uint8_t pin, uint8_t dir) {
-  if (pin > 7) return;
-  uint16_t ddr = ReadWRAM(VS1053_GPIO_DDR);
-
-  if (dir == INPUT)
-    ddr &= ~_BV(pin);
-  if (dir == OUTPUT)
-    ddr |= _BV(pin);
-
-  WriteWRAM(VS1053_GPIO_DDR, ddr);
-}
-
-
-void AudioPro::GPIO_digitalWrite(uint8_t val) {
-  WriteWRAM(VS1053_GPIO_ODATA, val);
-}
-
-void AudioPro::GPIO_digitalWrite(uint8_t pin, uint8_t val) {
-  if (pin > 7) return;
-  uint16_t pins = ReadWRAM(VS1053_GPIO_ODATA);
-
-  if (val == LOW)
-    pins &= ~_BV(pin);
-  if (val == HIGH)
-    pins |= _BV(pin);
-
-  WriteWRAM(VS1053_GPIO_ODATA, pins);
-}
-
-uint16_t AudioPro::GPIO_digitalRead(void){
-  return ReadWRAM(VS1053_GPIO_IDATA) & 0xFF;
-}
-
-bool AudioPro::GPIO_digitalRead(uint8_t pin) {
-  if (pin > 7) return 0;
-
-  uint16_t val = ReadWRAM(VS1053_GPIO_IDATA);
-  if (val & _BV(pin)) return true;
   return false;
+}
+
+boolean AudioPro_FilePlayer::detachInterrupt(uint8_t type) {
+  myself = this;  // oy vey
+
+  // if (type == VS1053_TIMER0_DREQ) {
+  // OCR0A = 0xAF;
+  // TIMSK0 &= ~_BV(OCIE0A);
+  // return true;
+  // }
+  if (type == _dreq) {
+    SPI.notUsingInterrupt(digitalPinToInterrupt(_dreq));
+    detachInterrupt(digitalPinToInterrupt(_dreq));
+    return true;
+  }
+  return false;
+}
+
+AudioPro_FilePlayer::AudioPro_FilePlayer(uint8_t cardcs, uint8_t midi, uint8_t cs, uint8_t dcs, uint8_t dreq)
+  : AudioPro(midi, cs, dcs, dreq) {
+
+  playingMusic = false;
+
+  // Set the card to be disabled while we get the VS1053 up
+  pinMode(_cardCS, OUTPUT);
+  digitalWrite(_cardCS, HIGH);
+}
+
+
+boolean AudioPro_FilePlayer::begin(void) {
+  uint8_t v  = AudioPro::begin();
+
+  if (!useInterrupt(_dreq)) {
+    return 0;
+  }
+  //dumpRegs();
+  //Serial.print("Version = "); Serial.println(v);
+  return (v == 4);
+}
+
+void AudioPro_FilePlayer::end(void) {
+  AudioPro::end();
+
+  detachInterrupt(_dreq);
+}
+
+boolean AudioPro_FilePlayer::playFullFile(const char *trackname) {
+  if (! playMP3(trackname)) return false;
+
+  while (playingMusic) {
+    // twiddle thumbs
+    feedBuffer();
+  }
+  // music file finished!
+  return true;
+}
+
+void AudioPro_FilePlayer::stopPlaying(void) {
+  AudioPro::stopPlaying();
+  // wrap it up!
+  playingMusic = false;
+  currentTrack.close();
+}
+
+void AudioPro_FilePlayer::stopSong(void) {
+  AudioPro::stopPlaying();
+  // wrap it up!
+  playingMusic = false;
+}
+
+void AudioPro_FilePlayer::pausePlaying(boolean pause) {
+  if (pause) {
+    //setAmplifier(false);
+    playingMusic = false;
+  }
+  else {
+    //setAmplifier(true);
+    playingMusic = true;
+    feedBuffer();
+  }
+}
+
+boolean AudioPro_FilePlayer::paused(void) {
+  return (!playingMusic && currentTrack);
+}
+
+boolean AudioPro_FilePlayer::stopped(void) {
+  return (!playingMusic && !currentTrack);
+}
+
+boolean AudioPro_FilePlayer::playMP3(const char *trackname) {
+  // reset playback
+  sciWrite(VS1053_REG_MODE, VS1053_MODE_SM_LINE1 | VS1053_MODE_SM_SDINEW);
+  // resync
+  sciWrite(VS1053_REG_WRAMADDR, 0x1e29);
+  sciWrite(VS1053_REG_WRAM, 0);
+
+  currentTrack = SD.open(trackname);
+  if (!currentTrack) {
+    return false;
+  }
+
+  if (!getAmplifier()) {
+    setAmplifier(true);
+  }
+
+  // As explained in datasheet, set twice 0 in REG_DECODETIME to set time back to 0
+  sciWrite(VS1053_REG_DECODETIME, 0x00);
+  sciWrite(VS1053_REG_DECODETIME, 0x00);
+
+  playingMusic = true;
+
+  // wait till its ready for data
+  while (! readyForData() );
+
+  // fill it up!
+  while (playingMusic && readyForData())
+    feedBuffer();
+
+  //  Serial.println("Ready");
+
+  return true;
+}
+
+boolean AudioPro_FilePlayer::playMP3(String trackname) {
+  char buffer_data[16];
+  for (int a = 0; a < 16; a++) {
+    buffer_data[a] = NULL;
+  }
+
+  for (int a = 0; a < trackname.length(); a++) {
+    buffer_data[a] = trackname[a];
+  }
+
+  this -> playMP3(buffer_data);
+}
+
+uint8_t AudioPro_FilePlayer::getMusicFile(String * _FileName) {
+  char * filename = "Microduino.mp3";
+  File file;
+  file = SD.open("/");
+  uint8_t count = 0;
+  while (1) {
+    File entry =  file.openNextFile(O_READ);
+    if (! entry) {
+      break;
+    }
+    filename = entry.name();
+    if ( isFnMusic(filename) ) {
+      _FileName[count] = filename;
+      count++;
+    }
+    entry.close();
+    delay(10);
+  }
+  return count;
+}
+
+void AudioPro_FilePlayer::feedBuffer(void) {
+  static uint8_t running = 0;
+  uint8_t sregsave;
+
+  // Do not allow 2 copies of this code to run concurrently.
+  // If an interrupt causes feedBuffer() to run while another
+  // copy of feedBuffer() is already running in the main
+  // program, havoc can occur.  "running" detects this state
+  // and safely returns.
+  sregsave = SREG;
+  cli();
+  if (running) {
+    SREG = sregsave;
+    return;  // return safely, before touching hardware!  :-)
+  } else {
+    running = 1;
+    SREG = sregsave;
+  }
+
+  if (! playingMusic) {
+    running = 0;
+    return; // paused or stopped
+  }
+  if (! currentTrack) {
+    running = 0;
+    return;
+  }
+  if (! readyForData()) {
+    running = 0;
+    return;
+  }
+
+  // Feed the hungry buffer! :)
+  while (readyForData()) {
+    // Read some audio data from the SD card file
+    int bytesread = currentTrack.read(mp3buffer, VS1053_DATABUFFERLEN);
+
+    if (bytesread == 0) {
+      // must be at the end of the file, wrap it up!
+      playingMusic = false;
+      currentTrack.close();
+      running = 0;
+      return;
+    }
+    playData(mp3buffer, bytesread);
+  }
+  running = 0;
+  return;
+}
+
+
+/***************************************************************/
+
+/* VS1053 'low level' interface */
+static volatile PortReg *clkportreg, *misoportreg, *mosiportreg;
+static PortMask clkpin, misopin, mosipin;
+
+
+AudioPro::AudioPro(uint8_t midi, uint8_t cs, uint8_t dcs, uint8_t dreq) {
+  _midi = midi;
+  _cs = cs;
+  _dcs = dcs;
+  _dreq = dreq;
 }
 
 
 void AudioPro::applyPatch(const uint16_t *patch, uint16_t patchsize) {
   uint16_t i = 0;
 
+  // Serial.print("Patch size: "); Serial.println(patchsize);
   while ( i < patchsize ) {
     uint16_t addr, n, val;
 
@@ -368,30 +286,29 @@ void AudioPro::applyPatch(const uint16_t *patch, uint16_t patchsize) {
     n = pgm_read_word(patch++);
     i += 2;
 
-    if (n & 0x8000U) { // RLE run, replicate n samples 
+    //Serial.println(addr, HEX);
+    if (n & 0x8000U) { // RLE run, replicate n samples
       n &= 0x7FFF;
       val = pgm_read_word(patch++);
       i++;
       while (n--) {
-		WriteRegister(addr, val);
-      }      
-    } else {           // Copy run, copy n samples 
+        sciWrite(addr, val);
+      }
+    } else {           // Copy run, copy n samples
       while (n--) {
-		val = pgm_read_word(patch++);
-		i++;
-		WriteRegister(addr, val);
+        val = pgm_read_word(patch++);
+        i++;
+        sciWrite(addr, val);
       }
     }
   }
 }
 
-
-
 void AudioPro::midiSetBank(uint8_t chan, uint8_t bank) {
   if (chan > 15 || bank > 127) return;
 
   uint8_t _c[] = {0, MIDI_CHAN_MSG | chan, 0, MIDI_CHAN_BANK, 0, bank};
-  while (!digitalRead(MP3_DREQ));
+  while (!digitalRead(_dreq));
   playData(_c, sizeof(_c));
 }
 
@@ -400,7 +317,7 @@ void AudioPro::midiSetVolume(uint8_t chan, uint16_t vol) {
   if (chan > 15 || vol > 127) return;
 
   uint8_t _c[] = {0, MIDI_CHAN_MSG | chan, 0, MIDI_CHAN_VOLUME, 0, vol};
-  while (!digitalRead(MP3_DREQ));
+  while (!digitalRead(_dreq));
   playData(_c, sizeof(_c));
 }
 
@@ -408,7 +325,7 @@ void AudioPro::midiSetInstrument(uint8_t chan, uint8_t inst) {
   if (chan > 15 || inst > 127) return;  // page 32 has instruments starting with 1 not 0 :(
 
   uint8_t _c[] = {0, MIDI_CHAN_PROGRAM | chan, 0, inst};
-  while (!digitalRead(MP3_DREQ));
+  while (!digitalRead(_dreq));
   playData(_c, sizeof(_c));
 }
 
@@ -416,7 +333,7 @@ void AudioPro::noteOn(uint8_t chan, uint8_t n, uint8_t vol) {
   if (chan > 15 || n > 127 || vol > 127) return;
 
   uint8_t _c[] = {0, MIDI_NOTE_ON | chan, 0, n, 0, vol};
-  while (!digitalRead(MP3_DREQ));
+  while (!digitalRead(_dreq));
   playData(_c, sizeof(_c));
 }
 
@@ -425,1814 +342,405 @@ void AudioPro::noteOff(uint8_t chan, uint8_t n, uint8_t vol) {
   if (chan > 15 || n > 127 || vol > 127) return;
 
   uint8_t _c[] = {0, MIDI_NOTE_OFF | chan, 0, n, 0, vol};
-  while (!digitalRead(MP3_DREQ));
+  while (!digitalRead(_dreq));
   playData(_c, sizeof(_c));
 }
 
 
-void AudioPro::playData(uint8_t *buffer, uint16_t buffsiz) {
 
-  while(!digitalRead(MP3_DREQ)) ;
+boolean AudioPro::readyForData(void) {
+  return digitalRead(_dreq);
+}
 
-  cli();
-  dcs_low(); //Select Data
-  for(uint16_t y = 0 ; y < buffsiz ; y++) { // sizeof(mp3DataBuffer)
-    // Every 32 check if not ready for next buffer chunk.
-    if (!(y % 32) ) {
-      while(!digitalRead(MP3_DREQ));
+void AudioPro::playData(uint8_t *buffer, uint8_t buffsiz) {
+  SPI.beginTransaction(VS1053_DATA_SPI_SETTING);
+  digitalWrite(_dcs, LOW);
+  for (uint8_t i = 0; i < buffsiz; i++) {
+    spiwrite(buffer[i]);
+  }
+  digitalWrite(_dcs, HIGH);
+  SPI.endTransaction();
+}
+
+
+void AudioPro::playBuffer(uint8_t *buffer, size_t buffsiz) {
+  SPI.beginTransaction(VS1053_DATA_SPI_SETTING);
+  digitalWrite(_dcs, LOW);
+  while ( buffsiz ) {
+    while (!readyForData());
+    delayMicroseconds(3);
+    size_t chunk_length = min(buffsiz, VS1053_DATABUFFERLEN);
+    buffsiz -= chunk_length;
+    while ( chunk_length-- ) spiwrite(*buffer++);
+  }
+  digitalWrite(_dcs, HIGH);
+  SPI.endTransaction();
+}
+
+
+#define BUFFERNUM 256 // <256
+void AudioPro::playROM(const uint8_t *_buffer, unsigned long _len) {
+  unsigned long data_num = 0;
+  while (data_num < _len - 1) {
+    uint8_t buffer[BUFFERNUM];
+    uint16_t cache_num = min(_len - data_num, BUFFERNUM);
+    for (uint16_t a = 0; a < cache_num; a++) {
+      buffer[a] = pgm_read_byte(_buffer + data_num);
+      data_num++;
     }
-	SPI.transfer(buffer[y]); // Send next byte
-  }  
-  while(!digitalRead(MP3_DREQ)) ;
-  dcs_high(); //Deselect Data	
-  sei();
+    playBuffer(buffer, cache_num);   //...send them to VS1053B
+  }
 }
 
 
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// @{
-// SelfTest_Group
-
-//------------------------------------------------------------------------------
-/**
- * \brief Generate Test Sine wave
- *
- * \param[in] freq specifies the output frequency sine wave.
- *
- * Enable and/or report the generation of Test Sine Wave as per specified.
- * As specified by Data Sheet Section 9.12.1
- *
- * \return
- * - -1 indicates the test can not be performed while currently streaming music
- *      or chip is reset.
- * - 1 indicates that test has begun successfully.
- * - 2 indicates that test is already in progress.
- *
- * \see
- * \ref Error_Codes
- * \note 9.12.5 New Sine and Sweep Tests was not implemented.
- */
-uint8_t AudioPro::enableTestSineWave(uint8_t freq) {
-
-//  if(isPlaying() || !digitalRead(MP3_RESET)) {
-  if(isPlaying()) {	  
-    Serial.println(F("Warning Tests are not available."));
-    return -1;
-  }
-
-  uint16_t MP3SCI_MODE = ReadRegister(SCI_MODE);
-  if(MP3SCI_MODE & SM_TESTS) {
-    return 2;
-  }
-
-  WriteRegister(SCI_MODE, MP3SCI_MODE | SM_TESTS);
-
-  uint8_t _c[] = {0x53, 0xEF, 0x6E, freq, 0x00, 0x00, 0x00, 0x00};
-  
-  for(int y = 0 ; y <= 1 ; y++) { // need to do it twice if it was already done once before
-	playData(_c, sizeof(_c));
-  }
-
-  playing_state = testing_sinewave;
-  return 1;
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Disable Test Sine wave
- *
- * Disable and report the generation of Test Sine Wave as per specified.
- * As specified by Data Sheet Section 9.12.1
- * \return
- * - -1 indicates the test can not be performed while currently streaming music
- *      or chip is reset.
- * - 0 indicates the test is not previously enabled and skipping disable.
- * - 1 indicates that test was disabled.
- *
- * \see
- * \ref Error_Codes
- */
-uint8_t AudioPro::disableTestSineWave() {
-
-//  if(isPlaying() || !digitalRead(MP3_RESET)) {
-  if(isPlaying()) {
-    Serial.println(F("Warning Tests are not available."));
-    return -1;
-  }
-
-  uint16_t MP3SCI_MODE = ReadRegister(SCI_MODE);
-  if(!(MP3SCI_MODE & SM_TESTS)) {
-    return 0;
-  }
-
-  uint8_t _c[] = {0x45, 0x78, 0x69, 0x74, 0x00, 0x00, 0x00, 0x00};
-  playData(_c, sizeof(_c));
-
-  // turn test mode bit off
-  WriteRegister(SCI_MODE, ReadRegister(SCI_MODE) & ~SM_TESTS);
-
-  playing_state = ready;
-  return 0;
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Perform Memory Test
- *
- * Perform the internal memory test of the VSdsp core processor and resources.
- * As specified by Data Sheet Section 9.12.4
- *
- * \return
- * - -1 indicates the test can not be performed while currently streaming music
- *      or chip is reset.
- * - 1 indicates that test has begun successfully.
- * - 2 indicates that test is already in progress.
- *
- * \see
- * \ref Error_Codes
- */
-uint16_t AudioPro::memoryTest() {
-
-//  if(isPlaying() || !digitalRead(MP3_RESET)) {
-  if(isPlaying()) {
-    Serial.println(F("Warning Tests are not available."));
-    return -1;
-  }
-
-  playing_state = testing_memory;
-
-  vs_init();
-
-  uint16_t MP3SCI_MODE = ReadRegister(SCI_MODE);
-  if(MP3SCI_MODE & SM_TESTS) {
-    playing_state = ready;
-    return 2;
-  }
-
-  WriteRegister(SCI_MODE, MP3SCI_MODE | SM_TESTS);
-
-  uint8_t _c[] = {0x4D, 0xEA, 0x6D, 0x54, 0x00, 0x00, 0x00, 0x00};
-  playData(_c, sizeof(_c));
-  delay(250);
-
-  uint16_t MP3SCI_HDAT0 = ReadRegister(SCI_HDAT0);
-
-  WriteRegister(SCI_MODE, ReadRegister(SCI_MODE) & ~SM_TESTS);
-
-  vs_init();
-
-  playing_state = ready;
-  return MP3SCI_HDAT0;
-}
-// @}
-// SelfTest_Group
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// @{
-// Volume_Group
-
-//------------------------------------------------------------------------------
-/**
- * \brief Overload function of audio::setVolume(leftchannel, rightchannel)
- *
- * \param[in] data packed with left and right master volume
- *
- * calls audio::setVolume expecting the left channel in the upper byte
- * and right channel in the lower byte.
- *
- * As specified by Data Sheet Section 8.7.11
- */
-void AudioPro::setVolume(uint16_t data) {
-  union twobyte val;
-  val.word = data;
-  setVolume(val.byte[1], val.byte[0]);
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Overload function of audio::setVolume(leftchannel, rightchannel)
- *
- * \param[in] uint8_t to be placed into both Left and Right
- *
- * calls audio::setVolume placing the input into both the left channel
- * and right channels.
- *
- * As specified by Data Sheet Section 8.7.11
- */
-void AudioPro::setVolume(uint8_t data) {
-  setVolume(data, data);
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Store and Push member volume to VS10xx chip
- *
- * \param[in] leftchannel writes the left channel master volume
- * \param[in] rightchannel writes the right channel master volume
- *
- * Updates the VS10xx SCI_VOL register's left and right master volume level in
- * -0.5 dB Steps. Where maximum volume is 0x0000 and total silence is 0xFEFE.
- * As specified by Data Sheet Section 8.7.11
- *
- * \note input values are -1/2dB. e.g. 40 results in -20dB.
- */
-void AudioPro::setVolume(uint8_t leftchannel, uint8_t rightchannel){
-
-  VolL = leftchannel;
-  VolR = rightchannel;
-  WriteRegister(SCI_VOL, leftchannel, rightchannel);
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Get the current volume from the VS10xx chip
- *
- * Read the VS10xx SC_VOL register and return its results
- * As specified by Data Sheet Section 8.7.11
- *
- * \return uint16_t of both channels of master volume.
- * Where the left channel is in the upper byte and right channel is in the lower
- * byte.
- *
- * \note Input values are -1/2dB. e.g. 40 results in -20dB.
- * \note Cast the output to the union of twobyte.word to access individual
- * channels, with twobyte.byte[1] and [0].
- */
 uint16_t AudioPro::getVolume() {
-  uint16_t MP3SCI_VOL = ReadRegister(SCI_VOL);
-  return MP3SCI_VOL;
-}
-// @}
-// Volume_Group
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// @{
-// Base_Treble_Group
-
-//------------------------------------------------------------------------------
-/**
- * \brief Get the current Treble Frequency limit from the VS10xx chip
- *
- * \return int16_t of frequency limit in Hertz.
- *
- */
-uint16_t AudioPro::getTrebleFrequency(){
-  union sci_bass_m sci_base_value;
-  sci_base_value.word = ReadRegister(SCI_BASS);
-  return (sci_base_value.nibble.Treble_Freqlimt * 1000);
+  uint16_t _vol = sciRead(VS1053_REG_VOLUME);
+  return _vol;
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief Get the current Treble Amplitude from the VS10xx chip
- *
- * \return int16_t of amplitude (from -8 to 7).
- *
- */
-int8_t AudioPro::getTrebleAmplitude(){
-  union sci_bass_m sci_base_value;
-  sci_base_value.word = ReadRegister(SCI_BASS);
-  return (sci_base_value.nibble.Treble_Amplitude);
-}
-//------------------------------------------------------------------------------
-/**
- * \brief Get the current Bass Frequency limit from the VS10xx chip
- *
- * \return int16_t of bass frequency limit in Hertz.
- *
- */
-uint16_t AudioPro::getBassFrequency(){
-  union sci_bass_m sci_base_value;
-  sci_base_value.word = ReadRegister(SCI_BASS);
-  return (sci_base_value.nibble.Bass_Freqlimt * 10);
+void AudioPro::setVolume(uint8_t left, uint8_t right) {
+  noInterrupts(); //cli();
+  sciWrite(VS1053_REG_VOLUME, left, right);
+  interrupts();  //sei();
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief Get the current Bass boost amplitude from the VS10xx chip
- *
- * \return int16_t of bass bost amplitude in dB.
- *
- * \note Any value greater then zero enables the Bass Enhancer VSBE is a 
- * powerful bass boosting DSP algorithm, which tries to take the most out 
- * of the users earphones without causing clipping.
- *
- */
-int8_t AudioPro::getBassAmplitude(){
-  union sci_bass_m sci_base_value;
-  sci_base_value.word = ReadRegister(SCI_BASS);
-  return (sci_base_value.nibble.Bass_Amplitude);
-}
-//------------------------------------------------------------------------------
-/**
- * \brief Set the current treble frequency limit in VS10xx chip
- *
- * \param[in] Treble cutoff frequency limit in Hertz.
- *
- * \note The upper and lower limits of this parameter is checked.
- */
-void AudioPro::setTrebleFrequency(uint16_t frequency){
-  union sci_bass_m sci_base_value;
-
-  frequency /= 1000;
-
-  if(frequency < 1){
-      frequency = 1;
-  }else if(frequency > 15){
-      frequency = 15;
-  }
-  
-  sci_base_value.word = ReadRegister(SCI_BASS);
-  sci_base_value.nibble.Treble_Freqlimt = frequency;
-  WriteRegister(SCI_BASS, sci_base_value.word); 
+void AudioPro::setVolume(uint8_t left_right) {
+  setVolume(left_right, left_right);
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief Set the current Treble Amplitude in VS10xx chip
- *
- * \param[in] Treble amplitude in dB from -8 to 7.
- *
- * \note The upper and lower limits of this parameter is checked. 
- */
-void AudioPro::setTrebleAmplitude(int8_t amplitude){
-  union sci_bass_m sci_base_value;
+uint8_t AudioPro::volumeUp() {
+  union twobyte _vol; // create key_command existing variable that can be both word and double byte of left and right.
+  _vol.word = getVolume(); // returns a double uint8_t of Left and Right packed into int16_t
 
-  if(amplitude < -8){
-      amplitude = -8;
-  }else if(amplitude > 7){
-      amplitude = 7;
+  _vol.byte[1] -= 2; // keep it simpler with whole dB's
+  if (_vol.byte[1] < 2) { // range check
+    _vol.byte[1] = 2;
   }
 
-  sci_base_value.word = ReadRegister(SCI_BASS);
-  sci_base_value.nibble.Treble_Amplitude = amplitude;
-  WriteRegister(SCI_BASS, sci_base_value.word); 
+  // push byte[1] into both left and right assuming equal balance.
+  setVolume(_vol.byte[1]); // commit new volume
+  return _vol.byte[1];
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief Set the current Bass Boost Frequency limit cutoff in VS10xx chip
- *
- * \param[in] Bass Boost frequency cutoff limit in Hertz (20Hz to 150Hz).
- *
- * \note The upper and lower limits of this parameter is checked. 
- */
-void AudioPro::setBassFrequency(uint16_t frequency){
-  union sci_bass_m sci_base_value;
+uint8_t AudioPro::volumeDown() {
+  union twobyte _vol; // create key_command existing variable that can be both word and double byte of left and right.
+  _vol.word = getVolume(); // returns a double uint8_t of Left and Right packed into int16_t
 
-  frequency /= 10;
-
-  if(frequency < 2){
-      frequency = 2;
-  }else if(frequency > 15){
-      frequency = 15;
+  _vol.byte[1] += 2; // keep it simpler with whole dB's
+  if (_vol.byte[1] > 254) { // range check
+    _vol.byte[1] = 254;
   }
 
-  sci_base_value.word = ReadRegister(SCI_BASS);
-  sci_base_value.nibble.Bass_Freqlimt = frequency;
-  WriteRegister(SCI_BASS, sci_base_value.word); 
+  // push byte[1] into both left and right assuming equal balance.
+  setVolume(_vol.byte[1]); // commit new volume
+  return _vol.byte[1];
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief Set the current Bass Boost amplitude in VS10xx chip
- *
- * \param[in] Bass Boost amplitude in dB (0dB to 15dB).
- *
- * \note Any value greater then zero enables the Bass Enhancer VSBE is a 
- * powerful bass boosting DSP algorithm, which tries to take the most out 
- * of the users earphones without causing clipping.
- *
- * \note The upper and lower limits of this parameter is checked. 
- */
-void AudioPro::setBassAmplitude(uint8_t amplitude){
-  union sci_bass_m sci_base_value;
-
-  if(amplitude < 0){
-      amplitude = 0;
-  }else if(amplitude > 15){
-      amplitude = 15;
-  }
-
-  sci_base_value.word = ReadRegister(SCI_BASS);
-  sci_base_value.nibble.Bass_Amplitude = amplitude;
-  WriteRegister(SCI_BASS, sci_base_value.word); 
-}
-// @}
-// Base_Treble_Group
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// @{
-// PlaySpeed_Group
-
-//------------------------------------------------------------------------------
-/**
- * \brief Get the current playSpeed from the VS10xx chip
- *
- * Read the VS10xx extra parameter memory for playSpeed register and return its
- * results.
- * As specified by Data Sheet Section 9.11.1
- *
- * \return multipler of current playspeed versus normal speed.
- * Where 0 and/or 1 are normal 1x speed.
- * e.g. 4 to playSpeed will play the song four times as fast as normal,
- * if you are able to feed the data with that speed.
- *
- * \warning Excessive playspeed beyond the ability to stream data between the
- * SdCard, Arduino and VS10xx may result in erratic behavior.
- */
 uint16_t AudioPro::getPlaySpeed() {
-  uint16_t MP3playspeed = ReadWRAM(para_playSpeed);
+  uint16_t MP3playspeed = ReadWRAM(VS1053_PARA_PLAYSPEED);
   return MP3playspeed;
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief Set the current playSpeed of the VS10xx chip
- *
- * Write the VS10xx extra parameter memory for playSpeed register with the
- * desired multipler.
- *
- * Where 0 and/or 1 are normal 1x speed.
- * e.g. 4 to playSpeed will play the song four times as fast as normal,
- * if you are able to feed the data with that speed.
- * As specified by Data Sheet Section 9.11.1
- *
- * \warning Excessive playspeed beyond the ability to stream data between the
- * SdCard, Arduino and VS10xx may result in erratic behavior.
- */
 void AudioPro::setPlaySpeed(uint16_t data) {
-  WriteWRAM(para_playSpeed, data);
-}
-// @}
-//PlaySpeed_Group
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// @{
-// EarSpeaker_Group
-
-//------------------------------------------------------------------------------
-/**
- * \brief Get the current Spatial EarSpeaker setting from the VS10xx chip
- *
- * Read the VS10xx SCI_MODE register bits SM_EARSPEAKER_LO and SM_EARSPEAKER_HIGH
- * for current EarSpeaker and return its results as a composite integer.
- * As specified by Data Sheet Section 8.7.1 and 8.4
- *
- * \return result between 0 and 3. Where 0 is OFF and 3 is maximum.
- */
-uint8_t AudioPro::getEarSpeaker() {
-  uint8_t result = 0;
-  uint16_t MP3SCI_MODE = ReadRegister(SCI_MODE);
-
-  // SM_EARSPEAKER bits are not adjacent hence need to add them together
-  if(MP3SCI_MODE & SM_EARSPEAKER_LO) {
-    result += 0b01;
-  }
-  if(MP3SCI_MODE & SM_EARSPEAKER_HI) {
-    result += 0b10;
-  }
-  return result;
+  WriteWRAM(VS1053_PARA_PLAYSPEED, data);
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief Set the current Spatial EarSpeaker setting of the VS10xx chip
- *
- * \param[in] EarSpeaker integer value between 0 and 3. Where 0 is OFF and 3 is maximum.
- *
- * The input value is mapped onto SM_EARSPEAKER_LO and SM_EARSPEAKER_HIGH bits
- * and written the VS10xx SCI_MODE register, preserving the remainder of SCI_MODE.
- * As specified by Data Sheet Section 8.7.1 and 8.4
- */
-void AudioPro::setEarSpeaker(uint16_t EarSpeaker) {
-  uint16_t MP3SCI_MODE = ReadRegister(SCI_MODE);
-
-  // SM_EARSPEAKER bits are not adjacent hence need to add them individually
-  if(EarSpeaker & 0b01) {
-    MP3SCI_MODE |=  SM_EARSPEAKER_LO;
-  } else {
-    MP3SCI_MODE &= ~SM_EARSPEAKER_LO;
-  }
-
-  if(EarSpeaker & 0b10) {
-    MP3SCI_MODE |=  SM_EARSPEAKER_HI;
-  } else {
-    MP3SCI_MODE &= ~SM_EARSPEAKER_HI;
-  }
-  WriteRegister(SCI_MODE, MP3SCI_MODE);
-}
-// @}
-// EarSpeaker_Group
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// @{
-// Differential_Output_Mode_Group
-
-//------------------------------------------------------------------------------
-/**
- * \brief Get the current SM_DIFF setting from the VS10xx chip
- *
- * Read the VS10xx SCI_MODE register bits SM_DIFF
- * for current SM_DIFF and return its results as a composite integer.
- * To indicate if the Left Channel is either normal or differential output.
- * As specified by Data Sheet Section 8.7.1
- *
- * \return 0 for Normal and 1 is Differential Output.
- * \return
- * - 0 Normal in-phase audio output of left and right speaker signals.
- * - 1 Left channel output is the invert of the right channel.
- *
- * \see setDifferentialOutput()
- */
-uint8_t AudioPro::getDifferentialOutput() {
-  uint8_t result = 0;
-  uint16_t MP3SCI_MODE = ReadRegister(SCI_MODE);
-
-  if(MP3SCI_MODE & SM_DIFF) {
-    result = 1;
-  }
-  return result;
+uint16_t AudioPro::decodeTime() {
+  noInterrupts(); //cli();
+  uint16_t t = sciRead(VS1053_REG_DECODETIME);
+  interrupts(); //sei();
+  return t;
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief Set the current SM_DIFF setting of the VS10xx chip
- *
- * \param[in] DiffMode integer value between 0 and 1.
- *
- * The input value is mapped onto the SM_DIFF of the SCI_MODE register,
- *  preserving the remainder of SCI_MODE. For stereo playback streams this
- * creates a virtual sound, and for mono streams this creates a differential
- * left/right output with a maximum output of 3V.
-
- * As specified by Data Sheet Section 8.7.1
- * \see getDifferentialOutput()
- */
-void AudioPro::setDifferentialOutput(uint16_t DiffMode) {
-  uint16_t MP3SCI_MODE = ReadRegister(SCI_MODE);
-
-  if(DiffMode) {
-    MP3SCI_MODE |=  SM_DIFF;
-  } else {
-    MP3SCI_MODE &= ~SM_DIFF;
-  }
-  WriteRegister(SCI_MODE, MP3SCI_MODE);
-}
-// @}
-// Differential_Output_Mode_Group
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// @{
-// Stereo_Group
-
-//------------------------------------------------------------------------------
-/**
- * \brief Get the current Stereo/Mono setting of the VS10xx output
- *
- * Read the VS10xx WRAMADDR bit 0 of para_MonoOutput] for the current Stereo/Mono and
- * return its results as a byte. As specified by VS1053B PATCHES AND FLAC
- * DECODER Data Sheet Section 1.2 Mono output mode.
- *
- * \return result between 0 and 3. Where 0 is OFF and 3 is maximum.
- *
- * \warning This feature is only available when composite patch 1.7 or higher
- * is loaded into the VSdsp.
- */
 uint16_t AudioPro::getMonoMode() {
-  uint16_t result = (ReadWRAM(para_MonoOutput) & 0x0001);
+  uint16_t result = (ReadWRAM(VS1053_PARA_MONOOUTPUT) & 0x0001);
   return result;
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief Set the current Stereo/Mono setting of the VS10xx output
- *
- * Write the VS10xx WRAMADDR para_MonoOutput bit 0 to configure the current
- * Stereo/Mono. As specified by VS1053B PATCHES AND FLAC DECODER Data Sheet
- * Section 1.2 Mono output mode. While preserving the other bits.
- *
- * \warning This feature is only available when composite patch 1.7 or higher
- * is loaded into the VSdsp.
- */
 void AudioPro::setMonoMode(uint16_t StereoMode) {
-  uint16_t data = (ReadWRAM(para_MonoOutput) & ~0x0001); // preserve other bits
+  uint16_t data = (ReadWRAM(VS1053_PARA_MONOOUTPUT) & ~0x0001); // preserve other bits
   WriteWRAM(0x1e09, (StereoMode | (data & 0x0001)));
 }
-// @}
-// Stereo_Group
 
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// @{
-// Play_Control_Group
+uint8_t AudioPro::getDifferentialOutput() {
+  uint8_t result = 0;
+  uint16_t MP3SCI_MODE = sciRead(VS1053_REG_MODE);
 
-//------------------------------------------------------------------------------
-/**
- * \brief Begin playing a mp3 file, just with a number
- *
- * \param[in] trackNo integer value between 0 and 9, corresponding to the track to play.
- *
- * Formats the input number into a corresponding filename,
- * from track001.mp3 through track009.mp3. Then executes the track by
- * calling SFEMP3Shield::playMP3(char* fileName)
- *
- * \return Any Value other than zero indicates a problem occured.
- * where value indicates specific error
- *
- * \see
- * \ref Error_Codes
- */
-uint8_t AudioPro::playTrack(uint8_t trackNo){
-
-  //a storage place for track names
-  char trackName[] = "track001.mp3";
-  uint8_t trackNumber = 1;
-
-  //tack the number onto the rest of the filename
-  sprintf(trackName, "track%03d.mp3", trackNo);
-
-  //play the file
-  return playMP3(trackName);
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Begin playing a mp3 file by its filename.
- *
- * \param[out] fileName pointer of a char array (aka string), contianing the filename
- * \param[in] timecode (optional) milliseconds from the begining of the file.
- *  Only works with mp3 files, otherwise do nothing.
- *
- * Skip, if already playing. Otherwise initialize the SdCard track to desired filehandle.
- * Reset the ByteRate and Play position and set playing to indicate such.
- * If the filename extension is MP3, then pre-read the byterate from the file.
- * And initially fill the VSDsp's buffer, then enable refilling.
- *
- * \return Any Value other than zero indicates a problem occured.
- * where value indicates specific error
- *
- * \see
- * \ref Error_Codes
- *
- * \note
- * - Currently bitrate to calculate time offset is determined by either
- *   playing files or by reading MP3 headers. Hence only the later is doable
- *   without actually playing files. Hence other formats are not available, yet.
- * - enableRefill() will enable the appropiate interrupt to match the
- *   corresponding means selected.
- * - use \c SdFat::chvol() command prior, to select desired SdCard volume, if
- *   multiple cards are used.
- */
-uint8_t AudioPro::playMP3(char* fileName, uint32_t timecode) {
-
-  if(isPlaying()) return 1;
-//  if(!digitalRead(MP3_RESET)) return 3;
-
-  //Open the file in read mode.
-  if(!track.open(fileName, O_READ)) return 2;
-  
-  amplifierOn();
-  // find length of arrary at pointer
-  int fileNamefileName_length = 0;
-  while(*(fileName + fileNamefileName_length))
-    fileNamefileName_length++;
-  // Only know how to read bitrate from MP3 file. ignore the rest.
-  // Note bitrate may get updated later by getAudioInfo()
-  if(strstr(strlwr(fileName), "mp3") )  {
-    getBitRateFromMP3File(fileName);
-    if (timecode > 0) {
-      track.seekSet(timecode * bitrate + start_of_music); // skip to X ms.
-    }
-  }
-  playing_state = playback;
-
-  WriteRegister(SCI_DECODE_TIME, 0); // Reset the Decode and bitrate from previous play back.
-  delay(100); // experimentally found that we need to let this settle before sending data.
-  //gotta start feeding that hungry mp3 chip
-  refill();
-
-  //attach refill interrupt off DREQ line, pin 2
-  enableRefill();
-  return 0;
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Gracefully close track and cancel refill
- *
- * Skip if already not playing. Otherwise Disable the refill means,
- * then set playing to false, close the filehandle track instance.
- * And finally flush the VSdsp's stream buffer.
- */
-void AudioPro::stopTrack(){
-//  if(((playing_state != playback) && (playing_state != paused_playback)) || !digitalRead(MP3_RESET))
-  if((playing_state != playback) && (playing_state != paused_playback))	  
-    return;
-
-  amplifierOff();
-  //cancel external interrupt
-  disableRefill();
-  playing_state = ready;
-
-  track.close(); //Close out this track
-
-  flush_cancel(pre); //possible mode of "none" for faster response.
-  //Serial.println(F("Track is done!"));
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Inidicate if a song is playing?
- *
- * Public method for determining if a file is streaming to the VSdsp.
- *
- * \return
- * - 0 indicates \b NO file is currently being streamed to the VSdsp.
- * - 1 indicates that a file is currently being streamed to the VSdsp.
- * - 3 indicates that the VSdsp is in reset.
- */
-uint8_t AudioPro::isPlaying(){
-  uint8_t result;
- // if(!digitalRead(MP3_RESET))
- //   result = 3;
-  if(getState() == playback)
-    result = 2;
-  else if(getState() == paused_playback)
+  if (MP3SCI_MODE & VS1053_MODE_SM_DIFF) {
     result = 1;
-  else
-    result = 0;
-
+  }
   return result;
 }
 
-/**
- * \brief Get the current state of the device
- *
- * Reports the current operational status of the device from the list of possible
- * states enumerated by state_m
- *
- * \return the value held by SFEMP3Shield::playing_state
- */
-state_m AudioPro::getState(){
- return playing_state;
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Pause streaming data to the VSdsp.
- *
- * Public method for disabling the refill with disableRefill().
- */
-void AudioPro::pauseDataStream(){
-  //cancel external interrupt
-  //if((playing_state == playback) && digitalRead(MP3_RESET))
- if((playing_state == playback)) {
-    disableRefill();
-    playing_state = paused_playback;
-  }
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Unpause streaming data to the VSdsp.
- *
- * Public method for re-enabling the refill with enableRefill().
- * Where skipped if not currently playing.
- */
-void AudioPro::resumeDataStream(){
-
-  //if((playing_state == paused_playback) && digitalRead(MP3_RESET)) {
-  if((playing_state == paused_playback)) {
-    //see if it is already ready for more
-    refill();
-
-    playing_state = playback;
-    //attach refill interrupt off DREQ line, pin 2
-    enableRefill();
-  }
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Pause music.
- *
- * Public method for pausing the play of music.
- *
- * \note This is currently equal to pauseDataStream() and is a place holder to
- * pausing the VSdsp's playing and DREQ's.
- */
-void AudioPro::pauseMusic() {
-  pauseDataStream();
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Resume music from pause at new location.
- *
- * \param[in] timecode (optional) milliseconds from the begining of the file.
- *
- * Public method for resuming the play of music from a specific file location.
- *
- * \return
- * - 0 indicates the position was changed.
- * - 1 indicates no action, in lieu of any current file stream.
- * - 2 indicates failure to skip to new file location.
- *
- * \note This is effectively equal to resumeDataStream() and is a place holder to
- * resuming the VSdsp's playing and DREQ's.
- */
-uint8_t AudioPro::resumeMusic(uint32_t timecode) {
-  //if((playing_state == paused_playback) && digitalRead(MP3_RESET)) {
-  if((playing_state == paused_playback)) {
-    if(!track.seekSet(((timecode * ReadWRAM(para_byteRate))/1000) + start_of_music))    //if(!track.seekCur((uint32_t(timecode/1000 * ReadWRAM(para_byteRate)))))
-      return 2;
-
-    resumeDataStream();
-    return 0;
-  }
-  return 1;
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Resume music from where it was paused
- *
- * Public method for resuming the play of music from a specific file location.
- *
- * \return
- * - 0 indicates the position was changed.
- * - 1 indicates no action, in lieu of any current file stream.
- *
- * \note This is effectively equal to resumeDataStream() and is a place holder to
- * resuming the VSdsp's playing and DREQ's.
- */
-bool AudioPro::resumeMusic() {
-  //if((playing_state == paused_playback) && digitalRead(MP3_RESET)) {
-  if((playing_state == paused_playback)) { 
-	resumeDataStream();
-    return 0;
-  }
-  return 1;
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Skips to a duration in the track
- *
- * \param[in] timecode offset milliseconds from the current location of the file.
- *
- * Repositions the filehandles track location to the requested offset.
- * As calculated by the bitrate multiplied by the desired ms offset.
- *
- * \return
- * - 0 indicates the position was changed.
- * - 1 indicates no action, in lieu of any current file stream.
- * - 2 indicates failure to skip to new file location.
- *
- * \warning Limited to +/- 32768ms, since SdFile::seekCur(int32_t);
- */
-uint8_t AudioPro::skip(int32_t timecode){
-
-   //if(isPlaying() && digitalRead(MP3_RESET)) {
-  if(isPlaying()) {
-    //stop interupt for now
-    disableRefill();
-    playing_state = paused_playback;
-
-    // try to set the files position to current position + offset(in bytes)
-    // as calculated from current byte rate, as per VSdsp.
-    if(!track.seekCur((uint32_t(timecode/1000 * ReadWRAM(para_byteRate))))) // skip next X ms.
-      return 2;
-
-    WriteRegister(SCI_VOL, 0xFE, 0xFE);
-    //seeked successfully
-
-    flush_cancel(pre); //possible mode of "none" for faster response.
-
-    //gotta start feeding that hungry mp3 chip
-    refill();
-
-    //again, I'm being bad and not following the spec sheet.
-    //I already turned the volume down, so when the MP3 chip gets upset at me
-    //for just slammin in new bits of the file, you won't hear it.
-    //so we'll wait a bit, and restore the volume to previous level
-    delay(50);
-
-    //one of these days I'll come back and try to do it the right way.
-    setVolume(VolL,VolR);
-
-    playing_state = playback;
-    //attach refill interrupt off DREQ line, pin 2
-    enableRefill();
-
-    return 0;
-  }
-  return 1;
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Skips to a certain point in the track
- *
- * \param[in] timecode offset milliseconds from the begining of the file.
- *
- * Repositions the filehandles track location to the requested offset.
- * As calculated by the bitrate multiplied by the desired ms offset.
- *
- * \return
- * - 0 indicates the position was changed.
- * - 1 indicates no action, in lieu of any current file stream.
- * - 2 indicates failure to skip to new file location.
- *
- * \warning Limited to first 65535ms, since SdFile::seekSet(int32_t);
- */
-uint8_t AudioPro::skipTo(uint32_t timecode){
-  //if(isPlaying() && digitalRead(MP3_RESET)) {
-  if(isPlaying()) {
-    //stop interupt for now
-    disableRefill();
-    playing_state = paused_playback;
-
-    // try to set the files position to current position + offset(in bytes)
-    // as calculated from current byte rate, as per VSdsp.
-    if(!track.seekSet(((timecode * ReadWRAM(para_byteRate))/1000) + start_of_music)) // skip to X ms.
-    //if(!track.seekCur((uint32_t(timecode/1000 * ReadWRAM(para_byteRate))))) // skip next X ms.
-      return 2;
-
-    WriteRegister(SCI_VOL, 0xFE, 0xFE);
-    //seeked successfully
-
-    flush_cancel(pre); //possible mode of "none" for faster response.
-
-    //gotta start feeding that hungry mp3 chip
-    refill();
-
-    //again, I'm being bad and not following the spec sheet.
-    //I already turned the volume down, so when the MP3 chip gets upset at me
-    //for just slammin in new bits of the file, you won't hear it.
-    //so we'll wait a bit, and restore the volume to previous level
-    delay(50);
-
-    //one of these days I'll come back and try to do it the right way.
-    setVolume(VolL,VolR);
-
-    playing_state = playback;
-    //attach refill interrupt off DREQ line, pin 2
-    enableRefill();
-
-    return 0;
-  }
-  return 1;
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Current timecode in ms
- *
- * Reads the currenty position from the VSdsp's decode time
- * and converts the value to milliseconds.
- *
- * \return the milliseconds offset of stream played.
- *
- * \note SCI_DECODE_TIME is cleared during SFEMP3Shield::playMP3, as to restart
- * the position for each file stream. Erasing prior streams weight.
- *
- * \warning Not very accurate, rounded off to second. And Variable Bit-Rates
- * are completely inaccurate.
- */
-uint32_t AudioPro::currentPosition(){
-
-  return(ReadRegister(SCI_DECODE_TIME) << 10); // multiply by 1024 to convert to milliseconds.
-}
-
-// @}
-// Play_Control_Group
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// @{
-// Audio_Information_Group
-
-//------------------------------------------------------------------------------
-/**
- * \brief Get Track's Artist
- *
- * \param[out] infobuffer pointer char array to be updated with result
- *
- * Extract the Artist from the current filehandles track ID3 tag information.
- *
- * \warning ID3 Tag information may not be present on all source files.
- * Otherwise may result in non-sense.
- * It is possible to add it with common tools outside of this project.
- */
-void AudioPro::trackArtist(char* infobuffer){
-  getTrackInfo(TRACK_ARTIST, infobuffer);
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Get Track's Title
- *
- * \param[out] infobuffer pointer char array to be updated with result
- *
- * Extract the Title from the current filehandles track ID3 tag information.
- *
- * \warning ID3 Tag information may not be present on all source files.
- * Otherwise may result in non-sense.
- * It is possible to add it with common tools outside of this project.
- */
-void AudioPro::trackTitle(char* infobuffer){
-  getTrackInfo(TRACK_TITLE, infobuffer);
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Get Track's Album
- *
- * \param[out] infobuffer pointer char array to be updated with result
- *
- * Extract the Album from the current filehandles track ID3 tag information.
- *
- * \warning ID3 Tag information may not be present on all source files.
- * Otherwise may result in non-sense.
- * It is possible to add it with common tools outside of this project.
- */
-void AudioPro::trackAlbum(char* infobuffer){
-  getTrackInfo(TRACK_ALBUM, infobuffer);
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Fetch ID3 Tag information
- *
- * \param[in] offset for the desired information desired.
- * \param[out] infobuffer pointer char array of filename to be read.
- *
- * Read current filehandles offset of track ID3 tag information. Then strip
- * all non readible (ascii) characters.
- *
- * \note this suspends currently playing streams and returns afterwards.
- * Restoring the file position to where it left off, before resuming.
- */
-void AudioPro::getTrackInfo(uint8_t offset, char* infobuffer){
-
-  //disable interupts
-  if(playing_state == playback) {
-    disableRefill();
-  }
-
-  //record current file position
-  uint32_t currentPos = track.curPosition();
-
-  //skip to end
-  track.seekEnd((-128 + offset));
-
-  //read 30 bytes of tag informat at -128 + offset
-  track.read(infobuffer, 30);
-  infobuffer = strip_nonalpha_inplace(infobuffer);
-
-  //seek back to saved file position
-  track.seekSet(currentPos);
-
-  //renable interupt
-  if(playing_state == playback) {
-    enableRefill();
-  }
-
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Display various Audio information from the VSdsp.
- *
- * Read numerous attributes from the VSdsp's registers about either the currently
- * or prior played stream and display in a column format for easy reviewing.
- *
- * This may be called while playing a current stream.
- *
- * \note this suspends currently playing streams and returns afterwards.
- * Restoring the file position to where it left off, before resuming.
- */
-void AudioPro::getAudioInfo() {
-
-  //disable interupts
-  // already disabled in ReadRegister function
-  //pauseDataStream();
-
-  Serial.print(F("HDAT1"));
-  Serial.print(F("\tHDAT0"));
-  Serial.print(F("\tVOL"));
-  Serial.print(F("\tMode"));
-  Serial.print(F("\tStatus"));
-  Serial.print(F("\tClockF"));
-  Serial.print(F("\tpversion"));
-  Serial.print(F("\t[Bytes/S]"));
-  Serial.print(F("\t[KBits/S]"));
-  Serial.print(F("\tPlaySpeed"));
-  Serial.print(F("\tDECODE_TIME"));
-  Serial.print(F("\tCurrentPos"));
-  Serial.println();
-
-
-  uint16_t MP3HDAT1 = ReadRegister(SCI_HDAT1);
-  Serial.print(F("0x"));
-  Serial.print(MP3HDAT1, HEX);
-
-  uint16_t MP3HDAT0 = ReadRegister(SCI_HDAT0);
-  Serial.print(F("\t0x"));
-  Serial.print(MP3HDAT0, HEX);
-
-  uint16_t MP3SCI_VOL = ReadRegister(SCI_VOL);
-  Serial.print(F("\t0x"));
-  Serial.print(MP3SCI_VOL, HEX);
-
-  uint16_t MP3Mode = ReadRegister(SCI_MODE);
-  Serial.print(F("\t0x"));
-  Serial.print(MP3Mode, HEX);
-
-  uint16_t MP3Status = ReadRegister(SCI_STATUS);
-  Serial.print(F("\t0x"));
-  Serial.print(MP3Status, HEX);
-
-  uint16_t MP3Clock = ReadRegister(SCI_CLOCKF);
-  Serial.print(F("\t0x"));
-  Serial.print(MP3Clock, HEX);
-
-  uint16_t MP3para_version = ReadWRAM(para_version);
-  Serial.print(F("\t0x"));
-  Serial.print(MP3para_version, HEX);
-
-  uint16_t MP3ByteRate = ReadWRAM(para_byteRate);
-  Serial.print(F("\t\t"));
-  Serial.print(MP3ByteRate, HEX);
-
-  Serial.print(F("\t\t"));
-  Serial.print((MP3ByteRate>>7), DEC); // shift 7 is the same as *8/1024, and easier math.
-
-  uint16_t MP3playSpeed = ReadWRAM(para_playSpeed);
-  Serial.print(F("\t\t"));
-  Serial.print(MP3playSpeed, HEX);
-
-  uint16_t MP3SCI_DECODE_TIME = ReadRegister(SCI_DECODE_TIME);
-  Serial.print(F("\t\t"));
-  Serial.print(MP3SCI_DECODE_TIME, DEC);
-
-  Serial.print(F("\t\t"));
-  Serial.print(currentPosition(), DEC);
-
-  Serial.println();
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Read the Bit-Rate from the current track's filehandle.
- *
- * \param[out] fileName pointer of a char array (aka string), contianing the filename
- *
- * locate the MP3 header in the current file and from there determine the
- * Bit-Rate, using bitrate_table located in flash. And return the position
- * to the prior location.
- *
- * \note the bitrate will be updated, as read back from the VS10xx when needed.
- *
- * \warning This feature only works on MP3 files.
- * It will \b LOCK-UP on other file formats, looking for the MP3 header.
- */
-void AudioPro::getBitRateFromMP3File(char* fileName) {
-  //look for first MP3 frame (11 1's)
-  bitrate = 0;
-  uint8_t temp = 0;
-  uint8_t row_num =0;
-
-  for(uint16_t i = 0; i<65535; i++) {
-    if(track.read() == 0xFF) {
-
-      temp = track.read();
-
-      if(((temp & 0b11100000) == 0b11100000) && ((temp & 0b00000110) != 0b00000000)) {
-
-        //found the 11 1's
-        //parse version, layer and bitrate out and save bitrate
-        if(!(temp & 0b00001000)) { //!true if Version 1, !false version 2 and 2.5
-          row_num = 3;
-        }
-        else if((temp & 0b00000110) == 0b00000100) { //true if layer 2, false if layer 1 or 3
-          row_num += 1;
-        }
-        else if((temp & 0b00000110) == 0b00000010) { //true if layer 3, false if layer 2 or 1
-          row_num += 2;
-        } else {
-          continue; // Not found, need to skip the rest and continue looking.
-                    // \warning But this can lead to a dead end and file end of file.
-        }
-
-        //parse bitrate code from next byte
-        temp = track.read();
-        temp = temp>>4;
-
-        //lookup bitrate
-        bitrate = pgm_read_word_near ( &(bitrate_table[temp][row_num]) );
-
-        //convert kbps to Bytes per mS
-        bitrate /= 8;
-
-        //record file position
-        track.seekCur(-3);
-        start_of_music = track.curPosition();
-
-//          Serial.print(F("POS: "));
-//          Serial.println(start_of_music);
-
-//          Serial.print(F("Bitrate: "));
-//          Serial.println(bitrate);
-
-        //break out of for loop
-        break;
-
-      }
-    }
-  }
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief get the status of the VSdsp VU Meter
- *
- * \return responds with the current value of the SS_VU_ENABLE bit of the
- * SCI_STATUS register indicating if the VU meter is enabled.
- *
- * See data patches data sheet VU meter for details.
- * \warning This feature is only available with patches that support VU meter.
- */
-int8_t AudioPro::getVUmeter() {
-  if(ReadRegister(SCI_STATUS) & SS_VU_ENABLE) {
-    return 1;
-  }
-  return 0;
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief enable VSdsp VU Meter
- *
- * \param[in] enable when set will enable the VU meter
- *
- * Writes the SS_VU_ENABLE bit of the SCI_STATUS register to enable VU meter on
- * board to the VSdsp.
- *
- * See data patches data sheet VU meter for details.
- * \warning This feature is only available with patches that support VU meter.
- * \n The VU meter takes about 0.2MHz of processing power with 48 kHz samplerate.
- */
-int8_t AudioPro::setVUmeter(int8_t enable) {
-  uint16_t MP3Status = ReadRegister(SCI_STATUS);
-
-  if(enable) {
-    WriteRegister(SCI_STATUS, MP3Status | SS_VU_ENABLE);
+void AudioPro::setDifferentialOutput(uint16_t DiffMode) {
+  uint16_t MP3SCI_MODE = sciRead(VS1053_REG_MODE);
+
+  if (DiffMode) {
+    MP3SCI_MODE |=  VS1053_MODE_SM_DIFF;
   } else {
-    WriteRegister(SCI_STATUS, MP3Status & ~SS_VU_ENABLE);
+    MP3SCI_MODE &= ~VS1053_MODE_SM_DIFF;
   }
-  return 1; // in future return if not available, if patch not applied.
+  sciWrite(VS1053_REG_MODE, MP3SCI_MODE);
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief get current measured VU Meter
- *
- * Returns the calculated peak sample values from both channels in 3 dB
- * increaments through. Where the high byte represent the left channel,
- * and the low bytes the right channel.
- *
- * Values from 0 to 31 are valid for both channels.
- *
- * \warning This feature is only available with patches that support VU meter.
- */
-int16_t AudioPro::getVUlevel() {
-  return ReadRegister(SCI_AICTRL3);
+void AudioPro::softReset(void) {
+  sciWrite(VS1053_REG_MODE, VS1053_MODE_SM_SDINEW | VS1053_MODE_SM_RESET);
+  delay(100);
 }
 
-// @}
-// Audio_Information_Group
+void AudioPro::reset() {
+  // TODO: http://www.vlsi.fi/player_vs1011_1002_1003/modularplayer/vs10xx_8c.html#a3
+  digitalWrite(_cs, HIGH);
+  digitalWrite(_dcs, HIGH);
+  delay(100);
+  softReset();
+  delay(100);
 
-//------------------------------------------------------------------------------
-/**
- * \brief Force bit rate
- *
- * \param[in] bitr new bit-rate
- *
- * Public method for forcing the percieved bit-rate to a desired value.
- * Useful if auto-detect failed
- */
-void AudioPro::setBitRate(uint16_t bitr){
+  sciWrite(VS1053_REG_CLOCKF, 0x6000);
 
-  bitrate = bitr;
-  return;
+  setVolume(VS1053_DEFAULT_VOLUME, VS1053_DEFAULT_VOLUME);
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief Initialize the SPI for VS10xx use.
- *
- * Primative function to configure the SPI's BitOrder, DataMode and ClockDivider to that of
- * the current VX10xx.
- *
- * \warning This sets the rate fast for write, too fast for reading. In the case of a subsequent SPI.transfer that is reading back data followup with a SPI.setClockDivider(spi_Read_Rate); as not to get gibberish.
-*/
-void AudioPro::spiInit() {
-  //Set SPI bus for write
-  SPI.setBitOrder(MSBFIRST);
+void AudioPro::end() {
+  stopPlaying();
+  //GPIO_digitalWrite(4,HIGH);
+  digitalWrite(_cs, HIGH);
+  digitalWrite(_dcs, HIGH);
+
+  setAmplifier(false);
+}
+
+uint8_t AudioPro::begin(void) {
+  pinMode(_midi, INPUT_PULLUP);
+  delay(100);
+
+  pinMode(_cs, OUTPUT);
+  digitalWrite(_cs, HIGH);
+  pinMode(_dcs, OUTPUT);
+  digitalWrite(_dcs, HIGH);
+  pinMode(_dreq, INPUT);
+  delay(100);
+
+  SPI.begin();
   SPI.setDataMode(SPI_MODE0);
-  SPI.setClockDivider(spi_Write_Rate);
+  SPI.setBitOrder(MSBFIRST);
+  SPI.setClockDivider(SPI_CLOCK_DIV128);
+
+  reset();
+
+  setAmplifier(true);
+
+  return (sciRead(VS1053_REG_STATUS) >> 4) & 0x0F;
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief Select Control Channel
- *
- * Primative function to configure the SPI's Mode and rate control to that of
- * the current VX10xx. Then select the VS10xx's Control Chip Select as per
- * defined by MP3_XCS.
- *
- * \warning This uses spiInit() which sets the rate fast for write, too fast for reading. In the case of a subsequent SPI.transfer that is reading back data followup with a SPI.setClockDivider(spi_Read_Rate); as not to get gibberish.
- */
-void AudioPro::cs_low() {
-  spiInit();
-  digitalWrite(MP3_XCS, LOW);
+void AudioPro::dumpRegs(void) {
+  Serial.print("Mode = 0x"); Serial.println(sciRead(VS1053_REG_MODE), HEX);
+  Serial.print("Stat = 0x"); Serial.println(sciRead(VS1053_REG_STATUS), HEX);
+  Serial.print("ClkF = 0x"); Serial.println(sciRead(VS1053_REG_CLOCKF), HEX);
+  Serial.print("Vol. = 0x"); Serial.println(sciRead(VS1053_REG_VOLUME), HEX);
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief Deselect Control Channel
- *
- * Primative function to Deselect the VS10xx's Control Chip Select as per
- * defined by MP3_XCS.
- */
-void AudioPro::cs_high() {
-  digitalWrite(MP3_XCS, HIGH);
+
+uint16_t AudioPro::recordedWordsWaiting(void) {
+  return sciRead(VS1053_REG_HDAT1);
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief Select Data Channel
- *
- * Primative function to configure the SPI's Mode and rate control to that of
- * the current VX10xx. Then select the VS10xx's Data Chip Select as per
- * defined by MP3_XDCS.
- *
- * \warning This uses spiInit() which sets the rate fast for write, too fast for reading. In the case of a subsequent SPI.transfer that is reading back data followup with a SPI.setClockDivider(spi_Read_Rate); as not to get gibberish.
- */
-void AudioPro::dcs_low() {
-  spiInit();
-  digitalWrite(MP3_XDCS, LOW);
+uint16_t AudioPro::recordedReadWord(void) {
+  return sciRead(VS1053_REG_HDAT0);
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief Deselect Data Channel
- *
- * Primative function to Deselect the VS10xx's Control Data Select as per
- * defined by MP3_XDCS.
- */
-void AudioPro::dcs_high() {
-  digitalWrite(MP3_XDCS, HIGH);
+void AudioPro::stopPlaying(void) {
+  setAmplifier(false);
+  // cancel all playback
+  sciWrite(VS1053_REG_MODE, VS1053_MODE_SM_LINE1 | VS1053_MODE_SM_SDINEW | VS1053_MODE_SM_CANCEL);
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief uint16_t Overload of SFEMP3Shield::WriteRegister
- *
- * \param[in] addressbyte of the VSdsp's register to be written
- * \param[in] data to writen to the register
- *
- * Forces the input value into the Big Endian Corresponding positions of
- * WriteRegister as to be written to the addressed VSdsp's registers.
- */
-void AudioPro::WriteRegister(uint8_t addressbyte, uint16_t data) {
+void AudioPro::stopRecordOgg(void) {
+  sciWrite(VS1053_SCI_AICTRL3, 1);
+}
+
+void AudioPro::startRecordOgg(boolean mic) {
+  /* Set VS1053 mode bits as instructed in the VS1053b Ogg Vorbis Encoder
+     manual. Note: for microphone input, leave SMF_LINE1 unset! */
+  if (mic) {
+    sciWrite(VS1053_REG_MODE, VS1053_MODE_SM_ADPCM | VS1053_MODE_SM_SDINEW);
+  } else {
+    sciWrite(VS1053_REG_MODE, VS1053_MODE_SM_LINE1 |
+             VS1053_MODE_SM_ADPCM | VS1053_MODE_SM_SDINEW);
+  }
+  sciWrite(VS1053_SCI_AICTRL0, 1024);
+  /* Rec level: 1024 = 1. If 0, use AGC */
+  sciWrite(VS1053_SCI_AICTRL1, 1024);
+  /* Maximum AGC level: 1024 = 1. Only used if SCI_AICTRL1 is set to 0. */
+  sciWrite(VS1053_SCI_AICTRL2, 0);
+  /* Miscellaneous bits that also must be set before recording. */
+  sciWrite(VS1053_SCI_AICTRL3, 0);
+
+  sciWrite(VS1053_SCI_AIADDR, 0x34);
+  delay(1);
+  while (! readyForData() );
+}
+
+void AudioPro::setAmplifier(boolean sta) {
+  //配置输出模式
+  sciWrite(VS1053_REG_WRAMADDR, VS1053_GPIO_DDR);
+  uint16_t ddr = sciRead(VS1053_REG_WRAM);
+  ddr |= _BV(4);
+  WriteWRAM(VS1053_GPIO_DDR, ddr);
+
+  //设置GPIO4开关，低电平有效
+  sciWrite(VS1053_REG_WRAMADDR, VS1053_GPIO_ODATA);
+  uint16_t pins = sciRead(VS1053_REG_WRAM);
+
+  if (sta)
+    pins &= ~_BV(4);
+  else
+    pins |= _BV(4);
+
+  WriteWRAM(VS1053_GPIO_ODATA, pins);
+}
+
+boolean AudioPro::getAmplifier() {
+  sciWrite(VS1053_REG_WRAMADDR, VS1053_GPIO_IDATA);
+  uint16_t val = sciRead(VS1053_REG_WRAM);
+  if (val & _BV(4)) return false;
+  return true;
+}
+
+uint16_t AudioPro::sciRead(uint8_t addr) {
+  uint16_t data;
+
+  SPI.beginTransaction(VS1053_CONTROL_SPI_SETTING);
+  digitalWrite(_cs, LOW);
+  spiwrite(VS1053_SCI_READ);
+  spiwrite(addr);
+  delayMicroseconds(10);
+  data = spiread();
+  data <<= 8;
+  data |= spiread();
+  digitalWrite(_cs, HIGH);
+  SPI.endTransaction();
+
+  return data;
+}
+
+
+void AudioPro::sciWrite(uint8_t addr, uint8_t data_H, uint8_t data_L) {
+  SPI.beginTransaction(VS1053_CONTROL_SPI_SETTING);
+  digitalWrite(_cs, LOW);
+  spiwrite(VS1053_SCI_WRITE);
+  spiwrite(addr);
+  spiwrite(data_H);
+  spiwrite(data_L);
+  digitalWrite(_cs, HIGH);
+  SPI.endTransaction();
+}
+
+
+void AudioPro::sciWrite(uint8_t addr, uint16_t data) {
   union twobyte val;
   val.word = data;
-  WriteRegister(addressbyte, val.byte[1], val.byte[0]);
+  sciWrite(addr, val.byte[1], val.byte[0]);
+}
+
+
+uint8_t AudioPro::spiread(void) {
+  return SPI.transfer(0x00);
+}
+
+void AudioPro::spiwrite(uint8_t c) {
+  SPI.transfer(c);
 }
 
 //------------------------------------------------------------------------------
 /**
- * \brief Write a value a VSDsp's register.
- *
- * \param[in] addressbyte of the VSdsp's register to be written
- * \param[in] highbyte to writen to the register
- * \param[in] lowbyte to writen to the register
- *
- * Primative function to suspend playing and directly communicate over the SPI
- * to the VSdsp's registers. Where the value write is Big Endian (MSB first).
- */
-void AudioPro::WriteRegister(uint8_t addressbyte, uint8_t highbyte, uint8_t lowbyte) {
-//  if(!digitalRead(MP3_RESET)) return;
+   \brief Read a VS10xx WRAM Location
 
-  //cancel interrupt if playing
-  if(playing_state == playback)
-	disableRefill();
+   \param[in] addressbyte of the VSdsp's WRAM to be read
+   \return result read from the WRAM
 
-  //Wait for DREQ to go high indicating IC is available
-  while(!digitalRead(MP3_DREQ)) ;
-
-  cs_low(); //Select control
-
-  //SCI consists of instruction byte, address byte, and 16-bit data word.
-  SPI.transfer(0x02); //Write instruction
-  SPI.transfer(addressbyte);
-  SPI.transfer(highbyte);
-  SPI.transfer(lowbyte);
-  while(!digitalRead(MP3_DREQ)) ; //Wait for DREQ to go high indicating command is complete
-  cs_high(); //Deselect Control
-  //resume interrupt if playing.
-  if(playing_state == playback) {
-    //see if it is already ready for more
-    refill();
-
-    //attach refill interrupt off DREQ line, pin 2
-    enableRefill();
-  }
-
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Read a VS10xx register
- *
- * \param[in] addressbyte of the VSdsp's register to be read
- * \return result read from the register
- *
- * Primative function to suspend playing and directly communicate over the SPI
- * to the VSdsp's registers.
- */
-uint16_t AudioPro::ReadRegister (uint8_t addressbyte){
-
-  union twobyte resultvalue;
-
-  // skip if the chip is in reset.
-//  if(!digitalRead(MP3_RESET)) return 0;
-
-  //cancel interrupt if playing
-  if(playing_state == playback)
-    disableRefill();
-
-  while(!digitalRead(MP3_DREQ)) ; //Wait for DREQ to go high indicating IC is available
-
-  cs_low(); //Select control
-  SPI.setClockDivider(spi_Read_Rate); // correct the clock speed as from cs_low()
-
-  //SCI consists of instruction byte, address byte, and 16-bit data word.
-  SPI.transfer(0x03);  //Read instruction
-  SPI.transfer(addressbyte);
-
-  resultvalue.byte[1] = SPI.transfer(0xFF); //Read the first byte
-  while(!digitalRead(MP3_DREQ)) ; //Wait for DREQ to go high indicating command is complete
-  resultvalue.byte[0] = SPI.transfer(0xFF); //Read the second byte
-  while(!digitalRead(MP3_DREQ)) ; //Wait for DREQ to go high indicating command is complete
-
-  cs_high(); //Deselect Control
-
-  //resume interrupt if playing.
-  if(playing_state == playback) {
-    //see if it is already ready for more
-    refill();
-
-    //attach refill interrupt off DREQ line, pin 2
-    enableRefill();
-  }
-  return resultvalue.word;
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Read a VS10xx WRAM Location
- *
- * \param[in] addressbyte of the VSdsp's WRAM to be read
- * \return result read from the WRAM
- *
- * Function to communicate to the VSdsp's registers, indirectly accessing the WRAM.
- * As per data sheet the result is read back twice to verify. As it is not buffered.
- */
-uint16_t AudioPro::ReadWRAM (uint16_t addressbyte){
-
-  unsigned short int tmp1,tmp2;
+   Function to communicate to the VSdsp's registers, indirectly accessing the WRAM.
+   As per data sheet the result is read back twice to verify. As it is not buffered.
+*/
+uint16_t AudioPro::ReadWRAM (uint16_t addressbyte) {
+  uint16_t tmp1, tmp2;
 
   //Set SPI bus for write
-  spiInit();
-  SPI.setClockDivider(spi_Read_Rate);
+  SPI.setDataMode(SPI_MODE0);
+  SPI.setBitOrder(MSBFIRST);
+  SPI.setClockDivider(SPI_CLOCK_DIV128);
 
-  WriteRegister(SCI_WRAMADDR, addressbyte);
-  tmp1 = ReadRegister(SCI_WRAM);
+  sciWrite(VS1053_REG_WRAMADDR, addressbyte);
 
-  WriteRegister(SCI_WRAMADDR, addressbyte);
-  tmp2 = ReadRegister(SCI_WRAM);
+  tmp1 = sciRead(VS1053_REG_WRAM);
 
-  if(tmp1==tmp2) return tmp1;
-  WriteRegister(SCI_WRAMADDR, addressbyte);
-  tmp2 = ReadRegister(SCI_WRAM);
+  sciWrite(VS1053_REG_WRAMADDR, addressbyte);
+  tmp2 = sciRead(VS1053_REG_WRAM);
+  if (tmp1 == tmp2) return tmp1;
 
-  if(tmp1==tmp2) return tmp1;
-  WriteRegister(SCI_WRAMADDR, addressbyte);
-  tmp2 = ReadRegister(SCI_WRAM);
+  sciWrite(VS1053_REG_WRAMADDR, addressbyte);
+  tmp2 = sciRead(VS1053_REG_WRAM);
+  if (tmp1 == tmp2) return tmp1;
 
-  if(tmp1==tmp2) return tmp1;
+  sciWrite(VS1053_REG_WRAMADDR, addressbyte);
+  tmp2 = sciRead(VS1053_REG_WRAM);
+  if (tmp1 == tmp2) return tmp1;
+
   return tmp1;
 }
 
 //------------------------------------------------------------------------------
 /**
- * \brief Write a VS10xx WRAM Location
- *
- * \param[in] addressbyte of the VSdsp's WRAM to be read
- * \param[in] data written to the VSdsp's WRAM
- *
- * Function to communicate to the VSdsp's registers, indirectly accessing the WRAM.
- */
+   \brief Write a VS10xx WRAM Location
+
+   \param[in] addressbyte of the VSdsp's WRAM to be read
+   \param[in] data written to the VSdsp's WRAM
+
+   Function to communicate to the VSdsp's registers, indirectly accessing the WRAM.
+*/
 //Write the 16-bit value of a VS10xx WRAM location
-void AudioPro::WriteWRAM(uint16_t addressbyte, uint16_t data){
-
-  WriteRegister(SCI_WRAMADDR, addressbyte);
-  WriteRegister(SCI_WRAM, data);
+void AudioPro::WriteWRAM(uint16_t addressbyte, uint16_t data) {
+  sciWrite(VS1053_REG_WRAMADDR, addressbyte);
+  sciWrite(VS1053_REG_WRAM, data);
 }
 
-//------------------------------------------------------------------------------
-/**
- * \brief Public interface of refill.
- *
- * Serves as a helper as to correspondingly run either the timer service or run
- * the refill() direclty, depending upon the configured means for refilling.
- */
-void AudioPro::available() {
-  refill();
-}
+void AudioPro::sineTest(uint8_t n, uint16_t ms) {
+  reset();
 
-//------------------------------------------------------------------------------
-/**
- * \brief Refill the VS10xx buffer with new data
- *
- * This the primative function to refilling the VSdsp's buffers. And is
- * typically called as an interrupt to the rising edge of the VS10xx's DREQ.
- * Where if the DREQ is indicating not full, it will read 32 bytes from the
- * filehandle's track and send them via SPI to the VSdsp's data stream buffer.
- * Repeating until the DREQ indicates it is full.
- *
- * When the filehandle's track indicates it is at the end of file. The track is
- * closed, the playing indicator is set to false, interrupts for refilling are
- * disabled and the VSdsp's data stream buffer is flushed appropiately.
- */
-void AudioPro::refill() {
+  uint16_t mode = sciRead(VS1053_REG_MODE);
+  mode |= 0x0020;
+  sciWrite(VS1053_REG_MODE, mode);
 
-  //Serial.println(F("filling"));
-#if PERF_MON_PIN != -1
-  digitalWrite(PERF_MON_PIN,LOW);
-#endif
+  while (!digitalRead(_dreq));
+  //  delay(10);
 
-  // no need to keep interrupts blocked, allow other ISR such as timer0 to continue
-  sei();
+  SPI.beginTransaction(VS1053_DATA_SPI_SETTING);
+  digitalWrite(_dcs, LOW);
+  spiwrite(0x53);
+  spiwrite(0xEF);
+  spiwrite(0x6E);
+  spiwrite(n);
+  spiwrite(0x00);
+  spiwrite(0x00);
+  spiwrite(0x00);
+  spiwrite(0x00);
+  digitalWrite(_dcs, HIGH);
+  SPI.endTransaction();
 
-  while(digitalRead(MP3_DREQ)) {
+  delay(ms);
 
-    if(!track.read(mp3DataBuffer, sizeof(mp3DataBuffer))) { //Go out to SD card and try reading 32 new bytes of the song
-      track.close(); //Close out this track
-      playing_state = ready;
-
-      //cancel external interrupt
-      disableRefill();
-
-      flush_cancel(post); //possible mode of "none" for faster response.
-
-      break;
-    }
-
-    //Once DREQ is released (high) we now feed 32 bytes of data to the VS1053 from our SD read buffer
-    cli(); // allow transfer to occur with out interruption.
-
-    dcs_low(); //Select Data
-    for(uint8_t y = 0 ; y < sizeof(mp3DataBuffer) ; y++) {
-      //while(!digitalRead(MP3_DREQ)); // wait until DREQ is or goes high // turns out it is not needed.
-      SPI.transfer(mp3DataBuffer[y]); // Send SPI byte
-    }
-
-    dcs_high(); //Deselect Data
-    //We've just dumped 32 bytes into VS1053 so our SD read buffer is empty. go get more data
-    sei();
-  }
-
-#if PERF_MON_PIN != -1
-  digitalWrite(PERF_MON_PIN,HIGH);
-#endif
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Play hardcoded MIDI file
- *
- * This the primative function to fill the VSdsp's buffers quicly. The intention
- * is to send a quick MIDI file of a single note on and off. This can be used 
- * responses to buttons and such. Where the MIDI file is short enough to be 
- * stored into an array that can be delivered via SPI to the VSdsp's data stream 
- * buffer. Waiting for DREQ every 32 bytes.
- */
-void AudioPro::playMIDInote(const uint8_t *buffer, uint32_t buffsiz) {
-
-  //if(!digitalRead(MP3_RESET))
-	//return;
- 
-  //cancel and store current state to restore after
-  disableRefill();
-  state_m prv_state = playing_state;
-  playing_state = playMIDIbeep;
-  
-  // need to quickly purge the exiting formate of decoder.
-  flush_cancel(none);
-  while(!digitalRead(MP3_DREQ)) ;
-
-  cli();
-  dcs_low(); //Select Data
-  for(uint32_t y = 0 ; y < buffsiz ; y++) { // sizeof(mp3DataBuffer)
-    // Every 32 check if not ready for next buffer chunk.
-    if (!(y % 32) ) {
-      while(!digitalRead(MP3_DREQ));
-    }
-	SPI.transfer(pgm_read_byte_near(buffer+y)); // Send next byte
-  }  
-  while(!digitalRead(MP3_DREQ)) ;
-  dcs_high(); //Deselect Data	
-  sei();
-  
-  //flush_cancel(none); // need to quickly purge the exiting format of decoder.
-  playing_state = prv_state;
-  enableRefill();  
-  
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Enable the Interrupts for refill.
- *
- * Depending upon the means selected to request refill of the VSdsp's data
- * stream buffer, this routine will enable the corresponding service.
- */
-void AudioPro::enableRefill() {
-  if(playing_state == playback) {
-    attachInterrupt(digitalPinToInterrupt(MP3_DREQ), refill, RISING);
-  }
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Disable the Interrupts for refill.
- *
- * Depending upon the means selected to request refill of the VSdsp's data
- * stream buffer, this routine will disable the corresponding service.
- */
-void AudioPro::disableRefill() {
-  detachInterrupt(digitalPinToInterrupt(MP3_DREQ));
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief flush the VSdsp buffer and cancel
- *
- * \param[in] mode is an enumerated value of flush_m
- *
- * Typically called after a filehandlers' stream has been stopped, as to
- * gracefully flush any buffer contents still playing. Along with issueing a
- * SM_CANCEL to the VSdsp's SCI_MODE register.
-
- * - post - will flush vx10xx's 2K buffer after cancelled, typically with stopping a file, to have immediate affect.
- * - pre  - will flush buffer prior to issuing cancel, typically to allow completion of file
- * - both - will flush before and after issuing cancel
- * - none - will just issue cancel. Not sure if this should be used. Such as in skipTo().
- *
- * \note if cancel fails the vs10xx will be reset and initialized to current values.
- */
-void AudioPro::flush_cancel(flush_m mode) {
-  int8_t endFillByte = (int8_t) (ReadWRAM(para_endFillByte) & 0xFF);
-
-  if((mode == post) || (mode == both)) {
-
-    dcs_low(); //Select Data
-    for(int y = 0 ; y < 2052 ; y++) {
-      while(!digitalRead(MP3_DREQ)); // wait until DREQ is or goes high
-      SPI.transfer(endFillByte); // Send SPI byte
-    }
-    dcs_high(); //Deselect Data
-  }
-
-  for (int n = 0; n < 64 ; n++)
-  {
-//  WriteRegister(SCI_MODE, SM_LINE1 | SM_SDINEW | SM_CANCEL); // old way of SCI_MODE WRITE.
-    WriteRegister(SCI_MODE, (ReadRegister(SCI_MODE) | SM_CANCEL));
-
-    dcs_low(); //Select Data
-    for(int y = 0 ; y < 32 ; y++) {
-      while(!digitalRead(MP3_DREQ)); // wait until DREQ is or goes high
-      SPI.transfer(endFillByte); // Send SPI byte
-    }
-    dcs_high(); //Deselect Data
-
-    int cancel = ReadRegister(SCI_MODE) & SM_CANCEL;
-    if(cancel == 0) {
-      // Cancel has succeeded.
-      if((mode == pre) || (mode == both)) {
-        dcs_low(); //Select Data
-        for(int y = 0 ; y < 2052 ; y++) {
-          while(!digitalRead(MP3_DREQ)); // wait until DREQ is or goes high
-          SPI.transfer(endFillByte); // Send SPI byte
-        }
-        dcs_high(); //Deselect Data
-      }
-      return;
-    }
-  }
-  // Cancel has not succeeded.
-  //Serial.println(F("Warning: VS10XX chip did not cancel, reseting chip!"));
-  //WriteRegister(SCI_MODE, SM_LINE1 | SM_SDINEW | SM_RESET); // old way of SCI_MODE WRITE.
-  WriteRegister(SCI_MODE, (ReadRegister(SCI_MODE) | SM_RESET));  // software reset. but vs_init will HW reset anyways.
-  //vs_init(); // perform hardware reset followed by re-initializing.
-  //vs_init(); // however, SFEMP3Shield::begin() is member function that does not exist statically.
-}
-
-
-//------------------------------------------------------------------------------
-/**
- * \brief Initially load ADMixer patch and configure line/mic mode
- *
- * \param[out] fileName pointer of a char array (aka string), contianing the filename
- *
- * Loads a patch file of Analog to Digital Mixer. Current available options are
- * as follows:
- * - "admxster.053" Takes both ADC channels and routes them to left and right outputs.
- * - "admxswap.053" Swaps both Left and Right ADC channels and routes them to left and right outputs.
- * - "admxleft.053" MIC/LINE1 routed to both left and right output
- * - "admxrght.053" LINE2 routed to both left and right output
- * - "admxmono.053" mono version mixes both left and right inputs and plays them using both left and right outputs.
- *
- * And subsequently returns the following result codes.
- *
- * \return Any Value other than zero indicates a problem occured.
- * - 0 indicates that upload was successful.
- * - 1 indicates the upload can not be performed while currently streaming music.
- * - 2 indicates that desired file was not found.
- * - 3 indicates that the VSdsp is in reset.
- */
-uint8_t AudioPro::ADMixerLoad(char* fileName){
-
-  //if(!digitalRead(MP3_RESET)) return 3;
-  if(isPlaying() != FALSE)
-    return 1;
-
-  playing_state = loading;
-  if(VSLoadUserCode(fileName)) {
-    playing_state = ready;
-    return 2;
-    // Serial.print(F("Error: ")); Serial.print(fileName); Serial.println(F(", file not found, skipping."));
-  }
-
-  // Set Input Mode to either Line1 or Microphone.
-#if defined(VS_LINE1_MODE)
-    WriteRegister(SCI_MODE, (ReadRegister(SCI_MODE) | SM_LINE1));
-#else
-    WriteRegister(SCI_MODE, (ReadRegister(SCI_MODE) & ~SM_LINE1));
-#endif
-  playing_state = ready;
-  return 0;
-}
-
-//------------------------------------------------------------------------------
-/**
- * \brief Set ADMixer's attenuation of input to between -3 and -31 dB otherwise
- * disable.
- *
- * \param[in] ADM_volume -3 through -31 dB of attentuation.
- *
- * Will range check the requested value and for values out of range the VSdsp's
- * ADMixer will be disabled. While valid ranges will write to VSdsp's current
- * operating volume and enable the the ADMixer.
- *
- * \warning If file patch not applied this call will lock up the VS10xx.
- * need to add interlock to avoid.
- */
-void AudioPro::ADMixerVol(int8_t ADM_volume){
-  union twobyte MP3AIADDR;
-  union twobyte MP3AICTRL0;
-
-  MP3AIADDR.word = ReadRegister(SCI_AIADDR);
-
-  if((ADM_volume > -3) || (-31 > ADM_volume)) {
-    // Disable Mixer Patch
-    MP3AIADDR.word = 0x0F01;
-    WriteRegister(SCI_AIADDR, MP3AIADDR.word);
-  } else {
-    // Set Volume
-    //MP3AICTRL0.word = ReadRegister(SCI_AICTRL0);
-    MP3AICTRL0.byte[1] = (uint8_t) ADM_volume; // upper byte appears to have no affect
-    MP3AICTRL0.byte[0] = (uint8_t) ADM_volume;
-    WriteRegister(SCI_AICTRL0, MP3AICTRL0.word);
-
-    // Enable Mixer Patch
-    MP3AIADDR.word = 0x0F00;
-    WriteRegister(SCI_AIADDR, MP3AIADDR.word);
-  }
+  SPI.beginTransaction(VS1053_DATA_SPI_SETTING);
+  digitalWrite(_dcs, LOW);
+  spiwrite(0x45);
+  spiwrite(0x78);
+  spiwrite(0x69);
+  spiwrite(0x74);
+  spiwrite(0x00);
+  spiwrite(0x00);
+  spiwrite(0x00);
+  spiwrite(0x00);
+  digitalWrite(_dcs, HIGH);
+  SPI.endTransaction();
 }
 
 
@@ -2240,16 +748,16 @@ void AudioPro::ADMixerVol(int8_t ADM_volume){
 // Global Function
 
 /**
- * \brief chomp non printable characters out of string.
- *
- * \param[out] s pointer of a char array (aka string)
- *
- * \return char array (aka string) with out whitespaces
- */
+   \brief chomp non printable characters out of string.
+
+   \param[out] s pointer of a char array (aka string)
+
+   \return char array (aka string) with out whitespaces
+*/
 char* strip_nonalpha_inplace(char *s) {
   for ( ; *s && !isalpha(*s); ++s)
     ; // skip leading non-alpha chars
-  if(*s == '\0')
+  if (*s == '\0')
     return s; // there are no alpha characters
 
   char *tail = s + strlen(s);
@@ -2261,23 +769,23 @@ char* strip_nonalpha_inplace(char *s) {
 }
 
 /**
- * \brief is the filename music
- *
- * \param[in] filename inspects the end of the filename to be of the extension types
- *            that VS10xx can decode.
- *
- * \return boolean true indicating that it is music
- */
+   \brief is the filename music
+
+   \param[in] filename inspects the end of the filename to be of the extension types
+              that VS10xx can decode.
+
+   \return boolean true indicating that it is music
+*/
 bool isFnMusic(char* filename) {
   int8_t len = strlen(filename);
   bool result;
   if (  strstr(strlwr(filename + (len - 4)), ".mp3")
-     || strstr(strlwr(filename + (len - 4)), ".aac")
-     || strstr(strlwr(filename + (len - 4)), ".wma")
-     || strstr(strlwr(filename + (len - 4)), ".wav")
-     || strstr(strlwr(filename + (len - 4)), ".fla")
-     || strstr(strlwr(filename + (len - 4)), ".mid")
-    ) {
+        || strstr(strlwr(filename + (len - 4)), ".aac")
+        || strstr(strlwr(filename + (len - 4)), ".wma")
+        || strstr(strlwr(filename + (len - 4)), ".wav")
+        || strstr(strlwr(filename + (len - 4)), ".fla")
+        || strstr(strlwr(filename + (len - 4)), ".mid")
+     ) {
     result = true;
   } else {
     result = false;

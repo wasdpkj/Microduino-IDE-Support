@@ -1,5 +1,8 @@
 /*
-  使用前应该先将模块背后的跳线短接，才可进入串口模式
+   Microduino_AudioPro支持库例程
+   模块WIKI：https://wiki.microduino.cn/index.php/MCookie-Module_AudioPro
+   串口MIDI例程
+   使用前应该先将模块背后的跳线短接，才可进入串口模式
 */
 
 #include <Microduino_AudioPro.h>
@@ -9,16 +12,13 @@ void setup() {
   Serial.begin(9600);
   delay(200);
 
-  Serial.print(F("F_CPU = "));
-  Serial.println(F_CPU);
-  Serial.print(F("Free RAM = ")); // available in Version 1.0 F() bases the string to into Flash, to use less SRAM.
-  Serial.print(FreeRam(), DEC);  // FreeRam() is provided by SdFatUtil.h
-
   VS1053_MIDI.begin(31250);
-  // Set volume for left, right channels. lower numbers == louder volume!
+  midiSetChannelVolume(0, 127);//channels,volume
+  // See http://www.vlsi.fi/fileadmin/datasheets/vs1053.pdf Pg 31
+  // VS1053_BANK_DEFAULT VS1053_BANK_MELODY VS1053_BANK_DRUMS1 VS1053_BANK_DRUMS2
   midiSetChannelBank(0, VS1053_BANK_MELODY);
+  // See http://www.vlsi.fi/fileadmin/datasheets/vs1053.pdf Pg 32 for more!
   midiSetInstrument(0, VS1053_GM1_PIANO);
-  midiSetChannelVolume(0, 127);
 }
 
 void loop() {
