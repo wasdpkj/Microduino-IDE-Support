@@ -41,13 +41,14 @@ bool ProtocolSer::available(){
 				pSwSerial->stopListening();
 				pSwSerial->listen();
 				return true;
-			}
+			}			
 		}
 	}else{
 		if(pHwSerial->available() > 0){
 			inChar = pHwSerial->read();
 			if(dataParse->parse(inChar)){
-				pHwSerial->flush();		
+				pHwSerial->end();
+				pHwSerial->begin(baud);		
 				return true;
 			}
 		}

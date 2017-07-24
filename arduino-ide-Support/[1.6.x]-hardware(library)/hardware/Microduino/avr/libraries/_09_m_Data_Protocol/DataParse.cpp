@@ -1,4 +1,5 @@
 #include <DataParse.h>
+#include <Arduino.h>
 
 DataParse::DataParse(uint8_t _length){
 	length = _length;
