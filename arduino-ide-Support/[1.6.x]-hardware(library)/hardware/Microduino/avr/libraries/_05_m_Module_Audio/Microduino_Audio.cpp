@@ -73,11 +73,11 @@ void Audio::chooseMusic(uint16_t num){
 	sendCommand(CMD_CHOOSE, buffer, 2);
 }
 
-void Audio::volumnUp(){
+void Audio::volumeUp(){
 	sendCommand(CMD_UP, NULL, 0);
 }
 
-void Audio::volumnDown(){
+void Audio::volumeDown(){
 	sendCommand(CMD_DOWN, NULL, 0);
 }
 
@@ -91,7 +91,7 @@ void Audio::setEq(uint8_t eq){
 
 void Audio::setDevice(uint8_t device){
 	sendCommand(CMD_DEVICE, &device, 1);
-//	delay(1500);	
+	delay(1500);	
 }
 
 void Audio::sleep(){	
@@ -100,7 +100,7 @@ void Audio::sleep(){
 
 void Audio::reset(){
 	sendCommand(CMD_RESET, NULL, 0);
-	delay(500);	
+	delay(1000);	
 }
 
 void Audio::playMusic(){

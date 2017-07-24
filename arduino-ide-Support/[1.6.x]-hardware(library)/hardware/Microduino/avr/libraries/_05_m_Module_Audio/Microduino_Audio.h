@@ -74,9 +74,9 @@ public:
 	void nextMusic();
 	void prevMusic();
 	void chooseMusic(uint16_t num);
-	void volumnUp();
-	void volumnDown();
-	void setVolumn(uint8_t vol);
+	void volumeUp();
+	void volumeDown();
+	void setVolume(uint8_t vol);
 	void setEq(uint8_t eq);
 	void setDevice(uint8_t device);
 	void sleep();

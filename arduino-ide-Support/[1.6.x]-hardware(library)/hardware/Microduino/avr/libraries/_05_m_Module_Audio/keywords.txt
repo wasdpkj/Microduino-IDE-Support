@@ -14,9 +14,9 @@ begin	KEYWORD2
 nextMusic	KEYWORD2
 prevMusic	KEYWORD2
 chooseMusic	KEYWORD2
-volumnUp	KEYWORD2
-volumnDown	KEYWORD2
-setVolumn	KEYWORD2
+volumeUp	KEYWORD2
+volumeDown	KEYWORD2
+setVolume	KEYWORD2
 setEq	KEYWORD2
 setDevice	KEYWORD2
 sleep	KEYWORD2

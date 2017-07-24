@@ -55,7 +55,7 @@ void loop() {
       Serial.println("prev");   //短按
       break;
     case LONG_PRESS:
-      audio.volumnUp();
+      audio.volumeUp();
       Serial.println("volUp");    //长按
       delay(500);
       break;
@@ -67,7 +67,7 @@ void loop() {
       Serial.println("next");   //短按
       break;
     case LONG_PRESS:
-      audio.volumnDown();
+      audio.volumeDown();
       Serial.println("volDown");    //长按
       delay(500);
       break;
