@@ -21,13 +21,13 @@
 
 static AudioPro_FilePlayer *myself;
 
-#ifndef _BV
-#define _BV(x) (1<<(x))
-#endif
+// #ifndef _BV
+// #define _BV(x) (1<<(x))
+// #endif
 
-SIGNAL(TIMER0_COMPA_vect) {
-  myself->feedBuffer();
-}
+// SIGNAL(TIMER0_COMPA_vect) {
+//   myself->feedBuffer();
+// }
 
 static void feeder(void) {
   myself->feedBuffer();
@@ -69,14 +69,10 @@ boolean AudioPro_FilePlayer::detachInterrupt(uint8_t type) {
   return false;
 }
 
-AudioPro_FilePlayer::AudioPro_FilePlayer(uint8_t cardcs, uint8_t midi, uint8_t cs, uint8_t dcs, uint8_t dreq)
-  : AudioPro(midi, cs, dcs, dreq) {
+AudioPro_FilePlayer::AudioPro_FilePlayer(SDClass& _sd, uint8_t midi, uint8_t cs, uint8_t dcs, uint8_t dreq)
+  : AudioPro(midi, cs, dcs, dreq), sd(_sd) {
 
   playingMusic = false;
-
-  // Set the card to be disabled while we get the VS1053 up
-  pinMode(_cardCS, OUTPUT);
-  digitalWrite(_cardCS, HIGH);
 }
 
 
@@ -148,7 +144,7 @@ boolean AudioPro_FilePlayer::playMP3(const char *trackname) {
   sciWrite(VS1053_REG_WRAMADDR, 0x1e29);
   sciWrite(VS1053_REG_WRAM, 0);
 
-  currentTrack = SD.open(trackname);
+  currentTrack = sd.open(trackname);
   if (!currentTrack) {
     return false;
   }
@@ -176,22 +172,13 @@ boolean AudioPro_FilePlayer::playMP3(const char *trackname) {
 }
 
 boolean AudioPro_FilePlayer::playMP3(String trackname) {
-  char buffer_data[16];
-  for (int a = 0; a < 16; a++) {
-    buffer_data[a] = NULL;
-  }
-
-  for (int a = 0; a < trackname.length(); a++) {
-    buffer_data[a] = trackname[a];
-  }
-
-  this -> playMP3(buffer_data);
+  playMP3(trackname.c_str());
 }
 
 uint8_t AudioPro_FilePlayer::getMusicFile(String * _FileName) {
   char * filename = "Microduino.mp3";
   File file;
-  file = SD.open("/");
+  file = sd.open("/");
   uint8_t count = 0;
   while (1) {
     File entry =  file.openNextFile(O_READ);
@@ -228,17 +215,9 @@ void AudioPro_FilePlayer::feedBuffer(void) {
     SREG = sregsave;
   }
 
-  if (! playingMusic) {
+  if (! playingMusic || ! currentTrack) {
     running = 0;
     return; // paused or stopped
-  }
-  if (! currentTrack) {
-    running = 0;
-    return;
-  }
-  if (! readyForData()) {
-    running = 0;
-    return;
   }
 
   // Feed the hungry buffer! :)
@@ -250,8 +229,7 @@ void AudioPro_FilePlayer::feedBuffer(void) {
       // must be at the end of the file, wrap it up!
       playingMusic = false;
       currentTrack.close();
-      running = 0;
-      return;
+      break;
     }
     playData(mp3buffer, bytesread);
   }
@@ -261,11 +239,6 @@ void AudioPro_FilePlayer::feedBuffer(void) {
 
 
 /***************************************************************/
-
-/* VS1053 'low level' interface */
-static volatile PortReg *clkportreg, *misoportreg, *mosiportreg;
-static PortMask clkpin, misopin, mosipin;
-
 
 AudioPro::AudioPro(uint8_t midi, uint8_t cs, uint8_t dcs, uint8_t dreq) {
   _midi = midi;
@@ -379,8 +352,8 @@ void AudioPro::playBuffer(uint8_t *buffer, size_t buffsiz) {
 
 
 #define BUFFERNUM 256 // <256
-void AudioPro::playROM(const uint8_t *_buffer, unsigned long _len) {
-  unsigned long data_num = 0;
+void AudioPro::playROM(const uint8_t *_buffer, uint32_t _len) {
+  uint32_t data_num = 0;
   while (data_num < _len - 1) {
     uint8_t buffer[BUFFERNUM];
     uint16_t cache_num = min(_len - data_num, BUFFERNUM);

@@ -1,22 +1,25 @@
 /*
    Microduino_AudioPro支持库例程
    模块WIKI：https://wiki.microduino.cn/index.php/MCookie-Module_AudioPro
-   本例程性能要求高，目前只有Core+ 1284和CoreRF跑得动
+   本例程性能要求高，目前只有Core+ 1284和CoreRF跑得动，需配合Microduino_SD模块使用
 */
 #include <Microduino_AudioPro.h>
 #include <SD.h>
 
 #define REC_BUTTON 6
 
-AudioPro musicPlayer = AudioPro(SD_PIN_SEL);
+AudioPro_FilePlayer musicPlayer = AudioPro_FilePlayer(SD);
 
 File recording;  // the file we will save our recording to
 #define RECBUFFSIZE 128  // 64 or 128 bytes.
 uint8_t recording_buffer[RECBUFFSIZE];
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("Adafruit VS1053 Ogg Recording Test");
+  pinMode(SD_PIN_SEL, OUTPUT);    //先初始化AudioPro，所以先使能SD卡
+  digitalWrite(SD_PIN_SEL, HIGH);
+  delay(500);
 
   // initialise the music player
   if (!musicPlayer.begin()) {
