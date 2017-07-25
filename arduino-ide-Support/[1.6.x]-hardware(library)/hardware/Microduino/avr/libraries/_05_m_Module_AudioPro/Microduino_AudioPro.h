@@ -143,10 +143,14 @@ class AudioPro {
   uint8_t begin(void);
   void end();									//new
   void reset(void);
+  void softReset(void);
 
   uint16_t sciRead(uint8_t addr);
   void sciWrite(uint8_t addr, uint16_t data);
   void sciWrite(uint8_t addr, uint8_t data_H, uint8_t data_L);	//new
+
+  uint16_t ReadWRAM(uint16_t);					//new
+  void WriteWRAM(uint16_t, uint16_t);			//new
 
   void sineTest(uint8_t n, uint16_t ms);
 
@@ -169,9 +173,10 @@ class AudioPro {
   void setDifferentialOutput(uint16_t);			//new
   uint8_t getDifferentialOutput();				//new
   
+  boolean readyForData(void);
   void playData(uint8_t *buffer, uint8_t buffsiz);
   void playBuffer(uint8_t *buffer, size_t buffsiz);
-  void playROM(const uint8_t *_buffer, uint32_t _len);
+  void playROM(const uint8_t *_buffer, unsigned long _len);
   void stopPlaying(void);
   void applyPatch(const uint16_t *patch, uint16_t patchsize);
 
@@ -190,23 +195,16 @@ class AudioPro {
 
  protected:
   uint8_t _midi, _dreq;
-
-  boolean readyForData(void);
  private:
-  uint8_t _cs, _dcs;
-
-  void softReset(void);
+  int8_t _cs, _dcs;
   void spiwrite(uint8_t d);
   uint8_t spiread(void);
-
-  uint16_t ReadWRAM(uint16_t);					//new
-  void WriteWRAM(uint16_t, uint16_t);		//new 
 };
 
 
 class AudioPro_FilePlayer : public AudioPro {
  public:
-  AudioPro_FilePlayer (SDClass& _sd,
+  AudioPro_FilePlayer (uint8_t cardCS,
 					   uint8_t midi = VS1053_PIN_MIDI, uint8_t cs = VS1053_PIN_XCS, uint8_t dcs = VS1053_PIN_XDCS, uint8_t dreq = VS1053_PIN_DREQ);
 
   boolean begin(void);
@@ -214,15 +212,15 @@ class AudioPro_FilePlayer : public AudioPro {
   boolean useInterrupt(uint8_t type = VS1053_PIN_DREQ);
   boolean detachInterrupt(uint8_t type = VS1053_PIN_DREQ);
 
+  File currentTrack;
   uint8_t getMusicFile(String * _FileName);
   volatile boolean playingMusic;
- 
+  void feedBuffer(void);
+  
   boolean playMP3(const char * trackname);
   boolean playMP3(String trackname);
   boolean playFullFile(const char *trackname);
   
-  void feedBuffer(void);
- 
   boolean paused(void);
   boolean stopped(void);
   
@@ -231,11 +229,8 @@ class AudioPro_FilePlayer : public AudioPro {
   void stopSong(void);
   
  private:
-  SDClass& sd;
   uint8_t mp3buffer[VS1053_DATABUFFERLEN];
-  File currentTrack;
-
-
+  uint8_t _cardCS;
 };
 
 
