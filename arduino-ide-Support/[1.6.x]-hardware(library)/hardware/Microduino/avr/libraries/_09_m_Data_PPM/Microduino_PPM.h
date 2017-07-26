@@ -53,11 +53,11 @@ class PPM
 		PPM();
 		
         void PPMinterrupt();
-		void beginRead(byte pin = 2);
+		void beginRead(byte pin);
 		void Read(uint16_t* _data);
 		uint8_t getChannel();
 
-		void beginWrite(byte pin = 2,byte num = NBR_OF_CHANNELS);
+		void beginWrite(byte pin,byte num = NBR_OF_CHANNELS);
 		void setFix(int8_t fix);
 		void Write(byte channel, int microseconds);
 	private:
