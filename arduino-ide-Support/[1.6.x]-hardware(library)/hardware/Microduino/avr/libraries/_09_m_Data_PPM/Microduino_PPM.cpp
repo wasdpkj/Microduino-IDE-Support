@@ -142,9 +142,9 @@ ISR(TIMER1_COMPA_vect) {
 // private functions
 // -----------------------------------------------------------------------------
 // convert microseconds to timer cycles + ticks, and store in the Channels array
-void PPM::ChannelStorePulseWidth(byte Channel, int microseconds) {
+void PPM::ChannelStorePulseWidth(byte Channel, int Value) {
   cli();
-  Channels[Channel].ticks = MS_TO_TICKS(microseconds) ;
+  Channels[Channel].ticks = MS_TO_TICKS(Value) ;
   sei();     // enable interrupts
 /*
   Serial.print(Channel, DEC);
@@ -163,16 +163,16 @@ void PPM::setFix(int8_t fix){
 // user api
 // -----------------------------------------------------------------------------
 // turns on a Channels pulse of the specified length, on the specified pin
-void PPM::Write(byte channel, int microseconds) {
+void PPM::Write(byte Channel, int Value) {
   /*
-      if ( microseconds > MAX_CHANNEL_PULSE ) {
-       microseconds = MAX_CHANNEL_PULSE;
+      if ( Value > MAX_CHANNEL_PULSE ) {
+       Value = MAX_CHANNEL_PULSE;
       }
-      else if ( microseconds < MIN_CHANNEL_PULSE ) {
-       microseconds = MIN_CHANNEL_PULSE;
+      else if ( Value < MIN_CHANNEL_PULSE ) {
+       Value = MIN_CHANNEL_PULSE;
       }
   */
-  ChannelStorePulseWidth(channel, microseconds + fixVal);
+  ChannelStorePulseWidth(Channel, Value + fixVal);
 }
 
 // start the encoder with output on the given pin

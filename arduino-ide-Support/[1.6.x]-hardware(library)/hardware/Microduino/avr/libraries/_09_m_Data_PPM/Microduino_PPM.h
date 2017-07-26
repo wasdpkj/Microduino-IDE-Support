@@ -59,14 +59,14 @@ class PPM
 
 		void beginWrite(byte pin,byte num = NBR_OF_CHANNELS);
 		void setFix(int8_t fix);
-		void Write(byte channel, int microseconds);
+		void Write(byte Channel, int Value);
 	private:
 		int8_t fixVal = FIX_CHANNEL_PULSE;
 		int realRaw[NBR_OF_CHANNELS];
 		uint8_t currentChannel;
 		uint32_t lastms,diffms;
 		bool sync;
-		void ChannelStorePulseWidth(byte Channel, int microseconds);
+		void ChannelStorePulseWidth(byte Channel, int Value);
 };
 
 #endif
