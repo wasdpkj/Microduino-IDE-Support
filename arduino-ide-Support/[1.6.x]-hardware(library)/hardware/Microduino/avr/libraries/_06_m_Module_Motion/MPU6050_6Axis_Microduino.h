@@ -866,6 +866,10 @@ void MPU6050::getQuaternion(Quaternion *q, float mx, float my, float mz){
 			accSmooth[axis] = 0.95 * accSmooth[axis] + 0.05 * acc[axis];  
 		}
 		AHRSupdate(gyro[0], gyro[1], gyro[2], accSmooth[0], accSmooth[1], accSmooth[2], mx, my, mz);
+		
+		if(isnan(q0) || isnan(q1) || isnan(q2) || isnan(q3))
+			return;
+
 		q->w = q0;
 		q->x = q1;
 		q->y = q2;
@@ -885,13 +889,11 @@ void MPU6050::getYawPitchRoll(float* _ypr, float mx, float my, float mz){
     _cache[1] = -asin(-2 * q.x * q.z + 2 * q.w * q.y)* 180/M_PI;
     _cache[2] = atan2(2 * q.y * q.z + 2 * q.w * q.x, -2 * q.x * q.x - 2 * q.y * q.y + 1)* 180/M_PI;
 
-    if(isnan(_cache[0])) return;
-    if(isnan(_cache[1])) return;
-    if(isnan(_cache[2])) return;
+    if(isnan(_cache[0]) || isnan(_cache[1]) || isnan(_cache[2])) return;
 
-     _ypr[0] = _cache[0]; // yaw
-     _ypr[1] = _cache[1]; // pitch
-     _ypr[2] = _cache[2]; // roll   
+    _ypr[0] = _cache[0]; // yaw
+    _ypr[1] = _cache[1]; // pitch
+    _ypr[2] = _cache[2]; // roll   
 }
 
 
