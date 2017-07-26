@@ -880,9 +880,18 @@ void MPU6050::getQuaternion(Quaternion *q){
 
 void MPU6050::getYawPitchRoll(float* _ypr, float mx, float my, float mz){
 	getQuaternion(&q, mx, my, mz);
-	_ypr[0] = -atan2(2 * q.x * q.y + 2 * q.w * q.z, -2 * q.y*q.y - 2 * q.z * q.z + 1)* 180/M_PI; // yaw
-    _ypr[1] = -asin(-2 * q.x * q.z + 2 * q.w * q.y)* 180/M_PI; // pitch
-    _ypr[2] = atan2(2 * q.y * q.z + 2 * q.w * q.x, -2 * q.x * q.x - 2 * q.y * q.y + 1)* 180/M_PI; // roll	
+	float _cache[3];
+    _cache[0] = -atan2(2 * q.x * q.y + 2 * q.w * q.z, -2 * q.y*q.y - 2 * q.z * q.z + 1)* 180/M_PI;
+    _cache[1] = -asin(-2 * q.x * q.z + 2 * q.w * q.y)* 180/M_PI;
+    _cache[2] = atan2(2 * q.y * q.z + 2 * q.w * q.x, -2 * q.x * q.x - 2 * q.y * q.y + 1)* 180/M_PI;
+
+    if(isnan(_cache[0])) return;
+    if(isnan(_cache[1])) return;
+    if(isnan(_cache[2])) return;
+
+     _ypr[0] = _cache[0]; // yaw
+     _ypr[1] = _cache[1]; // pitch
+     _ypr[2] = _cache[2]; // roll   
 }
 
 
