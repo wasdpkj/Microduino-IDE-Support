@@ -44,6 +44,9 @@
 #define CONTINUOUS 0
 #define POWERSAVE 1
 
+#define GPS_NO_READY 0
+#define GPS_TIME_READY 1
+#define GPS_DATA_READY 2
 // how long to wait when we're looking for a response
 #define MAXWAITSENTENCE 5
 
@@ -57,6 +60,7 @@ class Microduino_GPS {
 
   char *lastNMEA(void);
   boolean newNMEAreceived();
+  byte available();
   void common_init(void);
   void pause(boolean b);
 

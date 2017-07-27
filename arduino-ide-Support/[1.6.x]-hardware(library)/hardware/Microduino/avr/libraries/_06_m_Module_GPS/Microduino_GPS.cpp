@@ -440,3 +440,18 @@ char Microduino_GPS::read(void) {
 
   return c;
 }
+byte Microduino_GPS::available(){
+  read();
+  if(recvdflag){
+    parse(lastNMEA());
+    if(fix){
+      return GPS_DATA_READY;
+    }
+    else{
+      return GPS_TIME_READY;
+    }
+  }
+  else{
+    return GPS_NO_READY;
+  }
+}
