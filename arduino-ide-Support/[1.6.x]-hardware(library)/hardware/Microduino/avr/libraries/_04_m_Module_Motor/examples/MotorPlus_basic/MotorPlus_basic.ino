@@ -2,50 +2,53 @@
   LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
 
   版权所有：
-  @沈阳  shenyang@microduino.cc
+  @Microduino_sy  shenyang@microduino.cc
 
-  Microduino_Motor维基网址:
-  https://wiki.microduino.cn/index.php/MCookie-Motor/zh
+  Microduino_MotorPlus维基网址:
+  https://wiki.microduino.cn/index.php/MCookie-MotorPlus/zh
 
-  本示例给出了Motor控制电机的一些基本方法
-  一个Motor模块可以同时驱动两个直流电机，占用引脚D5，D6，D7，D8
-  此示例中将两个电机分别命名为MotorLeft、MotorRight
+  本示例给出了MotorPlus控制电机的一些基本方法
+  MotorPlus模块，采用IIC通讯，IIC地址可通过模块上的拨码开关设置，
+  IIC地址设置可选择：
+  MOTOR_ADDR1   0x70
+  MOTOR_ADDR2   0x71
+  MOTOR_ADDR3   0x72
+  MOTOR_ADDR4   0x73
+  一个MotorPlus模块可以同时驱动两个直流电机，
 *******************************************************/
 
-#include <Microduino_Motor.h>
+#include <Microduino_MotorPlus.h>
 
-Motor MotorLeft(MOTOR0_PINA, MOTOR0_PINB);
-Motor MotorRight(MOTOR1_PINA, MOTOR1_PINB);
+MotorPlus motor(MOTOR_ADDR1);
 
 void setup()
 {
   Serial.begin(115200); //串口初始化
-  Serial.println("Microduino_Motor!");
+  Serial.println("Microduino_MotorPlus!");
 
-  MotorLeft.begin();   //电机MotorLeft初始化
-  MotorRight.begin();  //电机MotorLeft初始化
+  motor.begin();   //电机MotorLeft初始化
+//motor.begin(BIT_8);	//可以设置电机的分辨率，BIT_8/BIT_9/BIT_10/BIT_11/BIT_12/BIT_13/BIT_14
+
 }
 
 void loop()
 {
   Serial.println("Forward!");
-  MotorLeft.setSpeed(100);   //设置电机MotorLeft速度为100
-  MotorRight.setSpeed(100);  //设置电机MotorRight速度为100
+  motor.setSpeed1(100);		//设置电机1速度为100
+  motor.setSpeed2(100);		//设置电机2速度为100
   delay(2000);
 
-  Serial.println("Break!");
-  MotorLeft.Brake();        //电机MotorLeft刹车
-  MotorRight.Brake();       //电机MotorRight刹车
+  Serial.println("Brake!");
+  motor.setSpeed1(BRAKE);	//电机1刹车
+  motor.setSpeed2(BRAKE);	//电机2刹车
   delay(2000);
 
   Serial.println("Back!");
-  MotorLeft.setSpeed(-100);  //设置电机MotorLeft速度为-100
-  MotorRight.setSpeed(-100); //设置电机MotorRight速度为-100
+  motor.setSpeed(-100, -100);  //同时设置电机1和电机2速度为-100
   delay(2000);
 
   Serial.println("Free!");
-  MotorLeft.setSpeed(FREE);  //设置电机MotorLeft为释放状态，即速度为0
-  MotorRight.setSpeed(FREE); //设置电机MotorRight为释放状态，即速度为0
+  motor.setSpeed(FREE, FREE);  //同时设置电机1和电机2为释放状态，即速度为0
   delay(2000);
 }
 

@@ -2,7 +2,7 @@
 //  LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
 
 //  版权所有：
-//  @沈阳
+//  @Microduino_sy
 
 // 支持Microduino_MotorPlus
 
@@ -21,13 +21,13 @@
 #include <Arduino.h>
 
 #if defined(__AVR_ATmega32U4__) || (__AVR_ATmega1284P__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega128RFA1__)
-#define MOTOR0_PINA 8  //PWM
-#define MOTOR0_PINB 6
+#define MOTOR0_PINA 6  //PWM
+#define MOTOR0_PINB 8
 #define MOTOR1_PINA 7  //PWM 
 #define MOTOR1_PINB 5
 #else
-#define MOTOR0_PINA 6  //PWM
-#define MOTOR0_PINB 8
+#define MOTOR0_PINA 8  //PWM
+#define MOTOR0_PINB 6
 #define MOTOR1_PINA 5  //PWM
 #define MOTOR1_PINB 7
 #endif
