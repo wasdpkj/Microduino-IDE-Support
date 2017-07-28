@@ -21,7 +21,6 @@
 #include <Arduino.h>
 
 #define _useTimer1
-#define MAX_SPEED 	1024
 #if F_CPU == 16000000
 #define TIMER_COMP	160	//12.5K
 #elif F_CPU == 8000000
@@ -46,7 +45,8 @@
 #define PIN_STEPD 	8   //PORTD,6
 
 #define DEFAULT_ACCEL 120
-#define DEFAULT_MAX_SPEED 1
+#define MOTOR_MAX_SPEED	1024
+#define SERVO_MAX_SPEED 1
 
 void stepperAllEnable();
 void stepperAllDisable();
@@ -57,9 +57,7 @@ public:
 	 
 	Stepper(uint8_t _dirPin, uint8_t _stepPin);
 	
-	uint8_t begin();
-	
-	uint8_t begin(uint16_t _maxSpeed);
+	uint8_t begin(uint16_t _maxSpeed=MOTOR_MAX_SPEED);
 
 	bool setSpeed(int16_t _speed);
  

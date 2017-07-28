@@ -2,7 +2,7 @@
   LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
 
   版权所有：
-  @沈阳  shenyang@microduino.cc
+  @Microduino_sy  shenyang@microduino.cc
 
   Microduino_Motor维基网址:
   https://wiki.microduino.cn/index.php/MCookie-Motor/zh

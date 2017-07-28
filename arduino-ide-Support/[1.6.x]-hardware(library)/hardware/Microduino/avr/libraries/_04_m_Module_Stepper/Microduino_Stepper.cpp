@@ -103,10 +103,6 @@ uint8_t Stepper::begin(uint16_t _maxSpeed){
 	}
 	return this->stepperIndex;
 }
-
-uint8_t Stepper::begin(){
-	begin(MAX_SPEED);
-}
   
  
 bool Stepper::setSpeed(int16_t _speed){	
@@ -165,7 +161,7 @@ uint8_t StepServo::begin(){
 	if(this->stepperIndex < MAX_STEPPERS){
 		pinMode(dirPin, OUTPUT);
 		pinMode(stepPin, OUTPUT);
-		setMaxSpeed(DEFAULT_MAX_SPEED);
+		setMaxSpeed(SERVO_MAX_SPEED);
 		pinMode(PIN_EN, OUTPUT);
 		stepperAllEnable();
 	}
