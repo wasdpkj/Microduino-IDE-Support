@@ -40,7 +40,7 @@ void Audio::begin(uint8_t device, uint8_t mode, uint8_t vol){
 	reset();
 	setDevice(device);
 	setMode(mode);
-	setVolumn(vol);
+	setVolume(vol);
 }
 
 
@@ -81,7 +81,7 @@ void Audio::volumeDown(){
 	sendCommand(CMD_DOWN, NULL, 0);
 }
 
-void Audio::setVolumn(uint8_t vol){
+void Audio::setVolume(uint8_t vol){
 	sendCommand(CMD_VOL, &vol, 1);
 }
 
