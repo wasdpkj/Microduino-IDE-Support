@@ -84,7 +84,7 @@ bool Dust::dataParse(uint8_t _input)
 
 bool Dust::available()
 {
-	uint32_t pmTimer = millis() + MAX_TIME;
+	uint32_t pmTimer = millis() + DUSTMAX_TIME;
 	if(pmSwSerial)
 	{
 		pmSwSerial->begin(SERIAL_BAUD);

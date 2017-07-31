@@ -37,7 +37,7 @@
 
 #define SERIAL_BAUD	2400
 
-#define MAX_TIME	1000
+#define DUSTMAX_TIME	1000
 
 
 //0,1,2,3,4,5,6,7,8,9
