@@ -60,7 +60,6 @@
   Visit us at http://www.microduino.cc/ and click the chatbox in the lower right to submit
   a question. We'll get back to you as soon as possible.
 */
-#include <Microduino_Key.h>
 #include "colorLed.h"
 #include "userDef.h"
 #include "game.h"
@@ -69,6 +68,9 @@ void setup() {
   Serial.begin(9600);
   strip.begin();
   strip.setBrightness(BRIGHT_MAX);
+  keyLineA.begin(INPUT);
+  keyLineB.begin(INPUT);
+  keyButton.begin(INPUT_PULLUP);
 
 #if DEBUG
   Serial.println("**************START************");

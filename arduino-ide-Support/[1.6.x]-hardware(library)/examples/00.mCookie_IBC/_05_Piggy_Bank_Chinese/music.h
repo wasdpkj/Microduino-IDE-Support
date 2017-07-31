@@ -44,7 +44,7 @@ uint8_t rhythm_7[] = { 2, 2, 2, 4, 2, 2, 2, 4, 8, 2, 2, 2, 2, 4, 2, 4, 4, 8, 4, 
 //Song #8: Little Apple
 uint8_t music_8[] = { 10, 8, 9, 6, 10, 9, 8, 9, 6, 10, 8, 9, 9, 12, 10, 7, 8, 8, 7, 6, 7, 8, 9, 5, 13, 12, 10, 10, 9, 8, 9, 10, 9, 10, 9, 12, 12, 12, 12, 12, 12, 0  }; //41
 uint8_t rhythm_8[] = { 4, 4, 4, 4, 2, 2, 2, 2, 8, 4, 4, 4, 4, 2, 2, 4, 4, 2, 2, 4, 2, 2, 4, 4, 2, 2, 4, 4, 2, 4, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 4 };
-//Song #9: The Chirping Swallow 
+//Song #9: The Chirping Swallow
 uint8_t music_9[] = { 10, 12, 15, 13, 12, 10, 12, 13, 15, 12, 15, 17, 16, 15, 16, 15, 13, 15, 12 , 0 }; //19
 uint8_t rhythm_9[] = { 2, 2, 2, 2, 8, 2, 2, 2, 2, 8, 4, 2, 4, 4, 2, 2, 2, 2, 8 };
 //Song #10: Spring Time
@@ -78,7 +78,7 @@ uint8_t playSound(uint8_t songNum) {
     else
     {
       noTone(PIN_BUZZER);
-      setAllLed(playIndex % 10); 
+      setAllLed(playIndex % 10);
       playTimer = millis() + PLAY_INTERVAL / 5;
     }
     playIndex++;

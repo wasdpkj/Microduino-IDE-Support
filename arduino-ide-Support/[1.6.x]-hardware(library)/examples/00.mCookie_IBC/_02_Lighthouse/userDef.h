@@ -9,4 +9,4 @@
 //                                                                                                               //
 //IMPORTANT: Remember to upload the code into the mBattery again after changing the values!                      //
 //===============================================================================================================//
-#define BRIGHT_MAX  128         //Max LED brightness. Max brightness is 255. Minimum brightness is 0. 
+#define BRIGHT_MAX  64         //Max LED brightness. Max brightness is 255. Minimum brightness is 0. 

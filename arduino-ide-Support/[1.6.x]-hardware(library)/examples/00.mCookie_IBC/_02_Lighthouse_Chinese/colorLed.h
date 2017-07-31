@@ -1,42 +1,30 @@
-#include <Adafruit_NeoPixel.h>//Import the library for the ColorLED.
+#include <Microduino_ColorLED.h> //Import the library for the ColorLED.
 #include "userDef.h"
 
 #define COLOR_MAX 255   //Max value for ColorLED 
 #define COLOR_MIN 0     //Min value for ColorLED
 
-#define COLOR_NONE    0    //colorLED OFF
-#define COLOR_WARM    1    
-#define COLOR_COLD    2    
-#define COLOR_RED     3    
-#define COLOR_ORANGE  4    
-#define COLOR_YELLOW  5  
-#define COLOR_GREEN   6   
-#define COLOR_BLUE    7   
-#define COLOR_INDIGO  8  
-#define COLOR_PURPLE  9  
-#define COLOR_WHITE   10 
-
-
-//Array to hold preset colors.
-const uint16_t colorArray[10][3] = {
-  {0,   0,   0   },        //colorLED OFF
-  {155, 100, 0   },        //Warm
-  {100, 130, 100 },        //Cold
-  {255, 0,   0   },        //Red
-  {234, 139, 23  },        //Orange
-  {255, 255, 0   },        //Yellow
-  {0,   255, 0   },        //Green
-  {0,   255, 255 },        //Lime
-  {0,   0,   255 },        //Blue
-  {255, 0,   255 },        //Purple
+uint32_t Color[11] = {
+  COLOR_NONE,
+  COLOR_WARM,
+  COLOR_COLD,
+  COLOR_RED,
+  COLOR_ORANGE,
+  COLOR_YELLOW,
+  COLOR_GREEN,
+  COLOR_CYAN,
+  COLOR_BLUE,
+  COLOR_PURPLE,
+  COLOR_WHITE
 };
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_NUM, PIN_LED, NEO_GRB + NEO_KHZ800);
 
-uint32_t rainTimer;       
-uint32_t breathTimer;     
+ColorLED strip = ColorLED(LED_NUM, PIN_LED);
+
+uint32_t rainTimer;
+uint32_t breathTimer;
 uint32_t blinkTimer;
-bool breathFlag = true;  
+bool breathFlag = true;
 
 //------------Sets all LEDs to one color-------------//
 void setAllColor(uint32_t c)
@@ -51,7 +39,7 @@ void setAllColor(uint32_t c)
 //------------Sets all LEDs to one color-------------//
 void setAllLed(uint8_t color)
 {
-  setAllColor(strip.Color(colorArray[color][0], colorArray[color][1], colorArray[color][2]));
+  setAllColor(Color[color]);
 }
 
 
@@ -65,7 +53,7 @@ void setColor(uint32_t c, uint8_t i)
 //------------Sets color of one LED-------------//
 void setLed(uint8_t color, uint8_t i)
 {
-  setColor(strip.Color(colorArray[color][0], colorArray[color][1], colorArray[color][2]), i);
+  setColor(Color[color], i);
 }
 
 
@@ -95,7 +83,7 @@ void ledRainbow(uint8_t wait) {
 
 
 //------------Breathe Effect-------------//
-void ledBreath(uint8_t color, uint8_t wait) {
+void ledBreath(uint32_t color, uint8_t wait) {
   if (millis() - breathTimer > wait)
   {
     uint8_t i = (millis() / wait) & 0xFF;
@@ -103,48 +91,50 @@ void ledBreath(uint8_t color, uint8_t wait) {
       breathFlag = !breathFlag;
     if (!breathFlag)
       i = 255 - i;
-    setAllColor(strip.Color(map(i, COLOR_MIN, COLOR_MAX, 0, colorArray[color][0]), map(i, COLOR_MIN, COLOR_MAX, 0, colorArray[color][1]), map(i, COLOR_MIN, COLOR_MAX, 0, colorArray[color][2])));
+
+    strip.setBrightness(i);       //设置彩灯亮度
+    setAllColor(color);
     breathTimer = millis();
   }
 }
 
 //------------Blink Effect-------------//
-void ledBlink(uint8_t wait, uint8_t color, uint8_t j)
+void ledBlink(uint8_t wait, uint32_t color, uint8_t j)
 {
   if (millis() - blinkTimer > wait)
   {
     if ((millis() / wait) % 2)
-      setLed(color, j);
+      setColor(color, j);
     else
-      setLed(0, j);
+      setColor(0, j);
     blinkTimer = millis();
   }
 }
 
 //------------Blink Effect for multiple LEDs-------------//
-void allLedBlinkNum(uint8_t num, uint8_t color, uint16_t wait)
+void allLedBlinkNum(uint8_t num, uint32_t color, uint16_t wait)
 {
   for (uint8_t i = 0; i < num; i++)
   {
-    setAllLed(COLOR_NONE);
+    setAllColor(COLOR_NONE);
     delay(wait);
-    setAllLed(color);
+    setAllColor(color);
     delay(wait);
   }
   setAllLed(COLOR_NONE);
 }
 
 //------------Blink Effect for single LED-------------//
-void ledBlinkNum(uint8_t num, uint8_t color, uint8_t index, uint16_t wait)
+void ledBlinkNum(uint8_t num, uint32_t color, uint8_t index, uint16_t wait)
 {
   for (uint8_t i = 0; i < num; i++)
   {
-    setLed(COLOR_NONE, index);
+    setColor(COLOR_NONE, index);
     delay(wait);
-    setLed(color, index);
+    setColor(color, index);
     delay(wait);
   }
-  setLed(COLOR_NONE, index);
+  setColor(COLOR_NONE, index);
   delay(wait);
 }
 

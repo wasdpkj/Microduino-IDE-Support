@@ -1,5 +1,7 @@
-Key keyA(PIN_KEYA, INPUT);
-Key keyB(PIN_KEYB, INPUT);
+#include <Microduino_Key.h>
+
+DigitalKey keyA(PIN_KEYA);
+DigitalKey keyB(PIN_KEYB);
 
 uint32_t ledTimer;
 uint8_t scoreA, scoreB;
@@ -12,7 +14,7 @@ uint32_t scoreTimer;
 //---------------闪烁分数差-----------------//
 void ledScore(int8_t _score)
 {
-  setAllLed(COLOR_NONE);
+  setAllColor(COLOR_NONE);
   if (_score > 0)
     ledBlinkNum(_score, COLOR_COLD, 0, 300);
   else if (_score < 0)
@@ -22,23 +24,23 @@ void ledScore(int8_t _score)
 //----------ColorLED和Buzzer--------------//
 void soundInit()
 {
-  setAllLed(COLOR_RED);
+  setAllColor(COLOR_RED);
   tone(PIN_BUZZER, 1000);
   delay(500);
-  setAllLed(COLOR_NONE);
+  setAllColor(COLOR_NONE);
   noTone(PIN_BUZZER);
   delay(500);
-  setAllLed(COLOR_WARM);
+  setAllColor(COLOR_WARM);
   tone(PIN_BUZZER, 1000);
   delay(500);
-  setAllLed(COLOR_NONE);
+  setAllColor(COLOR_NONE);
   noTone(PIN_BUZZER);
   delay(500);
-  setAllLed(COLOR_GREEN);
+  setAllColor(COLOR_GREEN);
   tone(PIN_BUZZER, 1500);
   delay(500);
   noTone(PIN_BUZZER);
-  setAllLed(COLOR_NONE);
+  setAllColor(COLOR_NONE);
 }
 
 //--------------闪烁新颜色-----------------//
@@ -68,7 +70,7 @@ int8_t updateScore()
 {
   if (!digitalRead(PIN_KEYA))
   {
-    setLed(COLOR_NONE, 1);
+    setColor(COLOR_NONE, 1);
     if (ledX == ledY && ledX > 0)
     {
       tone(PIN_BUZZER, 500, 300);
@@ -86,7 +88,7 @@ int8_t updateScore()
   }
   else if (!digitalRead(PIN_KEYB))
   {
-    setLed(COLOR_NONE, 0);
+    setColor(COLOR_NONE, 0);
     if (ledX == ledY && ledX > 0)
     {
       tone(PIN_BUZZER, 500, 300);
@@ -107,7 +109,7 @@ int8_t updateScore()
 
 void playReset()
 {
-  if (keyA.read() == LONG_PRESS || keyB.read() == LONG_PRESS)
+  if (keyA.readEvent() == LONG_PRESS || keyB.readEvent() == LONG_PRESS)
   {
     scoreA = 0;
     scoreB = 0;
@@ -125,13 +127,13 @@ void gameOver()
   {
     if (colorNum % 2)
     {
-      setAllLed(COLOR_GREEN);
+      setAllColor(COLOR_GREEN);
       tone(PIN_BUZZER, 1000);
     }
     else
     {
       noTone(PIN_BUZZER);
-      setAllLed(COLOR_NONE);
+      setAllColor(COLOR_NONE);
     }
     playReset();
   }

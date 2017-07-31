@@ -58,7 +58,6 @@
   ---------------------------------------------------------------------------------
   欢迎访问 http://forum.microduino.cn/，在我们的论坛提交您的问题， 我们会尽快回复您。
 */
-#include <Microduino_Key.h>
 #include "colorLed.h"
 #include "userDef.h"
 #include "game.h"
@@ -67,6 +66,8 @@ void setup() {
   Serial.begin(9600);
   strip.begin();
   strip.setBrightness(BRIGHT_MAX);
+  keyA.begin(INPUT_PULLUP);
+  keyB.begin(INPUT_PULLUP);
 #if DEBUG
   Serial.println("**************START************");
 #endif
@@ -89,7 +90,7 @@ void loop() {
   }
   else if (!playgo)
   {
-    ledBreath(COLOR_INDIGO, 3);
+    ledBreath(COLOR_PURPLE, 3);
     playReset();
   }
   else if (!playStatus)

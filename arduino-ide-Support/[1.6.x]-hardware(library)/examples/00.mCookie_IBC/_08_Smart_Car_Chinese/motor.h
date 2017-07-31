@@ -1,17 +1,6 @@
 #include <Microduino_Motor.h>
 #include "colorLed.h"
 #include "music.h"
-#if defined(__AVR_ATmega32U4__) || (__AVR_ATmega1284P__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega128RFA1__)
-#define motor_pin0A 8
-#define motor_pin0B 6
-#define motor_pin1A 7
-#define motor_pin1B 5
-#else
-#define motor_pin0A 6
-#define motor_pin0B 8
-#define motor_pin1A 5
-#define motor_pin1B 7
-#endif
 
 #define CMD_OK     0
 #define CMD_UP     1
@@ -22,8 +11,8 @@
 #define RIGHT  1
 #define LEFT   0
 
-Motor MotorLeft(motor_pin0A, motor_pin0B);
-Motor MotorRight(motor_pin1A, motor_pin1B);
+Motor MotorLeft(MOTOR0_PINA, MOTOR0_PINB);
+Motor MotorRight(MOTOR1_PINA, MOTOR1_PINB);
 
 bool leftFlag = false;
 bool rightFlag = false;
@@ -36,8 +25,8 @@ bool fback = true;
 
 void motorUpdate(int16_t speed1, int16_t speed2)
 {
-  MotorLeft.Driver(speed1);
-  MotorRight.Driver(speed2);
+  MotorLeft.setSpeed(speed1);
+  MotorRight.setSpeed(speed2);
 }
 
 
@@ -52,12 +41,12 @@ void remoteControl(uint8_t remoteCmd)
   switch (remoteCmd)
   {
     case CMD_UP:
-      setAllLed(COLOR_COLD);
+      setAllColor(COLOR_COLD);
       leftSpeed = MAX_THROTTLE;
       rightSpeed = MAX_THROTTLE;
       break;
     case CMD_DOWN:
-      setAllLed(COLOR_RED);
+      setAllColor(COLOR_RED);
       if (leftSpeed > 0 || rightSpeed > 0)
       {
         leftSpeed = 0;
@@ -65,7 +54,7 @@ void remoteControl(uint8_t remoteCmd)
       }
       else if (leftSpeed == 0 && rightSpeed == 0)
       {
-        setAllLed(COLOR_RED);
+        setAllColor(COLOR_RED);
         leftSpeed = -MAX_THROTTLE;
         rightSpeed = -MAX_THROTTLE;
       }
@@ -75,35 +64,35 @@ void remoteControl(uint8_t remoteCmd)
       {
         leftSpeed = -MAX_THROTTLE + STEER;
         rightSpeed = -MAX_THROTTLE - STEER;
-        setLed(COLOR_NONE, RIGHT);
+        setColor(COLOR_NONE, RIGHT);
       }
       else
       {
         leftSpeed = MAX_THROTTLE - STEER;
         rightSpeed = MAX_THROTTLE + STEER;
-        setLed(COLOR_NONE, RIGHT);
+        setColor(COLOR_NONE, RIGHT);
       }
-      ledBlink(500, COLOR_RED, LEFT);
+      ledBlink(500, 3, LEFT);
       break;
     case CMD_RIGHT:
       if (rightSpeed < 0)
       {
         rightSpeed = -MAX_THROTTLE + STEER;
         leftSpeed = -MAX_THROTTLE - STEER;
-        setLed(COLOR_NONE, LEFT);
+        setColor(COLOR_NONE, LEFT);
       }
       else
       {
         rightSpeed = MAX_THROTTLE - STEER;
         leftSpeed = MAX_THROTTLE + STEER;
-        setLed(COLOR_NONE, LEFT);
+        setColor(COLOR_NONE, LEFT);
       }
-      ledBlink(500, COLOR_RED, RIGHT);
+      ledBlink(500, 3, RIGHT);
       break;
     case CMD_OK:
       if (leftSpeed != 0 || rightSpeed != 0)
       {
-        setAllLed(COLOR_NONE);
+        setAllColor(COLOR_NONE);
         leftSpeed = 0;
         rightSpeed = 0;
       }
@@ -119,25 +108,25 @@ void trackControl(uint16_t trackVal1, uint16_t trackVal2)
   {
     leftSpeed = MAX_THROTTLE - tackforward;
     rightSpeed = MAX_THROTTLE - tackforward;
-    setAllLed(COLOR_COLD);
+    setAllColor(COLOR_COLD);
   }
   else if (trackVal1 < TRACK_THRESHOLD && trackVal2 > TRACK_THRESHOLD)
   {
     leftSpeed = MAX_THROTTLE - tackforward + tacksteer;
     rightSpeed = MAX_THROTTLE - tackforward - tacksteer;
-    setLed(COLOR_WARM, LEFT);
-    setLed(COLOR_NONE, RIGHT);
+    setColor(COLOR_WARM, LEFT);
+    setColor(COLOR_NONE, RIGHT);
   }
   else if (trackVal1 > TRACK_THRESHOLD && trackVal2 < TRACK_THRESHOLD)
   {
     leftSpeed = MAX_THROTTLE - tackforward - tacksteer;
     rightSpeed = MAX_THROTTLE - tackforward + tacksteer;
-    setLed(COLOR_WARM, RIGHT);
-    setLed(COLOR_NONE, LEFT);
+    setColor(COLOR_WARM, RIGHT);
+    setColor(COLOR_NONE, LEFT);
   }
   else if (trackVal1 > TRACK_THRESHOLD && trackVal2 > TRACK_THRESHOLD)
   {
-    setAllLed(COLOR_NONE);
+    setAllColor(COLOR_NONE);
     leftSpeed = 0;
     rightSpeed = 0;
   }
@@ -161,19 +150,19 @@ void micControl(long micVal, long trackVal1, long trackVal2) {
       }
       trackTime1 = millis();
       if (trackTime1 - trackTime > 800) {
-        setAllLed(COLOR_RED);
+        setAllColor(COLOR_RED);
         motorUpdate(-150, -150);
         delay(1000);
         motorUpdate(150, -150);
         delay(300);
       }
     } else {
-      setAllLed(COLOR_COLD);
+      setAllColor(COLOR_COLD);
       back = true;
       trackTime1 = trackTime;
     }
   } else {
-    setAllLed(COLOR_NONE);
+    setAllColor(COLOR_NONE);
     leftSpeed = 0;
     rightSpeed = 0;
     micTime = 0;

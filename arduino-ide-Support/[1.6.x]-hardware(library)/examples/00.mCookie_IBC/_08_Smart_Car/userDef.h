@@ -5,7 +5,7 @@
 #define PIN_LINEA    A0      //Line Finder A pin.
 #define PIN_LINEB    A2      //Line Finder B pin.
 #define PIN_MIC      A6      //Microphone Sensor pin.
-#define LED_NUM      2       
+#define LED_NUM      2
 #define DOCK_MAX     500
 #define TRACK_THRESHOLD  500
 
@@ -18,7 +18,7 @@
 #define BRIGHT_MAX    128   //Max LED brightness. Max brightness is 255. Minimum brightness is 0.
 
 #define MAX_THROTTLE  150   //How quickly the Smart Car moves. Fastest speed is 255. A negative value will make
-                            //the Motor spin in the other direction. Note: 255 is very fast. Be careful!
+//the Motor spin in the other direction. Note: 255 is very fast. Be careful!
 
 #define STEER          40   //How quickly the Smart Car turns. Max value is 255. 
 

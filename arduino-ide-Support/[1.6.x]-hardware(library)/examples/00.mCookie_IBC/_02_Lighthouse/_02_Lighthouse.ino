@@ -83,7 +83,7 @@ void loop() {
   switch (mode)
   {
     case MODE_OFF:
-      setAllLed(COLOR_NONE);
+      setAllLed(LOW);
       break;
     case MODE_A:
       ledRainbow(20);       //Rainbow effect, 20 ms for every color.
@@ -98,7 +98,7 @@ void loop() {
       setAllLed(colorNum);
       break;
     case MODE_E:
-      ledBreath(colorNum, 10);
+      ledBreath(Color[colorNum], 10);
       break;
     default:
       break;
