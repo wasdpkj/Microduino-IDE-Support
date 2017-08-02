@@ -18,5 +18,5 @@
 
 #define SCORE_MAX    5       //判断游戏获胜的分差，默认为5分，即当一方得分比另一方得分多5分时，得分多者获胜！
 
-#define leftColor   6     //左灯颜色
-#define rightColor   9    //右灯颜色
+#define leftColor   COLOR_GREEN     //左灯颜色
+#define rightColor   COLOR_PURPLE    //右灯颜色

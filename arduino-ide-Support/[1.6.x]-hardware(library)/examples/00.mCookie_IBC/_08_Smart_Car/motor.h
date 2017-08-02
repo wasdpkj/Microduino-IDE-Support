@@ -72,7 +72,7 @@ void remoteControl(uint8_t remoteCmd)
         rightSpeed = MAX_THROTTLE + STEER;
         setColor(COLOR_NONE, RIGHT);
       }
-      ledBlink(500, 3, LEFT);
+      ledBlink(500, COLOR_YELLOW, LEFT);
       break;
     case CMD_RIGHT:
       if (rightSpeed < 0)
@@ -87,7 +87,7 @@ void remoteControl(uint8_t remoteCmd)
         leftSpeed = MAX_THROTTLE + STEER;
         setColor(COLOR_NONE, LEFT);
       }
-      ledBlink(500, 3, RIGHT);
+      ledBlink(500, COLOR_YELLOW, RIGHT);
       break;
     case CMD_OK:
       if (leftSpeed != 0 || rightSpeed != 0)

@@ -122,22 +122,6 @@ void playReset()
 //------------游戏结束-------------//
 void gameOver()
 {
-  uint32_t bTimer = millis();
-  while (millis() - bTimer < 300)
-  {
-    if (colorNum % 2)
-    {
-      setAllColor(COLOR_GREEN);
-      tone(PIN_BUZZER, 1000);
-    }
-    else
-    {
-      noTone(PIN_BUZZER);
-      setAllColor(COLOR_NONE);
-    }
-    playReset();
-  }
-  colorNum++;
-  if (colorNum > 9)
-    colorNum = 1;
+  playSound(1);
+  playReset();
 }

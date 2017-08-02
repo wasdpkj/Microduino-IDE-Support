@@ -60,6 +60,7 @@
 */
 #include "colorLed.h"
 #include "userDef.h"
+#include "music.h"
 #include "game.h"
 
 void setup() {

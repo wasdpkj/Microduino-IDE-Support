@@ -21,5 +21,5 @@
 //there will only be a winner if that person is beating the other person by 5 points.
 //Lower this number to have shorter games.
 
-#define leftColor   6     //左灯颜色
-#define rightColor   9    //右灯颜色
+#define leftColor   COLOR_GREEN     //左灯颜色
+#define rightColor   COLOR_PURPLE    //右灯颜色

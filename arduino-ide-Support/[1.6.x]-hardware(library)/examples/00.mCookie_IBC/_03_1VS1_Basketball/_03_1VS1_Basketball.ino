@@ -86,9 +86,24 @@ void loop() {
   Serial.println(analogRead(PIN_LINEB));//Line Finder B Value
 #endif
   gameReset();
-  if (scoreCmp < SCORE_MAX)
+  if (scoreCmp < SCORE_MAX) {
     updateScore();
-  else
-    gameOver();
+  }
+  else {
+    if (scoreCmp == SCORE_MAX) {
+      delay(1000);
+      tone(PIN_BUZZER, 800);
+      delay(500);
+      tone(PIN_BUZZER, 1000);
+      delay(500);
+      tone(PIN_BUZZER, 1200);
+      delay(500);
+      noTone(PIN_BUZZER);
+      scoreCmp++;
+    }
+    else {
+      gameOver();
+    }
+  }
   delay(15);
 }

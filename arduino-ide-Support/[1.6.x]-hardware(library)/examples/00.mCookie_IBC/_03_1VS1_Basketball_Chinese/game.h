@@ -66,25 +66,16 @@ void gameReset()
 //------------游戏结束-------------//
 void gameOver()
 {
-  uint32_t bTimer = millis();
-  while (millis() - bTimer < 300)
-  {
-    if (colorNum % 2)
-    {
-      if (scoreA > scoreB)
-        setAllLed(leftColor);
-      else
-        setAllLed(rightColor);
-      tone(PIN_BUZZER, 1000);
-    }
-    else
-    {
-      noTone(PIN_BUZZER);
-      setAllLed(COLOR_NONE);
-    }
-    gameReset();
-  }
   colorNum++;
   if (colorNum > 9)
     colorNum = 1;
+  if (scoreA > scoreB) {
+    setColor(Color[colorNum], 0);
+    setColor(COLOR_RED, 1);
+  }
+  else {
+    setColor(Color[colorNum], 1);
+    setColor(COLOR_RED, 0);
+  }
+  delay(250);
 }
