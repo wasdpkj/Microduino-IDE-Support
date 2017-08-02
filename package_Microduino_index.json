@@ -12,15 +12,15 @@
         {
           "name": "Microduino",
           "architecture": "avr",
-          "version": "1.6.12",
+          "version": "1.6.9",
           "category": "Contributed",
           "help": {
 			"online": "https://www.microduino.cc"
           },
           "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/Microduino-ide-Support.zip",
           "archiveFileName": "Microduino-ide-Support.zip",
-          "checksum": "SHA-256:62B89C2AE38374F68343EC00DCF060F8FBC520BAFF0117AF7D42CEEF6849A9C8",
-          "size": "5525156",
+          "checksum": "SHA-256:CCCF87DEE21AF7A588CE8DCE4F5464C9FF1848122BE4DD57F62B0CD791442CAB",
+          "size": "3322236",
           "boards": [
             {"name": "ATmega168pa"},
             {"name": "ATmega328p"},
