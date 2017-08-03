@@ -223,6 +223,10 @@ String AudioPro_FilePlayer::getMusicName(uint8_t _FileNum){
   if(!paused() && !stopped()){
     return "PLAYING.ER";
   }
+  
+  if(_FileNum > getMusicNum() - 1){
+    return "MUSICNUM.ER";    
+  }
 
   if(_FileNum == 0){
     return firstMusicFile;
