@@ -188,13 +188,24 @@ boolean AudioPro_FilePlayer::playTrack(uint8_t trackNo){
 }
 
 uint8_t AudioPro_FilePlayer::getMusicNum() {
-  if(!staFile) {		//只执行一遍
-    if(!paused() && !stopped()){
+  if (!staFile) {   //只执行一遍
+    if (!paused() && !stopped()) {
       return 0;
     }
+
     numMusicFile = 0;
-    
     char * filename = "TRACK001.mp3";
+
+    File file2;
+    if (sd.exists("AudioPro.dat")) {
+      sd.remove("AudioPro.dat");
+    }
+    file2 = sd.open("AudioPro.dat", FILE_WRITE);
+    file2.close();
+    if (!sd.exists("AudioPro.dat")) return 0;
+    file2 = sd.open("AudioPro.dat", FILE_WRITE);
+    if (!file2) return 0;
+
     File file;
     file = sd.open("/");
     if (!file) return 0;
@@ -205,14 +216,16 @@ uint8_t AudioPro_FilePlayer::getMusicNum() {
       }
       filename = entry.name();
       if ( isFnMusic(filename) ) {
-        if(numMusicFile == 0){
-          firstMusicFile = filename;
-        }
+        file2.write(filename);
+        file2.write('\n');
         numMusicFile++;
       }
       entry.close();
-      }
+    }
     file.close();
+
+    file2.close();
+
     staFile = true;
   }
 
@@ -228,37 +241,32 @@ String AudioPro_FilePlayer::getMusicName(uint8_t _FileNum){
     return "MUSICNUM.ER";    
   }
 
-  if(_FileNum == 0){
-    return firstMusicFile;
-  }
-  
-  char * filename = "TRACK001.mp3";
-  File file;
+  String filename = "";
 
-  file = sd.open(firstMusicFile);		//必须 解决SD库多次open以后缺失文件列表BUG
-  if (!file) return "SDCARD.ER";
-  file.close();							//必须 解决SD库多次open以后缺失文件列表BUG
-  _FileNum--;	//SD库BUG 第一个音乐文件跳过
-  
-  file = sd.open("/");
-  if (!file) return "SDCARD.ER";
-  uint8_t count = 0;
-  while (1) {
-    File entry =  file.openNextFile(O_READ);
-    if (! entry) {
-      break;
-    }
-    filename = entry.name();
-    if ( isFnMusic(filename) ) {
-      if(count == _FileNum){
-        entry.close();
-        break;
+  File file;
+  file = SD.open("AudioPro.dat"); 
+  if (file) {
+    uint8_t _n = 0;
+    // read from the file until there's nothing else in it:
+    while (file.available()) {
+      char _c = file.read();
+      if (_c == '\n') {
+        //Serial.print("_t: ");Serial.print(_t); Serial.print(" filename: [");Serial.print(filename);Serial.println("]");
+        _n++;
+        if (_n < _FileNum) {
+          filename = "";
+        }
       }
-      count++;
+      else if (_n == _FileNum) {
+          filename += _c;
+      }
     }
-    entry.close();
+    file.close();             //必须 解决SD库多次open以后缺失文件列表BUG
   }
-  file.close();
+  else {
+    return "SDCARD.ER";
+  }
+
   return filename;
 }
 
