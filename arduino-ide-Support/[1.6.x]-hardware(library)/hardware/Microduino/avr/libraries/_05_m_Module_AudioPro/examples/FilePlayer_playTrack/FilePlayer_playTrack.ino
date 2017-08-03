@@ -2,6 +2,7 @@
    Microduino_AudioPro支持库例程
    模块WIKI：https://wiki.microduino.cn/index.php/MCookie-Module_AudioPro
    串口控制的简易MP3，需配合Microduino_SD模块使用
+   歌曲文件名需要按照 track001.mp3 到 track009.mp3排列
    详情见help
 */
 
@@ -14,22 +15,17 @@ AudioPro_FilePlayer musicPlayer =  AudioPro_FilePlayer(SD);
 uint8_t fileNum = 0;  //文件数量
 
 void playNum(uint8_t num) {
-  if (num > musicPlayer.getMusicNum() - 1) {
-    return;
-  }
-
   if (!musicPlayer.paused() || !musicPlayer.stopped()) {
     musicPlayer.stopPlaying();  //必要，否则SD类得不到关闭，内存溢出
   }
 
-  String _name = musicPlayer.getMusicName(num);
   Serial.print(F("Playing:"));
-  if (!musicPlayer.playMP3(_name)) {
+  if (!musicPlayer.playTrack(num)) {
     Serial.println(F("ERROR"));
   }
   else {
     Serial.print(F("OK \t File: "));
-    Serial.println(_name);
+    Serial.println(num);
   }
 }
 
@@ -177,24 +173,6 @@ void loop() {
         Serial.println(F("End Player."));
         musicPlayer.end();
       }
-      else if (c == 'l') {          //列出音乐文件清单
-        if (musicPlayer.paused() || musicPlayer.stopped()) {
-          Serial.println(F("Enter Index of File to play"));
-          fileNum = musicPlayer.getMusicNum();    //可以获取SD卡中曲目列表以及数量
-          Serial.print(F("Music Files : "));
-          Serial.println(fileNum);
-          for (uint8_t a = 0; a < fileNum; a++) {
-            Serial.print("\t File[");
-            Serial.print(a);
-            Serial.print("]: ");
-            Serial.println(musicPlayer.getMusicName(a));
-          }
-        }
-        else {
-          Serial.println(F("Busy Playing Files, try again later."));
-        }
-
-      }
       else if (c == 'h') {          //显示帮助
         help();
       }
@@ -215,12 +193,11 @@ void help() {
   Serial.println(F(" [s] to stop playing"));
   Serial.println(F(" [+ or -] to change volume"));
   Serial.println(F(" [> or <] to increment or decrement play speed by 1 factor"));
-  Serial.println(F(" [m] Toggle between lMono and Stereo Output."));
+  Serial.println(F(" [m] Toggle between Mono and Stereo Output."));
   Serial.println(F(" [d] to toggle SM_DIFF between inphase and differential output"));
   Serial.println(F(" [r] Resets and initializes VS10xx chip."));
   Serial.println(F(" [f] turns OFF the VS10xx into low power reset."));
   Serial.println(F(" [n] turns ON the VS10xx out of low power reset."));
   Serial.println(F(" [i] retrieve current audio information (partial list)"));
-  Serial.println(F(" [l] Display list of music files"));
   Serial.println(F(" [h] this help"));
 }

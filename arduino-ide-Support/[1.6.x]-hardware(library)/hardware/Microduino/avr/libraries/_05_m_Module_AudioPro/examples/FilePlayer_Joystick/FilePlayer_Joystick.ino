@@ -18,41 +18,33 @@ enum KeyName {
   UP, DOWN, LEFT, RIGHT, PRESS
 };
 
-#define MUSIC_MAX 10
-String FileName[MUSIC_MAX] = {
-  "Microduino.mp3",
-  "Microduino.mp3",
-  "Microduino.mp3",
-  "Microduino.mp3",
-  "Microduino.mp3",
-  "Microduino.mp3",
-  "Microduino.mp3",
-  "Microduino.mp3",
-  "Microduino.mp3",
-  "Microduino.mp3"
-};
 
 uint8_t musicNum = 1; //歌曲序号
 uint8_t fileNum = 0;  //文件数量
 
 void playNum(uint8_t num) {
+  if (num > musicPlayer.getMusicNum() - 1) {
+    return;
+  }
+
   if (!musicPlayer.paused() || !musicPlayer.stopped()) {
     musicPlayer.stopPlaying();  //必要，否则SD类得不到关闭，内存溢出
   }
 
+  String _name = musicPlayer.getMusicName(num);
   Serial.print(F("Playing:"));
-  if (!musicPlayer.playMP3( FileName[num])) {
+  if (!musicPlayer.playMP3(_name)) {
     Serial.println(F("ERROR"));
   }
   else {
     Serial.print(F("OK \t File: "));
-    Serial.println(FileName[num]);
+    Serial.println(_name);
   }
 }
 
 void setup() {
   Serial.begin(115200);
-  pinMode(SD_PIN_SEL, OUTPUT);		//先初始化AudioPro，所以先使能SD卡
+  pinMode(SD_PIN_SEL, OUTPUT);    //先初始化AudioPro，所以先使能SD卡
   digitalWrite(SD_PIN_SEL, HIGH);
   delay(500);
 
@@ -72,17 +64,14 @@ void setup() {
   musicPlayer.setVolume(20, 20);
 
   Serial.println(F("Enter Index of File to play"));
-  fileNum = musicPlayer.getMusicFile(FileName);		//可以获取SD卡中曲目列表以及数量
-  if (fileNum > MUSIC_MAX) {
-    fileNum = MUSIC_MAX;
-  }
+  fileNum = musicPlayer.getMusicNum();    //可以获取SD卡中曲目列表以及数量
   Serial.print(F("Music Files : "));
   Serial.println(fileNum);
   for (uint8_t a = 0; a < fileNum; a++) {
     Serial.print("\t File[");
     Serial.print(a);
     Serial.print("]: ");
-    Serial.println(FileName[a]);
+    Serial.println(musicPlayer.getMusicName(a));
   }
 
   for (uint8_t a = 0; a < 5; a++) {
@@ -133,7 +122,7 @@ void loop() {
       if (musicNum < 1 ) {
         musicNum = fileNum;
       }
-      playNum(musicNum);
+      playNum(musicNum - 1);
       break;
   }
 
@@ -143,7 +132,7 @@ void loop() {
       if (musicNum > fileNum) {
         musicNum = 1;
       }
-      playNum(musicNum);
+      playNum(musicNum - 1);
       break;
   }
 
@@ -151,16 +140,16 @@ void loop() {
     case SHORT_PRESS:
       if (musicPlayer.stopped()) {
         Serial.println(F("Playing!"));
-        playNum(musicNum);
+        playNum(musicNum - 1);
       }
       else if (! musicPlayer.paused()) {
         Serial.println("Paused");
-        musicPlayer.setAmplifier(false);	//关闭运放
-        musicPlayer.pausePlaying(true);		//暂停
+        musicPlayer.setAmplifier(false);  //关闭运放
+        musicPlayer.pausePlaying(true);   //暂停
       } else {
         Serial.println("Resumed");
-        musicPlayer.setAmplifier(true);		//开启运放
-        musicPlayer.pausePlaying(false);	//取消暂停
+        musicPlayer.setAmplifier(true);   //开启运放
+        musicPlayer.pausePlaying(false);  //取消暂停
       }
 
       break;

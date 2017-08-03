@@ -175,10 +175,69 @@ boolean AudioPro_FilePlayer::playMP3(String trackname) {
   playMP3(trackname.c_str());
 }
 
-uint8_t AudioPro_FilePlayer::getMusicFile(String * _FileName) {
-  char * filename = "Microduino.mp3";
+boolean AudioPro_FilePlayer::playTrack(uint8_t trackNo){
+  //a storage place for track names
+  char trackName[] = "track001.mp3";
+  uint8_t trackNumber = 1;
+
+  //tack the number onto the rest of the filename
+  sprintf(trackName, "track%03d.mp3", trackNo);
+
+  //play the file
+  return playMP3(trackName);
+}
+
+uint8_t AudioPro_FilePlayer::getMusicNum() {
+  if(!staFile) {		//只执行一遍
+    if(!paused() && !stopped()){
+      return 0;
+    }
+    numMusicFile = 0;
+    
+    char * filename = "TRACK001.mp3";
+    File file;
+    file = sd.open("/");
+    if (!file) return 0;
+    while (1) {
+      File entry =  file.openNextFile(O_READ);
+      if (! entry) {
+        break;
+      }
+      filename = entry.name();
+      if ( isFnMusic(filename) ) {
+        if(numMusicFile == 0){
+          firstMusicFile = filename;
+        }
+        numMusicFile++;
+      }
+      entry.close();
+      }
+    file.close();
+    staFile = true;
+  }
+
+  return numMusicFile;
+}
+
+String AudioPro_FilePlayer::getMusicName(uint8_t _FileNum){
+  if(!paused() && !stopped()){
+    return "PLAYING.ER";
+  }
+
+  if(_FileNum == 0){
+    return firstMusicFile;
+  }
+  
+  char * filename = "TRACK001.mp3";
   File file;
+
+  file = sd.open(firstMusicFile);		//必须 解决SD库多次open以后缺失文件列表BUG
+  if (!file) return "SDCARD.ER";
+  file.close();							//必须 解决SD库多次open以后缺失文件列表BUG
+  _FileNum--;	//SD库BUG 第一个音乐文件跳过
+  
   file = sd.open("/");
+  if (!file) return "SDCARD.ER";
   uint8_t count = 0;
   while (1) {
     File entry =  file.openNextFile(O_READ);
@@ -187,14 +246,18 @@ uint8_t AudioPro_FilePlayer::getMusicFile(String * _FileName) {
     }
     filename = entry.name();
     if ( isFnMusic(filename) ) {
-      _FileName[count] = filename;
+      if(count == _FileNum){
+        entry.close();
+        break;
+      }
       count++;
     }
     entry.close();
-    delay(10);
   }
-  return count;
+  file.close();
+  return filename;
 }
+
 
 void AudioPro_FilePlayer::feedBuffer(void) {
   static uint8_t running = 0;

@@ -53,8 +53,10 @@ recordedWordsWaiting	KEYWORD2
 recordedReadWord	KEYWORD2
 useInterrupt	KEYWORD2
 detachInterrupt	KEYWORD2
-getMusicFile	KEYWORD2
+getMusicName	KEYWORD2
+getMusicNum	KEYWORD2
 playMP3	KEYWORD2
+playTrack	KEYWORD2
 playFullFile	KEYWORD2
 pausePlaying	KEYWORD2
 stopped	KEYWORD2

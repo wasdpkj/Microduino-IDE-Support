@@ -214,12 +214,15 @@ class AudioPro_FilePlayer : public AudioPro {
   boolean useInterrupt(uint8_t type = VS1053_PIN_DREQ);
   boolean detachInterrupt(uint8_t type = VS1053_PIN_DREQ);
 
-  uint8_t getMusicFile(String * _FileName);
+  uint8_t getMusicNum();
+  String getMusicName(uint8_t _FileNum);
   volatile boolean playingMusic;
  
   boolean playMP3(const char * trackname);
   boolean playMP3(String trackname);
   boolean playFullFile(const char *trackname);
+  
+  boolean playTrack(uint8_t trackNo);
   
   void feedBuffer(void);
  
@@ -229,13 +232,15 @@ class AudioPro_FilePlayer : public AudioPro {
   void pausePlaying(boolean pause);
   void stopPlaying(void);
   void stopSong(void);
-  
+
  private:
   SDClass& sd;
   uint8_t mp3buffer[VS1053_DATABUFFERLEN];
   File currentTrack;
 
-
+  uint8_t staFile = false;
+  uint8_t numMusicFile = 0;  
+  String firstMusicFile = "TRACK001.mp3";
 };
 
 
