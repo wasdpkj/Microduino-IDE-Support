@@ -5,7 +5,7 @@ Number::Number(uint8_t n,SoftwareSerial *ser) {
   common_init();
   numSwSerial = ser;
   numLED=n;
-
+  numLEDDir=0;
   if((numData = (uint8_t *)malloc(numLED*2))) {
     memset(numData, 0, numLED*2);
   }
@@ -15,7 +15,7 @@ Number::Number(uint8_t n,HardwareSerial *ser) {
   common_init();
   numHwSerial = ser;
   numLED=n;
-
+  numLEDDir=0;
   if((numData = (uint8_t *)malloc(numLED*2))) {
     memset(numData, 0, numLED*2);
   }
