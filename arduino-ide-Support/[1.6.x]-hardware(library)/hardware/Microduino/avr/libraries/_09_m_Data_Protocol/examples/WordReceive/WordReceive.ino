@@ -8,8 +8,8 @@
 
 SoftwareSerial mySerial(4, 5);
 
-ProtocolSer protocolA(&Serial1, 16);
-ProtocolSer protocolB(&mySerial, 16);
+ProtocolSer protocolA(&Serial1, 16);	//采用Serial1，数据长度为16个字节
+ProtocolSer protocolB(&mySerial, 16);   //mySerial，数据长度为16个字节
 
 uint16_t sendData[8] = {1500, 1500, 1500, 1500, 1000, 1000, 1000, 1000};
 uint16_t recData[8];

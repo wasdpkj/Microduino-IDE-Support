@@ -47,8 +47,9 @@ bool ProtocolSer::available(){
 		if(pHwSerial->available() > 0){
 			inChar = pHwSerial->read();
 			if(dataParse->parse(inChar)){
-				pHwSerial->end();
-				pHwSerial->begin(baud);		
+				if(pHwSerial->available() > (SERIAL_RX_BUFFER_SIZE-length-10))
+					while(pHwSerial->available() > 0)
+						pHwSerial->read();
 				return true;
 			}
 		}

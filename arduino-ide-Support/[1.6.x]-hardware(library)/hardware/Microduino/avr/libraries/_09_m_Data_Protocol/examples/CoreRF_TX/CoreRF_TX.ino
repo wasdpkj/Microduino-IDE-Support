@@ -6,7 +6,7 @@
 
 #include <Microduino_Protocol.h>
 
-ProtocolZig protocolA(16); //括号内参数为数据长度
+ProtocolZig protocolA(16); //数据长度为16个字节
 
 uint16_t sendData[8] = {1500, 1500, 1500, 1500, 1000, 1000, 1000, 1000};
 uint32_t sendTime;
