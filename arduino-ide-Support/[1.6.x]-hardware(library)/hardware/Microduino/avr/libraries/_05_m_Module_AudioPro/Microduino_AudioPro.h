@@ -240,7 +240,6 @@ class AudioPro_FilePlayer : public AudioPro {
 
   uint8_t staFile = false;
   uint8_t numMusicFile = 0;  
-  String firstMusicFile = "TRACK001.mp3";
 };
 
 

@@ -251,10 +251,12 @@ String AudioPro_FilePlayer::getMusicName(uint8_t _FileNum){
     while (file.available()) {
       char _c = file.read();
       if (_c == '\n') {
-        //Serial.print("_t: ");Serial.print(_t); Serial.print(" filename: [");Serial.print(filename);Serial.println("]");
         _n++;
         if (_n < _FileNum) {
           filename = "";
+        }
+        if(_n > _FileNum){
+          break;
         }
       }
       else if (_n == _FileNum) {
