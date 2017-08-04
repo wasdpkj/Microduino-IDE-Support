@@ -26,7 +26,7 @@
 #include <avr/pgmspace.h>
 
 #define NUM_DIGITAL_PINS            20
-#define NUM_ANALOG_INPUTS           6
+#define NUM_ANALOG_INPUTS           8
 #define analogInputToDigitalPin(p)  ((p < 6) ? (p) + 14 : -1)
 
 #if defined(__AVR_ATmega8__)
