@@ -334,7 +334,7 @@ void setup(void) {
 	}
 
 	Serial.println("station MAC addrress:");
-	MACAddr=wifi.getStationMac(DEFAULT_PATTERN);
+	MACAddr=wifi.getSimpleMac();
 	MACAddr.replace(":", "");
 	MACAddr.toLowerCase();
 	Serial.println(MACAddr);

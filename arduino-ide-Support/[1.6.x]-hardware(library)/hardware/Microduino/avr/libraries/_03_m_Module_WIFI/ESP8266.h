@@ -282,6 +282,15 @@ class ESP8266 {
      */
      String getStationMac(uint8_t pattern=DEFAULT_PATTERN);
      
+
+    /**
+     * Get simple MAC addrress.
+     *
+     * @return simple MAC.
+     */
+    String getSimpleMac(void);
+
+
      /**
      * Set the station's MAC address. 
      * @param pattern -1 send "AT+CIPSTAMAC_DEF=" -2 send "AT+CIPSTAMAC_CUR=" -3 send "AT+CIPSTAMAC=". 

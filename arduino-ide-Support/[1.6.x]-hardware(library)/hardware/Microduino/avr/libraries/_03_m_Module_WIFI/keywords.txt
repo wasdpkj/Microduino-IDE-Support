@@ -31,6 +31,7 @@ getDHCP	KEYWORD2
 setDHCP	KEYWORD2
 setAutoConnect	KEYWORD2
 getStationMac	KEYWORD2
+getSimpleMac	KEYWORD2
 setStationMac	KEYWORD2
 getStationIp	KEYWORD2
 setStationIp	KEYWORD2

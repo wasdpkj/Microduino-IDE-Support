@@ -240,6 +240,15 @@ String ESP8266::getStationMac(uint8_t pattern)
     return mac;
 }
 
+String ESP8266::getSimpleMac(void) {
+
+    String mac;
+    rx_empty();
+    m_puart->println("AT+CIPSTAMAC_CUR?");
+
+    recvFindAndFilter("OK", "+CIPSTAMAC_CUR:", "\r\n\r\nOK", mac);
+    return mac.substring(1,mac.length()-1);
+}
 
 bool ESP8266::setStationMac(String mac,uint8_t pattern)
 {
