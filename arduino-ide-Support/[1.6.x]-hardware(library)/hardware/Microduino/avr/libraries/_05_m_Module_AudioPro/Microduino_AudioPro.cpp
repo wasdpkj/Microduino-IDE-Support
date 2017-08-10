@@ -25,9 +25,9 @@ static AudioPro_FilePlayer *myself;
 // #define _BV(x) (1<<(x))
 // #endif
 
-// SIGNAL(TIMER0_COMPA_vect) {
-//   myself->feedBuffer();
-// }
+SIGNAL(TIMER0_COMPA_vect) {
+   myself->feedBuffer();
+ }
 
 static void feeder(void) {
   myself->feedBuffer();
@@ -40,11 +40,11 @@ static void feeder(void) {
 boolean AudioPro_FilePlayer::useInterrupt(uint8_t type) {
   myself = this;  // oy vey
 
-  // if (type == VS1053_TIMER0_DREQ) {
-  // OCR0A = 0xAF;
-  // TIMSK0 |= _BV(OCIE0A);
-  // return true;
-  // }
+  if (type == VS1053_TIMER0_DREQ) {
+    OCR0A = 0xAF;
+    TIMSK0 |= _BV(OCIE0A);
+    return true;
+  }
   if (type == _dreq) {
     SPI.usingInterrupt(digitalPinToInterrupt(_dreq));
     attachInterrupt(digitalPinToInterrupt(_dreq), feeder, CHANGE);
@@ -55,12 +55,12 @@ boolean AudioPro_FilePlayer::useInterrupt(uint8_t type) {
 
 boolean AudioPro_FilePlayer::detachInterrupt(uint8_t type) {
   myself = this;  // oy vey
-
-  // if (type == VS1053_TIMER0_DREQ) {
-  // OCR0A = 0xAF;
-  // TIMSK0 &= ~_BV(OCIE0A);
-  // return true;
-  // }
+  
+  if (type == VS1053_TIMER0_DREQ) {
+    OCR0A = 0xAF;
+    TIMSK0 &= ~_BV(OCIE0A);
+    return true;
+  }
   if (type == _dreq) {
     SPI.notUsingInterrupt(digitalPinToInterrupt(_dreq));
     detachInterrupt(digitalPinToInterrupt(_dreq));
@@ -78,7 +78,7 @@ AudioPro_FilePlayer::AudioPro_FilePlayer(SDClass& _sd, uint8_t midi, uint8_t cs,
 
 boolean AudioPro_FilePlayer::begin(void) {
   uint8_t v  = AudioPro::begin();
-
+  
   if (!useInterrupt(_dreq)) {
     return 0;
   }
