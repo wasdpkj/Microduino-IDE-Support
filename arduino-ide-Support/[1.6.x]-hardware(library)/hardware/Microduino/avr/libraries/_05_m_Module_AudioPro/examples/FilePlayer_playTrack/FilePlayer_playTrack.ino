@@ -15,7 +15,7 @@ AudioPro_FilePlayer musicPlayer =  AudioPro_FilePlayer(SD);
 uint8_t fileNum = 0;  //文件数量
 
 void playNum(uint8_t num) {
-  if (!musicPlayer.paused() || !musicPlayer.stopped()) {
+  if (!musicPlayer.paused() && !musicPlayer.stopped()) {
     musicPlayer.stopPlaying();  //必要，否则SD类得不到关闭，内存溢出
   }
 

@@ -27,7 +27,7 @@ void playNum(uint8_t num) {
     return;
   }
 
-  if (!musicPlayer.paused() || !musicPlayer.stopped()) {
+  if (!musicPlayer.paused() && !musicPlayer.stopped()) {
     musicPlayer.stopPlaying();  //必要，否则SD类得不到关闭，内存溢出
   }
 
