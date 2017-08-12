@@ -11,13 +11,13 @@ static const byte  GETDATA[]  PROGMEM = {
 //从这申请你自己的token: http://aqicn.org/data-platform/token/#/ 替换上面的"demo"字段
 
 //---------------------------------------
-#define string_head F("iaqi")
+#define string_target F("iaqi")
 #define string_body F("}")
 #define string_data    F("\":{\"v\":")
 #define string_time    F("\"time\":{\"s\":\"")
 
 #define MSGNUM 12
-static const char msg[MSGNUM][5] = {
+static const char string_head[MSGNUM][5] = {
   "co",   //一氧化碳
   "d",    //结露
   "h",    //湿度

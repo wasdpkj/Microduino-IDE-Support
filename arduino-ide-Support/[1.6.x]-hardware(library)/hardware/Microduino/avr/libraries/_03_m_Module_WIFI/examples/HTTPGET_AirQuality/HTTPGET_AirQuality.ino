@@ -104,16 +104,16 @@ void loop(void) {
   //----------------------------------
   if (dataSta) {
     for (int a = 0; a < MSGNUM; a++) {
-      Data[a] = recvFindAndFilter(string_head, String(msg[a]) + string_data, string_body, buffer).toFloat();
+      Data[a] = recvFindAndFilter(string_target, String(string_head[a]) + string_data, string_body, buffer).toFloat();
       Serial.print(F("["));
-      Serial.print(msg[a]);
+      Serial.print(string_head[a]);
       Serial.print(F(":"));
       Serial.print(Data[a], 1);
       Serial.print(F("] "));
     }
     Serial.print(F("\r\n"));
 
-    recvFindAndFilter(string_head, string_time, "\"", buffer, 24).toCharArray(updataDate, 20);
+    recvFindAndFilter(string_target, string_time, "\"", buffer, 24).toCharArray(updataDate, 20);
     Serial.print(F("updataDate:"));
     Serial.print(updataDate);
     Serial.print(F("\r\n"));

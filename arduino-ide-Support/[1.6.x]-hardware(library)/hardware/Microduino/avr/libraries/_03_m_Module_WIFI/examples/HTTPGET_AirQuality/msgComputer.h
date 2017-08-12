@@ -1,4 +1,9 @@
-#include "arduino.h"
+/*
+  LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+  版权所有: @老潘orz  wasdpkj@hotmail.com
+
+  本例程展示了一种占用内存资源极低的字符串处理办法
+*/
 
 Stream *d_puart;
 
