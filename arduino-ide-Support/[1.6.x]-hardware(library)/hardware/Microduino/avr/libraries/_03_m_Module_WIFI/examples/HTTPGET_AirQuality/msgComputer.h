@@ -33,7 +33,7 @@ bool recvStringAt(String begin, String &data, uint32_t timeout = 10000) {
   char * cache_data = "0123456789ABCDEF";
   memset(cache_data, 0, 16);
 
-  uint32_t n = 0;
+  uint16_t n = 0;
   char a;
   bool s = false;
   unsigned long start = millis();
@@ -74,7 +74,7 @@ bool recvStringAt(String begin, String end, String &data, uint32_t timeout = 100
   char * cache_data = "0123456789ABCDEF";
   memset(cache_data, 0, 16);
 
-  uint32_t n = 0;
+  int16_t n = 0;
   char a;
   bool s = false;
   unsigned long start = millis();
@@ -119,7 +119,7 @@ String recvFindAndFilter(String target, String begin, String end, String data, u
     int16_t index1 = data.indexOf(begin);
     index1 += begin.length();
     data = data.substring(index1, index1 + bufferNum);
-    int32_t index2 = data.indexOf(end);
+    int16_t index2 = data.indexOf(end);
     index1 = 0;
     if (index1 != -1 && index2 != -1) {
       return data.substring(index1, index2);
