@@ -41,10 +41,14 @@ SoftwareSerial mySerial(2, 3); /* RX:D2, TX:D3 */
 #define UARTSPEED  19200
 #endif
 
-#define SSID        "Makermodule"
-#define PASSWORD    "microduino"
-#define HOST_NAME   "www.baidu.com"
+#define SSID        F("Makermodule")
+#define PASSWORD    F("microduino")
+#define HOST_NAME   F("www.adafruit.com")
 #define HOST_PORT   (80)
+
+static const byte  GETDATA[]  PROGMEM = {
+  "GET /testwifi/index.html HTTP/1.0\r\nHost: www.adafruit.com\r\nConnection: close\r\n\r\n"
+};
 
 ESP8266 wifi(&EspSerial);
 
@@ -52,67 +56,68 @@ void setup(void)
 {
   Serial.begin(115200);
   while (!Serial); // wait for Leonardo enumeration, others continue immediately
-  Serial.print("setup begin\r\n");
+  Serial.print(F("setup begin\r\n"));
   delay(100);
 
   WifiInit(EspSerial, UARTSPEED);
 
-  Serial.print("FW Version:");
+  Serial.print(F("FW Version:"));
   Serial.println(wifi.getVersion().c_str());
 
   if (wifi.setOprToStationSoftAP()) {
-    Serial.print("to station + softap ok\r\n");
+    Serial.print(F("to station + softap ok\r\n"));
   } else {
-    Serial.print("to station + softap err\r\n");
+    Serial.print(F("to station + softap err\r\n"));
   }
 
   if (wifi.joinAP(SSID, PASSWORD)) {
-    Serial.print("Join AP success\r\n");
+    Serial.print(F("Join AP success\r\n"));
 
-    Serial.print("IP:");
+    Serial.print(F("IP:"));
     Serial.println( wifi.getLocalIP().c_str());
   } else {
-    Serial.print("Join AP failure\r\n");
+    Serial.print(F("Join AP failure\r\n"));
   }
 
   if (wifi.disableMUX()) {
-    Serial.print("single ok\r\n");
+    Serial.print(F("single ok\r\n"));
   } else {
-    Serial.print("single err\r\n");
+    Serial.print(F("single err\r\n"));
   }
 
-  Serial.print("setup end\r\n");
+  Serial.print(F("setup end\r\n"));
 }
 
 void loop(void)
 {
-  uint8_t buffer[1024] = {0};
-
   if (wifi.createTCP(HOST_NAME, HOST_PORT)) {
-    Serial.print("create tcp ok\r\n");
+    Serial.print(F("create tcp ok\r\n"));
   } else {
-    Serial.print("create tcp err\r\n");
+    Serial.print(F("create tcp err\r\n"));
   }
 
-  char *hello = "GET / HTTP/1.1\r\nHost: www.baidu.com\r\nConnection: close\r\n\r\n";
-  wifi.send((const uint8_t*)hello, strlen(hello));
+  //char *hello = "GET /testwifi/index.html HTTP/1.0\r\nHost: www.adafruit.com\r\nConnection: close\r\n\r\n";
+  //wifi.send((const uint8_t*)hello, strlen(hello));  //直接发送
 
-  uint32_t len = wifi.recv(buffer, sizeof(buffer), 10000);
+  wifi.sendFromFlash(GETDATA, sizeof(GETDATA)); //从Flash读取发送内容，节约内存
+
+  uint8_t buffer[512] = {0};
+  uint32_t len = wifi.recv(buffer, sizeof(buffer), 20000);
   if (len > 0) {
     Serial.print("Received:[");
     for (uint32_t i = 0; i < len; i++) {
       Serial.print((char)buffer[i]);
     }
-    Serial.print("]\r\n");
+    Serial.print(F("]\r\n"));
   }
 
   if (wifi.releaseTCP()) {
-    Serial.print("release tcp ok\r\n");
+    Serial.print(F("release tcp ok\r\n"));
   } else {
-    Serial.print("release tcp err\r\n");
+    Serial.print(F("release tcp err\r\n"));
   }
 
-  while (1);
-
+  //while (1);
+  delay(5000);
 }
 
