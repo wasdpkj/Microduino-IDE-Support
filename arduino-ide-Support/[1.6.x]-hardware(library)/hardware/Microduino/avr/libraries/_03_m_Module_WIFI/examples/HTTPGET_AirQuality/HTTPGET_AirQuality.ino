@@ -89,8 +89,15 @@ void loop(void) {
   //delay(500);
   wifi.sendFromFlash(GETDATA, sizeof(GETDATA));
 
-  String buffer = "{\"";
-  dataSta = recvStringAt("iaqi", "}}}", buffer, 15000, false);
+
+  String buffer;
+  if (available("+IPD", ":", 10000)) {
+    Serial.print(F("available Data"));
+    Serial.print(F("\r\n"));
+
+    buffer = "{\"";
+    dataSta = recvStringAt("iaqi", "}}}", buffer, 10000, BUFFER_CLR);
+  }
 
   if (wifi.releaseTCP()) {
     Serial.print(F("release tcp ok\r\n"));
@@ -98,13 +105,17 @@ void loop(void) {
     Serial.print(F("release tcp err\r\n"));
   }
 
+  Serial.print(F("RAM buffer:"));
+  Serial.print(buffer);
+  Serial.print(F("\r\n"));
+
   //----------------------------------
   freeRam();
 
   //----------------------------------
   if (dataSta) {
     for (int a = 0; a < MSGNUM; a++) {
-      Data[a] = recvFindAndFilter(string_target, String(string_head[a]) + string_data, string_body, buffer).toFloat();
+      Data[a] = findAndFilter(string_target, String(string_head[a]) + string_data, string_body, buffer, 24).toFloat();
       Serial.print(F("["));
       Serial.print(string_head[a]);
       Serial.print(F(":"));
@@ -113,7 +124,7 @@ void loop(void) {
     }
     Serial.print(F("\r\n"));
 
-    recvFindAndFilter(string_target, string_time, "\"", buffer, 24).toCharArray(updataDate, 20);
+    findAndFilter(string_target, string_time, "\"", buffer, 24).toCharArray(updataDate, 20);
     Serial.print(F("updataDate:"));
     Serial.print(updataDate);
     Serial.print(F("\r\n"));

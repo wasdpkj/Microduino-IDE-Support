@@ -37,7 +37,7 @@
 SoftwareSerial mySerial(2, 3); /* RX:D2, TX:D3 */
 
 #define EspSerial mySerial
-#define UARTSPEED  19200
+#define UARTSPEED  9600
 #endif
 
 
