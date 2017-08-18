@@ -115,7 +115,7 @@ void loop(void) {
   //----------------------------------
   if (dataSta) {
     for (int a = 0; a < MSGNUM; a++) {
-      Data[a] = findAndFilter(string_target, String(string_head[a]) + string_data, string_body, buffer, 24).toFloat();
+      Data[a] = findAndFilter(string_target, String(string_head[a]) + string_data, string_body, buffer, 16).toFloat();
       Serial.print(F("["));
       Serial.print(string_head[a]);
       Serial.print(F(":"));

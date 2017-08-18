@@ -162,7 +162,9 @@ String findAndFilter(String target, String begin, String end, String data, uint8
     if (index1 == -1) {
       return "NULL";
     }
-    data = data.substring(index1 + begin.length(), index1 + bufferNum);
+    index1 += begin.length();
+    data = data.substring(index1, index1 + bufferNum);
+
     int16_t index2 = data.indexOf(end);
     if (index2 != -1) {
       return data.substring(0, index2);
