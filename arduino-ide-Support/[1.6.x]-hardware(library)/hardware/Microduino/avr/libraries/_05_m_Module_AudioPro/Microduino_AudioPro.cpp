@@ -172,7 +172,7 @@ boolean AudioPro_FilePlayer::playMP3(const char *trackname) {
 }
 
 boolean AudioPro_FilePlayer::playMP3(String trackname) {
-  playMP3(trackname.c_str());
+  return playMP3(trackname.c_str());
 }
 
 boolean AudioPro_FilePlayer::playTrack(uint8_t trackNo){
