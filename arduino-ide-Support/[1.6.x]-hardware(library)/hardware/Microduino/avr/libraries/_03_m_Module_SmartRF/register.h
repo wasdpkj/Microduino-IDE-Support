@@ -27,7 +27,7 @@
 #ifndef _REGISTER_H
 #define _REGISTER_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 extern byte regIndex;
 

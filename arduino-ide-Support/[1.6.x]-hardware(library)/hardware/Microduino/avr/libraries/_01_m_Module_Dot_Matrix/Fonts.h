@@ -26,12 +26,8 @@
 // Weibo:
 // @老潘orz
 
-#if (ARDUINO >= 100)
-#include "Arduino.h"
-#include "Print.h"
-#else
-#include "WProgram.h"
-#endif
+#include <Arduino.h>
+#include <Print.h>
 
 #include <avr/pgmspace.h>
 

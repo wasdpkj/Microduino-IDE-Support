@@ -14,13 +14,9 @@
 // Microduino wiki:
 // http://wiki.microduino.cc
 
-#if ARDUINO >= 100
- #include "Arduino.h"
-#else
- #include "WProgram.h"
-#endif
+#include <Arduino.h>
 
-#include <Microduino_NFC.h>
+#include "Microduino_NFC.h"
 
 const uint8_t pn532ack[] = {0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00};
 const uint8_t pn532response_firmwarevers[] = {0x00, 0xFF, 0x06, 0xFA, 0xD5, 0x03};
@@ -41,11 +37,7 @@ uint8_t pn532_packetbuffer[PN532_PACKBUFFSIZ];
 /**************************************************************************/
 static inline void wiresend(uint8_t x) 
 {
-  #if ARDUINO >= 100
     WIRE.write((uint8_t)x);
-  #else
-    WIRE.send(x);
-  #endif
 }
 
 /**************************************************************************/
@@ -55,11 +47,7 @@ static inline void wiresend(uint8_t x)
 /**************************************************************************/
 static inline uint8_t wirerecv(void) 
 {
-  #if ARDUINO >= 100
     return WIRE.read();
-  #else
-    return WIRE.receive();
-  #endif
 }
 
 /**************************************************************************/

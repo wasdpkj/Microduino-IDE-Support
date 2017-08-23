@@ -29,7 +29,7 @@
 #ifndef _MICRODUINO_PPM_H
 #define _MICRODUINO_PPM_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 #define PIN_SET(pin) (*portOutputRegister(digitalPinToPort(pin)) |= digitalPinToBitMask(pin))
 #define PIN_CLR(pin) (*portOutputRegister(digitalPinToPort(pin)) &= ~digitalPinToBitMask(pin))

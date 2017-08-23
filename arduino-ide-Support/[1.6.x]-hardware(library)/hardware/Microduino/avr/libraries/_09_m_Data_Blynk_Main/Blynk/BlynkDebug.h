@@ -33,13 +33,8 @@
     #include "application.h"
 #endif
 
-#if defined(ARDUINO)
-    #if ARDUINO >= 100
-        #include <Arduino.h>
-    #else
-        #include <WProgram.h>
-    #endif
-#endif
+#include <Arduino.h>
+
 
 #if defined(LINUX)
     #if defined(RASPBERRY)

@@ -39,12 +39,7 @@
 #ifndef COLOR_LED_H
 #define COLOR_LED_H
 
-#if (ARDUINO >= 100)
  #include <Arduino.h>
-#else
- #include <WProgram.h>
- #include <pins_arduino.h>
-#endif
 
 // The order of primary colors in the NeoPixel data stream can vary
 // among device types, manufacturers and even different revisions of

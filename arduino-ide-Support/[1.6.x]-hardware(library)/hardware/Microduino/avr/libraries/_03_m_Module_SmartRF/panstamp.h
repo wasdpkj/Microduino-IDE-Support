@@ -27,8 +27,8 @@
 #ifndef _PANSTAMP_H
 #define _PANSTAMP_H
 
-#include "Arduino.h"
-#include "EEPROM.h"
+#include <Arduino.h>
+#include <EEPROM.h>
 #include "cc1101.h"
 #include "nvolat.h"
 #include "register.h"

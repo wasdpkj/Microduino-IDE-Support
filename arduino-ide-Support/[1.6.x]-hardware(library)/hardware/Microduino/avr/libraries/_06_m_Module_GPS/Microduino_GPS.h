@@ -18,14 +18,9 @@
 #ifndef _MICRODUINO_GPS_H_
 #define _MICRODUINO_GPS_H_
 
-#if ARDUINO >= 100
- #include "Arduino.h"
-#else
- #include "WProgram.h"
-#endif
+#include <Arduino.h>
 
-
-#include "SoftwareSerial.h"
+#include <SoftwareSerial.h>
 
 
 #define CONFIG_DEFAULT 0

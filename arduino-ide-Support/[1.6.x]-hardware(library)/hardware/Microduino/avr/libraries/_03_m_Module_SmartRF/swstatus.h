@@ -27,7 +27,7 @@
 #ifndef _SWSTATUS_H
 #define _SWSTATUS_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 #include "swpacket.h"
 
 

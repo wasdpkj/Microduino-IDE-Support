@@ -27,7 +27,7 @@
 #ifndef _SWQUERY_H
 #define _SWQUERY_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 #include "swpacket.h"
 
 class SWQUERY : public SWPACKET

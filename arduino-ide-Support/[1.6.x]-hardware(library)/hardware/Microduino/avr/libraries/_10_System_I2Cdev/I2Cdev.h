@@ -68,11 +68,7 @@ THE SOFTWARE.
 //#define I2CDEV_SERIAL_DEBUG
 
 #ifdef ARDUINO
-    #if ARDUINO < 100
-        #include "WProgram.h"
-    #else
-        #include "Arduino.h"
-    #endif
+    #include <Arduino.h>
     #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
         #include <Wire.h>
     #endif

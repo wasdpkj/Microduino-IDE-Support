@@ -29,12 +29,9 @@
 #ifndef Microduino_Matrix_h
 #define Microduino_Matrix_h
 
-#if (ARDUINO >= 100)
-#include "Arduino.h"
-#include "Print.h"
-#else
-#include "WProgram.h"
-#endif
+#include <Arduino.h>
+#include <Print.h>
+
 
 #include "Fonts.h"
 #include <Wire.h>

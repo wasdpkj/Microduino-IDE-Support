@@ -36,7 +36,7 @@
 #ifndef TIMERONE_cpp
 #define TIMERONE_cpp
 
-#include <TimerOne.h>
+#include "TimerOne.h"
 
 TimerOne Timer1;              // preinstatiate
 

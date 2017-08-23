@@ -26,7 +26,7 @@
 // Weibo:
 // @老潘orz
 
-#include <Microduino_PPM.h>
+#include "Microduino_PPM.h"
 
 uint8_t numChannel_R = NBR_OF_CHANNELS;
 

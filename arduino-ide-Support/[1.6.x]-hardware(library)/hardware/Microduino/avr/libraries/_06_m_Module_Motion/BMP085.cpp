@@ -26,7 +26,7 @@ THE SOFTWARE.
 ===============================================
 */
 
-#include <BMP085.h>
+#include "BMP085.h"
 #include <I2Cdev.h>
 #include <Wire.h>
 

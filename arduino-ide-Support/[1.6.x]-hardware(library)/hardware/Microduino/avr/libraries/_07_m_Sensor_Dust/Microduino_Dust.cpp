@@ -24,7 +24,7 @@
 
 
 #include <Arduino.h>
-#include <Microduino_Dust.h>
+#include "Microduino_Dust.h"
 
 
 Dust::Dust(SoftwareSerial *ser) {

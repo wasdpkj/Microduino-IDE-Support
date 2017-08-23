@@ -17,11 +17,7 @@
 #ifndef _MICRODUINO_NFC_H_
 #define _MICRODUINO_NFC_H_
 
-#if ARDUINO >= 100
- #include "Arduino.h"
-#else
- #include "WProgram.h"
-#endif
+#include <Arduino.h>
 
 #include <Wire.h>
 #ifdef __AVR__

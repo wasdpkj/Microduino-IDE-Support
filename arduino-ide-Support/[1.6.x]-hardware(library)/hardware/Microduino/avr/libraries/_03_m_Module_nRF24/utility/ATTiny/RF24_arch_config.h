@@ -17,11 +17,7 @@
 
 
 
-  #if ARDUINO < 100
-	#include <WProgram.h>
-  #else
-	#include <Arduino.h>
-  #endif
+  #include <Arduino.h>
   #include <stddef.h>  
   
   // Include the header file for SPI functions ( Main SPI code is contained in RF24.cpp for simplicity )

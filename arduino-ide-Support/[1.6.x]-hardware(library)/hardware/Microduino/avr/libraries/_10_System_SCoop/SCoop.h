@@ -40,11 +40,7 @@
 #warning "V1.2 TESTED ONLY ON 1.0.3 with PanSTamp, Arduino UNO, Teensy++2.0, Teensy2.0 and Teensy3.0" 
 #endif
 
-#if (ARDUINO >= 100)
 #include <Arduino.h>
-#else
-#include <WProgram.h>                // not a valid approach for ARM
-#endif
 
 #if defined (__AVR__)
 #define SCoop_AVR 1                  // inform the library that the code is made for AVR

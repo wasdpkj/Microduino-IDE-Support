@@ -28,11 +28,7 @@
 #if defined(SPARK) || defined(PARTICLE)
     #include "application.h"
 #elif defined(ARDUINO)
-    #if ARDUINO >= 100
-        #include "Arduino.h"
-    #else
-        #include "WProgram.h"
-    #endif
+    #include <Arduino.h>
 #endif
 
 class CRC32

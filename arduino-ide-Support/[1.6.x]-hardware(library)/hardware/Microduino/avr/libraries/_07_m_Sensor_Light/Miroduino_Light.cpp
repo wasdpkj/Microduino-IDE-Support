@@ -1,7 +1,7 @@
 #include <avr/pgmspace.h>
 #include <stdlib.h>
 #include <I2Cdev.h>
-#include <Miroduino_Light.h>
+#include "Miroduino_Light.h"
 
 #define TSL2561_DELAY_INTTIME_13MS		(15)
 #define TSL2561_DELAY_INTTIME_101MS		(120)

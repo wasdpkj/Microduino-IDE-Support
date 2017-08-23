@@ -2,13 +2,9 @@
 #define _MICRODUINO_PROTOCOL_H_
 
 #include <SoftwareSerial.h>
-#include <DataParse.h>
+#include "DataParse.h"
 
-#if ARDUINO >= 100
-#include "Arduino.h"
-#else
-#include "WProgram.h"
-#endif
+#include <Arduino.h>
 
 
 #define CMD_ROBOT 0xC8

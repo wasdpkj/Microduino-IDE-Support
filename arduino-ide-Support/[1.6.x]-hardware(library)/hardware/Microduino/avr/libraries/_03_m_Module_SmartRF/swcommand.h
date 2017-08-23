@@ -27,7 +27,7 @@
 #ifndef _SWCOMMAND_H
 #define _SWCOMMAND_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 #include "swpacket.h"
 
 

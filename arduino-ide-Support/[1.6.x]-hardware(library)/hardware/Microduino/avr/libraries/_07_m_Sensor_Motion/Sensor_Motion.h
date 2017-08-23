@@ -23,11 +23,7 @@
 // maxing@microduino.cc
 
 #include <SoftwareSerial.h>
-#if ARDUINO >= 100
-#include "Arduino.h"
-#else
-#include "WProgram.h"
-#endif
+#include <Arduino.h>
 
 
 #define ACCEL_FS_2          0

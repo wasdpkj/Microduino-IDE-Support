@@ -27,7 +27,7 @@
 /******************************************************************************/
 
 #include <Arduino.h>
-#include "Wire.h"
+#include <Wire.h>
 #include "Microduino_ColorDetector.h"
 
 

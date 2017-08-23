@@ -25,7 +25,7 @@
 #ifndef _CC1101_H
 #define _CC1101_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 #include "spi.h"
 #include "ccpacket.h"
 

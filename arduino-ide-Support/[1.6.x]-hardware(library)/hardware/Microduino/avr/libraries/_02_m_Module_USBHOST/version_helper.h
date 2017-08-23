@@ -20,17 +20,7 @@ e-mail   :  support@circuitsathome.com
  * Includes fixes for versions as low as 0023, used by Digilent.
  */
 
-#if defined(ARDUINO) && ARDUINO >=100
 #include <Arduino.h>
-#else
-#include <WProgram.h>
-#include <pins_arduino.h>
-#ifdef __AVR__
-#include <avr/pgmspace.h>
-#include <avr/io.h>
-#else
-#endif
-#endif
 
 #ifndef __PGMSPACE_H_
 #define __PGMSPACE_H_ 1

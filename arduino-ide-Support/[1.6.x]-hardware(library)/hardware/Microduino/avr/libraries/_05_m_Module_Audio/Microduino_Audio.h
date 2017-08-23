@@ -17,15 +17,10 @@
 #ifndef __MICRODUINO_AUDIO_H__
 #define __MICRODUINO_AUDIO_H__
 
-#if defined(ARDUINO) && ARDUINO >= 100
-	#include <Arduino.h>
-#else
-	#include <WProgram.h>
-	#include <pins_arduino.h>
-#endif
+#include <Arduino.h>
 
 #include <SoftwareSerial.h>
-#include <JQ6500_def.h>
+#include "JQ6500_def.h"
  
 #define AUDIO_VERSION "0.1.0"
 

@@ -5,11 +5,7 @@ By E.P.G. - 12/2012 - Ver. 1.0.1
 
 #include <avr/sleep.h>
 #include "Enerlib.h"
-#if defined(ARDUINO) && ARDUINO >= 100
-  #include <arduino.h>
-#else
-  #include <wiring.h>
-#endif
+#include <arduino.h>
 
 Energy::Energy()
 {

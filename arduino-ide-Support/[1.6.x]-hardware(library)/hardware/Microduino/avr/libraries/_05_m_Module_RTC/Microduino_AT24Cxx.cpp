@@ -14,7 +14,7 @@
 // Microduino wiki:
 // http://wiki.microduino.cc
 
-#include <Microduino_AT24Cxx.h>
+#include "Microduino_AT24Cxx.h"
 
 AT24Cxx::AT24Cxx(uint8_t _addr)
 {
@@ -39,24 +39,15 @@ uint16_t AT24Cxx::read(uint16_t iAddr, uint8_t *buf, uint16_t iCnt)
   uint16_t iRead=0, iBytes;
   while (iCnt>0) {
     Wire.beginTransmission(devAddr);
-#if ARDUINO >= 100
     Wire.write(iAddr>>8);   // Address MSB
     Wire.write(iAddr&0xff); // Address LSB
-#else
-    Wire.send(iAddr>>8);   // Address MSB
-    Wire.send(iAddr&0xff); // Address LSB
-#endif
     Wire.endTransmission();
 
     iBytes = min(iCnt, 128);
     Wire.requestFrom(devAddr, iBytes);
 
     while (Wire.available() && iCnt>0) {
-#if ARDUINO >= 100
       buf[iRead] = Wire.read();
-#else
-      buf[iRead] = Wire.receive();
-#endif
       iRead++; iCnt--; iAddr++;
     }  /* while */
   }
@@ -69,24 +60,15 @@ uint16_t AT24Cxx::readStr(uint16_t iAddr, uint8_t *buf, uint16_t iCnt)
   char c;
   while (iCnt>0) {
     Wire.beginTransmission(devAddr);
-#if ARDUINO >= 100
     Wire.write(iAddr>>8);   // Address MSB
     Wire.write(iAddr&0xff); // Address LSB
-#else
-    Wire.send(iAddr>>8);   // Address MSB
-    Wire.send(iAddr&0xff); // Address LSB
-#endif
     Wire.endTransmission();
 
     iBytes = min(iCnt, 128);
     Wire.requestFrom(devAddr, iBytes);
 
     while (Wire.available() && iCnt>0) {
-#if ARDUINO >= 100
       c = Wire.read();
-#else
-      c = Wire.receive();
-#endif
       buf[iRead] = c;
       if (c == '\0') {
         iCnt=0; break;
@@ -101,15 +83,9 @@ uint8_t AT24Cxx::write(uint16_t iAddr, uint8_t iVal)
 {
   uint8_t iRC=0;
   Wire.beginTransmission(devAddr);
-#if ARDUINO >= 100
-    Wire.write(iAddr>>8);   // Address MSB
-    Wire.write(iAddr&0xff); // Address LSB
-    Wire.write(iVal);
-#else
-    Wire.send(iAddr>>8);   // Address MSB
-    Wire.send(iAddr&0xff); // Address LSB
-    Wire.send(iVal);
-#endif
+  Wire.write(iAddr>>8);   // Address MSB
+  Wire.write(iAddr&0xff); // Address LSB
+  Wire.write(iVal);
   iRC = Wire.endTransmission();
   delay(5);
 
@@ -148,17 +124,10 @@ uint8_t AT24Cxx::write(uint16_t iAddr, const char *pBuf, uint16_t iCnt)
     if (iAddr+iBytes > iCurPage+32) { // Number of bytes is too large
       iBytes = (iCurPage+32) - iAddr;
     }
-
     Wire.beginTransmission(devAddr);
-#if ARDUINO >= 100
     Wire.write( highByte(iAddr) ); // Address MSB
     Wire.write( lowByte(iAddr) );  // Address LSB
     Wire.write((uint8_t*)pBuf, iBytes);
-#else
-    Wire.send( highByte(iAddr) );   // Address MSB
-    Wire.send( lowByte(iAddr) ); // Address LSB
-    Wire.send(pBuf, iBytes);
-#endif
     Wire.endTransmission();
     iRC  +=(int)iBytes;
     iCnt -=(int)iBytes;

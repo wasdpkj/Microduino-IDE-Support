@@ -9,7 +9,7 @@
 #include <I2Cdev.h>
 #include "Microduino_SHT2x.h"
 #include <math.h>
-#include "Arduino.h"
+#include <Arduino.h>
 
 uint16_t Tem_Hum_S2::readRaw(uint8_t _reg) {
   uint8_t buf[3];

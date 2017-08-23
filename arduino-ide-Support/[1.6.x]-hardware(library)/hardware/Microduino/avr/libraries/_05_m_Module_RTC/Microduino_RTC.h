@@ -16,8 +16,8 @@
 #ifndef _MICRDOUINO_RTC_H_
 #define _MICRDOUINO_RTC_H_
 
-#include "Arduino.h"
-#include "Wire.h"
+#include <Arduino.h>
+#include <Wire.h>
 
 /* the read and write values for pcf8563 rtcc */
 /* these are adjusted for arduino */

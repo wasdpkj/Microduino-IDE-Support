@@ -1,7 +1,7 @@
 #ifndef ethernetclient_h
 #define ethernetclient_h
-#include "Arduino.h"	
-#include "Print.h"
+#include <Arduino.h>
+#include <Print.h>
 #include "Client.h"
 #include "IPAddress.h"
 

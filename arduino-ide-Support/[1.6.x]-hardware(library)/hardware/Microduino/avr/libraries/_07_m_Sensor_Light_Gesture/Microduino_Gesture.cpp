@@ -18,7 +18,7 @@
  
  #include <Arduino.h>
  #include <Wire.h>
- #include "I2Cdev.h"
+ #include <I2Cdev.h>
  #include "Microduino_Gesture.h"
  
 /**

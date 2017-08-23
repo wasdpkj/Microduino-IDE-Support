@@ -21,7 +21,7 @@
 #ifndef __ESP8266_H__
 #define __ESP8266_H__
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 #define  VERSION_18   		0X18
 #define  VERSION_22   		0X22

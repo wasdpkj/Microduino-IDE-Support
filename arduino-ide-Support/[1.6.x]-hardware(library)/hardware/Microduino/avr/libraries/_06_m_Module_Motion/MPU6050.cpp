@@ -34,7 +34,7 @@ THE SOFTWARE.
 ===============================================
 */
 
-#include <MPU6050.h>
+#include "MPU6050.h"
 
 /** Specific address constructor.
  * @param address I2C address

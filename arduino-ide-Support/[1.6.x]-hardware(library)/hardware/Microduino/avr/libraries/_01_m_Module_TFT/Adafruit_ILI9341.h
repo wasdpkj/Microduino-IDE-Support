@@ -16,13 +16,10 @@
 #ifndef _ADAFRUIT_ILI9341H_
 #define _ADAFRUIT_ILI9341H_
 
-#if ARDUINO >= 100
- #include "Arduino.h"
- #include "Print.h"
-#else
- #include "WProgram.h"
-#endif
-#include <Adafruit_GFX.h>
+#include <Arduino.h>
+#include <Print.h>
+
+#include "Adafruit_GFX.h"
 #include <avr/pgmspace.h>
 
 

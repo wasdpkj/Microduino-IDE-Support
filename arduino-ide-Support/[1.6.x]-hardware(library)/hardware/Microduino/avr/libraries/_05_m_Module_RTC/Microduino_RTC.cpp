@@ -14,14 +14,11 @@
 // Microduino wiki:
 // http://wiki.microduino.cc
 
-#if defined(ARDUINO) && ARDUINO >= 100
-#include "Arduino.h"
-#else
-#include "WProgram.h"
-#endif
+
+#include <Arduino.h>
 
 #include <I2Cdev.h>
-#include <Microduino_RTC.h>
+#include "Microduino_RTC.h"
 
 /************************ static functions ************************/
 

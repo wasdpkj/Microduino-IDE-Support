@@ -14,7 +14,7 @@
 // Microduino wiki:
 // http://wiki.microduino.cc
 
-#include <Microduino_Audio.h>
+#include "Microduino_Audio.h"
 
 
 Audio::Audio(SoftwareSerial *ser) {

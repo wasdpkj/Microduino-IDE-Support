@@ -2,11 +2,8 @@
 #ifndef _MICRODUINO_LIGTH_H_
 #define _MICRODUINO_LIGTH_H_
 
-#if ARDUINO >= 100
- #include <Arduino.h>
-#else
- #include <WProgram.h>
-#endif
+
+#include <Arduino.h>
 #include <Wire.h>
 
 #define TSL2561_VISIBLE 2                   // channel 0 - channel 1
