@@ -19,8 +19,8 @@
           },
           "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/Microduino-ide-Support-1.6.9.zip",
           "archiveFileName": "Microduino-ide-Support-1.6.9.zip",
-          "checksum": "SHA-256:83BF84F5187E708B16F454E8EC562D01B967C5AFB38E9DB2B05E8F2227B4BDEE",
-          "size": "3365471",
+          "checksum": "SHA-256:2354B8A90489DF381560D36A1FC798BE3CE07DC45E17C638B178B33DC09E2887",
+          "size": "3195438",
           "boards": [
             {"name": "ATmega168pa"},
             {"name": "ATmega328p"},
@@ -52,8 +52,8 @@
           },
           "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/Microduino-ide-Support-1.8.4.zip",
           "archiveFileName": "Microduino-ide-Support-1.8.4.zip",
-          "checksum": "SHA-256:2D6EB0A2A9135F523E187121B1E8594F768EEAE9664984976B60754303E947AD",
-          "size": "3365638",
+          "checksum": "SHA-256:A5CCC6CEB7ED0E92E15C33EC5A9A77F8DF2EC2E868EE4CE46CFF51884A92E08B",
+          "size": "3195605",
           "boards": [
             {"name": "ATmega168pa"},
             {"name": "ATmega328p"},
