@@ -17,10 +17,10 @@
           "help": {
 			"online": "https://www.microduino.cc"
           },
-          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/Microduino-ide-Support.zip",
-          "archiveFileName": "Microduino-ide-Support.zip",
-          "checksum": "SHA-256:D703869D6F1FD0EE61C439EDFEF254BEFC65F5E502BED40A734021FCFB68AC28",
-          "size": "3326051",
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/Microduino-ide-Support-1.6.9.zip",
+          "archiveFileName": "Microduino-ide-Support-1.6.9.zip",
+          "checksum": "SHA-256:83BF84F5187E708B16F454E8EC562D01B967C5AFB38E9DB2B05E8F2227B4BDEE",
+          "size": "3365471",
           "boards": [
             {"name": "ATmega168pa"},
             {"name": "ATmega328p"},
@@ -39,6 +39,39 @@
               "packager": "arduino",
               "name": "avrdude",
               "version": "6.0.1-arduino5"
+            }
+          ]
+        },
+        {
+          "name": "Microduino",
+          "architecture": "avr",
+          "version": "1.8.4",
+          "category": "Contributed",
+          "help": {
+			"online": "https://www.microduino.cc"
+          },
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/Microduino-ide-Support-1.8.4.zip",
+          "archiveFileName": "Microduino-ide-Support-1.8.4.zip",
+          "checksum": "SHA-256:2D6EB0A2A9135F523E187121B1E8594F768EEAE9664984976B60754303E947AD",
+          "size": "3365638",
+          "boards": [
+            {"name": "ATmega168pa"},
+            {"name": "ATmega328p"},
+            {"name": "ATmega644pa"},
+            {"name": "ATmega1284pa"},
+            {"name": "ATmega32u4"},
+            {"name": "ATmega128rfa1"}
+          ],
+          "toolsDependencies": [
+            {
+              "packager": "arduino",
+              "name": "avr-gcc",
+              "version": "4.9.2-atmel3.5.4-arduino2"
+            },
+            {
+              "packager": "arduino",
+              "name": "avrdude",
+              "version": "6.3.0-arduino9"
             }
           ]
         }
