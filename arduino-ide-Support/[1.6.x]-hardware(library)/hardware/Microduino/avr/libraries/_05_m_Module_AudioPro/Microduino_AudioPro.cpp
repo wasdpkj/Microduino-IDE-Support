@@ -39,6 +39,8 @@ static void feeder_sd(void) {
   myself_sd->feedBuffer();
 }
 
+boolean feedBufferLock = false;
+
 #define VS1053_CONTROL_SPI_SETTING  SPISettings(250000,  MSBFIRST, SPI_MODE0)
 #define VS1053_DATA_SPI_SETTING     SPISettings(8000000, MSBFIRST, SPI_MODE0)
 
@@ -124,8 +126,12 @@ boolean AudioPro_FilePlayer::playMP3(const char *trackname) {
     return false;
   }
 
+  // don't let the IRQ get triggered by accident here
+  noInterrupts();
+
   if (!getAmplifier()) {
     setAmplifier(true);
+    delay(200);
   }
 
   // As explained in datasheet, set twice 0 in REG_DECODETIME to set time back to 0
@@ -142,7 +148,9 @@ boolean AudioPro_FilePlayer::playMP3(const char *trackname) {
     this->feedBuffer();
 
   //  Serial.println("Ready");
-
+  // ok going forward, we can use the IRQ
+  interrupts();
+  
   return true;
 }
 
@@ -249,29 +257,24 @@ String AudioPro_FilePlayer::getMusicName(uint8_t _FileNum){
 
 
 void AudioPro_FilePlayer::feedBuffer(void) {
-  static uint8_t running = 0;
-  uint8_t sregsave;
-
+  noInterrupts();
   // Do not allow 2 copies of this code to run concurrently.
   // If an interrupt causes feedBuffer() to run while another
   // copy of feedBuffer() is already running in the main
   // program, havoc can occur.  "running" detects this state
   // and safely returns.
-  sregsave = SREG;
-  cli();
-  if (running) {
-    SREG = sregsave;
+  if (feedBufferLock) {
+    interrupts();
     return;  // return safely, before touching hardware!  :-)
-  } else {
-    running = 1;
-    SREG = sregsave;
   }
+  feedBufferLock = true;
+  interrupts();
 
   if (! playingMusic || ! currentTrack) {
-    running = 0;
+    feedBufferLock = false;
     return; // paused or stopped
   }
-
+  
   // Feed the hungry buffer! :)
   while (readyForData()) {
     // Read some audio data from the SD card file
@@ -285,8 +288,7 @@ void AudioPro_FilePlayer::feedBuffer(void) {
     }
     playData(mp3buffer, bytesread);
   }
-  running = 0;
-  return;
+  feedBufferLock = false;
 }
 
 boolean AudioPro_FilePlayer::detachInterrupt(uint8_t type) {
@@ -375,26 +377,21 @@ boolean AudioPro::detachInterrupt(uint8_t type) {
 }
 
 void AudioPro::feedBuffer(void) {
-  static uint8_t running = 0;
-  uint8_t sregsave;
-
+  noInterrupts();
   // Do not allow 2 copies of this code to run concurrently.
   // If an interrupt causes feedBuffer() to run while another
   // copy of feedBuffer() is already running in the main
   // program, havoc can occur.  "running" detects this state
   // and safely returns.
-  sregsave = SREG;
-  cli();
-  if (running) {
-    SREG = sregsave;
+  if (feedBufferLock) {
+    interrupts();
     return;  // return safely, before touching hardware!  :-)
-  } else {
-    running = 1;
-    SREG = sregsave;
   }
+  feedBufferLock = true;
+  interrupts();
 
   if (! playingMusic || ! romTrack) {
-    running = 0;
+    feedBufferLock = false;
     return; // paused or stopped
   }
   
@@ -405,7 +402,7 @@ void AudioPro::feedBuffer(void) {
       mp3buffer[a] = pgm_read_byte(romAddr + romLenCache);
       romLenCache++;
     }
-    //Serial.print("LEN:");Serial.print(bytesread);Serial.println(" ");
+    Serial.print("LEN:");Serial.print(bytesread);Serial.println(" ");
     if(romLenCache == romLen){
       //Serial.print(F("#END-"));Serial.print(F(" mp3buffer:["));
       //for (uint8_t i = 0; i < bytesread; i++) {
@@ -419,8 +416,7 @@ void AudioPro::feedBuffer(void) {
     }
     playData(mp3buffer, bytesread);
 }
-  running = 0;
-  return;
+  feedBufferLock = false;
 }
 
 boolean AudioPro::paused(void) {
@@ -600,6 +596,7 @@ void AudioPro::playBuffer(uint8_t *buffer, size_t buffsiz) {
 boolean AudioPro::playROM(const uint8_t *_buffer, uint32_t _len) {
   //Serial.print(F("\t after Status: 0x"));Serial.println(getStatus(),HEX);
   if (getStatus() != 0x40) {
+    //feedBufferLock = false;
     //Serial.println("\t #flush_cancel");
     stopPlaying();
     flushCancel(both);
@@ -629,6 +626,7 @@ boolean AudioPro::playROM(const uint8_t *_buffer, uint32_t _len) {
   
   if (!getAmplifier()) {
     setAmplifier(true);
+    delay(200);
   }
   
   noInterrupts();
@@ -661,8 +659,10 @@ void AudioPro::pausePlaying(boolean pause) {
 }
 
 uint16_t AudioPro::getVolume() {
+  noInterrupts(); //cli();
   uint16_t _vol = sciRead(VS1053_REG_VOLUME);
   if (_vol == 0) _vol = 512;
+  interrupts();  //sei();
   return _vol;
 }
 

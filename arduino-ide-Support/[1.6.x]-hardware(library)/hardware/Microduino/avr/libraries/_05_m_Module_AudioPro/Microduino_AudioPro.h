@@ -38,7 +38,7 @@ typedef uint8_t PortMask;
 
 #define VS1053_DEFAULT_VOLUME	20
 
-#define VS1053_TIMER0_DREQ 255 // allows useInterrupt to accept pins 0 to 254
+//#define VS1053_TIMER0_DREQ 255 // allows useInterrupt to accept pins 0 to 254
 
 #define VS1053_SCI_READ 0x03
 #define VS1053_SCI_WRITE 0x02
