@@ -21,8 +21,6 @@
 
 #include <Arduino.h>
 
-//#include "pins_arduino.h"
-//#include "wiring_private.h"
 #include <SPI.h> 
 #include <SD.h>
 //#include <avr/pgmspace.h>
@@ -58,6 +56,7 @@ typedef uint8_t PortMask;
 #define VS1053_REG_VOLUME 0x0B
 
 #define VS1053_PARA_PLAYSPEED 0x1E04
+#define VS1053_PARA_ENDFILL 0x1E06
 #define VS1053_PARA_MONOOUTPUT 0x1E09
 
 
@@ -123,7 +122,7 @@ static const uint16_t  MIDIPatch[] PROGMEM = { /*if you don't let GPIO1 = H,plea
 };
 
 //software patch for Recording
-static const uint16_t recPlugin[]PROGMEM = { /* Compressed plugin for recording*/
+static const uint16_t recPlugin[] PROGMEM = { /* Compressed plugin for recording*/
   0x0007, 0x0001, 0x8010, 0x0006, 0x001c, 0x3e12, 0xb817, 0x3e14, /*    0 */
   0xf812, 0x3e01, 0xb811, 0x0007, 0x9717, 0x0020, 0xffd2, 0x0030, /*    8 */
   0x11d1, 0x3111, 0x8024, 0x3704, 0xc024, 0x3b81, 0x8024, 0x3101, /*   10 */
@@ -131,14 +130,38 @@ static const uint16_t recPlugin[]PROGMEM = { /* Compressed plugin for recording*
   0x9811, 0x0007, 0x0001, 0x8028, 0x0006, 0x0002, 0x2a00, 0x040e
 };
 
+/*
+ * For use with AudioPro::flushCancel(flush_m) as to how to flush the VSdsp's buffer.
+ * How to flush the VSdsp's buffer
+ * See Data sheet 9.5.2
+ */
+enum flush_m {
+  post,
+  pre,
+  both,
+  none
+};
+
+static const char sdData[] = "AudioPro.dat";
 
 class AudioPro {
  public:
   AudioPro(uint8_t midi = VS1053_PIN_MIDI, uint8_t cs = VS1053_PIN_XCS, uint8_t dcs = VS1053_PIN_XDCS, uint8_t dreq = VS1053_PIN_DREQ);
   uint8_t begin(void);
-  void end();									//new
+  void end();						//new
   void reset(void);
 
+  boolean useInterrupt(uint8_t type = VS1053_PIN_DREQ);		//new
+  boolean detachInterrupt(uint8_t type = VS1053_PIN_DREQ);	//new
+  void feedBuffer(void);			//new
+  volatile boolean playingMusic;	//new
+  boolean paused(void);				//new
+  boolean stopped(void);			//new
+
+  void flushCancel(flush_m);		//new
+  
+  uint16_t getStatus();				//new
+     
   uint16_t sciRead(uint8_t addr);
   void sciWrite(uint8_t addr, uint16_t data);
   void sciWrite(uint8_t addr, uint8_t data_H, uint8_t data_L);	//new
@@ -166,8 +189,9 @@ class AudioPro {
   
   void playData(uint8_t *buffer, uint8_t buffsiz);
   void playBuffer(uint8_t *buffer, size_t buffsiz);
-  void playROM(const uint8_t *_buffer, uint32_t _len);
+  boolean playROM(const uint8_t *_buffer, uint32_t _len);
   void stopPlaying(void);
+  void pausePlaying(boolean pause);
   void applyPatch(const uint16_t *patch, uint16_t patchsize);
 
   void midiSetBank(uint8_t, uint8_t);
@@ -176,8 +200,6 @@ class AudioPro {
   void noteOn(uint8_t, uint8_t, uint8_t);
   void noteOff(uint8_t, uint8_t, uint8_t);
   
-  void dumpRegs(void);
- 
   void startRecordOgg(boolean mic);
   void stopRecordOgg(void);
   uint16_t recordedWordsWaiting(void);
@@ -187,14 +209,21 @@ class AudioPro {
   uint8_t _midi, _dreq;
 
   boolean readyForData(void);
+  uint8_t mp3buffer[VS1053_DATABUFFERLEN];
+
  private:
   uint8_t _cs, _dcs;
 
+  boolean romTrack;							//new
+  uint32_t romAddr;							//new
+  uint32_t romLen;							//new
+  uint32_t romLenCache;						//new
+  
   void softReset(void);
   void spiwrite(uint8_t d);
   uint8_t spiread(void);
 
-  uint16_t ReadWRAM(uint16_t);					//new
+  uint16_t ReadWRAM(uint16_t);				//new
   void WriteWRAM(uint16_t, uint16_t);		//new 
 };
 
@@ -206,6 +235,7 @@ class AudioPro_FilePlayer : public AudioPro {
 
   boolean begin(void);
   void end();
+
   boolean useInterrupt(uint8_t type = VS1053_PIN_DREQ);
   boolean detachInterrupt(uint8_t type = VS1053_PIN_DREQ);
 
@@ -226,14 +256,12 @@ class AudioPro_FilePlayer : public AudioPro {
   
   void pausePlaying(boolean pause);
   void stopPlaying(void);
-  void stopSong(void);
 
  private:
   SDClass& sd;
-  uint8_t mp3buffer[VS1053_DATABUFFERLEN];
   File currentTrack;
 
-  uint8_t staFile = false;
+  boolean staFile = false;
   uint8_t numMusicFile = 0;  
 };
 
@@ -242,8 +270,7 @@ class AudioPro_FilePlayer : public AudioPro {
 /*
  * Global Functions
  */
-char* strip_nonalpha_inplace(char *s);
-bool isFnMusic(char*);
+boolean isFnMusic(char*);
 
 //------------------------------------------------------------------------------
 /*
@@ -281,5 +308,6 @@ union twobyte {
  */
   uint8_t  byte[2];
 } ;
+
 
 #endif // AUDIOPRO_VS1053_H
