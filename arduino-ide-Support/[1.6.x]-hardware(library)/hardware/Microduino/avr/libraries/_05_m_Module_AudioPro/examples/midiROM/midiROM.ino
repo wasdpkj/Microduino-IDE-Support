@@ -22,6 +22,10 @@ void setup() {
   Serial.println(F("VS1053 found"));
 
   midiPlayer.setVolume(10, 10);
+
+  // If DREQ is on an interrupt pin, we can do background
+  midiPlayer.useInterrupt(VS1053_PIN_DREQ);  // DREQ int
+  
   Serial.println(F("pleast input 'a' or 'm' to play the midi file:."));
 }
 
