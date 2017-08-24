@@ -61,6 +61,10 @@ playFullFile	KEYWORD2
 pausePlaying	KEYWORD2
 stopped	KEYWORD2
 paused	KEYWORD2
+playingMusic	KEYWORD2
+flushCancel	KEYWORD2
+getStatus	KEYWORD2
+sineTest	KEYWORD2
 
 #######################################
 # Instances (KEYWORD3)

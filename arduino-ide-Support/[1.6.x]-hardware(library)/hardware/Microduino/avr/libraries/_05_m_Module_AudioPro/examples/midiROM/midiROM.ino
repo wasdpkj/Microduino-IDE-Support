@@ -1,6 +1,7 @@
 /*
    Microduino_AudioPro支持库例程
    模块WIKI：https://wiki.microduino.cn/index.php/MCookie-Module_AudioPro
+   可以用以下工具转换：https://wiki.microduino.cn/index.php/File:DataToHex.zip
    播放ROM乐曲的例程，推荐MIDI格式
 */
 

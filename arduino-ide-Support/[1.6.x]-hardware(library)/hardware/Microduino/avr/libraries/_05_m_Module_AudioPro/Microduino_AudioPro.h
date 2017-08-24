@@ -170,7 +170,7 @@ class AudioPro {
 
   uint16_t decodeTime(void);
 
-  uint16_t getVolume();							//new
+  uint16_t getVolume(boolean sta = false);				//new
   void setVolume(uint8_t left, uint8_t right);
   void setVolume(uint8_t left_right);			//new
   uint8_t volumeUp();							//new

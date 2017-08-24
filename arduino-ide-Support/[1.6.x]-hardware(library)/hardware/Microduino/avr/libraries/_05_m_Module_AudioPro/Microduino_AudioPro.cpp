@@ -402,7 +402,7 @@ void AudioPro::feedBuffer(void) {
       mp3buffer[a] = pgm_read_byte(romAddr + romLenCache);
       romLenCache++;
     }
-    Serial.print("LEN:");Serial.print(bytesread);Serial.println(" ");
+    //Serial.print("LEN:");Serial.print(bytesread);Serial.println(" ");
     if(romLenCache == romLen){
       //Serial.print(F("#END-"));Serial.print(F(" mp3buffer:["));
       //for (uint8_t i = 0; i < bytesread; i++) {
@@ -658,11 +658,14 @@ void AudioPro::pausePlaying(boolean pause) {
   }
 }
 
-uint16_t AudioPro::getVolume() {
+uint16_t AudioPro::getVolume(boolean sta) {
   noInterrupts(); //cli();
   uint16_t _vol = sciRead(VS1053_REG_VOLUME);
   if (_vol == 0) _vol = 512;
   interrupts();  //sei();
+  if(sta){
+    _vol = (_vol >> 8) & 0x00ff;
+  }
   return _vol;
 }
 
