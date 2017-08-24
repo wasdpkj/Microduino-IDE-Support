@@ -71,7 +71,7 @@ boolean AudioPro_FilePlayer::playFullFile(const char *trackname) {
   while (playingMusic) {
     // twiddle thumbs
     feedBuffer();
-    delay(2); // give IRQs a chance
+    delay(5); // give IRQs a chance
   }
   // music file finished!
   return true;
@@ -105,14 +105,14 @@ boolean AudioPro_FilePlayer::stopped(void) {
 }
 
 boolean AudioPro_FilePlayer::playMP3(const char *trackname) {
-/*
   if (!stopped()) {
     stopPlaying();  //必要，否则SD类得不到关闭，内存溢出
+    delay(100);
   }
   if(!stopped()){
     return false;
   }
-*/  
+
   // reset playback
   sciWrite(VS1053_REG_MODE, VS1053_MODE_SM_LINE1 | VS1053_MODE_SM_SDINEW);
   // resync
@@ -374,8 +374,8 @@ boolean AudioPro::detachInterrupt(uint8_t type) {
   return false;
 }
 
-static uint8_t running = 0;
 void AudioPro::feedBuffer(void) {
+  static uint8_t running = 0;
   uint8_t sregsave;
 
   // Do not allow 2 copies of this code to run concurrently.
@@ -603,11 +603,14 @@ boolean AudioPro::playROM(const uint8_t *_buffer, uint32_t _len) {
     //Serial.println("\t #flush_cancel");
     stopPlaying();
     flushCancel(both);
-  }
-  //Serial.print(F("\t before Status: 0x"));Serial.println(getStatus(),HEX);
-  if(getStatus() != 0x40){
-    //Serial.print(F("\t Status ERROR"));
-    return false;
+    //Serial.print(F("\t before Status: 0x"));Serial.println(getStatus(),HEX);
+    if(getStatus() != 0x40){
+      sciWrite(VS1053_REG_STATUS,(uint16_t)0x40);
+      if(getStatus() != 0x40){
+        //Serial.println(F("\t Status ERROR"));
+        return false;
+      }
+    }
   }
 
   // reset playback
@@ -616,7 +619,7 @@ boolean AudioPro::playROM(const uint8_t *_buffer, uint32_t _len) {
   sciWrite(VS1053_REG_WRAMADDR, 0x1e29);
   sciWrite(VS1053_REG_WRAM, 0);
 
-  romAddr = _buffer;	//pgm_get_far_address(_buffer)
+  romAddr = _buffer;
   romLen = _len;
   romLenCache = 0;
   romTrack = true;
