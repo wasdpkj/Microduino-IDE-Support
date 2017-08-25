@@ -112,6 +112,8 @@ typedef uint8_t PortMask;
 #define MIDI_CHAN_VOLUME 0x07
 #define MIDI_CHAN_PROGRAM 0xC0
 
+#define DECODING 1
+
 //software patch for MIDI Play
 //const unsigned short  MIDIPatch[] = { /*if you don't let GPIO1 = H,please send this patch by spi*/
 static const uint16_t  MIDIPatch[] PROGMEM = { /*if you don't let GPIO1 = H,please send this patch by spi*/

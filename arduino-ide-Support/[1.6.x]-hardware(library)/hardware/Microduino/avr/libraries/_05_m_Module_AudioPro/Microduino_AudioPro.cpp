@@ -103,7 +103,7 @@ boolean AudioPro_FilePlayer::paused(void) {
 }
 
 boolean AudioPro_FilePlayer::stopped(void) {
-  return (!getStatus(true) && !playingMusic && !currentTrack);
+  return (!playingMusic && !currentTrack);
 }
 
 boolean AudioPro_FilePlayer::playMP3(const char *trackname) {
@@ -147,7 +147,7 @@ boolean AudioPro_FilePlayer::playMP3(const char *trackname) {
   while (playingMusic && readyForData())
     this->feedBuffer();
 
-  //  Serial.println("Ready");
+  //Serial.println("Ready");
   // ok going forward, we can use the IRQ
   interrupts();
   
@@ -438,7 +438,7 @@ boolean AudioPro::paused(void) {
 }
 
 boolean AudioPro::stopped(void) {
-  return (!getStatus(true) && !playingMusic && !romTrack);
+  return (!getStatus(DECODING) && !playingMusic && !romTrack);
 }
 
 //------------------------------------------------------------------------------
@@ -608,17 +608,17 @@ void AudioPro::playBuffer(uint8_t *buffer, size_t buffsiz) {
 
 
 boolean AudioPro::playROM(const uint8_t *_buffer, uint32_t _len) {
-  Serial.print(F("\t after Status: 0x"));Serial.println(getStatus(true),HEX);
-  if (getStatus(true)) {
+  //Serial.print(F("\t after Status: 0x"));Serial.println(getStatus(DECODING),HEX);
+  if (getStatus(DECODING)) {
     //feedBufferLock = false;
-    Serial.println("\t #flush_cancel");
+    //Serial.println("\t #flush_cancel");
     stopPlaying();
     flushCancel(both);
-    Serial.print(F("\t before Status: 0x"));Serial.println(getStatus(true),HEX);
-    if(getStatus(true)){
+    //Serial.print(F("\t before Status: 0x"));Serial.println(getStatus(DECODING),HEX);
+    if(getStatus(DECODING)){
       sciWrite(VS1053_REG_STATUS,(uint16_t)(getStatus() & ~_BV(15)));
-      if(getStatus(true)){
-        Serial.println(F("\t Status ERROR"));
+      if(getStatus(DECODING)){
+        //Serial.println(F("\t Status ERROR"));
         return false;
       }
     }
