@@ -51,10 +51,10 @@ void loop() {
         if (num == 1) {
           Serial.print(F("playing:"));
           Serial.print(F("romAddr:"));
-          Serial.print(pgm_get_far_address(marselje));
+          Serial.print(pgm_get_far_address(Jay));
           Serial.print(F(" ,romLen"));
-          Serial.println(sizeof(marselje));
-          if (!midiPlayer.playROM(marselje, sizeof(marselje))) {
+          Serial.println(sizeof(Jay));
+          if (!midiPlayer.playROM(Jay, sizeof(Jay))) {
             Serial.println(F("play ERROR"));
           }
           else {

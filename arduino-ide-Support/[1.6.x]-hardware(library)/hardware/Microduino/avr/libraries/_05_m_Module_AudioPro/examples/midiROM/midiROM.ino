@@ -35,6 +35,6 @@ void loop() {
     if (c == 'a')
       midiPlayer.playROM(Array, sizeof(Array));
     else if (c == 'm')
-      midiPlayer.playROM(marselje, sizeof(marselje));
+      midiPlayer.playROM(Jay, sizeof(Jay));
   }
 }
