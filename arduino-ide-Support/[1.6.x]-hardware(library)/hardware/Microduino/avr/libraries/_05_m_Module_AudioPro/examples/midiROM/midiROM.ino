@@ -21,7 +21,9 @@ void setup() {
   }
   Serial.println(F("VS1053 found"));
 
-  midiPlayer.setVolume(10, 10);
+  midiPlayer.setVolume(96);  //left & right 0-127
+  //or
+  //midiPlayer.setVolume(96, 96);  //left right 0-127
 
   // If DREQ is on an interrupt pin, we can do background
   midiPlayer.useInterrupt(VS1053_PIN_DREQ);  // DREQ int

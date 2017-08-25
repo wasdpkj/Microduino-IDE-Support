@@ -44,6 +44,7 @@ void playNum(uint8_t num) {
 
 void setup() {
   Serial.begin(115200);
+  Serial.println(F("AudioPro(VS1053) Simple Test"));
   pinMode(SD_PIN_SEL, OUTPUT);    //先初始化AudioPro，所以先使能SD卡
   digitalWrite(SD_PIN_SEL, HIGH);
   delay(500);
@@ -55,24 +56,28 @@ void setup() {
   Serial.println(F("VS1053 found"));
 
   if (!SD.begin(SD_PIN_SEL)) {
-    Serial.println("initialization failed!");
+    Serial.println(F("initialization failed!"));
     return;
   }
-  Serial.println("initialization done.");
+  Serial.println(F("initialization done."));
 
-  // Set volume for left, right channels. lower numbers == louder volume!
-  musicPlayer.setVolume(20, 20);
+  musicPlayer.setVolume(96);  //left & right 0-127
+  //or
+  //musicPlayer.setVolume(96, 96);  //left right 0-127
 
   Serial.println(F("Enter Index of File to play"));
   fileNum = musicPlayer.getMusicNum();    //可以获取SD卡中曲目列表以及数量
   Serial.print(F("Music Files : "));
   Serial.println(fileNum);
   for (uint8_t a = 0; a < fileNum; a++) {
-    Serial.print("\t File[");
+    Serial.print(F("\t File["));
     Serial.print(a);
-    Serial.print("]: ");
+    Serial.print(F("]: "));
     Serial.println(musicPlayer.getMusicName(a));
   }
+
+  // If DREQ is on an interrupt pin, we can do background
+  musicPlayer.useInterrupt(VS1053_PIN_DREQ);  // DREQ int
 
   for (uint8_t a = 0; a < 5; a++) {
     keyAnalog[a].begin(INPUT);
@@ -85,16 +90,15 @@ void loop() {
   switch (keyAnalog[UP].readEvent(700 - 50, 700 + 50)) {
     case SHORT_PRESS:  {
         int _volume = musicPlayer.volumeUp();
-        Serial.print(F("Volume changed to -"));
-        Serial.print(_volume >> 1, 1);
-        Serial.println(F("[dB]"));
+        Serial.print(F("Volume changed to "));
+        Serial.println(_volume);
+        delay(100);
       }
       break;
     case LONG_PRESS:
       int _volume = musicPlayer.volumeUp();
-      Serial.print(F("Volume changed to -"));
-      Serial.print(_volume >> 1, 1);
-      Serial.println(F("[dB]"));
+      Serial.print(F("Volume changed to "));
+      Serial.println(_volume);
       delay(100);
       break;
   }
@@ -102,16 +106,14 @@ void loop() {
   switch (keyAnalog[DOWN].readEvent(330 - 50, 330 + 50)) {
     case SHORT_PRESS: {
         int _volume = musicPlayer.volumeDown();
-        Serial.print(F("Volume changed to -"));
-        Serial.print(_volume >> 1, 1);
-        Serial.println(F("[dB]"));
+        Serial.print(F("Volume changed to "));
+        Serial.println(_volume);
       }
       break;
     case LONG_PRESS:
       int _volume = musicPlayer.volumeDown();
-      Serial.print(F("Volume changed to -"));
-      Serial.print(_volume >> 1, 1);
-      Serial.println(F("[dB]"));
+      Serial.print(F("Volume changed to "));
+      Serial.println(_volume);
       delay(100);
       break;
   }
@@ -143,11 +145,11 @@ void loop() {
         playNum(musicNum - 1);
       }
       else if (! musicPlayer.paused()) {
-        Serial.println("Paused");
+        Serial.println(F("Paused"));
         musicPlayer.setAmplifier(false);  //关闭运放
         musicPlayer.pausePlaying(true);   //暂停
       } else {
-        Serial.println("Resumed");
+        Serial.println(F("Resumed"));
         musicPlayer.setAmplifier(true);   //开启运放
         musicPlayer.pausePlaying(false);  //取消暂停
       }

@@ -35,7 +35,7 @@ void playNum(uint8_t num) {
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("AudioPro(VS1053) Simple Test");
+  Serial.println(F("AudioPro(VS1053) Simple Test"));
   pinMode(SD_PIN_SEL, OUTPUT);    //先初始化AudioPro，所以先使能SD卡
   digitalWrite(SD_PIN_SEL, HIGH);
   delay(500);
@@ -47,17 +47,17 @@ void setup() {
   Serial.println(F("VS1053 found"));
 
   if (!SD.begin(SD_PIN_SEL)) {
-    Serial.println("initialization failed!");
+    Serial.println(F("initialization failed!"));
     return;
   }
-  Serial.println("initialization done.");
+  Serial.println(F("initialization done."));
 
-  // Set volume for left, right channels. lower numbers == louder volume!
-  musicPlayer.setVolume(20, 20);
+  musicPlayer.setVolume(96);  //left & right 0-127
+  //or
+  //musicPlayer.setVolume(96, 96);  //left right 0-127
 
   // If DREQ is on an interrupt pin, we can do background
-  // audio playing
-  //musicPlayer.useInterrupt(VS1053_PIN_DREQ);  // DREQ int
+  musicPlayer.useInterrupt(VS1053_PIN_DREQ);  // DREQ int
 
   help();
 }
@@ -72,10 +72,10 @@ void loop() {
       }
       else if (c == 'a') {             //控制运放开关
         if (! musicPlayer.getAmplifier()) {
-          Serial.println("Amplifier On");
+          Serial.println(F("Amplifier On"));
           musicPlayer.setAmplifier(true);
         } else {
-          Serial.println("Amplifier Off");
+          Serial.println(F("Amplifier Off"));
           musicPlayer.setAmplifier(false);
         }
       }
@@ -86,13 +86,13 @@ void loop() {
       // if we get an 'p' on the serial console, pause/unpause!
       else if (c == 'p') {    //暂停播放音乐
         if (musicPlayer.stopped()) {
-          Serial.println("Player is Stopping.");
+          Serial.println(F("Player is Stopping."));
         }
         else if (! musicPlayer.paused()) {
-          Serial.println("Paused");
+          Serial.println(F("Paused"));
           musicPlayer.pausePlaying(true);
         } else {
-          Serial.println("Resumed");
+          Serial.println(F("Resumed"));
           musicPlayer.pausePlaying(false);
         }
       }
@@ -104,41 +104,28 @@ void loop() {
         else {
           _volume = musicPlayer.volumeUp();
         }
-        Serial.print(F("Volume changed to -"));
-        Serial.print(_volume >> 1, 1);
-        Serial.println(F("[dB]"));
+        Serial.print(F("Volume changed to "));
+        Serial.println(_volume);
       }
       else if (c == 'i') {          //显示系统常见信息
-        union twobyte mp3_vol; // create key_command existing variable that can be both word and double byte of left and right.
-        mp3_vol.word = musicPlayer.getVolume(); // returns a double uint8_t of Left and Right packed into int16_t
-        Serial.print("getVolume:");
-        Serial.print(mp3_vol.byte[1]);
-        Serial.print(",");
-        Serial.println(mp3_vol.byte[0]);
-        Serial.print("getAmplifier:");
+        Serial.print(F("getVolume:"));
+        Serial.println(musicPlayer.getVolume());
+        Serial.print(F("getAmplifier:"));
         Serial.println(musicPlayer.getAmplifier());
-        Serial.print("getPlaySpeed:");
+        Serial.print(F("getPlaySpeed:"));
         Serial.println(musicPlayer.getPlaySpeed());
-        Serial.print("decodeTime:");
+        Serial.print(F("decodeTime:"));
         Serial.println(musicPlayer.decodeTime());
       }
       else if ((c == '>') || (c == '<')) {  //控制播放速度
         uint16_t playspeed = musicPlayer.getPlaySpeed(); // create key_command existing variable
         // note playspeed of Zero is equal to ONE, normal speed.
         if (c == '>') { // note dB is negative
-          // assume equal balance and use byte[1] for math
-          if (playspeed >= 254) { // range check
-            playspeed = 5;
-          } else {
-            playspeed += 1; // keep it simpler with whole dB's
-          }
+          playspeed ++; // keep it simpler with whole dB's
         } else {
-          if (playspeed == 0) { // range check
-            playspeed = 0;
-          } else {
-            playspeed -= 1;
-          }
+          playspeed --;
         }
+        playspeed = constrain(playspeed, 1, 127);
         musicPlayer.setPlaySpeed(playspeed); // commit new playspeed
         Serial.print(F("playspeed to "));
         Serial.println(playspeed, DEC);
@@ -184,9 +171,9 @@ void loop() {
           Serial.print(F("Music Files : "));
           Serial.println(fileNum);
           for (uint8_t a = 0; a < fileNum; a++) {
-            Serial.print("\t File[");
+            Serial.print(F("\t File["));
             Serial.print(a);
-            Serial.print("]: ");
+            Serial.print(F("]: "));
             Serial.println(musicPlayer.getMusicName(a));
           }
         }
@@ -215,7 +202,7 @@ void help() {
   Serial.println(F(" [s] to stop playing"));
   Serial.println(F(" [+ or -] to change volume"));
   Serial.println(F(" [> or <] to increment or decrement play speed by 1 factor"));
-  Serial.println(F(" [m] Toggle between lMono and Stereo Output."));
+  Serial.println(F(" [m] Toggle between Mono and Stereo Output."));
   Serial.println(F(" [d] to toggle SM_DIFF between inphase and differential output"));
   Serial.println(F(" [r] Resets and initializes VS10xx chip."));
   Serial.println(F(" [f] turns OFF the VS10xx into low power reset."));

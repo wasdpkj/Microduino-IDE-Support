@@ -12,7 +12,6 @@
 AudioPro midiPlayer;
 
 void setup() {
-  uint8_t result; //result code from some function as to be tested at later time.
   Serial.begin(115200);
   delay(200);
 
@@ -22,7 +21,9 @@ void setup() {
   }
   Serial.println(F("VS1053 found"));
 
-  midiPlayer.setVolume(10, 10);
+  midiPlayer.setVolume(96);  //left & right 0-127
+  //or
+  //midiPlayer.setVolume(96, 96);  //left right 0-127
 
   // If DREQ is on an interrupt pin, we can do background
   midiPlayer.useInterrupt(VS1053_PIN_DREQ);  // DREQ int
@@ -35,11 +36,12 @@ void loop() {
     if ((0x20 <= c) && (c <= 0x126)) {  // strip off non-ASCII, such as CR or LF
       if (c >= '0' && c <= '9') {
         int num = c - 48;
+
         if (num == 0) {
           Serial.print(F("playing:"));
           Serial.print(F("romAddr:"));
           Serial.print(pgm_get_far_address(Array));
-          Serial.print(F(" ,romLen"));
+          Serial.print(F(" ,romLen:"));
           Serial.println(sizeof(Array));
           if (!midiPlayer.playROM(Array, sizeof(Array))) {
             Serial.println(F("play ERROR"));
@@ -64,10 +66,10 @@ void loop() {
       }
       else if (c == 'a') {             //控制运放开关
         if (! midiPlayer.getAmplifier()) {
-          Serial.println("Amplifier On");
+          Serial.println(F("Amplifier On"));
           midiPlayer.setAmplifier(true);
         } else {
-          Serial.println("Amplifier Off");
+          Serial.println(F("Amplifier Off"));
           midiPlayer.setAmplifier(false);
         }
       }
@@ -96,41 +98,28 @@ void loop() {
         else {
           _volume = midiPlayer.volumeUp();
         }
-        Serial.print(F("Volume changed to -"));
-        Serial.print(_volume >> 1, 1);
-        Serial.println(F("[dB]"));
+        Serial.print(F("Volume changed to "));
+        Serial.println(_volume);
       }
       else if (c == 'i') {          //显示系统常见信息
-        union twobyte mp3_vol; // create key_command existing variable that can be both word and double byte of left and right.
-        mp3_vol.word = midiPlayer.getVolume(); // returns a double uint8_t of Left and Right packed into int16_t
-        Serial.print("getVolume:");
-        Serial.print(mp3_vol.byte[1]);
-        Serial.print(",");
-        Serial.println(mp3_vol.byte[0]);
-        Serial.print("getAmplifier:");
+        Serial.print(F("getVolume:"));
+        Serial.println(midiPlayer.getVolume());
+        Serial.print(F("getAmplifier:"));
         Serial.println(midiPlayer.getAmplifier());
-        Serial.print("getPlaySpeed:");
+        Serial.print(F("getPlaySpeed:"));
         Serial.println(midiPlayer.getPlaySpeed());
-        Serial.print("decodeTime:");
+        Serial.print(F("decodeTime:"));
         Serial.println(midiPlayer.decodeTime());
       }
       else if ((c == '>') || (c == '<')) {  //控制播放速度
         uint16_t playspeed = midiPlayer.getPlaySpeed(); // create key_command existing variable
         // note playspeed of Zero is equal to ONE, normal speed.
         if (c == '>') { // note dB is negative
-          // assume equal balance and use byte[1] for math
-          if (playspeed >= 254) { // range check
-            playspeed = 5;
-          } else {
-            playspeed += 1; // keep it simpler with whole dB's
-          }
+          playspeed ++; // keep it simpler with whole dB's
         } else {
-          if (playspeed == 0) { // range check
-            playspeed = 0;
-          } else {
-            playspeed -= 1;
-          }
+          playspeed --;
         }
+        playspeed = constrain(playspeed, 1, 127);
         midiPlayer.setPlaySpeed(playspeed); // commit new playspeed
         Serial.print(F("playspeed to "));
         Serial.println(playspeed, DEC);
@@ -190,7 +179,7 @@ void help() {
   Serial.println(F(" [s] to stop playing"));
   Serial.println(F(" [+ or -] to change volume"));
   Serial.println(F(" [> or <] to increment or decrement play speed by 1 factor"));
-  Serial.println(F(" [m] Toggle between lMono and Stereo Output."));
+  Serial.println(F(" [m] Toggle between Mono and Stereo Output."));
   Serial.println(F(" [d] to toggle SM_DIFF between inphase and differential output"));
   Serial.println(F(" [r] Resets and initializes VS10xx chip."));
   Serial.println(F(" [f] turns OFF the VS10xx into low power reset."));

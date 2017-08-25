@@ -36,7 +36,7 @@ typedef uint8_t PortMask;
 #define VS1053_PIN_DREQ		3 //Data Request Pin: Player asks for more data
 #define SD_PIN_SEL			7 //select pin for SD card
 
-#define VS1053_DEFAULT_VOLUME	20
+#define VS1053_DEFAULT_VOLUME	96
 
 //#define VS1053_TIMER0_DREQ 255 // allows useInterrupt to accept pins 0 to 254
 
@@ -58,6 +58,8 @@ typedef uint8_t PortMask;
 #define VS1053_PARA_PLAYSPEED 0x1E04
 #define VS1053_PARA_ENDFILL 0x1E06
 #define VS1053_PARA_MONOOUTPUT 0x1E09
+#define VS1053_PARA_POSITIONMSEC_L 0x1E27
+#define VS1053_PARA_POSITIONMSEC_H 0x1E28
 
 
 #define VS1053_GPIO_DDR 0xC017
@@ -112,7 +114,9 @@ typedef uint8_t PortMask;
 #define MIDI_CHAN_VOLUME 0x07
 #define MIDI_CHAN_PROGRAM 0xC0
 
-#define DECODING 1
+#define VS1053_RAW 0
+#define DECODE 1
+#define VOLUME 1
 
 //software patch for MIDI Play
 //const unsigned short  MIDIPatch[] = { /*if you don't let GPIO1 = H,please send this patch by spi*/
@@ -188,7 +192,7 @@ class AudioPro {
 
   void flushCancel(flush_m);		//new
   
-  uint16_t getStatus(boolean sta = false);				//new
+  uint16_t getStatus(boolean sta = DECODE);				//new
      
   uint16_t sciRead(uint8_t addr);
   void sciWrite(uint8_t addr, uint16_t data);
@@ -197,8 +201,9 @@ class AudioPro {
   void sineTest(uint8_t n, uint16_t ms);
 
   uint16_t decodeTime(void);
+  uint32_t decodeTimeMillis(void);
 
-  uint16_t getVolume(boolean sta = false);				//new
+  uint16_t getVolume(boolean sta = VOLUME);				//new
   void setVolume(uint8_t left, uint8_t right);
   void setVolume(uint8_t left_right);			//new
   uint8_t volumeUp();							//new

@@ -106,16 +106,16 @@ boolean AudioPro_FilePlayer::paused(void) {
 }
 
 boolean AudioPro_FilePlayer::stopped(void) {
-  return (!AudioPro::getStatus(DECODING) && !playingMusic && !currentTrack);
+  return (!AudioPro::getStatus() && !playingMusic && !currentTrack);
 }
 
 boolean AudioPro_FilePlayer::playMP3(const char *trackname) {
   if (!stopped()) {
     stopPlaying();  //必要，否则SD类得不到关闭，内存溢出
     delay(100);
-  }
-  if(!stopped()){
-    return false;
+    if(!stopped()){
+      return false;
+    }
   }
 
   // reset playback
@@ -455,7 +455,7 @@ boolean AudioPro::paused(void) {
 }
 
 boolean AudioPro::stopped(void) {
-  return (!getStatus(DECODING) && !playingMusic && !romTrack);
+  return (!getStatus() && !playingMusic && !romTrack);
 }
 
 //------------------------------------------------------------------------------
@@ -625,16 +625,16 @@ void AudioPro::playBuffer(uint8_t *buffer, size_t buffsiz) {
 
 
 boolean AudioPro::playROM(const uint8_t *_buffer, uint32_t _len) {
-  //Serial.print(F("\t after Status: 0x"));Serial.println(getStatus(DECODING),HEX);
-  if (getStatus(DECODING)) {
+  //Serial.print(F("\t after Status: 0x"));Serial.println(getStatus(),HEX);
+  if (getStatus()) {
     //feedBufferLock = false;
     //Serial.println("\t #flush_cancel");
     stopPlaying();
     flushCancel(both);
-    //Serial.print(F("\t before Status: 0x"));Serial.println(getStatus(DECODING),HEX);
-    if(getStatus(DECODING)){
-      sciWrite(VS1053_REG_STATUS,(uint16_t)(getStatus() & ~_BV(15)));
-      if(getStatus(DECODING)){
+    //Serial.print(F("\t before Status: 0x"));Serial.println(getStatus(),HEX);
+    if(getStatus()){
+      sciWrite(VS1053_REG_STATUS,(uint16_t)(getStatus(VS1053_RAW) & ~_BV(15)));
+      if(getStatus()){
         //Serial.println(F("\t Status ERROR"));
         return false;
       }
@@ -694,18 +694,18 @@ void AudioPro::pausePlaying(boolean pause) {
 uint16_t AudioPro::getVolume(boolean sta) {
   noInterrupts(); //cli();
   uint16_t _vol = sciRead(VS1053_REG_VOLUME);
-  if (_vol == 0) _vol = 512;
-  interrupts();  //sei();
-  if(sta){
+  if(sta = VOLUME){
     _vol = (_vol >> 8) & 0x00ff;
+    _vol = 127 - _vol;
   }
+  interrupts();  //sei();
   return _vol;
 }
 
 void AudioPro::setVolume(uint8_t left, uint8_t right) {
   if(left > 127 || right > 127) return;
   noInterrupts(); //cli();
-  sciWrite(VS1053_REG_VOLUME, left, right);
+  sciWrite(VS1053_REG_VOLUME, 127 - left, 127 - right);
   interrupts();  //sei();
 }
 
@@ -714,39 +714,32 @@ void AudioPro::setVolume(uint8_t left_right) {
 }
 
 uint8_t AudioPro::volumeUp() {
-  union twobyte _vol; // create key_command existing variable that can be both word and double byte of left and right.
-  _vol.word = getVolume(); // returns a double uint8_t of Left and Right packed into int16_t
-
-  _vol.byte[1] -= 2; // keep it simpler with whole dB's
-  if (_vol.byte[1] < 2) { // range check
-    _vol.byte[1] = 2;
+  uint8_t _vol = getVolume();
+  if (_vol == 127) { // range check
+    return _vol;
   }
-
-  // push byte[1] into both left and right assuming equal balance.
-  setVolume(_vol.byte[1]); // commit new volume
-  return _vol.byte[1];
+  _vol++;
+  setVolume(_vol); // commit new volume
+  return _vol;
 }
 
 uint8_t AudioPro::volumeDown() {
-  union twobyte _vol; // create key_command existing variable that can be both word and double byte of left and right.
-  _vol.word = getVolume(); // returns a double uint8_t of Left and Right packed into int16_t
-
-  _vol.byte[1] += 2; // keep it simpler with whole dB's
-  if (_vol.byte[1] > 254) { // range check
-    _vol.byte[1] = 254;
+  uint8_t _vol = getVolume();
+  if (_vol == 0) { // range check
+    return _vol;
   }
-
-  // push byte[1] into both left and right assuming equal balance.
-  setVolume(_vol.byte[1]); // commit new volume
-  return _vol.byte[1];
+  _vol--;
+  setVolume(_vol); // commit new volume
+  return _vol;
 }
 
 uint16_t AudioPro::getPlaySpeed() {
   uint16_t MP3playspeed = ReadWRAM(VS1053_PARA_PLAYSPEED);
-  return MP3playspeed;
+  return (MP3playspeed ? MP3playspeed : 1);
 }
 
 void AudioPro::setPlaySpeed(uint16_t data) {
+  if(data > 127) return;
   WriteWRAM(VS1053_PARA_PLAYSPEED, data);
 }
 
@@ -758,8 +751,7 @@ uint16_t AudioPro::decodeTime() {
 }
 
 uint16_t AudioPro::getMonoMode() {
-  uint16_t result = (ReadWRAM(VS1053_PARA_MONOOUTPUT) & 0x0001);
-  return result;
+  return ReadWRAM(VS1053_PARA_MONOOUTPUT) & 0x0001;
 }
 
 void AudioPro::setMonoMode(uint16_t StereoMode) {
@@ -855,7 +847,7 @@ void AudioPro::stopPlaying(void) {
 uint16_t AudioPro::getStatus(boolean sta){
   noInterrupts(); //cli();
   uint16_t t = sciRead(VS1053_REG_STATUS);
-  if(sta){
+  if(sta = DECODE){
     t = (t >> 15) | 0x0000; 
   }
   interrupts(); //sei();

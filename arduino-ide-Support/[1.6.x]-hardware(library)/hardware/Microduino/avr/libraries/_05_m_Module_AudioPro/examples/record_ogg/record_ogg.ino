@@ -35,8 +35,12 @@ void setup() {
   }
   Serial.println("SD OK!");
 
-  // Set volume for left, right channels. lower numbers == louder volume!
-  musicPlayer.setVolume(10, 10);
+  musicPlayer.setVolume(96);  //left & right 0-127
+  //or
+  //musicPlayer.setVolume(96, 96);  //left right 0-127
+
+  // If DREQ is on an interrupt pin, we can do background
+  musicPlayer.useInterrupt(VS1053_PIN_DREQ);  // DREQ int
 
   // when the button is pressed, record!
   pinMode(REC_BUTTON, INPUT);

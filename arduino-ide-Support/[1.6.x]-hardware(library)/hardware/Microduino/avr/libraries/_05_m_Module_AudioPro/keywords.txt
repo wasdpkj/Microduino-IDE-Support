@@ -76,7 +76,9 @@ midiPlayer	KEYWORD3
 #######################################
 # Constants (LITERAL1)
 #######################################
-DECODING	LITERAL1
+VS1053_RAW	LITERAL1
+DECODE	LITERAL1
+VOLUME	LITERAL1
 VS1053_PIN_MIDI	LITERAL1
 VS1053_PIN_XCS	LITERAL1
 VS1053_PIN_XDCS	LITERAL1
