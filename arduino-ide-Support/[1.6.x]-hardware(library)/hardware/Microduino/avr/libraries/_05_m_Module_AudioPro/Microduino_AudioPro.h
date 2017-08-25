@@ -289,6 +289,9 @@ class AudioPro_FilePlayer : public AudioPro {
   SDClass& sd;
   File currentTrack;
 
+  boolean mp3LenSta;						//new
+  uint32_t mp3LenCache;						//new
+
   boolean staFile = false;
   uint8_t numMusicFile = 0;  
 };

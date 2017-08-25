@@ -57,6 +57,9 @@ boolean AudioPro_FilePlayer::begin(void) {
   if (!useInterrupt(_dreq)) {
     return 0;
   }
+
+  mp3LenSta = false;
+  mp3LenCache = 0;
   //Serial.print("Version = "); Serial.println(v);
   return (v == 4);
 }
@@ -103,7 +106,7 @@ boolean AudioPro_FilePlayer::paused(void) {
 }
 
 boolean AudioPro_FilePlayer::stopped(void) {
-  return (!playingMusic && !currentTrack);
+  return (!AudioPro::getStatus(DECODING) && !playingMusic && !currentTrack);
 }
 
 boolean AudioPro_FilePlayer::playMP3(const char *trackname) {
@@ -138,6 +141,8 @@ boolean AudioPro_FilePlayer::playMP3(const char *trackname) {
   sciWrite(VS1053_REG_DECODETIME, 0x00);
   sciWrite(VS1053_REG_DECODETIME, 0x00);
 
+  mp3LenSta = false;
+  mp3LenCache = 0;
   playingMusic = true;
 
   // wait till its ready for data
@@ -278,13 +283,25 @@ void AudioPro_FilePlayer::feedBuffer(void) {
   // Feed the hungry buffer! :)
   while (readyForData()) {
     // Read some audio data from the SD card file
-    int bytesread = currentTrack.read(mp3buffer, VS1053_DATABUFFERLEN);
-
-    if (bytesread == 0) {
-      // must be at the end of the file, wrap it up!
-      playingMusic = false;
-      currentTrack.close();
-      break;
+    int bytesread;
+    if(!mp3LenSta){
+      bytesread = currentTrack.read(mp3buffer, VS1053_DATABUFFERLEN);
+      if (bytesread == 0) {
+        mp3LenSta = true;
+      }
+    }
+    else{
+      bytesread = min(panda_len - mp3LenCache, VS1053_DATABUFFERLEN);
+      for (uint16_t a = 0; a < bytesread; a++) {
+        mp3buffer[a] = pgm_read_byte(panda + mp3LenCache);
+        mp3LenCache++;
+      }
+      if(mp3LenCache == panda_len){
+        // must be at the end of the file, wrap it up!
+        playingMusic = false;
+        currentTrack.close();
+        break;
+      }
     }
     playData(mp3buffer, bytesread);
   }
