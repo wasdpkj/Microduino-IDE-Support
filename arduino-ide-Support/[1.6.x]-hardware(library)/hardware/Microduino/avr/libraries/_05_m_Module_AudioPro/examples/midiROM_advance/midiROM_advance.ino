@@ -83,7 +83,6 @@ void loop() {
         else if (! midiPlayer.paused()) {
           Serial.println("Paused");
           midiPlayer.pausePlaying(true);
-          midiPlayer.flushCancel(none); //post pre both none
         } else {
           Serial.println("Resumed");
           midiPlayer.pausePlaying(false);

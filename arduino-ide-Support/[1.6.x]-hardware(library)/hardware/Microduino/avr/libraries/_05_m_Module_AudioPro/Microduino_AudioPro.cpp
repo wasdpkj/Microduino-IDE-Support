@@ -103,7 +103,7 @@ boolean AudioPro_FilePlayer::paused(void) {
 }
 
 boolean AudioPro_FilePlayer::stopped(void) {
-  return (!playingMusic && !currentTrack);
+  return (!getStatus(true) && !playingMusic && !currentTrack);
 }
 
 boolean AudioPro_FilePlayer::playMP3(const char *trackname) {
@@ -397,14 +397,27 @@ void AudioPro::feedBuffer(void) {
   
   // Feed the hungry buffer! :)
   while (readyForData()) {
-    int bytesread = min(romLen - romLenCache, VS1053_DATABUFFERLEN);
-    for (uint16_t a = 0; a < bytesread; a++) {
-      mp3buffer[a] = pgm_read_byte(romAddr + romLenCache);
-      romLenCache++;
+    int bytesread;
+    if(romLenCache < romLen){
+      bytesread = min(romLen - romLenCache, VS1053_DATABUFFERLEN);
+      for (uint16_t a = 0; a < bytesread; a++) {
+        mp3buffer[a] = pgm_read_byte(romAddr + romLenCache);
+        romLenCache++;
+      }
+      //Serial.print("romLenCache-A:");Serial.println(romLenCache);
+    }
+    else if(romLenCache < (panda_len + romLen)){
+      bytesread = min(panda_len - (romLenCache - romLen), VS1053_DATABUFFERLEN);
+      for (uint16_t a = 0; a < bytesread; a++) {
+        mp3buffer[a] = pgm_read_byte(panda + (romLenCache - romLen));
+        romLenCache++;
+      }
+      //Serial.print("romLenCache-B:");Serial.print(romLenCache);Serial.print(",panda_len:");Serial.println(bytesread);
     }
     //Serial.print("LEN:");Serial.print(bytesread);Serial.println(" ");
-    if(romLenCache == romLen){
-      //Serial.print(F("#END-"));Serial.print(F(" mp3buffer:["));
+    else{  //romLenCache == (panda_len + romLen)
+      //Serial.print("romLenCache-C:");Serial.println(romLenCache);Serial.print(F("#END-"));
+      //Serial.print(F(" mp3buffer:["));
       //for (uint8_t i = 0; i < bytesread; i++) {
       //  Serial.print(F(" 0x"));Serial.print(mp3buffer[i],HEX);
       //}
@@ -414,6 +427,7 @@ void AudioPro::feedBuffer(void) {
       romLenCache = 0;
       break;          
     }
+
     playData(mp3buffer, bytesread);
 }
   feedBufferLock = false;
@@ -424,7 +438,7 @@ boolean AudioPro::paused(void) {
 }
 
 boolean AudioPro::stopped(void) {
-  return (!playingMusic && !romTrack);
+  return (!getStatus(true) && !playingMusic && !romTrack);
 }
 
 //------------------------------------------------------------------------------
@@ -594,17 +608,17 @@ void AudioPro::playBuffer(uint8_t *buffer, size_t buffsiz) {
 
 
 boolean AudioPro::playROM(const uint8_t *_buffer, uint32_t _len) {
-  //Serial.print(F("\t after Status: 0x"));Serial.println(getStatus(),HEX);
-  if (getStatus() != 0x40) {
+  Serial.print(F("\t after Status: 0x"));Serial.println(getStatus(true),HEX);
+  if (getStatus(true)) {
     //feedBufferLock = false;
-    //Serial.println("\t #flush_cancel");
+    Serial.println("\t #flush_cancel");
     stopPlaying();
     flushCancel(both);
-    //Serial.print(F("\t before Status: 0x"));Serial.println(getStatus(),HEX);
-    if(getStatus() != 0x40){
-      sciWrite(VS1053_REG_STATUS,(uint16_t)0x40);
-      if(getStatus() != 0x40){
-        //Serial.println(F("\t Status ERROR"));
+    Serial.print(F("\t before Status: 0x"));Serial.println(getStatus(true),HEX);
+    if(getStatus(true)){
+      sciWrite(VS1053_REG_STATUS,(uint16_t)(getStatus() & ~_BV(15)));
+      if(getStatus(true)){
+        Serial.println(F("\t Status ERROR"));
         return false;
       }
     }
@@ -624,12 +638,14 @@ boolean AudioPro::playROM(const uint8_t *_buffer, uint32_t _len) {
   uint32_t _romLen = sizeof(_buffer);
   //Serial.print("romAddr:");Serial.print(romAddr);Serial.print(" romLen");Serial.println(_romLen);
   
+  // don't let the IRQ get triggered by accident here
+  noInterrupts();
+
   if (!getAmplifier()) {
     setAmplifier(true);
     delay(200);
   }
-  
-  noInterrupts();
+
   // As explained in datasheet, set twice 0 in REG_DECODETIME to set time back to 0
   sciWrite(VS1053_REG_DECODETIME, 0x00);
   sciWrite(VS1053_REG_DECODETIME, 0x00);
@@ -819,8 +835,14 @@ void AudioPro::stopPlaying(void) {
   sciWrite(VS1053_REG_MODE, VS1053_MODE_SM_LINE1 | VS1053_MODE_SM_SDINEW | VS1053_MODE_SM_CANCEL);
 }
 
-uint16_t AudioPro::getStatus(){
-  return sciRead(VS1053_REG_STATUS);
+uint16_t AudioPro::getStatus(boolean sta){
+  noInterrupts(); //cli();
+  uint16_t t = sciRead(VS1053_REG_STATUS);
+  if(sta){
+    t = (t >> 15) | 0x0000; 
+  }
+  interrupts(); //sei();
+  return t;
 }
 
 void AudioPro::stopRecordOgg(void) {
