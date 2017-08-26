@@ -27,9 +27,9 @@ static AudioPro_FilePlayer *myself_sd;
 #endif
 
 /*
-SIGNAL(TIMER0_COMPA_vect) {
+  SIGNAL(TIMER0_COMPA_vect) {
    myself->feedBuffer();
- }
+  }
 */
 static void feeder(void) {
   myself->feedBuffer();
@@ -53,7 +53,7 @@ AudioPro_FilePlayer::AudioPro_FilePlayer(SDClass& _sd, uint8_t midi, uint8_t cs,
 
 boolean AudioPro_FilePlayer::begin(void) {
   uint8_t v  = AudioPro::begin();
-  
+
   if (!useInterrupt(_dreq)) {
     return 0;
   }
@@ -116,7 +116,7 @@ boolean AudioPro_FilePlayer::playMP3(const char *trackname) {
   if (!stopped()) {
     stopPlaying();  //必要，否则SD类得不到关闭，内存溢出
     delay(100);
-    if(!stopped()){
+    if (!stopped()) {
       return false;
     }
   }
@@ -124,7 +124,7 @@ boolean AudioPro_FilePlayer::playMP3(const char *trackname) {
   // reset playback
   sciWrite(VS1053_REG_MODE, VS1053_MODE_SM_LINE1 | VS1053_MODE_SM_SDINEW);
   // resync
-  sciWrite(VS1053_REG_WRAMADDR, 0x1e29);
+  sciWrite(VS1053_REG_WRAMADDR, VS1053_PARA_RESYNC);
   sciWrite(VS1053_REG_WRAM, 0);
 
   currentTrack = sd.open(trackname);
@@ -158,7 +158,7 @@ boolean AudioPro_FilePlayer::playMP3(const char *trackname) {
   //Serial.println("Ready");
   // ok going forward, we can use the IRQ
   interrupts();
-  
+
   return true;
 }
 
@@ -166,7 +166,7 @@ boolean AudioPro_FilePlayer::playMP3(String trackname) {
   return playMP3(trackname.c_str());
 }
 
-boolean AudioPro_FilePlayer::playTrack(uint8_t trackNo){
+boolean AudioPro_FilePlayer::playTrack(uint8_t trackNo) {
   //a storage place for track names
   char trackName[] = "track001.mp3";
   uint8_t trackNumber = 1;
@@ -187,7 +187,7 @@ uint8_t AudioPro_FilePlayer::getMusicNum() {
     numMusicFile = 0;
 
     char * filename = "TRACK001.mp3";
-    
+
     File file2;
     if (sd.exists(sdData)) {
       sd.remove(sdData);
@@ -197,7 +197,7 @@ uint8_t AudioPro_FilePlayer::getMusicNum() {
     if (!sd.exists(sdData)) return 0;
     file2 = sd.open(sdData, FILE_WRITE);
     if (!file2) return 0;
-    
+
     File file;
     file = sd.open("/");
     if (!file) return 0;
@@ -215,7 +215,7 @@ uint8_t AudioPro_FilePlayer::getMusicNum() {
       entry.close();
     }
     file.close();
-    
+
     file2.close();
     staFile = true;
   }
@@ -223,19 +223,19 @@ uint8_t AudioPro_FilePlayer::getMusicNum() {
   return numMusicFile;
 }
 
-String AudioPro_FilePlayer::getMusicName(uint8_t _FileNum){
-  if(!paused() && !stopped()){
+String AudioPro_FilePlayer::getMusicName(uint8_t _FileNum) {
+  if (!paused() && !stopped()) {
     return "PLAYING.ER";
   }
-  if(_FileNum > getMusicNum() - 1){
-    return "MUSICNUM.ER";    
+  if (_FileNum > getMusicNum() - 1) {
+    return "MUSICNUM.ER";
   }
-  
+
   String filename = "";
   filename.reserve(16);
-  
+
   File file;
-  file = SD.open(sdData); 
+  file = SD.open(sdData);
   if (file) {
     uint8_t _n = 0;
     // read from the file until there's nothing else in it:
@@ -246,12 +246,12 @@ String AudioPro_FilePlayer::getMusicName(uint8_t _FileNum){
         if (_n < _FileNum) {
           filename = "";
         }
-        if(_n > _FileNum){
+        if (_n > _FileNum) {
           break;
         }
       }
       else if (_n == _FileNum) {
-          filename += _c;
+        filename += _c;
       }
     }
     file.close();             //必须 解决SD库多次open以后缺失文件列表BUG
@@ -282,25 +282,25 @@ void AudioPro_FilePlayer::feedBuffer(void) {
     feedBufferLock = false;
     return; // paused or stopped
   }
-  
+
   // Feed the hungry buffer! :)
   while (readyForData()) {
     // Read some audio data from the SD card file
     int bytesread;
-    if(!mp3LenSta){
+    if (!mp3LenSta) {
       bytesread = currentTrack.read(mp3buffer, VS1053_DATABUFFERLEN);
       if (bytesread == 0) {
         mp3LenSta = true;
       }
     }
-    else{
+    else {
       bytesread = min(panda_len - mp3LenCache, VS1053_DATABUFFERLEN);
       for (uint16_t a = 0; a < bytesread; a++) {
         mp3buffer[a] = pgm_read_byte(panda + mp3LenCache);
         mp3LenCache++;
       }
 
-      if(mp3LenCache == panda_len){
+      if (mp3LenCache == panda_len) {
         // must be at the end of the file, wrap it up!
         playingMusic = false;
         currentTrack.close();
@@ -314,13 +314,13 @@ void AudioPro_FilePlayer::feedBuffer(void) {
 
 boolean AudioPro_FilePlayer::detachInterrupt(uint8_t type) {
   myself_sd = this;  // oy vey
-/*  
-  if (type == VS1053_TIMER0_DREQ) {
-    OCR0A = 0xAF;
-    TIMSK0 &= ~_BV(OCIE0A);
-    return true;
-  }
-*/
+  /*
+    if (type == VS1053_TIMER0_DREQ) {
+      OCR0A = 0xAF;
+      TIMSK0 &= ~_BV(OCIE0A);
+      return true;
+    }
+  */
   if (type == _dreq) {
     SPI.notUsingInterrupt(digitalPinToInterrupt(_dreq));
     detachInterrupt(digitalPinToInterrupt(_dreq));
@@ -330,15 +330,15 @@ boolean AudioPro_FilePlayer::detachInterrupt(uint8_t type) {
 }
 
 boolean AudioPro_FilePlayer::useInterrupt(uint8_t type) {
-  if(myself) AudioPro::detachInterrupt();  //只允许一个中断实例
+  if (myself) AudioPro::detachInterrupt(); //只允许一个中断实例
   myself_sd = this;  // oy vey
-/*
-  if (type == VS1053_TIMER0_DREQ) {
-    OCR0A = 0xAF;
-    TIMSK0 |= _BV(OCIE0A);
-    return true;
-  }
-*/
+  /*
+    if (type == VS1053_TIMER0_DREQ) {
+      OCR0A = 0xAF;
+      TIMSK0 |= _BV(OCIE0A);
+      return true;
+    }
+  */
   if (type == _dreq) {
     SPI.usingInterrupt(digitalPinToInterrupt(_dreq));
     attachInterrupt(digitalPinToInterrupt(_dreq), feeder_sd, CHANGE);
@@ -365,13 +365,13 @@ AudioPro::AudioPro(uint8_t midi, uint8_t cs, uint8_t dcs, uint8_t dreq) {
 
 boolean AudioPro::useInterrupt(uint8_t type) {
   myself = this;  // oy vey
-/*
-  if (type == VS1053_TIMER0_DREQ) {
-    OCR0A = 0xAF;
-    TIMSK0 |= _BV(OCIE0A);
-    return true;
-  }
-*/
+  /*
+    if (type == VS1053_TIMER0_DREQ) {
+      OCR0A = 0xAF;
+      TIMSK0 |= _BV(OCIE0A);
+      return true;
+    }
+  */
   if (type == _dreq) {
     SPI.usingInterrupt(digitalPinToInterrupt(_dreq));
     attachInterrupt(digitalPinToInterrupt(_dreq), feeder, CHANGE);
@@ -382,13 +382,13 @@ boolean AudioPro::useInterrupt(uint8_t type) {
 
 boolean AudioPro::detachInterrupt(uint8_t type) {
   myself = this;  // oy vey
-/*  
-  if (type == VS1053_TIMER0_DREQ) {
-    OCR0A = 0xAF;
-    TIMSK0 &= ~_BV(OCIE0A);
-    return true;
-  }
-*/
+  /*
+    if (type == VS1053_TIMER0_DREQ) {
+      OCR0A = 0xAF;
+      TIMSK0 &= ~_BV(OCIE0A);
+      return true;
+    }
+  */
   if (type == _dreq) {
     SPI.notUsingInterrupt(digitalPinToInterrupt(_dreq));
     detachInterrupt(digitalPinToInterrupt(_dreq));
@@ -415,11 +415,11 @@ void AudioPro::feedBuffer(void) {
     feedBufferLock = false;
     return; // paused or stopped
   }
-  
+
   // Feed the hungry buffer! :)
   while (readyForData()) {
     int bytesread;
-    if(romLenCache < romLen){
+    if (romLenCache < romLen) {
       bytesread = min(romLen - romLenCache, VS1053_DATABUFFERLEN);
       for (uint16_t a = 0; a < bytesread; a++) {
         mp3buffer[a] = pgm_read_byte(romAddr + romLenCache);
@@ -427,7 +427,7 @@ void AudioPro::feedBuffer(void) {
       }
       //Serial.print("romLenCache-A:");Serial.println(romLenCache);
     }
-    else if(romLenCache < (panda_len + romLen)){
+    else if (romLenCache < (panda_len + romLen)) {
       bytesread = min(panda_len - (romLenCache - romLen), VS1053_DATABUFFERLEN);
       for (uint16_t a = 0; a < bytesread; a++) {
         mp3buffer[a] = pgm_read_byte(panda + (romLenCache - romLen));
@@ -436,7 +436,7 @@ void AudioPro::feedBuffer(void) {
       //Serial.print("romLenCache-B:");Serial.print(romLenCache);Serial.print(",panda_len:");Serial.println(bytesread);
     }
     //Serial.print("LEN:");Serial.print(bytesread);Serial.println(" ");
-    else{  //romLenCache == (panda_len + romLen)
+    else { //romLenCache == (panda_len + romLen)
       //Serial.print("romLenCache-C:");Serial.println(romLenCache);Serial.print(F("#END-"));
       //Serial.print(F(" mp3buffer:["));
       //for (uint8_t i = 0; i < bytesread; i++) {
@@ -446,11 +446,11 @@ void AudioPro::feedBuffer(void) {
       playingMusic = false;
       romTrack = false;
       romLenCache = 0;
-      break;          
+      break;
     }
 
     playData(mp3buffer, bytesread);
-}
+  }
   feedBufferLock = false;
 }
 
@@ -464,29 +464,29 @@ boolean AudioPro::stopped(void) {
 
 //------------------------------------------------------------------------------
 /**
- * \brief flush the VSdsp buffer and cancel
- *
- * \param[in] mode is an enumerated value of flush_m
- *
- * Typically called after a filehandlers' stream has been stopped, as to
- * gracefully flush any buffer contents still playing. Along with issueing a
- * SM_CANCEL to the VSdsp's SCI_MODE register.
+   \brief flush the VSdsp buffer and cancel
 
- * - post - will flush vx10xx's 2K buffer after cancelled, typically with stopping a file, to have immediate affect.
- * - pre  - will flush buffer prior to issuing cancel, typically to allow completion of file
- * - both - will flush before and after issuing cancel
- * - none - will just issue cancel. Not sure if this should be used. Such as in skipTo().
- *
- * \note if cancel fails the vs10xx will be reset and initialized to current values.
- */
+   \param[in] mode is an enumerated value of flush_m
+
+   Typically called after a filehandlers' stream has been stopped, as to
+   gracefully flush any buffer contents still playing. Along with issueing a
+   SM_CANCEL to the VSdsp's SCI_MODE register.
+
+   - post - will flush vx10xx's 2K buffer after cancelled, typically with stopping a file, to have immediate affect.
+   - pre  - will flush buffer prior to issuing cancel, typically to allow completion of file
+   - both - will flush before and after issuing cancel
+   - none - will just issue cancel. Not sure if this should be used. Such as in skipTo().
+
+   \note if cancel fails the vs10xx will be reset and initialized to current values.
+*/
 void AudioPro::flushCancel(flush_m mode) {
   //Serial.println("\t flush");
   int8_t endFillByte = (int8_t) (ReadWRAM(VS1053_PARA_ENDFILL) & 0xFF);
 
-  if((mode == post) || (mode == both)) {
+  if ((mode == post) || (mode == both)) {
     digitalWrite(_dcs, LOW); //Select Data
-    for(int y = 0 ; y < 2052 ; y++) {
-      while(!readyForData()); // wait until DREQ is or goes high
+    for (int y = 0 ; y < 2052 ; y++) {
+      while (!readyForData()); // wait until DREQ is or goes high
       spiwrite(endFillByte); // Send SPI byte
     }
     digitalWrite(_dcs, HIGH); //Deselect Data
@@ -497,19 +497,19 @@ void AudioPro::flushCancel(flush_m mode) {
     sciWrite(VS1053_REG_MODE, (sciRead(VS1053_REG_MODE) | VS1053_MODE_SM_CANCEL));
 
     digitalWrite(_dcs, LOW); //Select Data
-    for(int y = 0 ; y < 32 ; y++) {
-      while(!readyForData()); // wait until DREQ is or goes high
+    for (int y = 0 ; y < 32 ; y++) {
+      while (!readyForData()); // wait until DREQ is or goes high
       spiwrite(endFillByte); // Send SPI byte
     }
     digitalWrite(_dcs, HIGH); //Deselect Data
 
     int cancel = sciRead(VS1053_REG_MODE) & VS1053_MODE_SM_CANCEL;
-    if(cancel == 0) {
+    if (cancel == 0) {
       // Cancel has succeeded.
-      if((mode == pre) || (mode == both)) {
+      if ((mode == pre) || (mode == both)) {
         digitalWrite(_dcs, LOW); //Select Data
-        for(int y = 0 ; y < 2052 ; y++) {
-          while(!readyForData()); // wait until DREQ is or goes high
+        for (int y = 0 ; y < 2052 ; y++) {
+          while (!readyForData()); // wait until DREQ is or goes high
           spiwrite(endFillByte); // Send SPI byte
         }
         digitalWrite(_dcs, HIGH); //Deselect Data
@@ -636,9 +636,9 @@ boolean AudioPro::playROM(const uint8_t *_buffer, uint32_t _len) {
     stopPlaying();
     flushCancel(both);
     //Serial.print(F("\t before Status: 0x"));Serial.println(getStatus(),HEX);
-    if(getStatus()){
-      sciWrite(VS1053_REG_STATUS,(uint16_t)(getStatus(VS1053_RAW) & ~_BV(15)));
-      if(getStatus()){
+    if (getStatus()) {
+      sciWrite(VS1053_REG_STATUS, (uint16_t)(getStatus(VS1053_RAW) & ~_BV(15)));
+      if (getStatus()) {
         //Serial.println(F("\t Status ERROR"));
         return false;
       }
@@ -648,7 +648,7 @@ boolean AudioPro::playROM(const uint8_t *_buffer, uint32_t _len) {
   // reset playback
   sciWrite(VS1053_REG_MODE, VS1053_MODE_SM_LINE1 | VS1053_MODE_SM_SDINEW);
   // resync
-  sciWrite(VS1053_REG_WRAMADDR, 0x1e29);
+  sciWrite(VS1053_REG_WRAMADDR, VS1053_PARA_RESYNC);
   sciWrite(VS1053_REG_WRAM, 0);
 
   romAddr = _buffer;
@@ -658,7 +658,7 @@ boolean AudioPro::playROM(const uint8_t *_buffer, uint32_t _len) {
   playingMusic = true;
   uint32_t _romLen = sizeof(_buffer);
   //Serial.print("romAddr:");Serial.print(romAddr);Serial.print(" romLen");Serial.println(_romLen);
-  
+
   // don't let the IRQ get triggered by accident here
   noInterrupts();
 
@@ -680,7 +680,7 @@ boolean AudioPro::playROM(const uint8_t *_buffer, uint32_t _len) {
 
   //Serial.println("Ready");
   interrupts();
-  return true;  
+  return true;
 }
 
 void AudioPro::pausePlaying(boolean pause) {
@@ -702,7 +702,7 @@ void AudioPro::pausePlaying(boolean pause) {
 uint16_t AudioPro::getVolume(boolean sta) {
   noInterrupts(); //cli();
   uint16_t _vol = sciRead(VS1053_REG_VOLUME);
-  if(sta = VOLUME){
+  if (sta = VOLUME) {
     _vol = (_vol >> 8) & 0x00ff;
     _vol = 127 - _vol;
   }
@@ -711,7 +711,7 @@ uint16_t AudioPro::getVolume(boolean sta) {
 }
 
 void AudioPro::setVolume(uint8_t left, uint8_t right) {
-  if(left > 127 || right > 127) return;
+  if (left > 127 || right > 127) return;
   noInterrupts(); //cli();
   sciWrite(VS1053_REG_VOLUME, 127 - left, 127 - right);
   interrupts();  //sei();
@@ -747,7 +747,7 @@ uint16_t AudioPro::getPlaySpeed() {
 }
 
 void AudioPro::setPlaySpeed(uint16_t data) {
-  if(data > 127) return;
+  if (data > 127) return;
   WriteWRAM(VS1053_PARA_PLAYSPEED, data);
 }
 
@@ -852,11 +852,11 @@ void AudioPro::stopPlaying(void) {
   sciWrite(VS1053_REG_MODE, VS1053_MODE_SM_LINE1 | VS1053_MODE_SM_SDINEW | VS1053_MODE_SM_CANCEL);
 }
 
-uint16_t AudioPro::getStatus(boolean sta){
+uint16_t AudioPro::getStatus(boolean sta) {
   noInterrupts(); //cli();
   uint16_t t = sciRead(VS1053_REG_STATUS);
-  if(sta = DECODE){
-    t = (t >> 15) | 0x0000; 
+  if (sta = DECODE) {
+    t = (t >> 15) | 0x0000;
   }
   interrupts(); //sei();
   return t;
