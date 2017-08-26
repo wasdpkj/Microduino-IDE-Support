@@ -29,8 +29,8 @@ void playNum(uint8_t num) {
 
   if (!musicPlayer.stopped()) {
     musicPlayer.stopPlaying();  //必要，否则SD类得不到关闭，内存溢出
-    musicPlayer.flushCancel(both);  //播放MIDI文件时需要清缓存
   }
+  musicPlayer.flushCancel(both);  //清缓存，播放MIDI等格式文件时必要
 
   String _name = musicPlayer.getMusicName(num);
   Serial.print(F("Playing:"));

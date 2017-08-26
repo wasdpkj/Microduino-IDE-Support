@@ -295,8 +295,15 @@ void AudioPro_FilePlayer::feedBuffer(void) {
       for (uint16_t a = 0; a < bytesread; a++) {
         mp3buffer[a] = pgm_read_byte(panda + mp3LenCache);
         mp3LenCache++;
+Serial.print(" 0x");
+Serial.print(mp3buffer[a],HEX);
       }
+Serial.println(" ");
+
+Serial.print(F("bytesread:"));
+Serial.println(bytesread);
       if(mp3LenCache == panda_len){
+Serial.println(F("currentTrack.close()"));
         // must be at the end of the file, wrap it up!
         playingMusic = false;
         currentTrack.close();
