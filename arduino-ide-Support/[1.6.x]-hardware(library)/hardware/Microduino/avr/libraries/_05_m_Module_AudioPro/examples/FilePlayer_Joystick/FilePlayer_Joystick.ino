@@ -147,11 +147,9 @@ void loop() {
       }
       else if (! musicPlayer.paused()) {
         Serial.println(F("Paused"));
-        musicPlayer.setAmplifier(false);  //关闭运放
         musicPlayer.pausePlaying(true);   //暂停
       } else {
         Serial.println(F("Resumed"));
-        musicPlayer.setAmplifier(true);   //开启运放
         musicPlayer.pausePlaying(false);  //取消暂停
       }
 

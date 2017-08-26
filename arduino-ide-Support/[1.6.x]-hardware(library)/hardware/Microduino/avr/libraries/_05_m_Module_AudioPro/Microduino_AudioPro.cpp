@@ -91,11 +91,14 @@ void AudioPro_FilePlayer::stopPlaying(void) {
 
 void AudioPro_FilePlayer::pausePlaying(boolean pause) {
   if (pause) {
-    //setAmplifier(false);
+    setAmplifier(false);
     playingMusic = false;
   }
   else {
-    //setAmplifier(true);
+    if (!getAmplifier()) {
+      setAmplifier(true);
+      delay(200);
+    }
     playingMusic = true;
     this->feedBuffer();
   }
@@ -295,15 +298,9 @@ void AudioPro_FilePlayer::feedBuffer(void) {
       for (uint16_t a = 0; a < bytesread; a++) {
         mp3buffer[a] = pgm_read_byte(panda + mp3LenCache);
         mp3LenCache++;
-Serial.print(" 0x");
-Serial.print(mp3buffer[a],HEX);
       }
-Serial.println(" ");
 
-Serial.print(F("bytesread:"));
-Serial.println(bytesread);
       if(mp3LenCache == panda_len){
-Serial.println(F("currentTrack.close()"));
         // must be at the end of the file, wrap it up!
         playingMusic = false;
         currentTrack.close();
@@ -562,7 +559,7 @@ void AudioPro::midiSetBank(uint8_t chan, uint8_t bank) {
   if (chan > 15 || bank > 127) return;
 
   uint8_t _c[] = {0, MIDI_CHAN_MSG | chan, 0, MIDI_CHAN_BANK, 0, bank};
-  while (!digitalRead(_dreq));
+  while (!readyForData());
   playData(_c, sizeof(_c));
 }
 
@@ -571,7 +568,7 @@ void AudioPro::midiSetVolume(uint8_t chan, uint16_t vol) {
   if (chan > 15 || vol > 127) return;
 
   uint8_t _c[] = {0, MIDI_CHAN_MSG | chan, 0, MIDI_CHAN_VOLUME, 0, vol};
-  while (!digitalRead(_dreq));
+  while (!readyForData());
   playData(_c, sizeof(_c));
 }
 
@@ -579,7 +576,7 @@ void AudioPro::midiSetInstrument(uint8_t chan, uint8_t inst) {
   if (chan > 15 || inst > 127) return;  // page 32 has instruments starting with 1 not 0 :(
 
   uint8_t _c[] = {0, MIDI_CHAN_PROGRAM | chan, 0, inst};
-  while (!digitalRead(_dreq));
+  while (!readyForData());
   playData(_c, sizeof(_c));
 }
 
@@ -587,7 +584,7 @@ void AudioPro::noteOn(uint8_t chan, uint8_t n, uint8_t vol) {
   if (chan > 15 || n > 127 || vol > 127) return;
 
   uint8_t _c[] = {0, MIDI_NOTE_ON | chan, 0, n, 0, vol};
-  while (!digitalRead(_dreq));
+  while (!readyForData());
   playData(_c, sizeof(_c));
 }
 
@@ -596,7 +593,7 @@ void AudioPro::noteOff(uint8_t chan, uint8_t n, uint8_t vol) {
   if (chan > 15 || n > 127 || vol > 127) return;
 
   uint8_t _c[] = {0, MIDI_NOTE_OFF | chan, 0, n, 0, vol};
-  while (!digitalRead(_dreq));
+  while (!readyForData());
   playData(_c, sizeof(_c));
 }
 
@@ -688,11 +685,15 @@ boolean AudioPro::playROM(const uint8_t *_buffer, uint32_t _len) {
 
 void AudioPro::pausePlaying(boolean pause) {
   if (pause) {
-    //setAmplifier(false);
+    setAmplifier(false);
     playingMusic = false;
   }
   else {
-    //setAmplifier(true);
+    if (!getAmplifier()) {
+      setAmplifier(true);
+      delay(200);
+    }
+    delay(200);
     playingMusic = true;
     this->feedBuffer();
   }
@@ -1017,7 +1018,7 @@ void AudioPro::sineTest(uint8_t n, uint16_t ms) {
   mode |= 0x0020;
   sciWrite(VS1053_REG_MODE, mode);
 
-  while (!digitalRead(_dreq));
+  while (!readyForData());
   //  delay(10);
 
   SPI.beginTransaction(VS1053_DATA_SPI_SETTING);
