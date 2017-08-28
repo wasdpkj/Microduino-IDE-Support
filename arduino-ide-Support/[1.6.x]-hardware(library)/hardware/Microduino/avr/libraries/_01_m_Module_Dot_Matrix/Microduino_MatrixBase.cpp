@@ -223,7 +223,7 @@ void LedControl::setColumn(uint8_t _col, byte _value) {
   }
 }
 
-void LedControl::writeString(int16_t _time, char* _displayString) {
+void LedControl::writeString(uint16_t _time, char* _displayString) {
   int16_t _leng = 0;
   int16_t _wight = 0;
   while (_displayString[_leng] != NULL) _wight += 1 + pgm_read_byte(alphabetBitmap[CharToInt(_displayString[_leng++])] + FONE_SIZE_X);

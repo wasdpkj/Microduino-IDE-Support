@@ -73,7 +73,7 @@ class LedControl : public Print {
     void setCursor(int16_t x, int16_t y);
     virtual size_t write(uint8_t);
     void displayChar(int8_t _row, int8_t _col, char _charIndex);
-    void writeString(int time, char * displayString);
+    void writeString(uint16_t time, char * displayString);
 
     void (*Fun)();
 
