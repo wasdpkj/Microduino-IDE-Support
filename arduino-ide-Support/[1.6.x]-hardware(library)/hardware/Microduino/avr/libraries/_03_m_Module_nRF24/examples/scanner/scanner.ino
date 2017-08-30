@@ -54,14 +54,14 @@ void setup(void)
   int i = 0;
   while ( i < num_channels )
   {
-    printf("%x",i>>4);
+    Serial.print(i>>4, HEX);
     ++i;
   }
   Serial.println();
   i = 0;
   while ( i < num_channels )
   {
-    printf("%x",i&0xf);
+    Serial.print(i&0xf, HEX);
     ++i;
   }
   Serial.println();
@@ -104,7 +104,7 @@ void loop(void)
   int i = 0;
   while ( i < num_channels )
   {
-    printf("%x",min(0xf,values[i]));
+    Serial.print(min(0xf,values[i]), HEX);
     ++i;
   }
   Serial.println();
