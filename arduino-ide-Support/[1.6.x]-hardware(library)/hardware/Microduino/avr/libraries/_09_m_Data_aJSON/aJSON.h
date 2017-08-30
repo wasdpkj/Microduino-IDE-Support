@@ -89,7 +89,7 @@ public:
 	int printString(aJsonObject *item);
 
 	int skip();
-	int flush();
+	virtual void flush(void);
 
 	int parseValue(aJsonObject *item, char** filter);
 	int printValue(aJsonObject *item);
