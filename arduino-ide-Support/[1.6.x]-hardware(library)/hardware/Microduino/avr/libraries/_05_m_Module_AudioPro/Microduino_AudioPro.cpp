@@ -651,13 +651,11 @@ boolean AudioPro::playROM(const uint8_t *_buffer, uint32_t _len) {
   sciWrite(VS1053_REG_WRAMADDR, VS1053_PARA_RESYNC);
   sciWrite(VS1053_REG_WRAM, 0);
 
-  romAddr = _buffer;
+  romAddr = (uint32_t)_buffer;
   romLen = _len;
   romLenCache = 0;
   romTrack = true;
   playingMusic = true;
-  uint32_t _romLen = sizeof(_buffer);
-  //Serial.print("romAddr:");Serial.print(romAddr);Serial.print(" romLen");Serial.println(_romLen);
 
   // don't let the IRQ get triggered by accident here
   noInterrupts();
