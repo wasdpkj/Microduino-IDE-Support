@@ -1,6 +1,6 @@
 # Microduino-IDE
 
-[![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Support.svg?branch=master)]
+![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Support.svg?branch=master)
 
 ## 2017-07-14：
 - Library进行了一次大更新，可能会和之前的程序有不兼容
