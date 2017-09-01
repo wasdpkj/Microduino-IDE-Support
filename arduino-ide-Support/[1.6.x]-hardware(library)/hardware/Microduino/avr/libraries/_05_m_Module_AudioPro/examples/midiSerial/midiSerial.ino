@@ -6,7 +6,7 @@
 */
 
 #include <Microduino_AudioPro.h>
-#include "MIDI.h"
+#include "Midi.h"
 
 void setup() {
   Serial.begin(9600);
