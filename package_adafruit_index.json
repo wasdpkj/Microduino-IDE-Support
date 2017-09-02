@@ -1,0 +1,63 @@
+{
+  "packages": [
+    {
+      "maintainer": "Adafruit",
+      "help": {
+        "online": "https://forums.adafruit.com"
+      },
+      "websiteURL": "https://adafruit.com",
+      "platforms": [
+        {
+          "category": "Adafruit",
+          "help": {
+            "online": "https://forums.adafruit.com"
+          },
+          "url": "https://github.com/wasdpkj/arduino-board-index/raw/gh-pages/boards/adafruit-avr-1.4.9.zip",
+          "checksum": "SHA-256:293C0255627EEB0BE7A8D0B5417980A1782E9A69ED708F29F6B78EE7FB8D175C",
+          "name": "Adafruit AVR Boards",
+          "version": "1.4.9",
+          "architecture": "avr",
+          "archiveFileName": "adafruit-avr-1.4.9.zip",
+          "size": "326314",
+          "toolsDependencies": [
+            {
+              "packager": "arduino",
+              "version": "4.8.1-arduino5",
+              "name": "avr-gcc"
+            },
+            {
+              "packager": "arduino",
+              "version": "6.0.1-arduino5",
+              "name": "avrdude"
+            }
+          ],
+          "boards": [
+            {
+              "name": "Microduino/mCookie-Core (328p)@16M,5V"
+            },
+            {
+              "name": "Microduino/mCookie-Core (328p)@8M,3.3V"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (644pa)@16M,5V)"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (644pa)@8M,3.3V"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (1284pa)@16M,5V)"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (1284pa)@8M,3.3V"
+            },
+            {
+              "name": "Microduino/mCookie-Core USB (32u4)"
+            }
+          ]
+        }
+      ],
+      "email": "pankejia@microduino.cc",
+      "name": "microduino"
+    }
+  ]
+}
