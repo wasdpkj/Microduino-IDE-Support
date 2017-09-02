@@ -31,7 +31,7 @@ mv arduino-1.6.9 $HOME/arduino_ide
 #ln -s $TRAVIS_BUILD_DIR/libraries/* $HOME/arduino_ide/libraries
 rm -rf $HOME/arduino_ide/libraries
 mkdir -p $HOME/arduino_ide/libraries
-mv -f $TRAVIS_BUILD_DIR/arduino-ide-Support\[1.6.x]-hardware(library)\hardware\Microduino\avr\libraries/* $HOME/arduino_ide/libraries
+mv -f $TRAVIS_BUILD_DIR/arduino-ide-Support/[1.6.x]-hardware(library)/hardware/Microduino/avr/libraries/* $HOME/arduino_ide/libraries
 #mv -f $TRAVIS_BUILD_DIR/libraries $HOME/arduino_ide/libraries
 
 echo -e "\n########################################################################";
