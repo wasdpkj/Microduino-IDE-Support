@@ -1,24 +1,24 @@
 {
   "packages": [
     {
-      "maintainer": "Adafruit",
+      "maintainer": "Microduino",
       "help": {
-        "online": "https://forums.adafruit.com"
+        "online": "https://wiki.microduino.cn"
       },
-      "websiteURL": "https://adafruit.com",
+      "websiteURL": "https://www.microduino.cn",
       "platforms": [
         {
-          "category": "Adafruit",
+          "category": "Microduino",
           "help": {
-            "online": "https://forums.adafruit.com"
+            "online": "https://wiki.microduino.cn"
           },
-          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/travis/boards/adafruit-avr-1.4.9.zip",
-          "checksum": "SHA-256:293C0255627EEB0BE7A8D0B5417980A1782E9A69ED708F29F6B78EE7FB8D175C",
-          "name": "Adafruit AVR Boards",
-          "version": "1.4.9",
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/for_travis/boards/microduino-avr-1.6.9.zip",
+          "checksum": "SHA-256:A513027A9B579F3CEC54CD35BCD539D8453F346A1E6C119B9D7DD517505780C3",
+          "name": "Microduino AVR Boards",
+          "version": "1.6.9",
           "architecture": "avr",
-          "archiveFileName": "adafruit-avr-1.4.9.zip",
-          "size": "326314",
+          "archiveFileName": "microduino-avr-1.6.9.zip",
+          "size": "328078",
           "toolsDependencies": [
             {
               "packager": "arduino",

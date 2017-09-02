@@ -8,11 +8,11 @@ fi
 
 # associative array for the platforms that will be verified in build_main_platforms()
 # this will be eval'd in the functions below because arrays can't be exported
-export MAIN_PLATFORMS='declare -A main_platforms=( [uno]="arduino:avr:uno" [due]="arduino:sam:arduino_due_x" [zero]="arduino:samd:zero" [16MHzatmega328]="microduino:avr:16MHzatmega328" [16MHzatmega644]="microduino:avr:16MHzatmega644" [16MHzatmega1284]="microduino:avr:16MHzatmega1284" [usb32u416m]="microduino:avr:usb32u416m" [leonardo]="arduino:avr:leonardo" )'
+export MAIN_PLATFORMS='declare -A main_platforms=( [uno]="arduino:avr:uno" [due]="arduino:sam:arduino_due_x" [zero]="arduino:samd:zero"[leonardo]="arduino:avr:leonardo" )'
 
 # associative array for other platforms that can be called explicitly in .travis.yml configs
 # this will be eval'd in the functions below because arrays can't be exported
-export AUX_PLATFORMS='declare -A aux_platforms=( [trinket]="microduino:avr:trinket5" [gemma]="arduino:avr:gemma" )'
+export AUX_PLATFORMS='declare -A aux_platforms=( [16MHzatmega328]="arduino:avr:uno" [16MHzatmega644]="microduino:avr:16MHzatmega644" [16MHzatmega1284]="microduino:avr:16MHzatmega1284" [usb32u416m]="microduino:avr:usb32u416m" )'
 
 # make display available for arduino CLI
 /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16
@@ -48,7 +48,7 @@ echo "########################################################################";
 
 # install the due, esp8266, and microduino board packages
 echo -n "ADD PACKAGE INDEX: "
-DEPENDENCY_OUTPUT=$(arduino --pref "boardsmanager.additional.urls=https://raw.githubusercontent.com/wasdpkj/Microduino-IDE-Support/master/travis/package_adafruit_index.json" --save-prefs 2>&1)
+DEPENDENCY_OUTPUT=$(arduino --pref "boardsmanager.additional.urls=https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/for_travis/package_microduino_index.json" --save-prefs 2>&1)
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 
 echo -n "MICRODUINO AVR: "
@@ -398,4 +398,3 @@ function json_main_platforms()
   echo -e "||||||||||||||||||||||||||||| JSON STATUS ||||||||||||||||||||||||||||||\n"
 
 }
-
