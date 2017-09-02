@@ -1,0 +1,63 @@
+{
+  "packages": [
+    {
+      "maintainer": "Microduino",
+      "help": {
+        "online": "https://wiki.microduino.cc"
+      },
+      "websiteURL": "https://www.microduino.cc",
+      "platforms": [
+        {
+          "category": "Microduino",
+          "help": {
+            "online": "https://wiki.microduino.cc"
+          },
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/travis/boards/microduino-avr-1.6.9-for-travis.zip",
+          "checksum": "SHA-256:793201808773A82C6E338AE396AC759511394E6FB9E1BE254B09D809C37A02D1",
+          "name": "Microduino AVR Boards",
+          "version": "1.6.9",
+          "architecture": "avr",
+          "archiveFileName": "microduino-avr-1.6.9-for-travis.zip",
+          "size": "329590",
+          "toolsDependencies": [
+            {
+              "packager": "arduino",
+              "version": "4.8.1-arduino5",
+              "name": "avr-gcc"
+            },
+            {
+              "packager": "arduino",
+              "version": "6.0.1-arduino5",
+              "name": "avrdude"
+            }
+          ],
+          "boards": [
+            {
+              "name": "Microduino/mCookie-Core (328p)@16M,5V"
+            },
+            {
+              "name": "Microduino/mCookie-Core (328p)@8M,3.3V"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (644pa)@16M,5V)"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (644pa)@8M,3.3V"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (1284pa)@16M,5V)"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (1284pa)@8M,3.3V"
+            },
+            {
+              "name": "Microduino/mCookie-Core USB (32u4)"
+            }
+          ]
+        }
+      ],
+      "email": "pankejia@microduino.cc",
+      "name": "microduino"
+    }
+  ]
+}
