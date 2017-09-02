@@ -54,21 +54,3 @@ notifications:
     on_success: change  # options: [always|never|change] default: always
     on_failure: always  # options: [always|never|change] default: always
     on_start: false     # default: false
-
-
-language: c
-sudo: false
-before_install:
-  - source <(curl -SLs https://raw.githubusercontent.com/Microduino-IDE-Support/master/travis/install.sh)
-script:
-  - build_platform microduino:avr:16MHzatmega328
-  - build_platform microduino:avr:16MHzatmega644
-  - build_platform microduino:avr:16MHzatmega1284
-  - build_platform microduino:avr:usb32u416m
-branches:
-  only:
-    - gh-pages
-notifications:
-  email:
-    on_success: change
-    on_failure: change
