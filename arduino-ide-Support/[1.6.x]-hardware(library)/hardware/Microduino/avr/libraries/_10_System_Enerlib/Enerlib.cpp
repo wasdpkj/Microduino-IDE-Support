@@ -5,7 +5,7 @@ By E.P.G. - 12/2012 - Ver. 1.0.1
 
 #include <avr/sleep.h>
 #include "Enerlib.h"
-#include <arduino.h>
+#include <Arduino.h>
 
 Energy::Energy()
 {
