@@ -3,10 +3,10 @@ sudo: false
 before_install:
   - source <(curl -SLs https://raw.githubusercontent.com/wasdpkj/Microduino-IDE-Support/master/install.sh)
 script:
-  - build_platform microduino:avr:16MHzatmega328
+#  - build_platform microduino:avr:16MHzatmega328
   - build_platform microduino:avr:16MHzatmega644
-  - build_platform microduino:avr:16MHzatmega1284
-  - build_platform microduino:avr:usb32u416m
+#  - build_platform microduino:avr:16MHzatmega1284
+#  - build_platform microduino:avr:usb32u416m
 branches:
   only:
     - master
