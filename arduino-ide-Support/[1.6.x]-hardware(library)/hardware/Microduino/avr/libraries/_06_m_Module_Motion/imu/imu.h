@@ -2,7 +2,7 @@
 #ifndef __IMU_H__
 #define __IMU_H__
 
-#include <arduino.h>
+#include <Arduino.h>
 
 #define AHRS_KP		2.0f
 #define AHRS_KI		0.01f
