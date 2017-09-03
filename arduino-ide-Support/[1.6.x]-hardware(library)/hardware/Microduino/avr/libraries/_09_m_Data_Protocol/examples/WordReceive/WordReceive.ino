@@ -6,10 +6,11 @@
 
 #include <Microduino_Protocol.h>
 
-SoftwareSerial mySerial(4, 5);
+SoftwareSerial mySerial1(4, 5);
+SoftwareSerial mySerial2(2, 3);
 
-ProtocolSer protocolA(&Serial1, 16);	//采用Serial1，数据长度为16个字节
-ProtocolSer protocolB(&mySerial, 16);   //mySerial，数据长度为16个字节
+ProtocolSer protocolA(&mySerial1, 16);	//采用mySerial1，数据长度为16个字节
+ProtocolSer protocolB(&mySerial2, 16);   //mySerial2，数据长度为16个字节
 
 uint16_t sendData[8] = {1500, 1500, 1500, 1500, 1000, 1000, 1000, 1000};
 uint16_t recData[8];

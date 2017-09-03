@@ -30,8 +30,8 @@ void setup()
 
 void loop() // run over and over again
 {
-  if (Serial1.available()) {
-    char c = Serial1.read();
+  if (SerialGPS.available()) {
+    char c = SerialGPS.read();
     Serial.write(c);
   }
 }
