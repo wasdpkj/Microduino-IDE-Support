@@ -63,29 +63,29 @@ void setup(void) {
 	digitalWrite(stateLEDPin,LOW);
 
 	while (!Serial); // wait for Leonardo enumeration, others continue immediately
-  	Serial.print("setup begin\r\n");
+  	Serial.print(F("setup begin\r\n"));
   	delay(100);
 
   	WifiInit(EspSerial, UARTSPEED);
 
-	Serial.print("FW Microduino Version:");
+	Serial.print(F("FW Microduino Version:"));
 	Serial.println(wifi.getMVersion().c_str());
 
 	if (wifi.setOprToStation()) {
-		Serial.print("to station ok\r\n");
+		Serial.print(F("to station ok\r\n"));
 	} else {
-		Serial.print("to station err\r\n");
+		Serial.print(F("to station err\r\n"));
 	}
 
 	if (wifi.joinAP(SSID, PASSWORD)) {
 		wifi.setWiFiconnected(true);
-		Serial.print("Join AP success\r\n");
-		Serial.print("IP:");
+		Serial.print(F("Join AP success\r\n"));
+		Serial.print(F("IP:"));
 		Serial.println(wifi.getMLocalIP().c_str());
 	} else {
 		wifi.setWiFiconnected(false);
-		Serial.print("Join AP failure\r\n");
-		Serial.print("Make sure your SSID, PASS correctly!\r\n");
+		Serial.print(F("Join AP failure\r\n"));
+		Serial.print(F("Make sure your SSID, PASS correctly!\r\n"));
 		while (true) {
 			mCottenData = wifi.getMqttJson();
 			if (mCottenData != "") {
@@ -96,11 +96,11 @@ void setup(void) {
 	}
 
 	  if (wifi.disableMUX()) {
-	      Serial.print("single ok\r\n");
+	      Serial.print(F("single ok\r\n"));
 	  } else {
-	      Serial.print("single err\r\n");
+	      Serial.print(F("single err\r\n"));
 	  }
-	  Serial.print("setup end\r\n");
+	  Serial.print(F("setup end\r\n"));
 
 
 
@@ -154,9 +154,9 @@ void updateWheatherData() {
   char infoData[60]={0};
 
     if (wifi.createTCP(HOST_NAME, HOST_PORT)) {
-        Serial.print("create tcp ok\r\n");
+        Serial.print(F("create tcp ok\r\n"));
     } else {
-        Serial.print("create tcp err\r\n");
+        Serial.print(F("create tcp err\r\n"));
     }
 
 
@@ -201,39 +201,39 @@ void updateWheatherData() {
     uint32_t len = wifi.recv(buffer, sizeof(buffer), 10000);
 
     if (len > 0) {
-        //Serial.print("Received:[");
+        //Serial.print(F("Received:["));
         for(uint32_t i = 0; i < len; i++) {
-            //Serial.print((char)buffer[i]);
+            //Serial.print((char)buffer[i]));
             if((char)buffer[i]=='{') {
               start=i;
             } if((char)buffer[i]=='}') {
               end=i;
             }
         }
-        //Serial.print("]\r\n");
+        //Serial.print(F("]\r\n"));
         int index=0;
         for(uint32_t i = start; i <= end; i++) {
             infoData[index]=(char)buffer[i];
             index++;
         }
         infoData[index]='\n';
-        Serial.print("Received:[");
+        Serial.print(F("Received:["));
         Serial.println(infoData);
-        Serial.print("]\r\n");
+        Serial.print(F("]\r\n"));
 
         if(strstr(infoData,"\"Status\":\"true\"")!=NULL) {
-          Serial.println("ON");
+          Serial.println(F("ON"));
         } else {
-          Serial.println("OFF");
+          Serial.println(F("OFF"));
         }
 
     }
 
 
     if (wifi.releaseTCP()) {
-        Serial.print("release tcp ok\r\n");
+        Serial.print(F("release tcp ok\r\n"));
     } else {
-        Serial.print("release tcp err\r\n");
+        Serial.print(F("release tcp err\r\n"));
     }
 
     postArray=NULL;

@@ -61,25 +61,25 @@ void setup(void) {
 
 
 	while (!Serial); // wait for Leonardo enumeration, others continue immediately
-  	Serial.print("setup begin\r\n");
+  	Serial.print(F("setup begin\r\n"));
   	delay(100);
 
   	WifiInit(EspSerial, UARTSPEED);
 
-	Serial.print("FW Microduino Version:");
+	Serial.print(F("FW Microduino Version:"));
 	Serial.println(wifi.getMVersion().c_str());
 
 
 //	if (wifi.setUart(57600)) {
-//		Serial.print("set uart ok\r\n");
+//		Serial.print(F("set uart ok\r\n"));
 //	} else {
-//		Serial.print("set uart err\r\n");
+//		Serial.print(F("set uart err\r\n"));
 //	}
 
 	if (wifi.setOprToStation()) {
-		Serial.print("to station ok\r\n");
+		Serial.print(F("to station ok\r\n"));
 	} else {
-		Serial.print("to station err\r\n");
+		Serial.print(F("to station err\r\n"));
 	}
 
 //	wifi.setAutoConnect(false);
@@ -87,13 +87,13 @@ void setup(void) {
 
 	if (wifi.joinAP(SSID, PASSWORD)) {
 		wifi.setWiFiconnected(true);
-		Serial.print("Join AP success\r\n");
-		Serial.print("IP:");
+		Serial.print(F("Join AP success\r\n"));
+		Serial.print(F("IP:"));
 		Serial.println(wifi.getMLocalIP().c_str());
 	} else {
 		wifi.setWiFiconnected(false);
-		Serial.print("Join AP failure\r\n");
-		Serial.print("Make sure your SSID, PASS correctly!\r\n");
+		Serial.print(F("Join AP failure\r\n"));
+		Serial.print(F("Make sure your SSID, PASS correctly!\r\n"));
 		while (true) {
 			mCottenData = wifi.getMqttJson();
 			if (mCottenData != "") {
@@ -104,17 +104,17 @@ void setup(void) {
 	}
 
 	if (wifi.mqttSetServer(MQTTSERVER, MQTT_PORT)) {
-		Serial.print("mqtt set server ok\r\n");
+		Serial.print(F("mqtt set server ok\r\n"));
 	} else {
-		Serial.print("mqtt set server err\r\n");
+		Serial.print(F("mqtt set server err\r\n"));
 	}
 	if (wifi.mqttConnect(ID, USER, PASS)) {
 		wifi.setMqttConnected(true);
 		digitalWrite(stateLEDPin,HIGH);
-		Serial.print("mqtt connect ok\r\n");
+		Serial.print(F("mqtt connect ok\r\n"));
 	} else {
 		wifi.setMqttConnected(false);
-		Serial.print("mqtt connect err\r\n");
+		Serial.print(F("mqtt connect err\r\n"));
 		while (true) {
 			mCottenData = wifi.getMqttJson();
 			if (mCottenData != "") {
@@ -124,28 +124,28 @@ void setup(void) {
 		}
 	}
 	if (wifi.mqttSetDiveceIDToken(ID, PASS)) {
-		Serial.print("mqtt set device ID Token ok\r\n");
+		Serial.print(F("mqtt set device ID Token ok\r\n"));
 	} else {
-		Serial.print("mqtt set device ID Token err\r\n");
+		Serial.print(F("mqtt set device ID Token err\r\n"));
 	}
 	if (wifi.mqttSetSubscrib(SUBSCRIBTOPIC)) {
-		Serial.print("mqtt set subscrib ca topic ok\r\n");
+		Serial.print(F("mqtt set subscrib ca topic ok\r\n"));
 	} else {
-		Serial.print("mqtt set subscrib ca topic err\r\n");
+		Serial.print(F("mqtt set subscrib ca topic err\r\n"));
 	}
 	if (wifi.mqttSetSubscrib(SUBSCRIBTOPICP)) {
-		Serial.print("mqtt set subscrib cp topic ok\r\n");
+		Serial.print(F("mqtt set subscrib cp topic ok\r\n"));
 	} else {
-		Serial.print("mqtt set subscrib cp topic err\r\n");
+		Serial.print(F("mqtt set subscrib cp topic err\r\n"));
 	}
 
 
 
 	jsonData = "{\"Humidity\":66.66}";
 	if (wifi.mqttPublish(PUBLISHTOPIC, jsonData)) {
-		Serial.print("mqtt publish ok\r\n");
+		Serial.print(F("mqtt publish ok\r\n"));
 	} else {
-		Serial.print("mqtt publish err\r\n");
+		Serial.print(F("mqtt publish err\r\n"));
 	}
 
 }
@@ -188,10 +188,10 @@ void loop(void) {
 				aJsonObject* state = aJson.getObjectItem(root, "undefined");
 
 				if (strcmp(state->valuestring, "true") == 0) {
-					Serial.println("ON");
+					Serial.println(F("ON"));
 				}
 				if (strcmp(state->valuestring, "false") == 0) {
-					Serial.println("OFF");
+					Serial.println(F("OFF"));
 				}
 			}
 		}
@@ -218,9 +218,9 @@ void loop(void) {
 
 
 			if (wifi.mqttPublishM(jsonData)) {
-				Serial.print("mqtt publishM ok\r\n");
+				Serial.print(F("mqtt publishM ok\r\n"));
 			} else {
-				Serial.print("mqtt publishM err\r\n");
+				Serial.print(F("mqtt publishM err\r\n"));
 			}
 
 			sensorlastTime = millis();

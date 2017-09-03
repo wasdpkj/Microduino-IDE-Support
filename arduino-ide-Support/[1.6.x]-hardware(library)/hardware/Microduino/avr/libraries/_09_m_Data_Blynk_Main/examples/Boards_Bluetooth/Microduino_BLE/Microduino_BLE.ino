@@ -29,19 +29,38 @@
 
 #include <BlynkSimpleSerialBLE.h>
 
+
 // You should get Auth Token in the Blynk App.
 // Go to the Project Settings (nut icon).
 char auth[] = "YourAuthToken";
+
+/**
+**CoreUSB UART Port: [Serial1] [D0,D1]
+**Core+ UART Port: [Serial1] [D2,D3]
+**/
+#if defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega644P__) || defined(__AVR_ATmega128RFA1__)
+#define BLESerial Serial1
+#define UARTSPEED  9600
+#endif
+
+/**
+**Core UART Port: [SoftSerial] [D2,D3]
+**/
+#if defined (__AVR_ATmega168__) || defined (__AVR_ATmega328__) || defined (__AVR_ATmega328P__)
+#include <SoftwareSerial.h>
+SoftwareSerial BLESerial(2, 3); /* RX:D2, TX:D3 */
+#define UARTSPEED  9600
+#endif
 
 void setup()
 {
   // Debug console
   Serial.begin(9600);
 
-  // Blynk will work through Serial1
+  // Blynk will work through BLESerial
   // Do not read or write this serial manually in your sketch
-  Serial1.begin(9600);
-  Blynk.begin(auth, Serial1);
+  BLESerial.begin(UARTSPEED);
+  Blynk.begin(auth, BLESerial);
 }
 
 void loop()

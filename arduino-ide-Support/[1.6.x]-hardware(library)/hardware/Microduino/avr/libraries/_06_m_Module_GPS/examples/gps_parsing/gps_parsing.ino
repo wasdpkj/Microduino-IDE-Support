@@ -1,5 +1,23 @@
 #include <Microduino_GPS.h>
-Microduino_GPS GPS(&Serial1);
+
+/**
+**CoreUSB UART Port: [Serial1] [D0,D1]
+**Core+ UART Port: [Serial1] [D2,D3]
+**/
+#if defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega644P__) || defined(__AVR_ATmega128RFA1__)
+#define SerialGPS Serial1
+#endif
+
+/**
+**Core UART Port: [SoftSerial] [D2,D3]
+**/
+#if defined (__AVR_ATmega168__) || defined (__AVR_ATmega328__) || defined (__AVR_ATmega328P__)
+#include <SoftwareSerial.h>
+SoftwareSerial SerialGPS(2, 3); /* RX:D2, TX:D3 */
+#endif
+
+
+Microduino_GPS GPS(&SerialGPS);
 
 // Set GPSECHO to 'false' to turn off echoing the GPS data to the Serial console
 // Set to 'true' if you want to debug and listen to the raw GPS sentences

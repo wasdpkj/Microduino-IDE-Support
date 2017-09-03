@@ -29,7 +29,7 @@ void setup(void)
 {
   Serial.begin(115200);
   while (!Serial); // wait for Leonardo enumeration, others continue immediately
-  Serial.print("setup begin\r\n");
+  Serial.print(F("setup begin\r\n"));
   delay(100);
 
   WifiInit(EspSerial, UARTSPEED);

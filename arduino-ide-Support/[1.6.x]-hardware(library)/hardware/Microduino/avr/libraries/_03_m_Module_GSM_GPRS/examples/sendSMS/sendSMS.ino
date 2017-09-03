@@ -10,12 +10,21 @@
 
 #include <TinyGsmClient.h>
 
-// Use Hardware Serial on Microduino/mCookie Core+
+/**
+**CoreUSB UART Port: [Serial1] [D0,D1]
+**Core+ UART Port: [Serial1] [D2,D3]
+**/
+#if defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega644P__) || defined(__AVR_ATmega128RFA1__)
 #define SerialAT Serial1
+#endif
 
-// or Software Serial on Microduino/mCookie Core
-//#include <SoftwareSerial.h>
-//SoftwareSerial SerialAT(2, 3); // RX, TX
+/**
+**Core UART Port: [SoftSerial] [D2,D3]
+**/
+#if defined (__AVR_ATmega168__) || defined (__AVR_ATmega328__) || defined (__AVR_ATmega328P__)
+#include <SoftwareSerial.h>
+SoftwareSerial SerialAT(2, 3); /* RX:D2, TX:D3 */
+#endif
 
 TinyGsm modem(SerialAT);
 TinyGsmClient client(modem);

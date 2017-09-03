@@ -49,30 +49,30 @@ void setup(void)
 {
   Serial.begin(115200);
   while (!Serial); // wait for Leonardo enumeration, others continue immediately
-  Serial.print("setup begin\r\n");
+  Serial.print(F("setup begin\r\n"));
   delay(100);
 
   WifiInit(EspSerial, UARTSPEED);
 
-  Serial.print("FW Version: ");
+  Serial.print(F("FW Version: "));
   Serial.println(wifi.getVersion().c_str());
 
 
   if (wifi.setOprToStation()) {
-    Serial.print("to station ok\r\n");
+    Serial.print(F("to station ok\r\n"));
   } else {
-    Serial.print("to station err\r\n");
+    Serial.print(F("to station err\r\n"));
   }
 
   if (wifi.joinAP(SSID, PASSWORD)) {
-    Serial.print("Join AP success\r\n");
-    Serial.print("IP: ");
+    Serial.print(F("Join AP success\r\n"));
+    Serial.print(F("IP: "));
     Serial.println(wifi.getLocalIP().c_str());
   } else {
-    Serial.print("Join AP failure\r\n");
+    Serial.print(F("Join AP failure\r\n"));
   }
 
-  Serial.print("setup end\r\n");
+  Serial.print(F("setup end\r\n"));
 }
 
 void loop(void)

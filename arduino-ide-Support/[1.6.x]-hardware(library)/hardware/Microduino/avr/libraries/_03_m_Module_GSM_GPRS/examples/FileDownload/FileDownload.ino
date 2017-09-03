@@ -17,8 +17,21 @@ const char apn[]  = "YourAPN";
 const char user[] = "";
 const char pass[] = "";
 
-// Use Hardware Serial on Microduino/mCookie Core+
+/**
+**CoreUSB UART Port: [Serial1] [D0,D1]
+**Core+ UART Port: [Serial1] [D2,D3]
+**/
+#if defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega644P__) || defined(__AVR_ATmega128RFA1__)
 #define SerialAT Serial1
+#endif
+
+/**
+**Core UART Port: [SoftSerial] [D2,D3]
+**/
+#if defined (__AVR_ATmega168__) || defined (__AVR_ATmega328__) || defined (__AVR_ATmega328P__)
+#include <SoftwareSerial.h>
+SoftwareSerial SerialAT(2, 3); /* RX:D2, TX:D3 */
+#endif
 
 TinyGsm modem(SerialAT);
 TinyGsmClient client(modem);
@@ -31,11 +44,11 @@ uint32_t knownFileSize = 1024;   // In case server does not send it
 
 void setup() {
   // Set console baud rate
-  Serial.begin(115200);
+  Serial.begin(9600);
   delay(10);
 
   // Set GSM module baud rate
-  SerialAT.begin(115200);
+  SerialAT.begin(9600);
   delay(3000);
 
   // Restart takes quite some time

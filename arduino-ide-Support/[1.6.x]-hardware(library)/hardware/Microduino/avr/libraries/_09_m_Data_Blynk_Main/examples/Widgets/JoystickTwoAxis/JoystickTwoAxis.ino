@@ -41,15 +41,23 @@ char auth[] = "YourAuthToken";
 char ssid[] = "YourNetworkName";
 char pass[] = "YourPassword";
 
-// Hardware Serial on Core+, CoreUSB, CoreRF...
+/**
+**CoreUSB UART Port: [Serial1] [D0,D1]
+**Core+ UART Port: [Serial1] [D2,D3]
+**/
+#if defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega644P__) || defined(__AVR_ATmega128RFA1__)
 #define EspSerial Serial1
+#define ESP8266_BAUD  115200
+#endif
 
-// or Software Serial on Core
-//#include <SoftwareSerial.h>
-//SoftwareSerial EspSerial(2, 3); // RX, TX
-
-// Your ESP8266 baud rate:
-#define ESP8266_BAUD 115200
+/**
+**Core UART Port: [SoftSerial] [D2,D3]
+**/
+#if defined (__AVR_ATmega168__) || defined (__AVR_ATmega328__) || defined (__AVR_ATmega328P__)
+#include <SoftwareSerial.h>
+SoftwareSerial EspSerial(2, 3); /* RX:D2, TX:D3 */
+#define ESP8266_BAUD  9600
+#endif
 
 ESP8266 wifi(&EspSerial);
 

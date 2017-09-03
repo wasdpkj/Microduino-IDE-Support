@@ -77,9 +77,9 @@ void writeToEEPROM(uint16_t start, uint16_t end) {
 	for (uint16_t i = start; i < (start + storInfo.length()); i++) {
 		EEPROM.write(i, storInfo[i]);
 	}
-	Serial.print("---write from ");
+	Serial.print(F("---write from "));
 	Serial.print(start);
-	Serial.println(" once---");
+	Serial.println(F(" once---"));
 //	EEPROM.commit();
 //		EEPROM.end();
 }
@@ -87,9 +87,9 @@ void writeToEEPROM(uint16_t start, uint16_t end) {
 //显示EEPROM
 void showEEPROM() {
 	Serial.println();
-	Serial.print("Total memory is:");
+	Serial.print(F("Total memory is:"));
 	Serial.println(EEPROMLengh);
-	Serial.println("-----EEPROM image here:-----");
+	Serial.println(F("-----EEPROM image here:-----"));
 	for (uint16_t i = 0; i < EEPROMLengh; i++) {
 		char ascii = EEPROM.read(i);
 		Serial.print(ascii);
@@ -142,12 +142,12 @@ void readEEPROM(uint8_t start, uint8_t end) {
 			startSplit = i + 1;
 			switch (num) {
 			case 0:
-				Serial.print("diviceID:");
+				Serial.print(F("diviceID:"));
 				deviceID = printStr;
 				Serial.println(printStr);
 				break;
 			case 1:
-				Serial.print("secureToken:");
+				Serial.print(F("secureToken:"));
 				secureToken = printStr;
 				Serial.println(printStr);
 				break;
@@ -161,7 +161,7 @@ void readEEPROM(uint8_t start, uint8_t end) {
 
 void doRegMqtt() {
 
-//	Serial.println("station MAC addrress:");
+//	Serial.println(F("station MAC addrress:"));
 //	MACAddr=wifi.getStationMac();
 //	MACAddr.replace(":", "");
 //	MACAddr.toLowerCase();
@@ -179,23 +179,23 @@ void doRegMqtt() {
 
 	//setRegister
 	if (wifi.mqttSetServer(MQTTSERVER, REG_PORT)) {
-		Serial.print("mqtt set reg server ok\r\n");
+		Serial.print(F("mqtt set reg server ok\r\n"));
 	} else {
-		Serial.print("mqtt set reg server err\r\n");
+		Serial.print(F("mqtt set reg server err\r\n"));
 	}
 
 	if (wifi.mqttConnect(MACAddr, PROJECTID, PROJECTTOKEN)) {
 		wifi.setMqttConnected(true);
-		Serial.print("mqtt reg connect ok\r\n");
+		Serial.print(F("mqtt reg connect ok\r\n"));
 	} else {
 		wifi.setMqttConnected(false);
-		Serial.print("mqtt reg connect err\r\n");
+		Serial.print(F("mqtt reg connect err\r\n"));
 	}
 
 	if (wifi.mqttSetSubscrib(subscribTopic)) {
-		Serial.print("reg set subscrib topic ok\r\n");
+		Serial.print(F("reg set subscrib topic ok\r\n"));
 	} else {
-		Serial.print("reg set subscrib topic err\r\n");
+		Serial.print(F("reg set subscrib topic err\r\n"));
 	}
 
 	jsonData = "{\"";
@@ -208,24 +208,24 @@ void doRegMqtt() {
 	jsonData += "\"}";
 
 	if (wifi.mqttSetTopic(publishTopic)) {
-		Serial.print("mqtt reg set publish topic ok\r\n");
+		Serial.print(F("mqtt reg set publish topic ok\r\n"));
 	} else {
-		Serial.print("mqtt reg set publish topic err\r\n");
+		Serial.print(F("mqtt reg set publish topic err\r\n"));
 	}
 	if (wifi.mqttSetMessage(jsonData)) {
-		Serial.print("mqtt reg set message ok\r\n");
+		Serial.print(F("mqtt reg set message ok\r\n"));
 	} else {
-		Serial.print("mqtt reg set message err\r\n");
+		Serial.print(F("mqtt reg set message err\r\n"));
 	}
 
 	if (wifi.mqttPub()) {
-		Serial.print("mqtt reg pub ok\r\n");
+		Serial.print(F("mqtt reg pub ok\r\n"));
 	} else {
-		Serial.print("mqtt reg pub err\r\n");
+		Serial.print(F("mqtt reg pub err\r\n"));
 	}
 
 
-	Serial.println("Waitting for DeviceID, DeviceToken");
+	Serial.println(F("Waitting for DeviceID, DeviceToken"));
 
 
 
@@ -233,7 +233,7 @@ void doRegMqtt() {
 		if (sensorlastTime > millis())
 			sensorlastTime = millis();
 		if (millis() - sensorlastTime > INTERVAL_sensor) {
-			Serial.println("...");
+			Serial.println(F("..."));
 			sensorlastTime = millis();
 		}
 		mCottenData = wifi.getMqttJson();
@@ -262,9 +262,9 @@ void setTransportMqtt() {
 	readEEPROM(0, DeviceID_Token_Range);
 
 	if (wifi.mqttSetServer(MQTTSERVER, MQTT_PORT)) {
-		Serial.print("mqtt set server ok\r\n");
+		Serial.print(F("mqtt set server ok\r\n"));
 	} else {
-		Serial.print("mqtt set server err\r\n");
+		Serial.print(F("mqtt set server err\r\n"));
 	}
 
 	//subscribe:ca
@@ -282,27 +282,27 @@ void setTransportMqtt() {
 
 	if (wifi.mqttConnect(MACAddr, deviceID, secureToken)) {
 		wifi.setMqttConnected(true);
-		Serial.print("mqtt connect ok\r\n");
+		Serial.print(F("mqtt connect ok\r\n"));
 	} else {
 		wifi.setMqttConnected(false);
-		Serial.print("mqtt connect err\r\n");
+		Serial.print(F("mqtt connect err\r\n"));
 	}
 	if (wifi.mqttSetDiveceIDToken(MACAddr, secureToken)) {
-		Serial.print("mqtt set device ID Token ok\r\n");
+		Serial.print(F("mqtt set device ID Token ok\r\n"));
 	} else {
-		Serial.print("mqtt set device ID Token err\r\n");
+		Serial.print(F("mqtt set device ID Token err\r\n"));
 	}
 	if (wifi.mqttSetSubscrib(subscribTopic)) {
-		Serial.print("mqtt set subscrib ca topic ok\r\n");
+		Serial.print(F("mqtt set subscrib ca topic ok\r\n"));
 	} else {
-		Serial.print("mqtt set subscrib ca topic err\r\n");
+		Serial.print(F("mqtt set subscrib ca topic err\r\n"));
 	}
 
 	subscribTopic[1]='p';
 	if (wifi.mqttSetSubscrib(subscribTopic)) {
-		Serial.print("mqtt set subscrib cp topic ok\r\n");
+		Serial.print(F("mqtt set subscrib cp topic ok\r\n"));
 	} else {
-		Serial.print("mqtt set subscrib cp topic err\r\n");
+		Serial.print(F("mqtt set subscrib cp topic err\r\n"));
 	}
 	subscribTopic[1]='a';
 
@@ -318,22 +318,22 @@ void setup(void) {
 
 
 	while (!Serial); // wait for Leonardo enumeration, others continue immediately
-	Serial.print("setup begin\r\n");
+	Serial.print(F("setup begin\r\n"));
 	delay(100);
 
 	WifiInit(EspSerial, UARTSPEED);
 
 	EEPROM.begin();
-	Serial.print("FW Microduino Version:");
+	Serial.print(F("FW Microduino Version:"));
 	Serial.println(wifi.getMVersion());
 
 	if (wifi.setOprToStation()) {
-		Serial.print("to station ok\r\n");
+		Serial.print(F("to station ok\r\n"));
 	} else {
-		Serial.print("to station err\r\n");
+		Serial.print(F("to station err\r\n"));
 	}
 
-	Serial.println("station MAC addrress:");
+	Serial.println(F("station MAC addrress:"));
 	MACAddr=wifi.getSimpleMac();
 	MACAddr.replace(":", "");
 	MACAddr.toLowerCase();
@@ -341,14 +341,14 @@ void setup(void) {
 
 	if (isSmartConfiger) {
 		wifi.smartConfiger(true);
-		Serial.println("Smart Configer ...");
+		Serial.println(F("Smart Configer ..."));
 		while (true) {
 
 			if (sensorlastTime > millis())
 				sensorlastTime = millis();
 			if (millis() - sensorlastTime > INTERVAL_sensor) {
 
-				Serial.println("...");
+				Serial.println(F("..."));
 				sensorlastTime = millis();
 			}
 
@@ -363,11 +363,11 @@ void setup(void) {
 		}
 	} else {
 		wifi.setAutoConnect(true);
-		Serial.println("restart");
+		Serial.println(F("restart"));
 		wifi.restart();
 	}
 
-	Serial.println("wifi info");
+	Serial.println(F("wifi info"));
 	Serial.println(wifi.queryWiFiInfo());
 
 	if (getDevID_TokenEnable) {
@@ -376,9 +376,9 @@ void setup(void) {
 
 		writeToEEPROM(0, DeviceID_Token_Range);
 		if(wifi.mqttDisconnect()) {//断开连接
-			Serial.print("disconnect ok\r\n");
+			Serial.print(F("disconnect ok\r\n"));
 		}else {
-			Serial.print("disconnect err\r\n");
+			Serial.print(F("disconnect err\r\n"));
 		}
 
 	} else {//否则，直接设置传输数据Mqtt
@@ -420,10 +420,10 @@ void loop(void) {
 				aJsonObject* state = aJson.getObjectItem(root, "undefined");
 
 				if (strcmp(state->valuestring, "true") == 0) {
-					Serial.println("ON");
+					Serial.println(F("ON"));
 				}
 				if (strcmp(state->valuestring, "false") == 0) {
-					Serial.println("OFF");
+					Serial.println(F("OFF"));
 				}
 			}
 		}
@@ -445,9 +445,9 @@ void loop(void) {
 			jsonData += "}";
 
 			if (wifi.mqttPublishM(jsonData)) {
-				Serial.print("mqtt publishM ok\r\n");
+				Serial.print(F("mqtt publishM ok\r\n"));
 			} else {
-				Serial.print("mqtt publishM err\r\n");
+				Serial.print(F("mqtt publishM err\r\n"));
 			}
 
 			sensorlastTime = millis();

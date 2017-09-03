@@ -51,100 +51,100 @@ void setup(void)
 {
   Serial.begin(115200);
   while (!Serial); // wait for Leonardo enumeration, others continue immediately
-  Serial.print("setup begin\r\n");
+  Serial.print(F("setup begin\r\n"));
   delay(100);
 
   WifiInit(EspSerial, UARTSPEED);
   
   Serial.println(wifi.getWifiModeList().c_str());
   if (wifi.setOprToSoftAP(2, 2)) {
-    Serial.println("it is STA");
+    Serial.println(F("it is STA"));
   }
   if (wifi.setOprToStation(2, 2)) {
-    Serial.println("it is AP");
+    Serial.println(F("it is AP"));
   }
   if (wifi.setOprToStationSoftAP(2, 2)) {
-    Serial.println("it is AP+SoftAP");
+    Serial.println(F("it is AP+SoftAP"));
   }
   Serial.println(wifi.getAPList().c_str());
   wifi.joinAP(SSID, PASSWORD);
   Serial.println(wifi.getNowConecAp(1).c_str());
   if (wifi.leaveAP())
   {
-    Serial.println("it is leave");
+    Serial.println(F("it is leave"));
   }
   Serial.println(wifi.getNowConecAp(1).c_str());
   if (wifi.setSoftAPParam("aaa", "12345678"))
   {
-    Serial.println("it is set param ok");
+    Serial.println(F("it is set param ok"));
   }
   Serial.println(wifi.getSoftAPParam());
   Serial.println(wifi.getJoinedDeviceIP().c_str());
-  Serial.print("the state of DHCP:");
+  Serial.print(F("the state of DHCP:"));
   Serial.println(wifi.getDHCP().c_str());
   if (wifi.setDHCP(2, 1)) {
-    Serial.println("it is set DHCP OK");
+    Serial.println(F("it is set DHCP OK"));
   }
   Serial.println(wifi.getDHCP().c_str());
   if (wifi.setAutoConnect(false)) {
-    Serial.println("take off auto connect ok");
+    Serial.println(F("take off auto connect ok"));
   }
-  Serial.print("get the station mac: ");
+  Serial.print(F("get the station mac: "));
   Serial.println(wifi.getStationMac().c_str());
   if (wifi.setStationMac("18:fe:35:98:d3:7b")) {
-    Serial.println("set station mac is ok ");
+    Serial.println(F("set station mac is ok "));
   }
   else {
-    Serial.println("it is error");
+    Serial.println(F("it is error"));
   }
-  Serial.print("get the station mac: ");
+  Serial.print(F("get the station mac: "));
   Serial.println(wifi.getStationMac().c_str());
-  Serial.print("get the station's ip");
+  Serial.print(F("get the station's ip"));
   Serial.println(wifi.getStationIp().c_str());
 
   if (wifi.setStationIp("192.168.1.6", "192.168.1.1", "255.255.255.0")) {
-    Serial.println("set station's ip is ok");
+    Serial.println(F("set station's ip is ok"));
   }
   else {
-    Serial.println("set station's ip is error");
+    Serial.println(F("set station's ip is error"));
   }
-  Serial.print("get the station's ip");
+  Serial.print(F("get the station's ip"));
   Serial.println(wifi.getStationIp().c_str());
 
-  Serial.print("get the ap's ap");
+  Serial.print(F("get the ap's ap"));
   Serial.println(wifi.getAPIp().c_str());
 
   if (wifi.setAPIp("192.168.1.1")) {
-    Serial.println("set ap's ip is ok");
+    Serial.println(F("set ap's ip is ok"));
   }
   else
   {
-    Serial.println("set ap's is is error");
+    Serial.println(F("set ap's is is error"));
   }
-  Serial.print("get the ap's ap");
+  Serial.print(F("get the ap's ap"));
   Serial.println(wifi.getAPIp().c_str());
 
   if (wifi.startSmartConfig(1)) {
-    Serial.println("start smartconfig is ok");
+    Serial.println(F("start smartconfig is ok"));
   }
   else {
-    Serial.println("start smartconfig is error");
+    Serial.println(F("start smartconfig is error"));
   }
   if (wifi.stopSmartConfig()) {
-    Serial.println("stop smartconfig is ok");
+    Serial.println(F("stop smartconfig is ok"));
   }
   else {
-    Serial.println("stop smartconfig is error");
+    Serial.println(F("stop smartconfig is error"));
   }
-  Serial.print("get the current status of connection:");
+  Serial.print(F("get the current status of connection:"));
   Serial.println(wifi.getIPStatus().c_str());
   if (wifi.saveTransLink(1, "192.168.1.18", 1006)) {
-    Serial.println("save trans link is ok");
+    Serial.println(F("save trans link is ok"));
   }
   else {
-    Serial.println("save trans link is error");
+    Serial.println(F("save trans link is error"));
   }
-  Serial.println("setup end\r\n");
+  Serial.println(F("setup end\r\n"));
 }
 
 void loop(void)

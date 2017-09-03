@@ -104,7 +104,7 @@ void loop(void)
   uint8_t buffer[512] = {0};
   uint32_t len = wifi.recv(buffer, sizeof(buffer), 20000);
   if (len > 0) {
-    Serial.print("Received:[");
+    Serial.print(F("Received:["));
     for (uint32_t i = 0; i < len; i++) {
       Serial.print((char)buffer[i]);
     }
