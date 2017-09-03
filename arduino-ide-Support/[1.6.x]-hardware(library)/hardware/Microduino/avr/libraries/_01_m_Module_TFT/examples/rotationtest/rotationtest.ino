@@ -16,19 +16,18 @@
   MIT license, all text above must be included in any redistribution
  ****************************************************/
 
-// For the breakout, you can use any (4 or) 5 pins
+
+// For the breakout, you can use any (2 or) 3 pins
 //#define sclk 13
 //#define mosi 11
-//#define cs   5
-//#define dc   4
-//#define rst  -1  // you can also connect this to the Arduino reset
-
-//Use these pins for the shield!
-#define sclk 13
-#define mosi 11
 #define cs   5
 #define dc   4
 #define rst  -1  // you can also connect this to the Arduino reset
+
+//Use these pins for the shield!
+//#define cs   5
+//#define dc   4
+//#define rst  -1  // you can also connect this to the Arduino reset
 
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7735.h> // Hardware-specific library
@@ -40,13 +39,13 @@
 #endif
 
 // Option 1: use any pins but a little slower
-Adafruit_ST7735 tft = Adafruit_ST7735(cs, dc, mosi, sclk, rst);
+//Adafruit_ST7735 tft = Adafruit_ST7735(cs, dc, mosi, sclk, rst);
 
 // Option 2: must use the hardware SPI pins
 // (for UNO thats sclk = 13 and sid = 11) and pin 10 must be
 // an output. This is much faster - also required if you want
 // to use the microSD card (see the image drawing example)
-//Adafruit_ST7735 tft = Adafruit_ST7735(cs, dc, rst);
+Adafruit_ST7735 tft = Adafruit_ST7735(cs, dc, rst);
 
 void setup(void) {
   Serial.begin(9600);
