@@ -54,7 +54,7 @@ DEPENDENCY_OUTPUT=$(arduino --pref "boardsmanager.additional.urls=https://github
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 
 echo -n "MICRODUINO AVR: "
-DEPENDENCY_OUTPUT=$(arduino --install-boards microduino:avr 2>&1)
+DEPENDENCY_OUTPUT=$(arduino --install-boards microduino:avr:1.8.4 2>&1)
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 
 # install random lib so the arduino IDE grabs a new library index

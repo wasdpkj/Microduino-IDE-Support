@@ -44,6 +44,44 @@
               "name": "Microduino/mCookie-Core USB (32u4)"
             }
           ]
+        },
+        {
+          "category": "Microduino",
+          "help": {
+            "online": "https://wiki.microduino.cn"
+          },
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/for_travis/boards/microduino-avr-1.8.4.zip",
+          "checksum": "SHA-256:a5f49d2d23d1a006bf4ea31283e2f020ec4d1bd7f301353df99070019e368143",
+          "name": "Microduino AVR Boards",
+          "version": "1.8.4",
+          "architecture": "avr",
+          "archiveFileName": "microduino-avr-1.8.4.zip",
+          "size": "328258",
+          "toolsDependencies": [
+          ],
+          "boards": [
+            {
+              "name": "Microduino/mCookie-Core (328p)@16M,5V"
+            },
+            {
+              "name": "Microduino/mCookie-Core (328p)@8M,3.3V"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (644pa)@16M,5V)"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (644pa)@8M,3.3V"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (1284pa)@16M,5V)"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (1284pa)@8M,3.3V"
+            },
+            {
+              "name": "Microduino/mCookie-Core USB (32u4)"
+            }
+          ]
         }
       ],
       "tools": [
