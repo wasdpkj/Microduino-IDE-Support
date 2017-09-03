@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo -e "\n\n install Version:V20 \n\n";
+
 # we need bash 4 for associative arrays
 if [ "${BASH_VERSION%%[^0-9]*}" -lt "4" ]; then
   echo "BASH VERSION < 4: ${BASH_VERSION}" >&2
@@ -19,10 +21,10 @@ export AUX_PLATFORMS='declare -A aux_platforms=( [16MHzatmega328]="arduino:avr:u
 sleep 3
 export DISPLAY=:1.0
 
-# download and install arduino 1.6.9
-wget https://downloads.arduino.cc/arduino-1.6.9-linux64.tar.xz
-tar xf arduino-1.6.9-linux64.tar.xz
-mv arduino-1.6.9 $HOME/arduino_ide
+# download and install arduino 1.8.4
+wget https://downloads.arduino.cc/arduino-1.8.4-linux64.tar.xz
+tar xf arduino-1.8.4-linux64.tar.xz
+mv arduino-1.8.4 $HOME/arduino_ide
 
 #cd $HOME/arduino_ide/hardware
 #mkdir Microduino
@@ -34,9 +36,9 @@ mkdir -p $HOME/arduino_ide/libraries
 mv -f $TRAVIS_BUILD_DIR/arduino-ide-Support/\[1\.6\.x\]\-hardware\(library\)/hardware/Microduino/avr/libraries/* $HOME/arduino_ide/libraries
 #mv -f $TRAVIS_BUILD_DIR/libraries $HOME/arduino_ide/libraries
 
-echo -e "\n########################################################################";
-echo $HOME/arduino_ide/libraries/*
-echo -e "########################################################################\n";
+echo -e "\n=============================================================";
+echo -e $HOME/arduino_ide/libraries/*
+echo -e "=============================================================\n";
 
 # add the arduino CLI to our PATH
 export PATH="$HOME/arduino_ide:$PATH"
@@ -100,7 +102,7 @@ function build_platform()
 
   # loop through results and add them to the array
   #examples=($(find $PWD -name "*.pde" -o -name "*.ino"))
-  examples=($(find $HOME/arduino_ide/libraries -name "*.pde" -o -name "*.ino"))
+  examples=($(find $HOME/arduino_ide/libraries -name "*.ino"))
 
   # get the last example in the array
   local last="${examples[@]:(-1)}"
@@ -157,8 +159,7 @@ function build_platform()
       last_example=1
     fi
 
-    echo -n "$example_dir"
-    echo -e "\v";
+    echo -n -e "$example_dir \t#"
     echo -n "$example_file: "
 
     # continue to next example if platform switch failed
@@ -211,27 +212,27 @@ function build_platform()
     fi
 
     # make sure that all examples are .ino files
-    if [[ $example =~ \.pde$ ]]; then
+    #if [[ $example =~ \.pde$ ]]; then
 
       # heavy X
-      echo -e "\xe2\x9c\x96"
+      #echo -e "\xe2\x9c\x96"
 
-      echo -e "-------------------------- DEBUG OUTPUT --------------------------\n"
-      echo "PDE EXTENSION. PLEASE UPDATE TO INO"
-      echo -e "\n------------------------------------------------------------------\n"
+      #echo -e "-------------------------- DEBUG OUTPUT --------------------------\n"
+      #echo "PDE EXTENSION. PLEASE UPDATE TO INO"
+      #echo -e "\n------------------------------------------------------------------\n"
 
       # add json
-      PLATFORM_JSON="${PLATFORM_JSON}$(json_sketch 0 $example_file $last_example)"
+      #PLATFORM_JSON="${PLATFORM_JSON}$(json_sketch 0 $example_file $last_example)"
 
       # increment fails
-      FAIL_COUNT=$((FAIL_COUNT + 1))
+      #FAIL_COUNT=$((FAIL_COUNT + 1))
 
       # mark as fail
-      exit_code=1
+      #exit_code=1
 
-      continue
+      #continue
 
-    fi
+    #fi
 
     # verify the example, and save stdout & stderr to a variable
     # we have to avoid reading the exit code of local:

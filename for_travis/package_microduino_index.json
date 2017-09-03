@@ -22,13 +22,13 @@
           "toolsDependencies": [
             {
               "packager": "arduino",
-              "version": "4.8.1-arduino5",
-              "name": "avr-gcc"
+              "name": "avr-gcc",
+              "version": "4.9.2-atmel3.5.4-arduino2"
             },
             {
               "packager": "arduino",
-              "version": "6.0.1-arduino5",
-              "name": "avrdude"
+              "name": "avrdude",
+              "version": "6.3.0-arduino9"
             }
           ],
           "boards": [
@@ -56,6 +56,8 @@
           ]
         }
       ],
+      "tools": [
+      ],  
       "email": "pankejia@microduino.cc",
       "name": "microduino"
     }
