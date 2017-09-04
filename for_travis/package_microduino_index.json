@@ -13,12 +13,12 @@
             "online": "https://wiki.microduino.cn"
           },
           "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/for_travis/boards/microduino-avr-1.6.9.zip",
-          "checksum": "SHA-256:A513027A9B579F3CEC54CD35BCD539D8453F346A1E6C119B9D7DD517505780C3",
+          "checksum": "SHA-256:4FADCA36DE567E88CD13831FC899A74F4B46F548FE8120AF21C19BEB52C309B7",
           "name": "Microduino AVR Boards",
           "version": "1.6.9",
           "architecture": "avr",
           "archiveFileName": "microduino-avr-1.6.9.zip",
-          "size": "328078",
+          "size": "328540",
           "toolsDependencies": [
           ],
           "boards": [
@@ -51,12 +51,12 @@
             "online": "https://wiki.microduino.cn"
           },
           "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/for_travis/boards/microduino-avr-1.8.4.zip",
-          "checksum": "SHA-256:a5f49d2d23d1a006bf4ea31283e2f020ec4d1bd7f301353df99070019e368143",
+          "checksum": "SHA-256:2E52CBE148F517FFBA4CD776338802D428AE538474C2E4F28F31774F3C8B03F1",
           "name": "Microduino AVR Boards",
           "version": "1.8.4",
           "architecture": "avr",
           "archiveFileName": "microduino-avr-1.8.4.zip",
-          "size": "328258",
+          "size": "328720",
           "toolsDependencies": [
           ],
           "boards": [
@@ -80,6 +80,9 @@
             },
             {
               "name": "Microduino/mCookie-Core USB (32u4)"
+            },
+            {
+              "name": "Microduino/mCookie-Core RF (128rfa1)"
             }
           ]
         }
