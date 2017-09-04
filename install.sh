@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo -e "\n\n install Version:V30 \n\n";
+echo -e "\n\n install Version:V40 \n\n";
 
 # we need bash 4 for associative arrays
 if [ "${BASH_VERSION%%[^0-9]*}" -lt "4" ]; then
@@ -36,9 +36,13 @@ mkdir -p $HOME/arduino_ide/libraries
 mv -f $TRAVIS_BUILD_DIR/libraries/* $HOME/arduino_ide/libraries
 #mv -f $TRAVIS_BUILD_DIR/libraries $HOME/arduino_ide/libraries
 
-echo -e "\n=============================================================";
-echo -e $HOME/arduino_ide/libraries/*
-echo -e "=============================================================\n";
+
+#pushd $HOME/arduino_ide/libraries/
+#echo -e "\n=============================================================";
+#ls -d */
+#echo -e "=============================================================\n";
+#popd
+
 
 # add the arduino CLI to our PATH
 export PATH="$HOME/arduino_ide:$PATH"
@@ -53,13 +57,13 @@ echo -n "ADD PACKAGE INDEX: "
 DEPENDENCY_OUTPUT=$(arduino --pref "boardsmanager.additional.urls=https://github.com/${TRAVIS_REPO_SLUG}/raw/${TRAVIS_BRANCH}/_for_travis/package_microduino_index.json" --save-prefs 2>&1)
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 
-echo -n "MICRODUINO AVR: "
-DEPENDENCY_OUTPUT=$(arduino --install-boards microduino:avr:1.8.4 2>&1)
-if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
-
 echo -n "MICRODUINO ESP32: "
 DEPENDENCY_OUTPUT=$(arduino --install-boards microduino:esp32 2>&1)
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
+
+#echo -n "MICRODUINO AVR: "
+#DEPENDENCY_OUTPUT=$(arduino --install-boards microduino:avr:1.8.4 2>&1)
+#if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 
 # install random lib so the arduino IDE grabs a new library index
 # see: https://github.com/arduino/Arduino/issues/3535
