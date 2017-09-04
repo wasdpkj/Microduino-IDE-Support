@@ -14,7 +14,7 @@ export MAIN_PLATFORMS='declare -A main_platforms=( [uno]="arduino:avr:uno" [due]
 
 # associative array for other platforms that can be called explicitly in .travis.yml configs
 # this will be eval'd in the functions below because arrays can't be exported
-export AUX_PLATFORMS='declare -A aux_platforms=( [16MHzatmega328]="arduino:avr:uno" [16MHzatmega644]="microduino:avr:16MHzatmega644" [16MHzatmega1284]="microduino:avr:16MHzatmega1284" [usb32u416m]="microduino:avr:usb32u416m" )'
+export AUX_PLATFORMS='declare -A aux_platforms=( [core328]="microduino:avr:mddevice:cpu=16MHzatmega328" [coreplus644]="microduino:avr:mddevice:cpu=16MHzatmega644" [coreplus1284]="microduino:avr:mddevice:cpu=16MHzatmega1284" [coreusb]="microduino:avr:mddevice:cpu=usb32u416m" [corerf]="microduino:avr:mddevice:cpu=16MHzatmega128rfa1" )'
 
 # make display available for arduino CLI
 /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16
