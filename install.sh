@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo -e "\n\n install Version:V61 \n\n";
+echo -e "\n\n install Version:V66 \n\n";
 
 # we need bash 4 for associative arrays
 if [ "${BASH_VERSION%%[^0-9]*}" -lt "4" ]; then
@@ -20,6 +20,8 @@ export AUX_PLATFORMS='declare -A aux_platforms=( [core328]="microduino:avr:mddev
 /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16
 sleep 3
 export DISPLAY=:1.0
+
+pip install pyserial
 
 # download and install arduino 1.8.4
 wget https://downloads.arduino.cc/arduino-1.8.4-linux64.tar.xz
@@ -86,8 +88,6 @@ if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 echo -n "SET BUILD PREFERENCES: "
 DEPENDENCY_OUTPUT=$(arduino --pref "compiler.warning_level=dafault" --save-prefs 2>&1)
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
-
-pip install pyserial
 
 # init the json temp var for the current platform
 export PLATFORM_JSON=""
