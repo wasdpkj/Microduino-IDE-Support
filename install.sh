@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo -e "\n\n install Version:V68 \n\n";
+echo -e "\n\n install Version:V69 \n\n";
 
 # we need bash 4 for associative arrays
 if [ "${BASH_VERSION%%[^0-9]*}" -lt "4" ]; then
@@ -21,8 +21,6 @@ export AUX_PLATFORMS='declare -A aux_platforms=( [core328]="microduino:avr:mddev
 sleep 3
 export DISPLAY=:1.0
 
-pip install pyserial
-
 # download and install arduino 1.8.4
 wget https://downloads.arduino.cc/arduino-1.8.4-linux64.tar.xz
 tar xf arduino-1.8.4-linux64.tar.xz
@@ -34,10 +32,14 @@ mv arduino-1.8.4 $HOME/arduino_ide
 # move this library to the arduino libraries folder
 #ln -s $TRAVIS_BUILD_DIR/libraries/* $HOME/arduino_ide/libraries
 rm -rf $HOME/arduino_ide/libraries
-mkdir -p $HOME/Arduino/libraries
-mv -f $TRAVIS_BUILD_DIR/libraries/* $HOME/Arduino/libraries
+mkdir -p $HOME/arduino_ide/libraries
+mv -f $TRAVIS_BUILD_DIR/libraries/* $HOME/arduino_ide/libraries
 #mv -f $TRAVIS_BUILD_DIR/libraries $HOME/arduino_ide/libraries
 
+
+echo -e "\n=============================================================";
+echo -e $HOME/arduino_ide/libraries/*
+echo -e "=============================================================\n";
 
 #pushd $HOME/arduino_ide/libraries/
 #echo -e "\n=============================================================";
@@ -85,6 +87,8 @@ echo -n "SET BUILD PREFERENCES: "
 DEPENDENCY_OUTPUT=$(arduino --pref "compiler.warning_level=all" --save-prefs 2>&1)
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 
+pip install pyserial
+
 # init the json temp var for the current platform
 export PLATFORM_JSON=""
 
@@ -119,7 +123,7 @@ function build_platform()
 
   # loop through results and add them to the array
   #examples=($(find $PWD -name "*.pde" -o -name "*.ino"))
-  examples=($(find $HOME/Arduino/libraries -name "*.ino"))
+  examples=($(find $HOME/arduino_ide/libraries -name "*.ino"))
 
   # get the last example in the array
   local last="${examples[@]:(-1)}"
