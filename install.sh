@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo -e "\n\n install Version:V50 \n\n";
+echo -e "\n\n install Version:V60 \n\n";
 
 # we need bash 4 for associative arrays
 if [ "${BASH_VERSION%%[^0-9]*}" -lt "4" ]; then
@@ -20,6 +20,8 @@ export AUX_PLATFORMS='declare -A aux_platforms=( [core328]="microduino:avr:mddev
 /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16
 sleep 3
 export DISPLAY=:1.0
+
+pip install pyserial
 
 # download and install arduino 1.8.4
 wget https://downloads.arduino.cc/arduino-1.8.4-linux64.tar.xz
@@ -61,14 +63,12 @@ echo -n "MICRODUINO ESP32: "
 DEPENDENCY_OUTPUT=$(arduino --install-boards microduino:esp32 2>&1)
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 
-
 #- ln -s $TRAVIS_BUILD_DIR esp32
-cd $HOME/travis/\.arduino15/packages/microduino/hardware/esp32/\1\.\8\.\4/tools
-python get.py
-export PATH="$HOME/arduino_ide:$TRAVIS_BUILD_DIR/\.arduino15/packages/microduino/hardware/esp32/\1\.\8\.\4/tools/xtensa-esp32-elf/bin:$PATH"
-which arduino
-cd $TRAVIS_BUILD_DIR
-
+#cd $HOME/travis/\.arduino15/packages/microduino/hardware/esp32/\1\.\8\.\4/tools
+#python get.py
+#export PATH="$HOME/arduino_ide:$TRAVIS_BUILD_DIR/\.arduino15/packages/microduino/hardware/esp32/\1\.\8\.\4/tools/xtensa-esp32-elf/bin:$PATH"
+#which arduino
+#cd $TRAVIS_BUILD_DIR
 
 #echo -n "MICRODUINO AVR: "
 #DEPENDENCY_OUTPUT=$(arduino --install-boards microduino:avr:1.8.4 2>&1)
