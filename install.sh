@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo -e "\n\n install Version:V40 \n\n";
+echo -e "\n\n install Version:V50 \n\n";
 
 # we need bash 4 for associative arrays
 if [ "${BASH_VERSION%%[^0-9]*}" -lt "4" ]; then
@@ -45,7 +45,14 @@ mv -f $TRAVIS_BUILD_DIR/libraries/* $HOME/arduino_ide/libraries
 
 
 # add the arduino CLI to our PATH
-export PATH="$HOME/arduino_ide:$PATH"
+#export PATH="$HOME/arduino_ide:$PATH"
+
+#- ln -s $TRAVIS_BUILD_DIR esp32
+- cd $TRAVIS_BUILD_DIR/\.arduino15/packages/microduino/hardware/esp32/\1\.\8\.\4/tools
+- python get.py
+- export PATH="$HOME/arduino_ide:$TRAVIS_BUILD_DIR/\.arduino15/packages/microduino/hardware/esp32/\1\.\8\.\4/tools/xtensa-esp32-elf/bin:$PATH"
+- which arduino
+- cd $TRAVIS_BUILD_DIR
 
 echo -e "\n########################################################################";
 echo "INSTALLING DEPENDENCIES"
@@ -54,7 +61,7 @@ echo "########################################################################";
 
 # install the due, esp8266, and microduino board packages
 echo -n "ADD PACKAGE INDEX: "
-DEPENDENCY_OUTPUT=$(arduino --pref "boardsmanager.additional.urls=https://github.com/${TRAVIS_REPO_SLUG}/raw/${TRAVIS_BRANCH}/_for_travis/package_microduino_index.json" --save-prefs 2>&1)
+DEPENDENCY_OUTPUT=$(arduino --pref "boardsmanager.additional.urls=https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/package_microduino_index.json" --save-prefs 2>&1)
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 
 echo -n "MICRODUINO ESP32: "
