@@ -1,0 +1,164 @@
+{
+  "packages": [
+    {
+      "maintainer": "Microduino",
+      "help": {
+        "online": "https://wiki.microduino.cn"
+      },
+      "websiteURL": "https://www.microduino.cn",
+      "platforms": [
+        {
+          "category": "Microduino",
+          "help": {
+            "online": "https://wiki.microduino.cn"
+          },
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-avr-1.6.9.zip",
+          "checksum": "SHA-256:CFD01EC9B72D06D62872246B8E0E88FE961CA6D2212709E86559C550873C35DB",
+          "name": "Microduino AVR Boards",
+          "version": "1.6.9",
+          "architecture": "avr",
+          "archiveFileName": "microduino-avr-1.6.9.zip",
+          "size": "425020",
+          "toolsDependencies": [
+          ],
+          "boards": [
+            {
+              "name": "Microduino/mCookie-Core (328p)@16M,5V"
+            },
+            {
+              "name": "Microduino/mCookie-Core (328p)@8M,3.3V"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (644pa)@16M,5V)"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (644pa)@8M,3.3V"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (1284pa)@16M,5V)"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (1284pa)@8M,3.3V"
+            },
+            {
+              "name": "Microduino/mCookie-Core USB (32u4)"
+            }
+          ]
+        },
+        {
+          "category": "Microduino",
+          "help": {
+            "online": "https://wiki.microduino.cn"
+          },
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-avr-1.8.4.zip",
+          "checksum": "SHA-256:AE4B0EB4F406C7E3DA7F453C9F7A2B5A1D014024E1ECB8DB5E68765262156E02",
+          "name": "Microduino AVR Boards",
+          "version": "1.8.4",
+          "architecture": "avr",
+          "archiveFileName": "microduino-avr-1.8.4.zip",
+          "size": "425187",
+          "toolsDependencies": [
+          ],
+          "boards": [
+            {
+              "name": "Microduino/mCookie-Core (328p)@16M,5V"
+            },
+            {
+              "name": "Microduino/mCookie-Core (328p)@8M,3.3V"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (644pa)@16M,5V)"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (644pa)@8M,3.3V"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (1284pa)@16M,5V)"
+            },
+            {
+              "name": "Microduino/mCookie-Core+ (1284pa)@8M,3.3V"
+            },
+            {
+              "name": "Microduino/mCookie-Core USB (32u4)"
+            },
+            {
+              "name": "Microduino/mCookie-Core RF (128rfa1)"
+            }
+          ]
+        },
+        {
+          "category": "Microduino",
+          "help": {
+            "online": "https://wiki.microduino.cn"
+          },
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4.zip",
+          "checksum": "SHA-256:F148E09F1357085539977BDB16962D7366639DFB25BE9B9465019B2A62AA0D84",
+          "name": "Microduino ESP32 Boards",
+          "version": "1.8.4",
+          "architecture": "esp32",
+          "archiveFileName": "microduino-esp32-1.8.4.zip",
+          "size": "35370464",
+          "toolsDependencies": [
+            {
+              "packager": "microduino",
+              "version": "1.22.0-61-gab8375a-5.2.0",
+              "name": "xtensa-esp32-elf-gcc"
+            }
+          ],
+          "boards": [
+            {
+              "name": "Microduino-CoreESP32"
+            },
+            {
+              "name": "Node32s"
+            },
+            {
+              "name": "ESP32 Dev Module"
+            },
+            {
+              "name": "WEMOS LoLin32"
+            }
+          ]
+        }
+      ],
+      "tools": [
+        {
+          "version": "1.22.0-61-gab8375a-5.2.0", 
+          "name": "xtensa-esp32-elf-gcc", 
+          "systems": [
+            {
+              "url": "https://dl.espressif.com/dl/xtensa-esp32-elf-win32-1.22.0-61-gab8375a-5.2.0.zip", 
+              "checksum": "SHA-256:c00dbdab8e8acc273d4aa319a74f7bb1d9496c843159823201d685359174168f", 
+              "host": "i686-mingw32", 
+              "archiveFileName": "xtensa-esp32-elf-win32-1.22.0-61-gab8375a-5.2.0.zip", 	
+              "size": "76346909"
+            },
+            {
+              "url": "https://dl.espressif.com/dl/xtensa-esp32-elf-osx-1.22.0-61-gab8375a-5.2.0.tar.gz", 
+              "checksum": "SHA-256:89a9a6084ec032ddcd4bdae37b428e533ed5fd0c0ab6b66ddf703e4b3f83d6e4", 
+              "host": "x86_64-apple-darwin", 
+              "archiveFileName": "xtensa-esp32-elf-osx-1.22.0-61-gab8375a-5.2.0.tar.gz",   
+              "size": "40481812"
+            },
+            {
+              "host": "x86_64-pc-linux-gnu",
+              "url": "https://dl.espressif.com/dl/xtensa-esp32-elf-linux64-1.22.0-61-gab8375a-5.2.0.tar.gz",
+              "archiveFileName": "xtensa-esp32-elf-linux64-1.22.0-61-gab8375a-5.2.0.tar.gz",
+              "checksum": "SHA-256:b74333fd7f622f035fee7c4e0ca57c3e2ccb2515de5d901f33e87e79cdf0d4f9",
+              "size": "37674568"
+            },
+            {
+              "host": "i686-pc-linux-gnu",
+              "url": "https://dl.espressif.com/dl/xtensa-esp32-elf-linux32-1.22.0-61-gab8375a-5.2.0.tar.gz",
+              "archiveFileName": "xtensa-esp32-elf-linux32-1.22.0-59.tar.gz",
+              "checksum": "SHA-256:dbb342b7c377a7c3a1fcccc60fa1193332d0c37e6a90c5075d3471c13c9e94ad",
+              "size": "41032647"
+            }
+          ]
+        }
+      ],  
+      "email": "pankejia@microduino.cc",
+      "name": "microduino"
+    }
+  ]
+}
