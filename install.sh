@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo -e "\n\n install Version:V40 \n\n";
+echo -e "\n\n install Version:V50 \n\n";
 
 # we need bash 4 for associative arrays
 if [ "${BASH_VERSION%%[^0-9]*}" -lt "4" ]; then
@@ -60,6 +60,15 @@ if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 echo -n "MICRODUINO ESP32: "
 DEPENDENCY_OUTPUT=$(arduino --install-boards microduino:esp32 2>&1)
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
+
+
+#- ln -s $TRAVIS_BUILD_DIR esp32
+cd $HOME/travis/\.arduino15/packages/microduino/hardware/esp32/\1\.\8\.\4/tools
+python get.py
+export PATH="$HOME/arduino_ide:$TRAVIS_BUILD_DIR/\.arduino15/packages/microduino/hardware/esp32/\1\.\8\.\4/tools/xtensa-esp32-elf/bin:$PATH"
+which arduino
+cd $TRAVIS_BUILD_DIR
+
 
 #echo -n "MICRODUINO AVR: "
 #DEPENDENCY_OUTPUT=$(arduino --install-boards microduino:avr:1.8.4 2>&1)
