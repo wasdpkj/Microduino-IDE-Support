@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo -e "\n\n install Version:V61 \n\n";
+echo -e "\n\n install Version:V66 \n\n";
 
 # we need bash 4 for associative arrays
 if [ "${BASH_VERSION%%[^0-9]*}" -lt "4" ]; then
