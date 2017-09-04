@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo -e "\n\n install Version:V66 \n\n";
+echo -e "\n\n install Version:V68 \n\n";
 
 # we need bash 4 for associative arrays
 if [ "${BASH_VERSION%%[^0-9]*}" -lt "4" ]; then
@@ -34,8 +34,8 @@ mv arduino-1.8.4 $HOME/arduino_ide
 # move this library to the arduino libraries folder
 #ln -s $TRAVIS_BUILD_DIR/libraries/* $HOME/arduino_ide/libraries
 rm -rf $HOME/arduino_ide/libraries
-mkdir -p $HOME/arduino_ide/libraries
-mv -f $TRAVIS_BUILD_DIR/libraries/* $HOME/arduino_ide/libraries
+mkdir -p $HOME/Arduino/libraries
+mv -f $TRAVIS_BUILD_DIR/libraries/* $HOME/Arduino/libraries
 #mv -f $TRAVIS_BUILD_DIR/libraries $HOME/arduino_ide/libraries
 
 
@@ -119,7 +119,7 @@ function build_platform()
 
   # loop through results and add them to the array
   #examples=($(find $PWD -name "*.pde" -o -name "*.ino"))
-  examples=($(find $HOME/arduino_ide/libraries -name "*.ino"))
+  examples=($(find $HOME/Arduino/libraries -name "*.ino"))
 
   # get the last example in the array
   local last="${examples[@]:(-1)}"
