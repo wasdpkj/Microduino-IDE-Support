@@ -47,13 +47,6 @@ mv -f $TRAVIS_BUILD_DIR/libraries/* $HOME/arduino_ide/libraries
 # add the arduino CLI to our PATH
 #export PATH="$HOME/arduino_ide:$PATH"
 
-#- ln -s $TRAVIS_BUILD_DIR esp32
-- cd $TRAVIS_BUILD_DIR/\.arduino15/packages/microduino/hardware/esp32/\1\.\8\.\4/tools
-- python get.py
-- export PATH="$HOME/arduino_ide:$TRAVIS_BUILD_DIR/\.arduino15/packages/microduino/hardware/esp32/\1\.\8\.\4/tools/xtensa-esp32-elf/bin:$PATH"
-- which arduino
-- cd $TRAVIS_BUILD_DIR
-
 echo -e "\n########################################################################";
 echo "INSTALLING DEPENDENCIES"
 echo "########################################################################";
@@ -67,6 +60,14 @@ if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 echo -n "MICRODUINO ESP32: "
 DEPENDENCY_OUTPUT=$(arduino --install-boards microduino:esp32 2>&1)
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
+
+#- ln -s $TRAVIS_BUILD_DIR esp32
+- cd $TRAVIS_BUILD_DIR/\.arduino15/packages/microduino/hardware/esp32/\1\.\8\.\4/tools
+- python get.py
+- export PATH="$HOME/arduino_ide:$TRAVIS_BUILD_DIR/\.arduino15/packages/microduino/hardware/esp32/\1\.\8\.\4/tools/xtensa-esp32-elf/bin:$PATH"
+- which arduino
+- cd $TRAVIS_BUILD_DIR
+
 
 #echo -n "MICRODUINO AVR: "
 #DEPENDENCY_OUTPUT=$(arduino --install-boards microduino:avr:1.8.4 2>&1)
