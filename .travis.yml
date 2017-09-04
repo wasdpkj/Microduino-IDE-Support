@@ -12,7 +12,7 @@ script:
 #  - build_platform corerf
 branches:
   only:
-    - test
+    - master
 
 notifications:
   email:
