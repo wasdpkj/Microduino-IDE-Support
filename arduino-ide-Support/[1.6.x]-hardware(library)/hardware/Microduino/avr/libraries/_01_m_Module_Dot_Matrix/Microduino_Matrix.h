@@ -34,9 +34,13 @@
 
 #include "Microduino_MatrixBase.h"
 
+#if defined (ESP32)
+
+#else
 #define WDT
 #ifdef WDT
 #include <avr/wdt.h>
+#endif
 #endif
 
 #define U8G_DRAW_UPPER_RIGHT 0x01

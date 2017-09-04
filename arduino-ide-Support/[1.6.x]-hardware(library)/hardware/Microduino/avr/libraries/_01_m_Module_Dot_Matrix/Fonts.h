@@ -27,9 +27,12 @@
 // @老潘orz
 
 #include <Arduino.h>
-#include <Print.h>
 
+#if defined (ESP32)
+#include <pgmspace.h>
+#else
 #include <avr/pgmspace.h>
+#endif
 
 #define CharToInt(y) (y-32)
 

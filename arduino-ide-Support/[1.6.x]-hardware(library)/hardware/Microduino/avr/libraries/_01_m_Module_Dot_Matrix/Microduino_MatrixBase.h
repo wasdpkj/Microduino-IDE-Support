@@ -35,7 +35,12 @@
 
 #include "Fonts.h"
 #include <Wire.h>
+
+#if defined (ESP32)
+#include <pgmspace.h>
+#else
 #include <avr/pgmspace.h>
+#endif
 
 #define MatrixPix_X 8
 #define MatrixPix_Y 8
