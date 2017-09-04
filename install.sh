@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo -e "\n\n install Version:V69 \n\n";
+echo -e "\n\n install Version:V61 \n\n";
 
 # we need bash 4 for associative arrays
 if [ "${BASH_VERSION%%[^0-9]*}" -lt "4" ]; then
@@ -56,9 +56,9 @@ echo "INSTALLING DEPENDENCIES"
 echo "########################################################################";
 
 
-# install the due, esp8266, and microduino board packages
+# install the microduino board packages
 echo -n "ADD PACKAGE INDEX: "
-DEPENDENCY_OUTPUT=$(arduino --pref "boardsmanager.additional.urls=https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/package_microduino_index.json" --save-prefs 2>&1)
+DEPENDENCY_OUTPUT=$(arduino --pref "boardsmanager.additional.urls=https://github.com/${TRAVIS_REPO_SLUG}/raw/${TRAVIS_BRANCH}/_for_travis/package_microduino_index.json" --save-prefs 2>&1)
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 
 echo -n "MICRODUINO ESP32: "
