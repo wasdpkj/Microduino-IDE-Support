@@ -84,7 +84,7 @@ if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 
 # set the maximal compiler warning level
 echo -n "SET BUILD PREFERENCES: "
-DEPENDENCY_OUTPUT=$(arduino --pref "compiler.warning_level=all" --save-prefs 2>&1)
+DEPENDENCY_OUTPUT=$(arduino --pref "compiler.warning_level=dafault" --save-prefs 2>&1)
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 
 pip install pyserial
