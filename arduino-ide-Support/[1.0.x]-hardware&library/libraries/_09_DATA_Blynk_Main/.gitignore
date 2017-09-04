@@ -1,9 +1,0 @@
-linux/blynk
-linux/wiringPi
-scripts/certs/client.*
-scripts/blynk/gateway/bluepy
-*.pyc
-*.o
-.cproject
-.project
-.settings
