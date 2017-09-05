@@ -242,7 +242,11 @@ void PANSTAMP::sleepWd(byte time)
   // Disable ADC
   ADCSRA &= ~(1 << ADEN);
   // Unpower functions
+#if defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega128RFA1__) || defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega644P__)
+  PRR0 = 0xFF;
+#elif defined (__AVR_ATmega168__) || defined (__AVR_ATmega328__) || defined (__AVR_ATmega328P__)
   PRR = 0xFF;
+#endif
   //power_all_disable();
   //clock_prescale_set(clock_div_8);
   // Enter sleep mode

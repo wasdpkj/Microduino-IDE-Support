@@ -7,6 +7,7 @@
  */
 
 #include <Microduino_Joypad.h>
+#include <Mouse.h>
 
 #define joy_DEAD_ZONE 25
 
