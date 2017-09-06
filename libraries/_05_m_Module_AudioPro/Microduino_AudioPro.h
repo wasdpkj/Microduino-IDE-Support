@@ -23,23 +23,29 @@
 
 #include <SPI.h> 
 #include <SD.h>
-//#include <avr/pgmspace.h>
+#if defined(__AVR__)
+#include <avr/pgmspace.h>
+#elif defined(ESP32)
+#include <pgmspace.h>
+#endif
 
 
 typedef volatile uint8_t PortReg;
 typedef uint8_t PortMask;
 
 
-#define VS1053_PIN_MIDI		2 // There is no IRQ used on Seeduino
+#define VS1053_PIN_MIDI		D2 // There is no IRQ used on Seeduino
 #define VS1053_PIN_XCS		A3//Control Chip Select Pin (for accessing SPI Control/Status registers)
 #define VS1053_PIN_XDCS		A2//Data Chip Select / BSYNC Pin
-#define VS1053_PIN_DREQ		3 //Data Request Pin: Player asks for more data
-#define SD_PIN_SEL			7 //select pin for SD card
+#define VS1053_PIN_DREQ		D3 //Data Request Pin: Player asks for more data
+#define SD_PIN_SEL		D7 //select pin for SD card
 
 #define VS1053_DEFAULT_VOLUME	96
 
 //#define VS1053_TIMER0_DREQ 255 // allows useInterrupt to accept pins 0 to 254
 
+#define VS1053_CONTROL_SPI_SETTING  SPISettings(250000,  MSBFIRST, SPI_MODE0)
+#define VS1053_DATA_SPI_SETTING     SPISettings(8000000, MSBFIRST, SPI_MODE0)
 #define VS1053_SCI_READ 0x03
 #define VS1053_SCI_WRITE 0x02
 

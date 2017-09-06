@@ -40,7 +40,7 @@ void loop() {
         if (num == 0) {
           Serial.print(F("playing:"));
           Serial.print(F("romAddr:"));
-          Serial.print(pgm_get_far_address(Array));
+          Serial.print(uint32_t(Array));
           Serial.print(F(" ,romLen:"));
           Serial.println(sizeof(Array));
           if (!midiPlayer.playROM(Array, sizeof(Array))) {
@@ -53,7 +53,7 @@ void loop() {
         if (num == 1) {
           Serial.print(F("playing:"));
           Serial.print(F("romAddr:"));
-          Serial.print(pgm_get_far_address(Jay));
+          Serial.print(uint32_t(Jay));
           Serial.print(F(" ,romLen"));
           Serial.println(sizeof(Jay));
           if (!midiPlayer.playROM(Jay, sizeof(Jay))) {

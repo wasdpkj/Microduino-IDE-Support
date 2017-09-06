@@ -34,7 +34,7 @@ void setup() {
   Serial.print("Initializing SD card...");
 
 // Microduino SD module: pin 7
-  if (!SD.begin(7)) {
+  if (!SD.begin(D7)) {
     Serial.println("initialization failed!");
     return;
   }

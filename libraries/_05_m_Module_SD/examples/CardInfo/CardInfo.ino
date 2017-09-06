@@ -33,7 +33,7 @@ SdFile root;
 // Adafruit SD shields and modules: pin 10
 // Sparkfun SD shield: pin 8
 // Microduino SD module: pin 7
-const int chipSelect = 7;
+const int chipSelect = D7;
 
 void setup() {
   // Open serial communications and wait for port to open:

@@ -24,7 +24,7 @@
 #include <SD.h>
 
 // Microduino SD module: pin 7
-const int chipSelect = 7;
+const int chipSelect = D7;
 
 void setup() {
   // Open serial communications and wait for port to open:

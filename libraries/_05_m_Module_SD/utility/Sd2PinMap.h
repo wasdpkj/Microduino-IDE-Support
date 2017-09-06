@@ -506,6 +506,27 @@ uint8_t const SCK_PIN = 13;
 
 #endif	// Arduino ARC
 
+#elif defined (ESP32)
+
+#ifndef Sd2PinMap_h
+#define Sd2PinMap_h
+
+#include <Arduino.h>
+
+#endif // Sd2PinMap_h
+
+#define SDCARD_SS_PIN D7
+
+// Two Wire (aka I2C) ports
+uint8_t const SDA_PIN = SDA;
+uint8_t const SCL_PIN = SCL;
+
+// SPI port
+uint8_t const SS_PIN = SS;
+uint8_t const MOSI_PIN = MOSI;
+uint8_t const MISO_PIN = MISO;
+uint8_t const SCK_PIN = SCK;
+
 #else
 #error Architecture or board not supported.
 #endif

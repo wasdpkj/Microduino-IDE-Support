@@ -41,8 +41,6 @@ static void feeder_sd(void) {
 
 boolean feedBufferLock = false;
 
-#define VS1053_CONTROL_SPI_SETTING  SPISettings(250000,  MSBFIRST, SPI_MODE0)
-#define VS1053_DATA_SPI_SETTING     SPISettings(8000000, MSBFIRST, SPI_MODE0)
 
 
 AudioPro_FilePlayer::AudioPro_FilePlayer(SDClass& _sd, uint8_t midi, uint8_t cs, uint8_t dcs, uint8_t dreq)
@@ -322,7 +320,9 @@ boolean AudioPro_FilePlayer::detachInterrupt(uint8_t type) {
     }
   */
   if (type == _dreq) {
+#if defined(__AVR__)
     SPI.notUsingInterrupt(digitalPinToInterrupt(_dreq));
+#endif
     detachInterrupt(digitalPinToInterrupt(_dreq));
     return true;
   }
@@ -340,7 +340,9 @@ boolean AudioPro_FilePlayer::useInterrupt(uint8_t type) {
     }
   */
   if (type == _dreq) {
+#if defined(__AVR__)
     SPI.usingInterrupt(digitalPinToInterrupt(_dreq));
+#endif
     attachInterrupt(digitalPinToInterrupt(_dreq), feeder_sd, CHANGE);
     return true;
   }
@@ -373,7 +375,9 @@ boolean AudioPro::useInterrupt(uint8_t type) {
     }
   */
   if (type == _dreq) {
+#if defined(__AVR__)
     SPI.usingInterrupt(digitalPinToInterrupt(_dreq));
+#endif
     attachInterrupt(digitalPinToInterrupt(_dreq), feeder, CHANGE);
     return true;
   }
@@ -390,7 +394,9 @@ boolean AudioPro::detachInterrupt(uint8_t type) {
     }
   */
   if (type == _dreq) {
+#if defined(__AVR__)
     SPI.notUsingInterrupt(digitalPinToInterrupt(_dreq));
+#endif
     detachInterrupt(digitalPinToInterrupt(_dreq));
     return true;
   }
