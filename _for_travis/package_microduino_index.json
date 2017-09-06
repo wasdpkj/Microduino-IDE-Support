@@ -172,29 +172,29 @@
               "host": "i686-mingw32",
               "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/tools/esptool-a420774-windows.zip",
               "archiveFileName": "esptool-a420774-windows.zip",
-              "checksum": "SHA-256:7778545baa30a85a37a956e47e42a236fa67227f21b160b2164ef83a5e20a41f",
-              "size": "3394137"
+              "checksum": "SHA-256:F3BA87A296997CB7632C3351B8FD511346CD04E10090F0B595C43F5107E19167",
+              "size": "3394183"
             },
             {
               "host": "x86_64-apple-darwin",
-              "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/tools/esptool-a420774-macos.tar.gz",
-              "archiveFileName": "esptool-a420774-macos.tar.gz",
-              "checksum": "SHA-256:1a6237b695fe299357bfd78a9727564464a00e020bc7c7a4cf6fad02250eb2a2",
-              "size": "3808980"
+              "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/tools/esptool-a420774-macos.zip",
+              "archiveFileName": "esptool-a420774-macos.zip",
+              "checksum": "SHA-256:0C9CCA75080A6A5FBAE63661424DF170272CC6BF8C793493B44FDFBA85E27879",
+              "size": "3807565"
             },
             {
               "host": "x86_64-pc-linux-gnu",
               "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/tools/esptool-a420774-linux.zip",
               "archiveFileName": "esptool-a420774-linux.zip",
-              "checksum": "SHA-256:B377E76DAEC59E70C9D1CDE74B35D106437C4129245C9D4B9E15A586FEA45B6A",
-              "size": "3805138"
+              "checksum": "SHA-256:AA444A4C81B0E7C12A0CFFB216B9B94CDA96233AC74D470D36829DFD213DE9E0",
+              "size": "3805246"
             },
             {
               "host": "i686-pc-linux-gnu",
               "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/tools/esptool-a420774-linux.zip",
               "archiveFileName": "esptool-a420774-linux.zip",
-              "checksum": "SHA-256:B377E76DAEC59E70C9D1CDE74B35D106437C4129245C9D4B9E15A586FEA45B6A",
-              "size": "3805138"
+              "checksum": "SHA-256:AA444A4C81B0E7C12A0CFFB216B9B94CDA96233AC74D470D36829DFD213DE9E0",
+              "size": "3805246"
             }
           ]
         }
