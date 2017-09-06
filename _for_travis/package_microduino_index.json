@@ -92,7 +92,7 @@
             "online": "https://wiki.microduino.cn"
           },
           "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4.zip",
-          "checksum": "SHA-256:4C6658D8E50236CA9F194A58A076CB643464BB43",
+          "checksum": "SHA-256:BE207F02A70FB6532BA0C43CCAF272EF111BF41ED2CE66C319CECFCA0D8E594F",
           "name": "Microduino ESP32 Boards",
           "version": "1.8.4",
           "architecture": "esp32",
