@@ -44,6 +44,10 @@ THE SOFTWARE.
 #ifndef _I2CDEV_H_
 #define _I2CDEV_H_
 
+#ifndef BUFFER_LENGTH	//for ESP32
+#define BUFFER_LENGTH I2C_BUFFER_LENGTH
+#endif
+
 // -----------------------------------------------------------------------------
 // I2C interface implementation setting
 // -----------------------------------------------------------------------------
