@@ -42,7 +42,7 @@ uint32_t Pulse::getInterval() {
   }
 }
 
-bool Pulse::isUsefull(unsigned long _t) {
+bool Pulse::isUsefull(uint32_t _t) {
   if (_t) {  //有数据时才执行滤波
     if (_t < TIME1_MAX) {   //滤最小阈值
       if (_t < TIME1_MIN) { //若有过快的波，开启标志位

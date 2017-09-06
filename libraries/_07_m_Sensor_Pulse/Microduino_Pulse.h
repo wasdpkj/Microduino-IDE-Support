@@ -42,8 +42,8 @@ class Pulse {
   private:
     DigitalKey *pulseKey;
     uint32_t getInterval();
-    bool isUsefull(unsigned long _t);
-    uint32_t pulse(unsigned long _t);
+    bool isUsefull(uint32_t _t);
+    uint32_t pulse(uint32_t _t);
     int pinState;
     uint32_t thisTime = millis();
     uint32_t lastTime = millis();
