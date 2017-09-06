@@ -12,7 +12,7 @@
 
 #include <Microduino_ColorLED.h> //引用彩灯库
 
-#define PIN            6         //彩灯引脚
+#define PIN            D6         //彩灯引脚
 #define NUMPIXELS      7        //级联彩灯数量
 
 ColorLED strip = ColorLED(NUMPIXELS, PIN); //将ColorLED类命名为strip，并定义彩灯数量和彩灯引脚号

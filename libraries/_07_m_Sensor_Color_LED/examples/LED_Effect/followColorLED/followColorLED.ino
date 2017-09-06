@@ -12,7 +12,7 @@
 
 #include <Microduino_ColorLED.h> //引用彩灯库
 
-#define PIN            6         //彩灯引脚
+#define PIN            D6         //彩灯引脚
 #define NUMPIXELS      7         //级联彩灯数量
 
 #define val_max 255
