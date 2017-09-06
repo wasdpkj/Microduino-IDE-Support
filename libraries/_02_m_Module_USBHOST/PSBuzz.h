@@ -22,7 +22,7 @@
 #include "controllerEnums.h"
 
 #define PSBUZZ_VID 0x054C // Sony Corporation
-#define PSBUZZ_PID 0x1000 // PS Buzz Controller
+#define PSBUZZ_PID 0x1000 // USB_PS Buzz Controller
 
 /** Struct used to easily read the different buttons on the controllers */
 union PSBUZZButtons {

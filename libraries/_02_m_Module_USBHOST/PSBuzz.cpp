@@ -18,7 +18,7 @@
 #include "PSBuzz.h"
 
 // To enable serial debugging see "settings.h"
-//#define PRINTREPORT // Uncomment to print the report send by the PS Buzz Controllers
+//#define PRINTREPORT // Uncomment to print the report send by the USB_PS Buzz Controllers
 
 void PSBuzz::ParseHIDData(USBHID *hid, bool is_rpt_id, uint8_t len, uint8_t *buf) {
         if (HIDUniversal::VID == PSBUZZ_VID && HIDUniversal::PID == PSBUZZ_PID && len > 2 && buf) {

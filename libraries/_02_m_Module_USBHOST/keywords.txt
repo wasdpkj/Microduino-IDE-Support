@@ -75,16 +75,16 @@ PS3MoveConnected	KEYWORD2
 PS3NavigationConnected	KEYWORD2
 
 isReady	KEYWORD2
-watingForConnection	KEYWORD2
+waitingForConnection	KEYWORD2
 
 isTouching	KEYWORD2
 getX	KEYWORD2
 getY	KEYWORD2
 getTouchCounter	KEYWORD2
 
-getUsbStatus   	KEYWORD2
-getAudioStatus 	KEYWORD2
-getMicStatus   	KEYWORD2
+getUsbStatus    KEYWORD2
+getAudioStatus  KEYWORD2
+getMicStatus    KEYWORD2
 
 ####################################################
 # Constants and enums (LITERAL1)
@@ -127,7 +127,7 @@ TRIANGLE	LITERAL1
 CIRCLE	LITERAL1
 CROSS	LITERAL1
 SQUARE	LITERAL1
-PS	LITERAL1
+USB_PS	LITERAL1
 MOVE	LITERAL1
 T	LITERAL1
 

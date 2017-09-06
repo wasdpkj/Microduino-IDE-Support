@@ -71,7 +71,7 @@ e-mail   :  support@circuitsathome.com
 #define USE_SPI4TEENSY3 1
 #endif
 
-// disabled on the Teensy LC as it is incompatible for now
+// Disabled on the Teensy LC, as it is incompatible for now
 #if defined(__MKL26Z64__)
 #undef USE_SPI4TEENSY3
 #define USE_SPI4TEENSY3 0
@@ -129,7 +129,7 @@ e-mail   :  support@circuitsathome.com
 #define EXT_RAM 0
 #endif
 
-#if defined(CORE_TEENSY) && (defined(__MK20DX128__) || defined(__MK20DX256__) || defined(__MKL26Z64__))
+#if defined(CORE_TEENSY) && defined(KINETISK)
 #define USING_SPI4TEENSY3 USE_SPI4TEENSY3
 #else
 #define USING_SPI4TEENSY3 0
@@ -175,6 +175,22 @@ extern SPI_HandleTypeDef SPI_Handle; // Needed to be declared in your main.cpp
 // Set defaults
 #ifndef MFK_CASTUINT8T
 #define MFK_CASTUINT8T
+#endif
+
+// Workaround issue: https://github.com/esp8266/Arduino/issues/2078
+#if (defined(ESP8266) || defined(ESP32))
+#undef PROGMEM
+#define PROGMEM
+#undef PSTR
+#define PSTR(s) (s)
+#undef pgm_read_byte
+#define pgm_read_byte(addr) (*reinterpret_cast<const uint8_t*>(addr))
+#undef pgm_read_word
+#define pgm_read_word(addr) (*reinterpret_cast<const uint16_t*>(addr))
+#endif
+
+#ifdef ARDUINO_ESP8266_WIFIO
+#error "This board is currently not supported"
 #endif
 
 #endif /* SETTINGS_H */

@@ -254,7 +254,7 @@ uint8_t BTD::Init(uint8_t parent, uint8_t port, bool lowspeed) {
                 hci_num_reset_loops = 100; // only loop 100 times before trying to send the hci reset command
                 hci_counter = 0;
                 hci_state = HCI_INIT_STATE;
-                watingForConnection = false;
+                waitingForConnection = false;
                 bPollEnable = true;
 
 #ifdef DEBUG_USB_HOST
@@ -384,8 +384,8 @@ uint8_t BTD::Release() {
 uint8_t BTD::Poll() {
         if(!bPollEnable)
                 return 0;
-        if((long)(millis() - qNextPollTime) >= 0L) { // Don't poll if shorter than polling interval
-                qNextPollTime = millis() + pollInterval; // Set new poll time
+        if((int32_t)((uint32_t)millis() - qNextPollTime) >= 0L) { // Don't poll if shorter than polling interval
+                qNextPollTime = (uint32_t)millis() + pollInterval; // Set new poll time
                 HCI_event_task(); // Poll the HCI event pipe
                 HCI_task(); // HCI state machine
                 ACL_event_task(); // Poll the ACL input pipe too
@@ -802,14 +802,14 @@ void BTD::HCI_task() {
                                 Notify(PSTR("\r\nWait For Incoming Connection Request"), 0x80);
 #endif
                                 hci_write_scan_enable();
-                                watingForConnection = true;
+                                waitingForConnection = true;
                                 hci_state = HCI_CONNECT_IN_STATE;
                         }
                         break;
 
                 case HCI_CONNECT_IN_STATE:
                         if(hci_check_flag(HCI_FLAG_INCOMING_REQUEST)) {
-                                watingForConnection = false;
+                                waitingForConnection = false;
 #ifdef DEBUG_USB_HOST
                                 Notify(PSTR("\r\nIncoming Connection Request"), 0x80);
 #endif

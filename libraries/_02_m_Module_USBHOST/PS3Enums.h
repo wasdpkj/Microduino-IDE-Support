@@ -80,7 +80,7 @@ const uint32_t PS3_BUTTONS[] PROGMEM = {
         0x4000, // CROSS
         0x8000, // SQUARE
 
-        0x010000, // PS
+        0x010000, // USB_PS
         0x080000, // MOVE - covers 12 bits - we only need to read the top 8
         0x100000, // T - covers 12 bits - we only need to read the top 8
 };
@@ -104,7 +104,7 @@ const uint8_t PS3_ANALOG_BUTTONS[] PROGMEM = {
         32, // CIRCLE_ANALOG
         33, // CROSS_ANALOG
         34, // SQUARE_ANALOG
-        0, 0, // Skip PS and MOVE
+        0, 0, // Skip USB_PS and MOVE
 
         // Playstation Move Controller
         15, // T_ANALOG - Both at byte 14 (last reading) and byte 15 (current reading)

@@ -13,6 +13,12 @@
 #include <SPP.h>
 #include <usbhub.h>
 
+// Satisfy the IDE, which needs to see the include statment in the ino too.
+#ifdef dobogusinclude
+#include <spi4teensy3.h>
+#endif
+#include <SPI.h>
+
 USB Usb;
 //USBHub Hub1(&Usb); // Some dongles have a hub inside
 
@@ -86,7 +92,7 @@ void loop() {
         SerialBT.println(output);
       output = ""; // Reset output string
     }
-    if (PS3.getButtonClick(PS)) {
+    if (PS3.getButtonClick(USB_PS)) {
       output += " - PS";
       PS3.disconnect();
     }

@@ -117,7 +117,7 @@ enum ButtonEnum {
         CROSS = 14,
         SQUARE = 15,
 
-        PS = 16,
+        USB_PS = 16,
 
         MOVE = 17, // Covers 12 bits - we only need to read the top 8
         T = 18, // Covers 12 bits - we only need to read the top 8
@@ -140,7 +140,7 @@ enum ButtonEnum {
         WHITE = 9, // Available on the original Xbox controller
         /**@}*/
 
-        /** PS Buzz controllers */
+        /** USB_PS Buzz controllers */
         RED = 0,
         YELLOW = 1,
         GREEN = 2,

@@ -6,6 +6,11 @@
 
 #include <PS4USB.h>
 
+// Satisfy the IDE, which needs to see the include statment in the ino too.
+#ifdef dobogusinclude
+#include <spi4teensy3.h>
+#endif
+#include <SPI.h>
 
 USB Usb;
 PS4USB PS4(&Usb);
@@ -51,7 +56,7 @@ void loop() {
     oldL2Value = PS4.getAnalogButton(L2);
     oldR2Value = PS4.getAnalogButton(R2);
 
-    if (PS4.getButtonClick(PS))
+    if (PS4.getButtonClick(USB_PS))
       Serial.print(F("\r\nPS"));
     if (PS4.getButtonClick(TRIANGLE)) {
       Serial.print(F("\r\nTraingle"));

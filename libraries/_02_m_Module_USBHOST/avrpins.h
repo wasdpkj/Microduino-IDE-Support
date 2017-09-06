@@ -627,6 +627,38 @@ public:
 #define P20 Pf1
 #define P21 Pf0
 
+// "Classic" Arduino pin numbers
+
+#elif defined(CORE_TEENSY) && defined(__AVR_ATmega32U4__)
+// Teensy 2.0 pin numbers
+// http://www.pjrc.com/teensy/pinout.html
+#define P0  Pb0
+#define P1  Pb1
+#define P2  Pb2
+#define P3  Pb3
+#define P4  Pb7
+#define P5  Pd0
+#define P6  Pd1
+#define P7  Pd2
+#define P8  Pd3
+#define P9  Pc6
+#define P10 Pc7
+#define P11 Pd6
+#define P12 Pd7
+#define P13 Pb4
+#define P14 Pb5
+#define P15 Pb6
+#define P16 Pf7
+#define P17 Pf6
+#define P18 Pf5
+#define P19 Pf4
+#define P20 Pf1
+#define P21 Pf0
+#define P22 Pd4
+#define P23 Pd5
+#define P24 Pe6
+// Teensy 2.0
+
 #elif defined(__AVR_ATmega32U4__)
 // Arduino Leonardo pin numbers
 
@@ -718,6 +750,59 @@ public:
 #define P45 Pf7
 // Teensy++ 1.0 and 2.0
 
+#elif defined(ARDUINO_AVR_BALANDUINO) && (defined(__AVR_ATmega644__) || defined(__AVR_ATmega1284P__))
+// Balanduino pin numbers
+// http://balanduino.net/
+#define P0  Pd0 /* 0  - PD0 */
+#define P1  Pd1 /* 1  - PD1 */
+
+#if BALANDUINO_REVISION < 13
+  #define P2  Pb2 /* 2  - PB2 */
+  #define P3  Pd6 /* 3  - PD6 */
+  #define P4  Pd7 /* 4  - PD7 */
+  #define P5  Pb3 /* 5  - PB3 */
+#else
+  #define P2  Pd2 /* 2  - PD2 */
+  #define P3  Pd3 /* 3  - PD3 */
+  #define P4  Pd6 /* 4  - PD6 */
+  #define P5  Pd7 /* 5  - PD7 */
+#endif
+
+#define P6  Pb4 /* 6  - PB4 */
+#define P7  Pa0 /* 7  - PA0 */
+#define P8  Pa1 /* 8  - PA1 */
+#define P9  Pa2 /* 9  - PA2 */
+#define P10 Pa3 /* 10 - PA3 */
+#define P11 Pa4 /* 11 - PA4 */
+#define P12 Pa5 /* 12 - PA5 */
+#define P13 Pc1 /* 13 - PC1 */
+#define P14 Pc0 /* 14 - PC0 */
+
+#if BALANDUINO_REVISION < 13
+  #define P15 Pd2 /* 15 - PD2 */
+  #define P16 Pd3 /* 16 - PD3 */
+#else
+  #define P15 Pb2 /* 15 - PB2 */
+  #define P16 Pb3 /* 16 - PB2 */
+#endif
+
+#define P17 Pd4 /* 17 - PD4 */
+#define P18 Pd5 /* 18 - PD5 */
+#define P19 Pc2 /* 19 - PC2 */
+#define P20 Pc3 /* 20 - PC3 */
+#define P21 Pc4 /* 21 - PC4 */
+#define P22 Pc5 /* 22 - PC5 */
+#define P23 Pc6 /* 23 - PC6 */
+#define P24 Pc7 /* 24 - PC7 */
+#define P25 Pb0 /* 25 - PB0 */
+#define P26 Pb1 /* 26 - PB1 */
+#define P27 Pb5 /* 27 - PB5 */
+#define P28 Pb6 /* 28 - PB6 */
+#define P29 Pb7 /* 29 - PB7 */
+#define P30 Pa6 /* 30 - PA6 */
+#define P31 Pa7 /* 31 - PA7 */
+// Balanduino
+
 #elif defined(__AVR_ATmega644__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284P__)
 // Sanguino pin numbers
 // Homepage: http://sanguino.cc/hardware
@@ -766,7 +851,7 @@ public:
 // pointers are 32 bits on ARM
 #define pgm_read_pointer(p) pgm_read_dword(p)
 
-#if defined(CORE_TEENSY) && (defined(__MK20DX128__) || defined(__MK20DX256__))
+#if defined(CORE_TEENSY) && (defined(__MK20DX128__) || defined(__MK20DX256__) || defined(__MK64FX512__) || defined(__MK66FX1M0__))
 
 #include "core_pins.h"
 #include "avr_emulation.h"
@@ -830,6 +915,38 @@ MAKE_PIN(P30, CORE_PIN30_PORTREG, CORE_PIN30_BIT, CORE_PIN30_CONFIG);
 MAKE_PIN(P31, CORE_PIN31_PORTREG, CORE_PIN31_BIT, CORE_PIN31_CONFIG);
 MAKE_PIN(P32, CORE_PIN32_PORTREG, CORE_PIN32_BIT, CORE_PIN32_CONFIG);
 MAKE_PIN(P33, CORE_PIN33_PORTREG, CORE_PIN33_BIT, CORE_PIN33_CONFIG);
+#if defined(__MK64FX512__) || defined(__MK66FX1M0__)
+MAKE_PIN(P34, CORE_PIN34_PORTREG, CORE_PIN34_BIT, CORE_PIN34_CONFIG);
+MAKE_PIN(P35, CORE_PIN35_PORTREG, CORE_PIN35_BIT, CORE_PIN35_CONFIG);
+MAKE_PIN(P36, CORE_PIN36_PORTREG, CORE_PIN36_BIT, CORE_PIN36_CONFIG);
+MAKE_PIN(P37, CORE_PIN37_PORTREG, CORE_PIN37_BIT, CORE_PIN37_CONFIG);
+MAKE_PIN(P38, CORE_PIN38_PORTREG, CORE_PIN38_BIT, CORE_PIN38_CONFIG);
+MAKE_PIN(P39, CORE_PIN39_PORTREG, CORE_PIN39_BIT, CORE_PIN39_CONFIG);
+MAKE_PIN(P40, CORE_PIN40_PORTREG, CORE_PIN40_BIT, CORE_PIN40_CONFIG);
+MAKE_PIN(P41, CORE_PIN41_PORTREG, CORE_PIN41_BIT, CORE_PIN41_CONFIG);
+MAKE_PIN(P42, CORE_PIN42_PORTREG, CORE_PIN42_BIT, CORE_PIN42_CONFIG);
+MAKE_PIN(P43, CORE_PIN43_PORTREG, CORE_PIN43_BIT, CORE_PIN43_CONFIG);
+MAKE_PIN(P44, CORE_PIN44_PORTREG, CORE_PIN44_BIT, CORE_PIN44_CONFIG);
+MAKE_PIN(P45, CORE_PIN45_PORTREG, CORE_PIN45_BIT, CORE_PIN45_CONFIG);
+MAKE_PIN(P46, CORE_PIN46_PORTREG, CORE_PIN46_BIT, CORE_PIN46_CONFIG);
+MAKE_PIN(P47, CORE_PIN47_PORTREG, CORE_PIN47_BIT, CORE_PIN47_CONFIG);
+MAKE_PIN(P48, CORE_PIN48_PORTREG, CORE_PIN48_BIT, CORE_PIN48_CONFIG);
+MAKE_PIN(P49, CORE_PIN49_PORTREG, CORE_PIN49_BIT, CORE_PIN49_CONFIG);
+MAKE_PIN(P50, CORE_PIN50_PORTREG, CORE_PIN50_BIT, CORE_PIN50_CONFIG);
+MAKE_PIN(P51, CORE_PIN51_PORTREG, CORE_PIN51_BIT, CORE_PIN51_CONFIG);
+MAKE_PIN(P52, CORE_PIN52_PORTREG, CORE_PIN52_BIT, CORE_PIN52_CONFIG);
+MAKE_PIN(P53, CORE_PIN53_PORTREG, CORE_PIN53_BIT, CORE_PIN53_CONFIG);
+MAKE_PIN(P54, CORE_PIN54_PORTREG, CORE_PIN54_BIT, CORE_PIN54_CONFIG);
+MAKE_PIN(P55, CORE_PIN55_PORTREG, CORE_PIN55_BIT, CORE_PIN55_CONFIG);
+MAKE_PIN(P56, CORE_PIN56_PORTREG, CORE_PIN56_BIT, CORE_PIN56_CONFIG);
+MAKE_PIN(P57, CORE_PIN57_PORTREG, CORE_PIN57_BIT, CORE_PIN57_CONFIG);
+MAKE_PIN(P58, CORE_PIN58_PORTREG, CORE_PIN58_BIT, CORE_PIN58_CONFIG);
+MAKE_PIN(P59, CORE_PIN59_PORTREG, CORE_PIN59_BIT, CORE_PIN59_CONFIG);
+MAKE_PIN(P60, CORE_PIN60_PORTREG, CORE_PIN60_BIT, CORE_PIN60_CONFIG);
+MAKE_PIN(P61, CORE_PIN61_PORTREG, CORE_PIN61_BIT, CORE_PIN61_CONFIG);
+MAKE_PIN(P62, CORE_PIN62_PORTREG, CORE_PIN62_BIT, CORE_PIN62_CONFIG);
+MAKE_PIN(P63, CORE_PIN63_PORTREG, CORE_PIN63_BIT, CORE_PIN63_CONFIG);
+#endif
 
 #undef MAKE_PIN
 
@@ -1133,6 +1250,58 @@ MAKE_PIN(P19, GPIOC, GPIO_PIN_0); // A5
 
 #endif
 
+#elif defined(__ARDUINO_ARC__)
+
+#include <avr/pgmspace.h>
+// Pointers are 32 bits on arc
+#define pgm_read_pointer(p) pgm_read_dword(p)
+
+#define MAKE_PIN(className, pin) \
+class className { \
+public: \
+  static void Set() { \
+    digitalWrite(pin, HIGH);\
+  } \
+  static void Clear() { \
+    digitalWrite(pin, LOW); \
+  } \
+  static void SetDirRead() { \
+    pinMode(pin, INPUT); \
+  } \
+  static void SetDirWrite() { \
+    pinMode(pin, OUTPUT); \
+  } \
+  static uint8_t IsSet() { \
+    return digitalRead(pin); \
+  } \
+};
+
+MAKE_PIN(P0, 0);
+MAKE_PIN(P1, 1);
+MAKE_PIN(P2, 2);
+MAKE_PIN(P3, 3); //PWM
+MAKE_PIN(P4, 4);
+MAKE_PIN(P5, 5); //PWM
+MAKE_PIN(P6, 6); //PWM
+MAKE_PIN(P7, 7);
+MAKE_PIN(P8, 8);
+MAKE_PIN(P9, 9); //PWM
+
+MAKE_PIN(P10, 10); //SPI SS
+MAKE_PIN(P11, 11); //SPI MOSI
+MAKE_PIN(P12, 12); //SPI MISO
+MAKE_PIN(P13, 13); //SPI SCK / BUILTIN LED
+
+MAKE_PIN(P14, 14); // A0
+MAKE_PIN(P15, 15); // A1
+MAKE_PIN(P16, 16); // A2
+MAKE_PIN(P17, 17); // A3
+MAKE_PIN(P18, 18); // A4 SDA
+MAKE_PIN(P19, 19); // A5 SCL
+MAKE_PIN(P20, 20); // ATN
+
+#undef MAKE_PIN
+
 #elif defined(__ARDUINO_X86__) // Intel Galileo, Intel Galileo 2 and Intel Edison
 
 #include <avr/pgmspace.h>
@@ -1237,6 +1406,99 @@ MAKE_PIN(P10, 10); //
 MAKE_PIN(P11, 11); //
 MAKE_PIN(P12, 12); //
 MAKE_PIN(P13, 13); //
+
+#undef MAKE_PIN
+
+#elif defined(ESP8266)
+
+#define pgm_read_pointer(p) pgm_read_ptr(p)
+
+#define MAKE_PIN(className, pin) \
+class className { \
+public: \
+  static void Set() { \
+    digitalWrite(pin, HIGH);\
+  } \
+  static void Clear() { \
+    digitalWrite(pin, LOW); \
+  } \
+  static void SetDirRead() { \
+    pinMode(pin, INPUT); \
+  } \
+  static void SetDirWrite() { \
+    pinMode(pin, OUTPUT); \
+  } \
+  static uint8_t IsSet() { \
+    return digitalRead(pin); \
+  } \
+};
+
+// Pinout for ESP-12 module
+// 0 .. 16 - Digital pins
+// GPIO 6 to 11 and 16 are not usable in this library.
+
+MAKE_PIN(P0, 0);
+MAKE_PIN(P1, 1); // TX0
+MAKE_PIN(P2, 2); // TX1
+MAKE_PIN(P3, 3); // RX0
+MAKE_PIN(P4, 4); // SDA
+MAKE_PIN(P5, 5); // SCL
+MAKE_PIN(P12, 12); // MISO
+MAKE_PIN(P13, 13); // MOSI
+MAKE_PIN(P14, 14); // SCK
+MAKE_PIN(P15, 15); // SS
+
+#undef MAKE_PIN
+
+#elif defined(ESP32)
+
+#ifndef pgm_read_ptr
+#define pgm_read_ptr(addr) (*(const void* const *)(addr))
+#endif
+#define pgm_read_pointer(p) pgm_read_ptr(p)
+
+#define MAKE_PIN(className, pin) \
+class className { \
+public: \
+  static void Set() { \
+    digitalWrite(pin, HIGH);\
+  } \
+  static void Clear() { \
+    digitalWrite(pin, LOW); \
+  } \
+  static void SetDirRead() { \
+    pinMode(pin, INPUT); \
+  } \
+  static void SetDirWrite() { \
+    pinMode(pin, OUTPUT); \
+  } \
+  static uint8_t IsSet() { \
+    return digitalRead(pin); \
+  } \
+};
+
+MAKE_PIN(P0, 3);
+MAKE_PIN(P1, 1);
+MAKE_PIN(P2, 16);
+MAKE_PIN(P3, 17);
+MAKE_PIN(P4, 32);
+MAKE_PIN(P5, 33);
+MAKE_PIN(P6, 25);
+MAKE_PIN(P7, 26);
+MAKE_PIN(P8, 27);
+MAKE_PIN(P9, 14);
+MAKE_PIN(P10, 5);
+MAKE_PIN(P11, 23);
+MAKE_PIN(P12, 19);
+MAKE_PIN(P13, 18);
+MAKE_PIN(P14, 12);
+MAKE_PIN(P15, 13);
+MAKE_PIN(P16, 15);
+MAKE_PIN(P17, 4);
+MAKE_PIN(P18, 22);
+MAKE_PIN(P19, 21);
+MAKE_PIN(P20, 38);
+MAKE_PIN(P21, 37);
 
 #undef MAKE_PIN
 

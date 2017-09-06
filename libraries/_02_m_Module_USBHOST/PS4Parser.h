@@ -43,7 +43,7 @@ const uint8_t PS4_BUTTONS[] PROGMEM = {
         0x05, // CROSS
         0x04, // SQUARE
 
-        0x10, // PS
+        0x10, // USB_PS
         0x11, // TOUCHPAD
 };
 
