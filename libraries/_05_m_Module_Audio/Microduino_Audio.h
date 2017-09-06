@@ -19,10 +19,13 @@
 
 #include <Arduino.h>
 
+#if defined (__AVR__)
 #include <SoftwareSerial.h>
+#endif
+
 #include "JQ6500_def.h"
  
-#define AUDIO_VERSION "0.1.0"
+#define AUDIO_VERSION "0.2.0"
 
 #define STX 0x7E
 #define ETX 0xEF
@@ -62,8 +65,12 @@
 
 class Audio{
 public:
-	Audio(SoftwareSerial *ser);
+#if defined (__AVR__)
 	Audio(HardwareSerial *ser);
+	Audio(SoftwareSerial *ser);	
+#elif defined (ESP32)
+	Audio(HardwareSerial *ser,int _rx = D2,int _tx = D3 );
+#endif
 	
 	void begin(uint8_t device, uint8_t mode, uint8_t vol);
 	void nextMusic();
@@ -92,9 +99,13 @@ public:
 	
 private:
 	uint8_t sendBuffer[8];
-
-	SoftwareSerial *audioSwSerial;
 	HardwareSerial *audioHwSerial;
+#if defined (__AVR__)
+	SoftwareSerial *audioSwSerial;
+#elif defined (ESP32)
+	uint8_t pinRX = D2;
+	uint8_t pinTX = D3;	
+#endif
   
 	void common_init(void);
 	void sendCommand(uint8_t cmd, uint8_t *buf, uint16_t len);

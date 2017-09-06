@@ -16,27 +16,42 @@
 
 #include "Microduino_Audio.h"
 
-
-Audio::Audio(SoftwareSerial *ser) {
+#if defined (ESP32)
+Audio::Audio(HardwareSerial *ser,int _rx,int _tx) {
     common_init();
-	audioSwSerial = ser;	
+	audioHwSerial = ser;
+	pinRX=_rx;
+	pinTX=_tx;
 }
-
+#elif defined (__AVR__)
 Audio::Audio(HardwareSerial *ser) {
     common_init();
 	audioHwSerial = ser;
 }
 
+Audio::Audio(SoftwareSerial *ser) {
+    common_init();
+	audioSwSerial = ser;	
+}
+#endif
+
+
 void Audio::common_init(void){
-	audioSwSerial = NULL;
 	audioHwSerial = NULL;	
+#if defined (__AVR__)
+	audioSwSerial = NULL;
+#endif
 }
 
 void Audio::begin(uint8_t device, uint8_t mode, uint8_t vol){
+#if defined (ESP32)
+	audioHwSerial->begin(9600,SERIAL_8N1,pinRX,pinTX);
+#elif defined (__AVR__)
 	if(audioSwSerial) 
 		audioSwSerial->begin(9600);
-	else			  
+	else 
 		audioHwSerial->begin(9600);
+#endif
 	reset();
 	setDevice(device);
 	setMode(mode);
@@ -51,10 +66,13 @@ void Audio::sendCommand(uint8_t cmd, uint8_t *buf, uint16_t len){
 	if(len > 0)
 		memcpy(sendBuffer+3, buf, len);
 	sendBuffer[len+3] = ETX;
-	if(audioSwSerial)
-		audioSwSerial->write(sendBuffer, len+4);
-	else
+	if(audioHwSerial)
 		audioHwSerial->write(sendBuffer, len+4);
+	#if defined (__AVR__)	
+	else
+		audioSwSerial->write(sendBuffer, len+4);
+	#endif
+		
 	delay(160);
 }
 
@@ -129,18 +147,7 @@ void Audio::chooseFile(uint8_t folder, uint8_t file){
 uint16_t Audio::dataParse(){
 	uint16_t sum = 0;
 	uint8_t temp;
-	if(audioSwSerial){
-		while(audioSwSerial->available()){
-			temp = char(audioSwSerial->read());
-			if(temp>47&&temp<58){
-				temp -=48;  
-			}else if(temp>96&&temp<103){
-				temp -=87;  
-			}
-			sum = sum*16+temp;
-			delay(1);
-		}
-	}else{
+	if(audioHwSerial){
 		while(audioHwSerial->available()){
 			temp = char(audioHwSerial->read());
 			if(temp>47&&temp<58){
@@ -152,16 +159,33 @@ uint16_t Audio::dataParse(){
 			delay(1);
 		}
 	}
+	#if defined (__AVR__)
+	else{
+		while(audioSwSerial->available()){
+			temp = char(audioSwSerial->read());
+			if(temp>47&&temp<58){
+				temp -=48;  
+			}else if(temp>96&&temp<103){
+				temp -=87;  
+			}
+			sum = sum*16+temp;
+			delay(1);
+		}
+	}
+	#endif
 	return sum;	
 }
 
 uint16_t Audio::queryNum(uint8_t cmd){
-	if(audioSwSerial){
-		audioSwSerial->stopListening();
-		audioSwSerial->listen();
-	}else{
+	if(audioHwSerial){
 		audioHwSerial->flush();
 	}
+	#if defined (__AVR__)
+	else{
+		audioSwSerial->stopListening();
+		audioSwSerial->listen();
+	}
+	#endif
 	sendCommand(cmd, NULL, 0);	
 	return dataParse();	
 }
@@ -194,29 +218,17 @@ String Audio::queryName(){
 	String nameCache = "";
 	char temp;
 	uint16_t i = 0;
-	if(audioSwSerial){
+	if(audioHwSerial){
+		audioHwSerial->flush();	
+	}
+	#if defined (__AVR__)
+	else{
 		audioSwSerial->stopListening();
 		audioSwSerial->listen();
-	}else{
-		audioHwSerial->flush();
 	}
+	#endif
 	sendCommand(QUERY_NAME, NULL, 0);	
-	if(audioSwSerial){
-		while(audioSwSerial->available()){
-			temp = audioSwSerial->read();
-			nameCache += temp;
-			if(temp == 32){
-				i++;	
-			}else{
-				i = 0;
-			}
-			if(i >= 3){
-				i = 0;
-				nameCache.replace("   ", ".");
-			}
-			delay(1);
-		}
-	}else{
+	if(audioHwSerial){
 		while(audioHwSerial->available()){
 			temp = audioHwSerial->read();
 			nameCache += temp;
@@ -232,6 +244,24 @@ String Audio::queryName(){
 			delay(1);
 		}
 	}
+	#if defined (__AVR__)
+	else{
+		while(audioSwSerial->available()){
+			temp = audioSwSerial->read();
+			nameCache += temp;
+			if(temp == 32){
+				i++;	
+			}else{
+				i = 0;
+			}
+			if(i >= 3){
+				i = 0;
+				nameCache.replace("   ", ".");
+			}
+			delay(1);
+		}
+	}
+	#endif
 	return nameCache;	
 }
 

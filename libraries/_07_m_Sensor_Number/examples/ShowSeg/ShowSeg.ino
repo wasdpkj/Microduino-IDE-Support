@@ -20,17 +20,17 @@
     |       |
       ————-
        d
- 取模软件下载：https://wiki.microduino.cn/index.php/File:%E4%B8%83%E6%AE%B5%E6%95%B0%E7%A0%81%E7%AE%A1%E5%8F%96%E6%A8%A1%E8%BD%AF%E4%BB%B6.zip
- 取模方式：https://wiki.microduino.cn/images/a/a6/Sensor_Number_getseg.jpg
+  取模软件下载：https://wiki.microduino.cn/index.php/File:%E4%B8%83%E6%AE%B5%E6%95%B0%E7%A0%81%E7%AE%A1%E5%8F%96%E6%A8%A1%E8%BD%AF%E4%BB%B6.zip
+  取模方式：https://wiki.microduino.cn/images/a/a6/Sensor_Number_getseg.jpg
    
   电路：
   -数码管接到核心的4，5引脚
 
   注意：
-  -Core的A6，A7接口不能用于软串口控制。
+  -Core、ESP32的A6，A7接口不能用于串口控制。
   -控制段时不能直接控制点，只能通过setPoint()函数来控制点。
 
-  2017年7月17日修改
+  2017年9月1日修改
 */
 
 #include <Microduino_Number.h>
@@ -38,16 +38,24 @@
 #define NUM   1
 #define LIGHT 255
 
-SoftwareSerial mySerial(4, 5);   // RX, TX
-Number LED(NUM, &mySerial);  //使用软串口
+#if defined (__AVR__)
+SoftwareSerial mySerial(4, 5);   // Core RX, TX
+//#define mySerial Serial1      // Core+ D2,D3
+Number LED(NUM, &mySerial);  //使用串口
+#endif
 
-//Number LED(NUM, &Serial1); //使用硬串口1——D2、D3接口
+#if defined(ESP32)
+HardwareSerial mySerial(1);
+Number LED(NUM, &mySerial, D4, D5);  //使用串口
+#endif
 
 //控制段数据,从低位开始对应a,b,c,d,e,f,g
 byte num_data[7] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40};
 
 void setup() {
-  LED.begin();               //初始化数码管
+
+  LED.begin();
+
 }
 
 void loop() {

@@ -31,22 +31,33 @@ volatile char *lastline;
 volatile boolean recvdflag;
 volatile boolean inStandbyMode;
 
-
+#if defined (ESP32)
+// Constructor when using HardwareSerial
+Microduino_GPS::Microduino_GPS(HardwareSerial *ser, int _rx, int _tx) {
+  common_init();  // Set everything to common state, then...
+  gpsHwSerial = ser; // ...override gpsHwSerial with value passed.
+  pinRX = _rx;
+  pinTX = _tx;
+}
+#elif defined (__AVR__)
 // Constructor when using SoftwareSerial
 Microduino_GPS::Microduino_GPS(SoftwareSerial *ser) {
   common_init();  // Set everything to common state, then...
   gpsSwSerial = ser; // ...override gpsHwSerial with value passed.
 }
+
 // Constructor when using HardwareSerial
 Microduino_GPS::Microduino_GPS(HardwareSerial *ser) {
   common_init();  // Set everything to common state, then...
   gpsHwSerial = ser; // ...override gpsHwSerial with value passed.
 }
-
+#endif
 // Initialization code used by all constructor types
 void Microduino_GPS::common_init(void) {
-  gpsHwSerial = NULL; // port pointer in corresponding constructor
+#if defined (__AVR__)
   gpsSwSerial = NULL; // port pointer in corresponding constructor
+#endif
+  gpsHwSerial = NULL; // port pointer in corresponding constructor
   recvdflag   = false;
   paused      = false;
   lineidx     = 0;
@@ -58,13 +69,20 @@ void Microduino_GPS::common_init(void) {
   lat = lon = mag = 0; // char
   fix = false; // boolean
   milliseconds = 0; // uint16_t
-  latitude = longitude = geoidheight = altitude =
-                                         speed = angle = magvariation = HDOP = 0.0; // float
+  latitude = longitude = geoidheight = altitude = speed = angle = magvariation = HDOP = 0.0; // float
 }
 
 void Microduino_GPS::begin(uint32_t baud) {
   uint32_t _baud[5] = {9600, 19200, 38400, 57600, 115200};
-
+#if defined (ESP32)
+  if (gpsHwSerial) {
+    for (int _n = 0; _n < 5; _n++) {
+      gpsHwSerial->begin(_baud[_n], SERIAL_8N1, pinRX, pinTX);
+      set_baud(baud);
+    }
+    gpsHwSerial->begin(baud, SERIAL_8N1, pinRX, D3);
+  }
+#elif defined (__AVR__)
   if (gpsHwSerial) {
     for (int _n = 0; _n < 5; _n++) {
       gpsHwSerial->begin(_baud[_n]);
@@ -77,9 +95,9 @@ void Microduino_GPS::begin(uint32_t baud) {
       gpsSwSerial->begin(_baud[_n]);
       set_baud(baud);
     }
-
     gpsSwSerial->begin(baud);
   }
+#endif
   delay(10);
 }
 
@@ -89,11 +107,13 @@ void Microduino_GPS::rx_empty(void) {
       gpsHwSerial->read();
     }
   }
+#if defined (__AVR__)
   else {
     while (gpsSwSerial->available() > 0) {
       gpsSwSerial->read();
     }
   }
+#endif
 }
 
 boolean Microduino_GPS::newNMEAreceived(void) {
@@ -130,9 +150,11 @@ void Microduino_GPS::set_config(uint8_t _set_config) {
   if (gpsHwSerial) {
     gpsHwSerial->write(UBLOX_SET_CONFIG[_set_config], 21);
   }
+#if defined (__AVR__)
   else {
     gpsSwSerial->write(UBLOX_SET_CONFIG[_set_config], 21);
   }
+#endif
   delay(100);
 }
 
@@ -148,9 +170,11 @@ void Microduino_GPS::set_updata(uint8_t _set_updata) {
   if (gpsHwSerial) {
     gpsHwSerial->write(UBLOX_SET_UPDATE[_set_updata], 14);
   }
+#if defined (__AVR__)
   else {
     gpsSwSerial->write(UBLOX_SET_UPDATE[_set_updata], 14);
   }
+#endif
   delay(50);
 }
 
@@ -161,11 +185,11 @@ void Microduino_GPS::set_baud(uint32_t _set_baud) {
   byte UBLOX_SET_BAUD_57600[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0xD0, 0x08, 0x00, 0x00, 0x00, 0xE1, 0x00, 0x00, 0x07, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xDE, 0xC9};
   byte UBLOX_SET_BAUD_115200[] = {0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0xD0, 0x08, 0x00, 0x00, 0x00, 0xC2, 0x01, 0x00, 0x07, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC0, 0x7E};
 
-  byte BD_SET_BAUD_9600[] = {0x24, 0x50, 0x43, 0x41, 0x53, 0x30, 0x31, 0x2c, 0x31 ,0x2A ,0x31 ,0x44 ,0x0D ,0x0A};//$PCAS01,1*1D\r\n
-  byte BD_SET_BAUD_19200[] = {0x24, 0x50, 0x43, 0x41, 0x53, 0x30, 0x31, 0x2c, 0x32 ,0x2A ,0x31 ,0x45 ,0x0D ,0x0A};//$PCAS01,2*1E\r\n
-  byte BD_SET_BAUD_38400[] = {0x24, 0x50, 0x43, 0x41, 0x53, 0x30, 0x31, 0x2c, 0x33 ,0x2A ,0x31 ,0x46 ,0x0D ,0x0A};//$PCAS01,3*1F\r\n
-  byte BD_SET_BAUD_57600[] = {0x24, 0x50, 0x43, 0x41, 0x53, 0x30, 0x31, 0x2c, 0x34 ,0x2A ,0x31 ,0x38 ,0x0D ,0x0A};//$PCAS01,4*18\r\n
-  byte BD_SET_BAUD_115200[] = {0x24, 0x50, 0x43, 0x41, 0x53, 0x30, 0x31, 0x2c, 0x35 ,0x2A ,0x31 ,0x39,0x0D ,0x0A};//$PCAS01,5*19\r\n
+  byte BD_SET_BAUD_9600[] = {0x24, 0x50, 0x43, 0x41, 0x53, 0x30, 0x31, 0x2c, 0x31 , 0x2A , 0x31 , 0x44 , 0x0D , 0x0A}; //$PCAS01,1*1D\r\n
+  byte BD_SET_BAUD_19200[] = {0x24, 0x50, 0x43, 0x41, 0x53, 0x30, 0x31, 0x2c, 0x32 , 0x2A , 0x31 , 0x45 , 0x0D , 0x0A}; //$PCAS01,2*1E\r\n
+  byte BD_SET_BAUD_38400[] = {0x24, 0x50, 0x43, 0x41, 0x53, 0x30, 0x31, 0x2c, 0x33 , 0x2A , 0x31 , 0x46 , 0x0D , 0x0A}; //$PCAS01,3*1F\r\n
+  byte BD_SET_BAUD_57600[] = {0x24, 0x50, 0x43, 0x41, 0x53, 0x30, 0x31, 0x2c, 0x34 , 0x2A , 0x31 , 0x38 , 0x0D , 0x0A}; //$PCAS01,4*18\r\n
+  byte BD_SET_BAUD_115200[] = {0x24, 0x50, 0x43, 0x41, 0x53, 0x30, 0x31, 0x2c, 0x35 , 0x2A , 0x31 , 0x39, 0x0D , 0x0A}; //$PCAS01,5*19\r\n
   if (gpsHwSerial) {
     switch (_set_baud) {
       case 9600:
@@ -196,6 +220,7 @@ void Microduino_GPS::set_baud(uint32_t _set_baud) {
         break;
     }
   }
+#if defined (__AVR__)
   else {
     switch (_set_baud) {
       case 9600:
@@ -226,6 +251,7 @@ void Microduino_GPS::set_baud(uint32_t _set_baud) {
         break;
     }
   }
+#endif
   delay(50);
 }
 
@@ -240,9 +266,11 @@ void Microduino_GPS::set_cnssmode(uint8_t _set_cnssmode) {
   if (gpsHwSerial) {
     gpsHwSerial->write(UBLOX_SET_CNSSMODE[_set_cnssmode], 52);
   }
+#if defined (__AVR__)
   else {
     gpsSwSerial->write(UBLOX_SET_CNSSMODE[_set_cnssmode], 52);
   }
+#endif
   delay(50);
 }
 
@@ -256,9 +284,11 @@ void Microduino_GPS::set_powermode(uint8_t _set_powermode) {
   if (gpsHwSerial) {
     gpsHwSerial->write(UBLOX_SET_POWERMODE[_set_powermode], 31);
   }
+#if defined (__AVR__)
   else {
     gpsSwSerial->write(UBLOX_SET_POWERMODE[_set_powermode], 31);
   }
+#endif
   delay(50);
 }
 
@@ -283,7 +313,7 @@ boolean Microduino_GPS::parse(char *nmea) {
   }
 
   // look for a few common sentences
-  if (strstr(nmea, "$GPGGA")||strstr(nmea, "$BDGGA")) {
+  if (strstr(nmea, "$GPGGA") || strstr(nmea, "$BDGGA")) {
     // found GGA
     char *p = nmea;
     // get time
@@ -332,7 +362,7 @@ boolean Microduino_GPS::parse(char *nmea) {
     geoidheight = atof(p);
     return true;
   }
-  if (strstr(nmea, "$GPRMC")||strstr(nmea, "$BDRMC")) {
+  if (strstr(nmea, "$GPRMC") || strstr(nmea, "$BDRMC")) {
     // found RMC
     char *p = nmea;
 
@@ -405,11 +435,12 @@ char Microduino_GPS::read(void) {
     if (!gpsHwSerial->available()) return c;
     c = gpsHwSerial->read();
   }
+#if defined (__AVR__)
   else {
     if (!gpsSwSerial->available()) return c;
     c = gpsSwSerial->read();
   }
-
+#endif
   //Serial.print(c);
 
   if (c == '$') {
@@ -440,18 +471,18 @@ char Microduino_GPS::read(void) {
 
   return c;
 }
-byte Microduino_GPS::available(){
+byte Microduino_GPS::available() {
   read();
-  if(recvdflag){
+  if (recvdflag) {
     parse(lastNMEA());
-    if(fix){
+    if (fix) {
       return GPS_DATA_READY;
     }
-    else{
+    else {
       return GPS_TIME_READY;
     }
   }
-  else{
+  else {
     return GPS_NO_READY;
   }
 }

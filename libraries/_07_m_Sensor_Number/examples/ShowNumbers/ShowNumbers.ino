@@ -15,9 +15,9 @@
   数码管接到核心的4，5引脚
 
   注意：
-  Core的A6，A7接口不能用于软串口控制
+  Core、ESP32的A6，A7接口不能用于串口控制
 
-  2017年7月17日修改
+  2017年9月1日修改
 
 */
 
@@ -26,13 +26,20 @@
 #define NUM   1
 #define LIGHT 255
 
-SoftwareSerial mySerial(4, 5);   // RX, TX
-Number LED(NUM, &mySerial);  //使用软串口
+#if defined (__AVR__)
+SoftwareSerial mySerial(4, 5);   // Core RX, TX
+//#define mySerial Serial1      // Core+ D2,D3
+Number LED(NUM, &mySerial);  //使用串口
+#endif
 
-//Number LED(NUM, &Serial1); //使用硬串口1——D2、D3接口
+#if defined(ESP32)
+HardwareSerial mySerial(1);
+Number LED(NUM, &mySerial, D4, D5);  //使用串口
+#endif
+
 
 void setup() {
-  LED.begin();               //初始化数码管
+  LED.begin();
 }
 
 void loop() {

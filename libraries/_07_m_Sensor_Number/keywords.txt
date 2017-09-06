@@ -5,6 +5,7 @@
 #######################################
 
 Number	KEYWORD1
+HardwareSerial	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)

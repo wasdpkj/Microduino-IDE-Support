@@ -20,8 +20,9 @@
 
 #include <Arduino.h>
 
+#if defined (__AVR__)
 #include <SoftwareSerial.h>
-
+#endif
 
 #define CONFIG_DEFAULT 0
 #define CONFIG_SAVE 1
@@ -49,10 +50,12 @@
 class Microduino_GPS {
  public:
   void begin(uint32_t baud); 
-
+#if defined (__AVR__)
   Microduino_GPS(SoftwareSerial *ser); // Constructor when using SoftwareSerial
   Microduino_GPS(HardwareSerial *ser); // Constructor when using HardwareSerial
-
+#elif defined (ESP32)
+  Microduino_GPS(HardwareSerial *ser,int _rx = D2,int _tx = D3);
+#endif
   char *lastNMEA(void);
   boolean newNMEAreceived();
   byte available();
@@ -89,8 +92,13 @@ class Microduino_GPS {
   boolean paused;
   
   uint8_t parseResponse(char *response);
+    HardwareSerial *gpsHwSerial;
+#if defined (__AVR__)
   SoftwareSerial *gpsSwSerial;
-  HardwareSerial *gpsHwSerial;	
+#elif defined (ESP32)
+  uint8_t pinRX = D2;
+  uint8_t pinTX = D3; 
+#endif	
   
   void rx_empty(void);
 };

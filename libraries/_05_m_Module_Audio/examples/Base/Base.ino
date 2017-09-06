@@ -6,16 +6,22 @@ AnalogKey keyA6[3] {(A6), (A6), (A6)};
 //Core UART Port: [SoftSerial] [D2,D3]
 #if defined (__AVR_ATmega168__) || defined (__AVR_ATmega328__) || defined (__AVR_ATmega328P__) || defined(__AVR_ATmega32U4__)
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(2, 3); /* RX:D2, TX:D3 */
-#define AudioSerial mySerial
+SoftwareSerial AudioSerial(2, 3); /* RX:D2, TX:D3 */
+Audio audio(&AudioSerial);
 #endif
 
 //Core+ UART Port: [Serial1] [D2,D3]
 #if defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega644P__) || defined(__AVR_ATmega128RFA1__)
 #define AudioSerial Serial1
+Audio audio(&AudioSerial);
 #endif
 
-Audio audio(&AudioSerial);
+//CoreESP UART Port: [RX,TX]
+#if defined(ESP32)
+HardwareSerial AudioSerial(1);
+Audio audio(&AudioSerial, D2, D3);
+#endif
+
 
 uint8_t musicVol = 20;             //初始音量20
 uint8_t musicMode = MODE_ALL;      //初始播放模式--全部循环
@@ -47,7 +53,7 @@ void loop() {
     case LONG_PRESS:
       audio.volumeUp();
       Serial.println("volUp");    //长按
-	  delay(500);
+    delay(500);
       break;
   }
 
@@ -59,7 +65,7 @@ void loop() {
     case LONG_PRESS:
       audio.volumeDown();
       Serial.println("volDown");    //长按
-	  delay(500);
+    delay(500);
       break;
   }
 

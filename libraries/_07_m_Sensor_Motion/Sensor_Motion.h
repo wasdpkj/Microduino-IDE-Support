@@ -21,8 +21,9 @@
 // E-mail:
 // Machine
 // maxing@microduino.cc
-
+#if defined (__AVR__)
 #include <SoftwareSerial.h>
+#endif
 #include <Arduino.h>
 
 
@@ -41,26 +42,35 @@
 #define  STEP_WAIT_DATA   3
 #define  STEP_WAIT_SUM    4
 
-#define  STX_AA       0x7a
-#define  STX_BB       0x7b
-#define  MOTION_3   0x01
-#define  CMD_3ypr   0x02
-#define  RAW_6   0x03
+#define  STX_AA         0x7a
+#define  STX_BB         0x7b
+#define  MOTION_3       0x01
+#define  CMD_3ypr       0x02
+#define  RAW_6          0x03
 #define  CMD_3accgyro   0x04
 
 
 class sensorMotion {
   public:
-    sensorMotion(SoftwareSerial *ser); // Constructor when using SoftwareSerial
+    #if defined (__AVR__)
+    sensorMotion(SoftwareSerial *ser); // Constructor when using SoftwareSerial  
     sensorMotion(HardwareSerial *ser); // Constructor when using HardwareSerial
-    void begin(void);
+    #elif defined (ESP32)
+    sensorMotion(HardwareSerial *ser,int _rx = D4,int _tx = D5);
+    #endif
+    void begin();
     boolean getData(uint8_t _cmd,float *_array) ;
     void setFullScaleGyroRange(uint8_t _range);
     void setFullScaleAccelRange(uint8_t _range);
     
   private:
-    SoftwareSerial *motionSwSerial;
     HardwareSerial *motionHwSerial;
+    #if defined (__AVR__)
+    SoftwareSerial *motionSwSerial;
+    #elif defined (ESP32)
+    uint8_t pinRX = D4;
+    uint8_t pinTX = D5; 
+    #endif
     void buf_process(void);
     void set_transmit_interval(byte a);
     void set_baud_rate(byte a);

@@ -1,7 +1,9 @@
 #ifndef __NUMBER_H__
 #define __NUMBER_H__
 
-#include <SoftwareSerial.h>
+#if defined (__AVR__)
+ #include <SoftwareSerial.h>
+#endif
 
 #define HEADA 0x7A  
 #define HEADB 0x7B 
@@ -19,11 +21,14 @@ const byte Negative_data[10] = {0x3f, 0x30, 0x5b, 0x79, 0x74, 0x6d, 0x6f, 0x38, 
 
 class Number{
 public:
+  #if defined (__AVR__)
   Number(uint8_t n,SoftwareSerial *ser);
   Number(uint8_t n,HardwareSerial *ser);
-  
+  #elif defined (ESP32)
+  Number(uint8_t n,HardwareSerial *ser,int _rx = D4,int _tx = D5);
+  #endif
   void begin();
-  void Serial_Send(u8* Data,u8 len);
+  void Serial_Send(uint8_t* Data,uint8_t len);
   void setNumber(uint8_t _num, uint8_t _data,byte _light);
   void setSeg(uint8_t _num, byte _data,byte _light);
   void direction(uint8_t n);
@@ -37,9 +42,14 @@ private:
   uint8_t numLED;
   uint8_t numLEDDir;
   uint8_t *numData;
-
-  SoftwareSerial *numSwSerial;
   HardwareSerial *numHwSerial;
+  #if defined (__AVR__)
+  SoftwareSerial *numSwSerial;
+  #elif defined (ESP32)
+  uint8_t pinRX = D4;
+  uint8_t pinTX = D5; 
+  #endif
+
 
   void common_init(void);
 };

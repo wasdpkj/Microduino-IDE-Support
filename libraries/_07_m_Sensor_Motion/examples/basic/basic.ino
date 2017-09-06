@@ -6,16 +6,21 @@
 // ==============
 #include <Sensor_Motion.h>
 
-SoftwareSerial mySerial(4, 5);   // RX, TX
-sensorMotion motion(&mySerial);  //使用软串口
-
-//sensorMotion motion(&Serial1); //使用硬串口0，1
+#if defined (__AVR__)
+SoftwareSerial mySerial(4, 5);   // Core RX, TX
+//#define mySerial Serial1      // Core+ D2，D3
+sensorMotion motion(&mySerial);  //使用串口
+#else
+HardwareSerial mySerial(1);
+sensorMotion motion(&mySerial, D4, D5); //使用串口
+#endif
 
 float ypr[3];//用来存放三轴姿态角
 
 void setup() {
   Serial.begin(115200);
-  motion.begin();
+
+  motion.begin();    // RX, TX
 }
 
 void loop() {
