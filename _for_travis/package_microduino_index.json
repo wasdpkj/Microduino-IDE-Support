@@ -92,12 +92,12 @@
             "online": "https://wiki.microduino.cn"
           },
           "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4.zip",
-          "checksum": "SHA-256:3EBF54A9532F4F2F13528322EC0491E20319EC314355D86AE950F3001D3A19CE",
+          "checksum": "SHA-256:F32608132DF986A43D180B59F6551A44F90A6F60FC3F3ED7251AF758E04C80BD",
           "name": "Microduino ESP32 Boards",
           "version": "1.8.4",
           "architecture": "esp32",
           "archiveFileName": "microduino-esp32-1.8.4.zip",
-          "size": "35372783",
+          "size": "35975168",
           "toolsDependencies": [
             {
               "packager": "microduino",
