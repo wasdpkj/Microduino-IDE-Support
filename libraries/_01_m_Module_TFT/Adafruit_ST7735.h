@@ -1,10 +1,15 @@
 /***************************************************
   This is a library for the Adafruit 1.8" SPI display.
-  This library works with the Adafruit 1.8" TFT Breakout w/SD card
+
+This library works with the Adafruit 1.8" TFT Breakout w/SD card
   ----> http://www.adafruit.com/products/358
-  as well as Adafruit raw 1.8" TFT display
+The 1.8" TFT shield
+  ----> https://www.adafruit.com/product/802
+The 1.44" TFT breakout
+  ----> https://www.adafruit.com/product/2088
+as well as Adafruit raw 1.8" TFT display
   ----> http://www.adafruit.com/products/618
- 
+
   Check out the links above for our tutorials and wiring diagrams
   These displays use SPI to communicate, 4 or 5 pins are required to
   interface (RST is optional)
@@ -19,30 +24,52 @@
 #ifndef _ADAFRUIT_ST7735H_
 #define _ADAFRUIT_ST7735H_
 
-#include <Arduino.h>
-#include <Print.h>
-
-
+#include "Arduino.h"
+#include "Print.h"
 #include <Adafruit_GFX.h>
 
-#if defined(__SAM3X8E__)
-#include <include/pio.h>
+#if defined(__AVR__) || defined(CORE_TEENSY)
+  #include <avr/pgmspace.h>
+  #define USE_FAST_IO
+  typedef volatile uint8_t RwReg;
+#elif defined(ARDUINO_STM32_FEATHER)
+  typedef volatile uint32 RwReg;
+  #define USE_FAST_IO
+#elif defined(ARDUINO_FEATHER52)
+  typedef volatile uint32_t RwReg;
+  #define USE_FAST_IO
+#elif defined(ESP8266) || defined(ESP32)
+  #include <pgmspace.h>
+#elif defined(__SAM3X8E__)
+  #undef __FlashStringHelper::F(string_literal)
+  #define F(string_literal) string_literal
+  #include <include/pio.h>
   #define PROGMEM
   #define pgm_read_byte(addr) (*(const unsigned char *)(addr))
   #define pgm_read_word(addr) (*(const unsigned short *)(addr))
-typedef unsigned char prog_uchar;
-#endif
-#ifdef __AVR__
-  #include <avr/pgmspace.h>
+  typedef unsigned char prog_uchar;
 #endif
 
 // some flags for initR() :(
-#define INITR_GREENTAB 0x0
-#define INITR_REDTAB   0x1
+#define INITR_GREENTAB   0x0
+#define INITR_REDTAB     0x1
 #define INITR_BLACKTAB   0x2
 
-#define ST7735_TFTWIDTH  128
-#define ST7735_TFTHEIGHT 160
+#define INITR_18GREENTAB    INITR_GREENTAB
+#define INITR_18REDTAB      INITR_REDTAB
+#define INITR_18BLACKTAB    INITR_BLACKTAB
+#define INITR_144GREENTAB   0x1
+#define INITR_MINI160x80    0x4
+
+
+// for 1.44 and mini
+#define ST7735_TFTWIDTH_128  128
+// for mini
+#define ST7735_TFTWIDTH_80   80
+// for 1.44" display
+#define ST7735_TFTHEIGHT_128 128
+// for 1.8" and mini display
+#define ST7735_TFTHEIGHT_160  160
 
 #define ST7735_NOP     0x00
 #define ST7735_SWRESET 0x01
@@ -97,7 +124,7 @@ typedef unsigned char prog_uchar;
 #define	ST7735_GREEN   0x07E0
 #define ST7735_CYAN    0x07FF
 #define ST7735_MAGENTA 0xF81F
-#define ST7735_YELLOW  0xFFE0  
+#define ST7735_YELLOW  0xFFE0
 #define ST7735_WHITE   0xFFFF
 
 
@@ -105,9 +132,8 @@ class Adafruit_ST7735 : public Adafruit_GFX {
 
  public:
 
-  Adafruit_ST7735(uint8_t CS, uint8_t RS, uint8_t SID, uint8_t SCLK,
-    uint8_t RST);
-  Adafruit_ST7735(uint8_t CS, uint8_t RS, uint8_t RST);
+  Adafruit_ST7735(int8_t CS, int8_t RS, int8_t SID, int8_t SCLK, int8_t RST = -1);
+  Adafruit_ST7735(int8_t CS, int8_t RS, int8_t RST = -1);
 
   void     initB(void),                             // for ST7735B displays
            initR(uint8_t options = INITR_GREENTAB), // for ST7735R
@@ -141,22 +167,28 @@ class Adafruit_ST7735 : public Adafruit_GFX {
            commonInit(const uint8_t *cmdList);
 //uint8_t  spiread(void);
 
+
+  inline void CS_HIGH(void);
+  inline void CS_LOW(void);
+  inline void DC_HIGH(void);
+  inline void DC_LOW(void);
+
   boolean  hwSPI;
 
-#if defined(__AVR__) || defined(CORE_TEENSY)
-volatile uint8_t *dataport, *clkport, *csport, *rsport;
-  uint8_t  _cs, _rs, _rst, _sid, _sclk,
-           datapinmask, clkpinmask, cspinmask, rspinmask,
-           colstart, rowstart; // some displays need this changed
-#endif //  #ifdef __AVR__
+  int8_t  _cs, _dc, _rst, _sid, _sclk;
+  uint8_t colstart, rowstart, xstart, ystart; // some displays need this changed
 
-#if defined(__SAM3X8E__)
-  Pio *dataport, *clkport, *csport, *rsport;
-  uint32_t  _cs, _rs, _rst, _sid, _sclk,
-            datapinmask, clkpinmask, cspinmask, rspinmask,
-            colstart, rowstart; // some displays need this changed
-#endif //  #if defined(__SAM3X8E__)
-  
+#if defined(USE_FAST_IO)
+  volatile RwReg  *dataport, *clkport, *csport, *dcport;
+
+  #if defined(__AVR__) || defined(CORE_TEENSY)  // 8 bit!
+    uint8_t  datapinmask, clkpinmask, cspinmask, dcpinmask;
+  #else    // 32 bit!
+    uint32_t  datapinmask, clkpinmask, cspinmask, dcpinmask;
+  #endif
+#endif
+
 };
+
 
 #endif
