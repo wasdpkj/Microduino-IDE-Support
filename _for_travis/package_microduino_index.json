@@ -105,7 +105,7 @@
               "name": "xtensa-esp32-elf-gcc"
             },
             {
-              "packager": "esp32",
+              "packager": "microduino",
               "name": "esptool",
               "version": "a420774"
             }
