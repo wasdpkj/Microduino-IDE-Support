@@ -1,0 +1,45 @@
+#######################################
+# Syntax Coloring Map For mJoypad
+####################################### 
+# Class
+#######################################
+
+ideaBoard	KEYWORD1
+
+#######################################
+# Methods and Functions 
+#######################################	
+
+begin	KEYWORD2
+getIN	KEYWORD2
+getLight	KEYWORD2
+getMic	KEYWORD2
+getJoystickX	KEYWORD2
+getJoystickY	KEYWORD2
+getButtonA	KEYWORD2
+getButtonB	KEYWORD2
+getButtonUp	KEYWORD2
+getButtonDown	KEYWORD2
+getButtonLeft	KEYWORD2
+getButtonRight	KEYWORD2
+getRAW	KEYWORD2
+getKey	KEYWORD2
+setLED	KEYWORD2
+setColorLED	KEYWORD2
+setOUT	KEYWORD2
+setSensitive	KEYWORD2
+
+
+#######################################
+# Constants
+#######################################
+ 
+LEFT_A	LITERAL1
+LEFT_B	LITERAL1
+LEFT_C	LITERAL1
+JOY_Y	LITERAL1
+JOY_X	LITERAL1
+LIGHT	LITERAL1
+MIC	LITERAL1
+KEY	LITERAL1
+ALL_BUTTON	LITERAL1
