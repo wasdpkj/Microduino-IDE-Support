@@ -8,6 +8,9 @@
 #include <ESP8266.h>
 #include <aJSON.h>
 
+#ifdef ESP32
+#error "This code is not recommended to run on the ESP32 platform! Please check your Tools->Board setting."
+#endif
 
 /**
 **CoreUSB UART Port: [Serial1] [D0,D1]

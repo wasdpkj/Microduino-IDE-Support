@@ -21,6 +21,10 @@
 
 #include <ESP8266.h>
 
+#ifdef ESP32
+#error "This code is not recommended to run on the ESP32 platform! Please check your Tools->Board setting."
+#endif
+
 /**
 **CoreUSB UART Port: [Serial1] [D0,D1]
 **Core+ UART Port: [Serial1] [D2,D3]

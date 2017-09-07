@@ -29,7 +29,11 @@
 
 
 #include "ESP8266.h"
+#if defined (__AVR__)
 #include <avr/pgmspace.h>
+#else
+#include <pgmspace.h>
+#endif
 
 #define LOG_OUTPUT_DEBUG            (1)
 #define LOG_OUTPUT_DEBUG_PREFIX     (1)
