@@ -70,7 +70,15 @@ void processMessage(aJsonObject *msg)
     Serial.print(pins[i], DEC);
     Serial.print(" to value ");
     Serial.println(pwmval->valueint, DEC);
+#if defined (ESP32)
+    ledcSetup(i, 1000, 8);
+    ledcAttachPin(pins[i], i);
+    ledcWrite(i, pwmval->valueint);
+#endif
+#if defined (__AVR__)
+    pinMode(pins[i],OUTPUT);
     analogWrite(pins[i], pwmval->valueint);
+#endif
   }
 }
 

@@ -226,42 +226,37 @@ struct __freelist {
 extern char * const __brkval;
 extern struct __freelist *__flp;
 
-uint16_t freeMem(uint16_t *biggest)
-{
+#if defined (__AVR__)
+uint16_t freeMem(void) {
   char *brkval;
   char *cp;
-  unsigned freeSpace;
-  struct __freelist *fp1, *fp2;
-
+  
   brkval = __brkval;
   if (brkval == 0) {
-    brkval = __malloc_heap_start;
+   brkval = __malloc_heap_start;
   }
   cp = __malloc_heap_end;
   if (cp == 0) {
-    cp = ((char *)AVR_STACK_POINTER_REG) - __malloc_margin;
+   cp = ((char *)AVR_STACK_POINTER_REG) - __malloc_margin;
   }
   if (cp <= brkval) return 0;
+  
+  return cp - brkval;
+}
+#endif
 
-  freeSpace = cp - brkval;
-
-  for (*biggest = 0, fp1 = __flp, fp2 = 0;
-     fp1;
-     fp2 = fp1, fp1 = fp1->nx) {
-      if (fp1->sz > *biggest) *biggest = fp1->sz;
-    freeSpace += fp1->sz;
-  }
-
-  return freeSpace;
+#if defined (ESP32)
+uint16_t freeMem(void)
+{
+  return esp_get_free_heap_size();
 }
 
-uint16_t biggest;
+#endif
+
 
 void freeMem(char* message) {
   Serial.print(message);
   Serial.print(":\t");
-  Serial.println(freeMem(&biggest));
+  Serial.println(freeMem());
 }
-
-
 
