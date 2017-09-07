@@ -1,5 +1,13 @@
+#if defined (__AVR__)
 #include <SoftwareSerial.h>
 SoftwareSerial VS1053_MIDI(-1, VS1053_PIN_MIDI);
+#endif
+
+//CoreESP UART Port: [RX,TX]
+#if defined(ESP32)
+HardwareSerial VS1053_MIDI(1);
+#endif
+
 
 void midiSetInstrument(uint8_t chan, uint8_t inst) {
   if (chan > 15 || inst > 127) return;  // page 32 has instruments starting with 1 not 0 :(
