@@ -24,7 +24,7 @@
 #endif
 
 #include "JQ6500_def.h"
- 
+
 #define AUDIO_VERSION "0.2.0"
 
 #define STX 0x7E
@@ -46,71 +46,71 @@
 #define CMD_MODE    0x11
 #define CMD_FILE    0x12
 
-#define QUERY_STA   	0x42
-#define QUERY_VOL   	0x43
-#define QUERY_EQ    	0x44
-#define QUERY_MODE  	0x45
-#define QUERY_VERSION 	0x46
-#define QUERY_TF    	0x47
-#define QUERY_DISK  	0x48
-#define QUERY_FLASH 	0x49
-#define QUERY_TF_FILE 	0x4B
+#define QUERY_STA     0x42
+#define QUERY_VOL     0x43
+#define QUERY_EQ      0x44
+#define QUERY_MODE    0x45
+#define QUERY_VERSION   0x46
+#define QUERY_TF      0x47
+#define QUERY_DISK    0x48
+#define QUERY_FLASH   0x49
+#define QUERY_TF_FILE   0x4B
 #define QUERY_DISK_FILE 0x4C
-#define QUERY_FLASH_FILE	0x4D
-#define QUERY_PTIME 	0x50
-#define QUERY_TTIME 	0x51
-#define QUERY_NAME  	0x52
-#define QUERY_FILES 	0x53
+#define QUERY_FLASH_FILE  0x4D
+#define QUERY_PTIME   0x50
+#define QUERY_TTIME   0x51
+#define QUERY_NAME    0x52
+#define QUERY_FILES   0x53
 
 
-class Audio{
-public:
+class Audio {
+  public:
 #if defined (__AVR__)
-	Audio(HardwareSerial *ser);
-	Audio(SoftwareSerial *ser);	
+    Audio(HardwareSerial *ser);
+    Audio(SoftwareSerial *ser);
 #elif defined (ESP32)
-	Audio(HardwareSerial *ser,int _rx = D2,int _tx = D3 );
+    Audio(HardwareSerial *ser, int _rx = D2, int _tx = D3 );
 #endif
-	
-	void begin(uint8_t device, uint8_t mode, uint8_t vol);
-	void nextMusic();
-	void prevMusic();
-	void chooseMusic(uint16_t num);
-	void volumeUp();
-	void volumeDown();
-	void setVolume(uint8_t vol);
-	void setEq(uint8_t eq);
-	void setDevice(uint8_t device);
-	void sleep();
-	void reset();
-	void playMusic();
-	void pauseMusic();
-	void folder(uint8_t temp);
-	void setMode(uint8_t temp);
-	void chooseFile(uint8_t folder, uint8_t file);
-	
-	uint16_t queryTF();
-	uint16_t queryTFFile();
-	uint16_t queryFlash();
-	uint16_t queryFlashFile();
-	uint16_t queryTotalTime();
-	uint16_t queryPlayTime();
-	String queryName();
-	
-private:
-	uint8_t sendBuffer[8];
-	HardwareSerial *audioHwSerial;
+
+    void begin(uint8_t device, uint8_t mode, uint8_t vol);
+    void nextMusic();
+    void prevMusic();
+    void chooseMusic(uint16_t num);
+    void volumeUp();
+    void volumeDown();
+    void setVolume(uint8_t vol);
+    void setEq(uint8_t eq);
+    void setDevice(uint8_t device);
+    void sleep();
+    void reset();
+    void playMusic();
+    void pauseMusic();
+    void folder(uint8_t temp);
+    void setMode(uint8_t temp);
+    void chooseFile(uint8_t folder, uint8_t file);
+
+    uint16_t queryTF();
+    uint16_t queryTFFile();
+    uint16_t queryFlash();
+    uint16_t queryFlashFile();
+    uint16_t queryTotalTime();
+    uint16_t queryPlayTime();
+    String queryName();
+
+  private:
+    uint8_t sendBuffer[8];
+    HardwareSerial *audioHwSerial;
 #if defined (__AVR__)
-	SoftwareSerial *audioSwSerial;
+    SoftwareSerial *audioSwSerial;
 #elif defined (ESP32)
-	uint8_t pinRX = D2;
-	uint8_t pinTX = D3;	
+    uint8_t pinRX = D2;
+    uint8_t pinTX = D3;
 #endif
-  
-	void common_init(void);
-	void sendCommand(uint8_t cmd, uint8_t *buf, uint16_t len);
-	uint16_t dataParse();
-	uint16_t queryNum(uint8_t cmd);
+
+    void common_init(void);
+    void sendCommand(uint8_t cmd, uint8_t *buf, uint16_t len);
+    uint16_t dataParse();
+    uint16_t queryNum(uint8_t cmd);
 };
 
 #endif

@@ -3,13 +3,16 @@
 
 // 版权所有：
 // @Machine  maxing@microduino.cc
+// 
+//Dust 不支持ESP32
+//
 // ==============
 
 #include <Microduino_Dust.h>
 
 SoftwareSerial mySerial(4, -1); // RX, TX
 Dust pmSensor(&mySerial);    //使用软串口
-
+//Dust pmSensor(&Serial1);   //Core+ D2,D3
 
 void setup() {
   Serial.begin(9600);

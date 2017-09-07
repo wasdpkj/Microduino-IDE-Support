@@ -25,10 +25,10 @@
 #include "Sensor_Motion.h"
 
 #if defined (ESP32)
-sensorMotion::sensorMotion(HardwareSerial *ser,int _rx,int _tx) {
+sensorMotion::sensorMotion(HardwareSerial *ser, int _rx, int _tx) {
   motionHwSerial = ser;
-  pinRX=_rx;
-  pinTX=_tx;
+  pinRX = _rx;
+  pinTX = _tx;
 }
 #elif defined (__AVR__)
 sensorMotion::sensorMotion(SoftwareSerial *ser) {
@@ -41,14 +41,14 @@ sensorMotion::sensorMotion(HardwareSerial *ser) {
 #endif
 
 void sensorMotion::begin() {
-  #if defined (ESP32)
-    motionHwSerial->begin(9600,SERIAL_8N1,pinRX,pinTX);//上位机设为9600波特率（假设下位机曾经是57600波特率，但下位机重启后恢复了9600默认波特率）
-    delay(50);
-    motionHwSerial->write("at+3:3\r\n");//向下位机发送设定57600波特率的at指令
-    delay(50);
-    motionHwSerial->begin(57600,SERIAL_8N1,pinRX,pinTX);//上位机设为57600波特率（下位机当前波特率）
-    delay(50);
-  #elif defined (__AVR__)
+#if defined (ESP32)
+  motionHwSerial->begin(9600, SERIAL_8N1, pinRX, pinTX); //上位机设为9600波特率（假设下位机曾经是57600波特率，但下位机重启后恢复了9600默认波特率）
+  delay(50);
+  motionHwSerial->write("at+3:3\r\n");//向下位机发送设定57600波特率的at指令
+  delay(50);
+  motionHwSerial->begin(57600, SERIAL_8N1, pinRX, pinTX); //上位机设为57600波特率（下位机当前波特率）
+  delay(50);
+#elif defined (__AVR__)
   if (motionHwSerial) {//如果是硬串口，使用57600波特率与sensor_motion通信
     motionHwSerial->begin(9600);//上位机设为9600波特率（假设下位机曾经是57600波特率，但下位机重启后恢复了9600默认波特率）
     delay(50);
@@ -60,7 +60,7 @@ void sensorMotion::begin() {
   else if (motionSwSerial) {//如果是软串口，使用9600波特率与sensor_motion通信
     motionSwSerial->begin(9600);//上位机设为9600波特率（下位机上电默认9600波特率）
   }
-  #endif
+#endif
   //  else if (motionSwSerial) {//如果是硬串口，使用9600波特率与sensor_motion通信
   //    motionSwSerial->begin(57600);//上位机设为57600波特率（假设下位机已经是57600波特率，而上位机重启了，下位机没重启）
   //    delay(50);
@@ -83,15 +83,15 @@ bool sensorMotion::parseData(uint8_t _cmd) {
   if (motionHwSerial) {
     temp = motionHwSerial->read();
   }
-  #if defined (__AVR__)
+#if defined (__AVR__)
   else if (motionSwSerial) {
     temp = motionSwSerial->read();
   }
-  #endif
+#endif
   /*
-  if (temp != 0xff) {
+    if (temp != 0xff) {
     Serial.print(temp, HEX); Serial.print(' ');
-   }
+    }
   */
   delayMicroseconds(200);//等待200微妙，避免读取速度太快，串口缓存读取错误
   //判断数据头：0x7a
@@ -160,11 +160,11 @@ void sensorMotion::mySerialFlush() {
   if (motionHwSerial) {
     while (motionHwSerial->read() >= 0);
   }
-  #if defined (__AVR__)
+#if defined (__AVR__)
   else if (motionSwSerial) {
     while (motionSwSerial->read() >= 0);
   }
-  #endif
+#endif
 }
 
 //将两个byte移位组合起来
@@ -192,14 +192,14 @@ boolean sensorMotion::getData(uint8_t _cmd, float *_array) {
           motionHwSerial->write("at+6:0\r\n");//让下位机发送2字节格式数据
           delay(50);
         }
-        #if defined (__AVR__)
+#if defined (__AVR__)
         else if (motionSwSerial) {
           motionSwSerial->write("at+0:1\r\n");//让下位机发送3轴姿态角
           delay(50);
           motionSwSerial->write("at+6:0\r\n");//让下位机发送2字节格式数据
           delay(50);
         }
-        #endif
+#endif
       }
       else if (_cmd == RAW_6) {
         if (motionHwSerial) {
@@ -208,14 +208,14 @@ boolean sensorMotion::getData(uint8_t _cmd, float *_array) {
           motionHwSerial->write("at+6:0\r\n");//让下位机发送2字节格式数据
           delay(50);
         }
-        #if defined (__AVR__)
+#if defined (__AVR__)
         else if (motionSwSerial) {
           motionSwSerial->write("at+0:0\r\n");//让下位机发送6轴原始值
           delay(50);
           motionSwSerial->write("at+6:0\r\n");//让下位机发送2字节格式数据
           delay(50);
         }
-        #endif
+#endif
       }
       return false;
     }
@@ -256,13 +256,13 @@ void sensorMotion::set_transmit_interval(byte a) {
       motionHwSerial->print(int2char(a));
       motionHwSerial->print("\r\n");
     }
-    #if defined (__AVR__)
+#if defined (__AVR__)
     else if (motionSwSerial) {
       motionSwSerial->print("at+1:");
       motionSwSerial->print(int2char(a));
       motionSwSerial->print("\r\n");
     }
-    #endif
+#endif
     delay(150);
   }
 }
@@ -274,13 +274,13 @@ void sensorMotion::set_smoothness(byte a) {
       motionHwSerial->print(int2char(a));
       motionHwSerial->print("\r\n");
     }
-    #if defined (__AVR__)
+#if defined (__AVR__)
     else if (motionSwSerial) {
       motionSwSerial->print("at+2:");
       motionSwSerial->print(int2char(a));
       motionSwSerial->print("\r\n");
     }
-    #endif
+#endif
     delay(150);
   }
 }
@@ -291,13 +291,13 @@ void sensorMotion::setFullScaleAccelRange(uint8_t _range) {
     motionHwSerial->print(int2char(_range));
     motionHwSerial->print("\r\n");
   }
-  #if defined (__AVR__)
+#if defined (__AVR__)
   else if (motionSwSerial) {
     motionSwSerial->print("at+4:");
     motionSwSerial->print(int2char(_range));
     motionSwSerial->print("\r\n");
   }
-  #endif
+#endif
   delay(150);
 }
 //设定角速度计分辨率，输入值0~3，代表满量程250、500、1000、2000°/s
@@ -307,13 +307,13 @@ void sensorMotion::setFullScaleGyroRange(uint8_t _range) {
     motionHwSerial->print(int2char(_range));
     motionHwSerial->print("\r\n");
   }
-  #if defined (__AVR__)
+#if defined (__AVR__)
   else if (motionSwSerial) {
     motionSwSerial->print("at+5:");
     motionSwSerial->print(int2char(_range));
     motionSwSerial->print("\r\n");
   }
-  #endif
+#endif
   delay(150);
 }
 
