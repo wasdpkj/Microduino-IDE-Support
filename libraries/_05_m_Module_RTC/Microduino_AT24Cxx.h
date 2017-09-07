@@ -18,6 +18,10 @@
 #ifndef _MICRODUINO_AT24Cxx_H_
 #define _MICRODUINO_AT24Cxx_H_
 
+#ifndef BUFFER_LENGTH //for ESP32
+#define BUFFER_LENGTH I2C_BUFFER_LENGTH
+#endif
+
 #include <Arduino.h>
 #include <Wire.h>
 
