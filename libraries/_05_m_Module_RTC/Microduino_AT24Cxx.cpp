@@ -119,7 +119,7 @@ uint8_t AT24Cxx::write(uint16_t iAddr, const char *pBuf, uint16_t iCnt)
 // boundry we must split the write.
 
   while (iCnt > 0) {
-    iBytes = min(iCnt, I2C_BUFFER_LENGTH-2);
+    iBytes = min(iCnt, BUFFER_LENGTH-2);
     int iCurPage = iAddr & ~((int)0x1f);
     if (iAddr+iBytes > iCurPage+32) { // Number of bytes is too large
       iBytes = (iCurPage+32) - iAddr;
