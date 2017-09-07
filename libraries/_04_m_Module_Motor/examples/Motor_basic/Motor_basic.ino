@@ -8,8 +8,15 @@
   https://wiki.microduino.cn/index.php/MCookie-Motor/zh
 
   本示例给出了Motor控制电机的一些基本方法
-  一个Motor模块可以同时驱动两个直流电机，占用引脚D5，D6，D7，D8
+  一个Motor模块可以同时驱动两个直流电机，占用引脚5，6，7，8
   此示例中将两个电机分别命名为MotorLeft、MotorRight
+  
+  如果使用核心Microduino_ESP32，任意引脚都可以用来驱动电机
+  供电允许条件下最多可驱动四个电机
+  使用定时器0和1的LEDC_PWM驱动
+  用数字引脚前要加D,例：D5
+  Microduino/mCookie motor模块默认使用引脚D5，D6，D7，D8
+  本示例可直接使用
 *******************************************************/
 
 #include <Microduino_Motor.h>

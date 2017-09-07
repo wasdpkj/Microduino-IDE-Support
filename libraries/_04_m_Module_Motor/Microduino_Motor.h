@@ -1,18 +1,18 @@
 /*********************************************************
-//  LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+  //  LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
 
-//  版权所有：
-//  @Microduino_sy
+  //  版权所有：
+  //  @Microduino_sy
 
-// 支持Microduino_MotorPlus
+  // 支持Microduino_MotorPlus
 
-// Microduino wiki:
-// http://wiki.microduino.cn
+  // Microduino wiki:
+  // http://wiki.microduino.cn
 
-// E-mail:
-// shenyang@microduino.cc
+  // E-mail:
+  // shenyang@microduino.cc
 
-//日期：2017.06
+  //修改记录：兼容ESP32, 2017-09-07，by CWJ
 *********************************************************/
 
 #ifndef _MICRODUINO_MOTOR_H_
@@ -32,23 +32,40 @@
 #define MOTOR1_PINB 7
 #endif
 
-#define FREE  	0   //释放
-#define SPEED_MAX	255
+#define FREE    0   //释放
+#define SPEED_MAX 255
+
+#if defined (ESP32)
+#define MOTOR0_PINA D8  //PWM
+#define MOTOR0_PINB D6  //PWM
+#define MOTOR1_PINA D5  //PWM 
+#define MOTOR1_PINB D7  //PWM
+#define LEDC_TIMER_8BIT   8
+#define LEDC_BASEFREQ     1000
+#define SPEED_MAX         256
+#define MAX_MOTOR         8
+#define INVALID_MOTOR     255
+#endif
 
 class Motor {
 
   public:
-	Motor(uint8_t _pinA, uint8_t _pinB);
+    Motor(uint8_t _pinA, uint8_t _pinB);
     void begin();
     void setSpeed(int16_t _speed);
-	void Brake();
-	
-  private:
-  
-	uint8_t pinA;
-	uint8_t pinB;
-	uint8_t _pinApwm;
-	uint8_t _pinBpwm;
-};
+    void Brake();
 
+  private:
+    uint8_t pinA;
+    uint8_t pinB;
+#if defined(__AVR__)
+    uint8_t _pinApwm;
+    uint8_t _pinBpwm;
+#endif
+#if defined (ESP32)
+    uint8_t LEDC_channel_0;
+    uint8_t LEDC_channel_1;
+#endif
+
+};
 #endif
