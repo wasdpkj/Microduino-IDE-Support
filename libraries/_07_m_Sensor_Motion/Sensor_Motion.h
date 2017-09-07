@@ -52,25 +52,25 @@
 
 class sensorMotion {
   public:
-#if defined (__AVR__)
-    sensorMotion(SoftwareSerial *ser); // Constructor when using SoftwareSerial
+    #if defined (__AVR__)
+    sensorMotion(SoftwareSerial *ser); // Constructor when using SoftwareSerial  
     sensorMotion(HardwareSerial *ser); // Constructor when using HardwareSerial
-#elif defined (ESP32)
-    sensorMotion(HardwareSerial *ser, int _rx = D4, int _tx = D5);
-#endif
+    #elif defined (ESP32)
+    sensorMotion(HardwareSerial *ser,int _rx = D4,int _tx = D5);
+    #endif
     void begin();
-    boolean getData(uint8_t _cmd, float *_array) ;
+    boolean getData(uint8_t _cmd,float *_array) ;
     void setFullScaleGyroRange(uint8_t _range);
     void setFullScaleAccelRange(uint8_t _range);
-
+    
   private:
     HardwareSerial *motionHwSerial;
-#if defined (__AVR__)
+    #if defined (__AVR__)
     SoftwareSerial *motionSwSerial;
-#elif defined (ESP32)
+    #elif defined (ESP32)
     uint8_t pinRX = D4;
-    uint8_t pinTX = D5;
-#endif
+    uint8_t pinTX = D5; 
+    #endif
     void buf_process(void);
     void set_transmit_interval(byte a);
     void set_baud_rate(byte a);

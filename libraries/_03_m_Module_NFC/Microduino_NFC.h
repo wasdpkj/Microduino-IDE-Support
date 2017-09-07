@@ -20,7 +20,7 @@
 #include <Arduino.h>
 
 #include <Wire.h>
-#ifdef __AVR__
+#if defined __AVR__|| defined ESP32
  #define WIRE Wire
 #else // Arduino Due
  #define WIRE Wire1

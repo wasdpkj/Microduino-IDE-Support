@@ -36,7 +36,7 @@ bool AT24Cxx::begin(void)
 
 uint16_t AT24Cxx::read(uint16_t iAddr, uint8_t *buf, uint16_t iCnt)
 {
-  uint16_t iRead=0, iBytes;
+  uint8_t iRead=0, iBytes;
   while (iCnt>0) {
     Wire.beginTransmission(devAddr);
     Wire.write(iAddr>>8);   // Address MSB
@@ -56,7 +56,7 @@ uint16_t AT24Cxx::read(uint16_t iAddr, uint8_t *buf, uint16_t iCnt)
 
 uint16_t AT24Cxx::readStr(uint16_t iAddr, uint8_t *buf, uint16_t iCnt)
 {
-  uint16_t iRead=0, iBytes;
+  uint8_t iRead=0, iBytes;
   char c;
   while (iCnt>0) {
     Wire.beginTransmission(devAddr);
@@ -119,7 +119,7 @@ uint8_t AT24Cxx::write(uint16_t iAddr, const char *pBuf, uint16_t iCnt)
 // boundry we must split the write.
 
   while (iCnt > 0) {
-    iBytes = min(iCnt, BUFFER_LENGTH-2);
+    iBytes = min(iCnt, I2C_BUFFER_LENGTH-2);
     int iCurPage = iAddr & ~((int)0x1f);
     if (iAddr+iBytes > iCurPage+32) { // Number of bytes is too large
       iBytes = (iCurPage+32) - iAddr;

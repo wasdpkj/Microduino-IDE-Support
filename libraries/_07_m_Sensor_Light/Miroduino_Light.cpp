@@ -1,4 +1,9 @@
+#ifdef ESP32
+#include <pgmspace.h>
+#else
 #include <avr/pgmspace.h>
+#endif
+
 #include <stdlib.h>
 #include <I2Cdev.h>
 #include "Miroduino_Light.h"
