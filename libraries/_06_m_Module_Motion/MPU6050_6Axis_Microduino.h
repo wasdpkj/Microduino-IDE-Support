@@ -47,7 +47,9 @@ THE SOFTWARE.
 #ifndef __arm__
 #ifdef ESP32
 #include <pgmspace.h>
-#else
+#endif
+
+#ifdef __AVR__
 #include <avr/pgmspace.h>
 #endif
 #else
