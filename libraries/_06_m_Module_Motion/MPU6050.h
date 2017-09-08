@@ -38,7 +38,15 @@ THE SOFTWARE.
 #define _MPU6050_H_
 
 #include <I2Cdev.h>
+
+
+#ifdef ESP32
+#include <pgmspace.h>
+#endif
+
+#ifdef __AVR__
 #include <avr/pgmspace.h>
+#endif
 
 
 
