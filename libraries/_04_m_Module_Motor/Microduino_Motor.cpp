@@ -25,24 +25,9 @@ Motor::Motor(uint8_t _pinA, uint8_t _pinB) {
   pinA = _pinA;
   pinB = _pinB;
 #if defined (ESP32)
-  if (motorNum == 0) {
-    LEDC_channel_0 = 0;
-    LEDC_channel_1 = 1;
-    motorNum++;
-  }
-  else if (motorNum == 1) {
-    LEDC_channel_0 = 8;
-    LEDC_channel_1 = 9;
-    motorNum++;
-  }
-  else if (motorNum == 2) {
-    LEDC_channel_0 = 2;
-    LEDC_channel_1 = 3;
-    motorNum++;
-  }
-  else if (motorNum == 3) {
-    LEDC_channel_0 = 10;
-    LEDC_channel_1 = 11;
+  if (motorNum < MAX_MOTOR) {
+    LEDC_channel_0 = motorNum*2;
+    LEDC_channel_1 = motorNum*2+1;
     motorNum++;
   }
   else {
@@ -85,7 +70,7 @@ void Motor::setSpeed(int16_t _speed) {
   }
   else {
     ledcWrite(LEDC_channel_0, 0);
-    ledcWrite(LEDC_channel_1, -_speed);
+    ledcWrite(LEDC_channel_1, abs(_speed));
   }
 #endif
 

@@ -19,7 +19,7 @@
 
 #include <Microduino_MotorPlus.h>
 
-MotorPlus motor(MOTOR_ADDR1);
+MotorPlus motor(MOTOR_ADDR4);
 
 void setup()
 {

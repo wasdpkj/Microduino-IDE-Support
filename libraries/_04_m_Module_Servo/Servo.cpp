@@ -251,12 +251,7 @@ static uint8_t servoNum = 0;
 Servo::Servo()
 {
 #if defined (ESP32)
-  if ( servoNum < MAX_SERVOS / 2) {
-    this->servoChannel = servoNum + 4;
-    this->servoIndex = servoNum;
-    servoNum++;
-  }
-  else if (servoNum < MAX_SERVOS) {
+  if (servoNum < MAX_SERVOS) {
     this->servoChannel = servoNum + 8;
     this->servoIndex = servoNum;
     servoNum++;

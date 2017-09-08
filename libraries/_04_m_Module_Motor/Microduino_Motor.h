@@ -43,7 +43,7 @@
 #define LEDC_TIMER_8BIT   8
 #define LEDC_BASEFREQ     1000
 #define SPEED_MAX         256
-#define MAX_MOTOR         8
+#define MAX_MOTOR         4
 #define INVALID_MOTOR     255
 #endif
 
