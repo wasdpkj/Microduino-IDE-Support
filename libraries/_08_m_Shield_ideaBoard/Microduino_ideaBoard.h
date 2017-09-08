@@ -9,7 +9,7 @@
 #define _IDEA_BOARD_H_
 
 #include <Wire.h>
-#include <arduino.h>
+#include <Arduino.h>
 
 #define IdeaBoard_ADDR 0x56
 
