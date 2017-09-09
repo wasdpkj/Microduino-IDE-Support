@@ -29,21 +29,6 @@ _Joypad Joypad;
  * zero acceleration.
  */
 
-#define CLR(x,y) (x&=(~(1<<y)))
-#define SET(x,y) (x|=(1<<y))
-
-const byte MUX_ADDR_PINS[] = { A0, A1, A2, A3 };
-const byte MUX_COM_PIN = A6;
-
-const int JOYSTICK_DEAD_ZONE = 200;
-
-const byte BUZZER_PIN = 6;
-const byte MOTOR_PIN = 8;
-
-// non-multiplexer Joypad pins:
-// External outputs: D3, D11
-// Buzzer: A8
-
 _Joypad::_Joypad() {
   for (byte p=0; p<4; p++) {
     pinMode(MUX_ADDR_PINS[p], OUTPUT);
@@ -51,47 +36,19 @@ _Joypad::_Joypad() {
 }
 
 unsigned int _Joypad::readChannel(byte channel) {
-#if defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644P__)
-  (channel & 1) ? SET(PORTA, 7) : CLR(PORTA, 7);
-  (channel & 2) ? SET(PORTA, 6) : CLR(PORTA, 6);
-  (channel & 4) ? SET(PORTA, 5) : CLR(PORTA, 5);
-  (channel & 8) ? SET(PORTA, 4) : CLR(PORTA, 4);
-#elif  defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega128RFA1__)
-  (channel & 1) ? SET(PORTF, 7) : CLR(PORTF, 7);
-  (channel & 2) ? SET(PORTF, 6) : CLR(PORTF, 6);
-  (channel & 4) ? SET(PORTF, 5) : CLR(PORTF, 5);
-  (channel & 8) ? SET(PORTF, 4) : CLR(PORTF, 4);
-#else
-  (channel & 1) ? SET(PORTC, 0) : CLR(PORTC, 0);
-  (channel & 2) ? SET(PORTC, 1) : CLR(PORTC, 1);
-  (channel & 4) ? SET(PORTC, 2) : CLR(PORTC, 2);
-  (channel & 8) ? SET(PORTC, 3) : CLR(PORTC, 3);	
-#endif
-
-/*  digitalWrite(MUX_ADDR_PINS[0], (channel & 1) ? HIGH : LOW);
-	digitalWrite(MUX_ADDR_PINS[1], (channel & 2) ? HIGH : LOW);
-	digitalWrite(MUX_ADDR_PINS[2], (channel & 4) ? HIGH : LOW);
-	digitalWrite(MUX_ADDR_PINS[3], (channel & 8) ? HIGH : LOW); */
-  // workaround to cope with lack of pullup resistor on joystick switch
-  /*
-  if (channel == CH_JOYSTICK_SW || channel == CH_JOYSTICK1_SW) {
-    pinMode(MUX_COM_PIN, INPUT_PULLUP); 
-    unsigned int joystickSwitchState = (digitalRead(MUX_COM_PIN) == HIGH) ? 1023 : 0;
-    digitalWrite(MUX_COM_PIN, LOW);
-    return joystickSwitchState;
-  }
+  (channel & 1) ? PIN_SET(MUX_ADDR_PINS[0]) : PIN_CLR(MUX_ADDR_PINS[0]);
+  (channel & 2) ? PIN_SET(MUX_ADDR_PINS[1]) : PIN_CLR(MUX_ADDR_PINS[1]);
+  (channel & 4) ? PIN_SET(MUX_ADDR_PINS[2]) : PIN_CLR(MUX_ADDR_PINS[2]);
+  (channel & 8) ? PIN_SET(MUX_ADDR_PINS[3]) : PIN_CLR(MUX_ADDR_PINS[3]);
   
-  else if (channel >= 0 && channel <= 3) {
-    pinMode(MUX_COM_PIN, INPUT_PULLUP); 
-    unsigned int joystickSwitchState = (digitalRead(MUX_COM_PIN) == HIGH) ? 1023 : 0;
-    digitalWrite(MUX_COM_PIN, LOW);
-    return joystickSwitchState;
-  }
-  else
-  */
-//analogInputToDigitalPin(TEMP_0_PIN);
+/*  digitalWrite(MUX_ADDR_PINS[0], (channel & 1) ? HIGH : LOW);
+    digitalWrite(MUX_ADDR_PINS[1], (channel & 2) ? HIGH : LOW);
+    digitalWrite(MUX_ADDR_PINS[2], (channel & 4) ? HIGH : LOW);
+    digitalWrite(MUX_ADDR_PINS[3], (channel & 8) ? HIGH : LOW); */
 
-    return analogRead(MUX_COM_PIN);
+  delayMicroseconds(10);
+
+  return analogRead(MUX_COM_PIN);
 }
 
 boolean _Joypad::joyLowHalf(byte joyCh) {
@@ -127,34 +84,4 @@ boolean _Joypad::readButton(byte ch) {
     
   unsigned int val = readChannel(ch);
   return (val > 512) ? HIGH : LOW;
-}
-
-void _Joypad::tone(unsigned int freq) {
-  if (freq > 0)
-    ::tone(BUZZER_PIN, freq);
-  else
-    ::noTone(BUZZER_PIN);
-}
-
-void _Joypad::tone(unsigned int freq, unsigned long duration) {
-  if (freq > 0)
-    ::tone(BUZZER_PIN, freq, duration);
-  else
-    ::noTone(BUZZER_PIN);
-}
-
-void _Joypad::noTone() {
-  ::noTone(BUZZER_PIN);
-}
-
-void _Joypad::motor(unsigned int motor_vol){
-pinMode(MOTOR_PIN,OUTPUT);
-#if defined(__AVR_ATmega1284P__)  || defined(__AVR_ATmega644P__)  || defined(__AVR_ATmega128RFA1__)   || defined(__AVR_ATmega32U4__) 
-analogWrite(MOTOR_PIN,motor_vol);
-#else
-if(motor_vol>0)
-digitalWrite(MOTOR_PIN,1);
-else
-digitalWrite(MOTOR_PIN,0);
-#endif
 }

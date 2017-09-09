@@ -23,13 +23,23 @@
 
 #include <Arduino.h>
 
+#ifndef PIN_SET
+#define PIN_SET(pin) (*portOutputRegister(digitalPinToPort(pin)) |= digitalPinToBitMask(pin))
+#endif
+#ifndef PIN_CLR
+#define PIN_CLR(pin) (*portOutputRegister(digitalPinToPort(pin)) &= ~digitalPinToBitMask(pin))
+#endif
+
+const byte MUX_ADDR_PINS[] = { A0, A1, A2, A3 };
+const byte MUX_COM_PIN = A6;
+
+const int JOYSTICK_DEAD_ZONE = 200;
+
+
 /*
  * The following constants are used internally by the Joypad
  * library code.
  */
-
-const byte JOYSTICK_BASE  = 16; // it's a "virtual" channel: its ID won't conflict with real ones
-const byte JOYSTICK1_BASE  = 20; // it's a "virtual" channel: its ID won't conflict with real ones
 
 const byte MAX_CHANNELS   = 16;
 
@@ -59,6 +69,8 @@ const byte CH_SWITCH_R       = 6;
  * The following constants can be used with the readButton()
  * method.
  */
+const byte JOYSTICK_BASE  = 16; // it's a "virtual" channel: its ID won't conflict with real ones
+const byte JOYSTICK1_BASE  = 20; // it's a "virtual" channel: its ID won't conflict with real ones
 
 const byte JOYSTICK_DOWN  = JOYSTICK_BASE;
 const byte JOYSTICK_LEFT  = JOYSTICK_BASE+1;
@@ -131,13 +143,7 @@ public:
    * LOW if the button is pressed, and HIGH otherwise.
    */
   boolean readButton(byte channel);
-  
-  void tone(unsigned int freq);
-  void tone(unsigned int freq, unsigned long duration);
-  void noTone();
-  
-  void motor(unsigned int motor_vol);
-  
+      
 };
 
 
