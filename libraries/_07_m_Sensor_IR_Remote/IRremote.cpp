@@ -13,7 +13,11 @@
 #include "IRremoteInt.h"
 
 // Provides ISR
+#if defined (__AVR__)
 #include <avr/interrupt.h>
+#elif defined (ESP32)
+void IRTimer();
+#endif
 
 volatile irparams_t irparams;
 
@@ -42,7 +46,7 @@ int MATCH_MARK(int measured_ticks, int desired_us) {
   Serial.print(measured_ticks, DEC);
   Serial.print(" <= ");
   Serial.println(TICKS_HIGH(desired_us + MARK_EXCESS), DEC);
-  return measured_ticks >= TICKS_LOW(desired_us + MARK_EXCESS) && measured_ticks <= TICKS_HIGH(desired_us + MARK_EXCESS);
+  return measured_ticks >= TICKS_LOW(desired_us - MARK_EXCESS) && measured_ticks <= TICKS_HIGH(desired_us + MARK_EXCESS);
 }
 
 int MATCH_SPACE(int measured_ticks, int desired_us) {
@@ -56,7 +60,14 @@ int MATCH_SPACE(int measured_ticks, int desired_us) {
   Serial.print(measured_ticks, DEC);
   Serial.print(" <= ");
   Serial.println(TICKS_HIGH(desired_us - MARK_EXCESS), DEC);
-  return measured_ticks >= TICKS_LOW(desired_us - MARK_EXCESS) && measured_ticks <= TICKS_HIGH(desired_us - MARK_EXCESS);
+  return measured_ticks >= TICKS_LOW(desired_us - MARK_EXCESS) && measured_ticks <= TICKS_HIGH(desired_us + MARK_EXCESS);
+}
+#endif
+
+#if defined (ESP32)
+IRsend::IRsend(int sendpin)
+{
+  ledcAttachPin(sendpin, LEDC_channel_IR); 
 }
 #endif
 
@@ -206,8 +217,9 @@ void IRsend::sendRC6(unsigned long data, int nbits)
 void IRsend::mark(int time) {
   // Sends an IR mark for the specified number of microseconds.
   // The mark output is modulated at the PWM frequency.
-  
-#if defined (__AVR_ATmega32U4__)
+#if defined (ESP32)
+  ledcWrite(LEDC_channel_IR, 100);
+#elif defined (__AVR_ATmega32U4__)
   TCCR4A |= _BV(COM4A1); 
 #elif defined(__AVR_ATmega128RFA1__)
   TCCR3A |= _BV(COM3B1);
@@ -222,7 +234,9 @@ void IRsend::mark(int time) {
 void IRsend::space(int time) {
   // Sends an IR space for the specified number of microseconds.
   // A space is no output, so the PWM output is disabled.
-#if defined (__AVR_ATmega32U4__)
+#if defined (ESP32)
+  ledcWrite(LEDC_channel_IR, 0); 
+#elif defined (__AVR_ATmega32U4__)
   TCCR4A &= ~(_BV(COM4A1));
 #elif defined(__AVR_ATmega128RFA1__)
   TCCR3A &= ~(_BV(COM3B1));
@@ -246,7 +260,9 @@ void IRsend::enableIROut(int khz) {
 
   
   // Disable the Timer2 Interrupt (which is used for receiving IR)
-#if defined (__AVR_ATmega32U4__)
+#if defined (ESP32)
+  ledcSetup(LEDC_channel_IR, khz*1000, LEDC_TIMER_8BIT);
+#elif defined (__AVR_ATmega32U4__)
 	TIMSK4 &= ~_BV(TOIE4);
 #elif defined(__AVR_ATmega128RFA1__)
 	TIMSK3 &= ~_BV(TOIE3); //Timer3 Overflow Interrupt
@@ -254,7 +270,9 @@ void IRsend::enableIROut(int khz) {
 	TIMSK2 &= ~_BV(TOIE2); //Timer2 Overflow Interrupt
 #endif
  
-#if defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__)
+#if defined (ESP32)
+
+#elif defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__)
   pinMode(8, OUTPUT);
   digitalWrite(8, LOW); // When not sending PWM, we want it low
 #elif defined(__AVR_ATmega128RFA1__)
@@ -273,7 +291,9 @@ void IRsend::enableIROut(int khz) {
   // COM2B = 00: disconnect OC2B; to send signal set to 10: OC2B non-inverted
   // WGM2 = 101: phase-correct PWM with OCRA as top
   // CS2 = 000: no prescaling
-#if defined (__AVR_ATmega32U4__)
+#if defined (ESP32)
+  
+#elif defined (__AVR_ATmega32U4__)
   TCCR4B = _BV(PWM4X) | _BV(CS40);
   TCCR4D = _BV(WGM40);
   
@@ -304,7 +324,15 @@ IRrecv::IRrecv(int recvpin)
 // initialization
 void IRrecv::enableIRIn() {
   // setup pulse clock timer interrupt
-#if defined (__AVR_ATmega32U4__)
+#if defined (ESP32)
+  hw_timer_t *timer;
+  timer = timerBegin(1, 80, 1); 
+  timerAttachInterrupt(timer, &IRTimer, 1); 
+  // every 50ns, autoreload = true 
+  timerAlarmWrite(timer, USECPERTICK, true); 
+  timerAlarmEnable(timer);  
+  
+#elif defined (__AVR_ATmega32U4__)
   sbi(TCCR4B,PWM4X);
 
   cbi(TCCR4B,CS43);
@@ -317,6 +345,7 @@ void IRrecv::enableIRIn() {
   sbi(TIMSK4, TOIE4);
   
   RESET_TIMER4;
+  sei();  // enable interrupts
 #elif defined(__AVR_ATmega128RFA1__)
   TCCR3A = 0;  // normal mode
 
@@ -331,6 +360,7 @@ void IRrecv::enableIRIn() {
   sbi(TIMSK3,TOIE3);
 
   RESET_TIMER3;
+  sei();  // enable interrupts
 #else
   TCCR2A = 0;  // normal mode
 
@@ -345,13 +375,12 @@ void IRrecv::enableIRIn() {
   sbi(TIMSK2,TOIE2);
 
   RESET_TIMER2;
-#endif
   sei();  // enable interrupts
-
+#endif
+ 
   // initialize state machine variables
   irparams.rcvstate = STATE_IDLE;
   irparams.rawlen = 0;
-
 
   // set pin modes
   pinMode(irparams.recvpin, INPUT);
@@ -365,7 +394,10 @@ void IRrecv::enableIRIn() {
 // First entry is the SPACE between transmissions.
 // As soon as a SPACE gets long, ready is set, state switches to IDLE, timing of SPACE continues.
 // As soon as first MARK arrives, gap width is recorded, ready is cleared, and new logging starts
-#if defined (__AVR_ATmega32U4__)
+#if defined (ESP32)
+void IRTimer()
+{
+#elif defined (__AVR_ATmega32U4__)
 ISR(TIMER4_OVF_vect)
 {
   RESET_TIMER4;
@@ -378,7 +410,6 @@ ISR(TIMER2_OVF_vect)
 {
   RESET_TIMER2;
 #endif
-
   uint8_t irdata = (uint8_t)digitalRead(irparams.recvpin);
 
   irparams.timer++; // One more 50us tick
@@ -446,6 +477,7 @@ void IRrecv::resume() {
 int IRrecv::decode(decode_results *results) {
   results->rawbuf = irparams.rawbuf;
   results->rawlen = irparams.rawlen;
+
   if (irparams.rcvstate != STATE_STOP) {
     return ERR;
   }

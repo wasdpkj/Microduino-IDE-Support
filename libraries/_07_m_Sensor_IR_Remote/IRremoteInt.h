@@ -33,9 +33,14 @@
 
 // clock timer reset value
 #define INIT_TIMER_COUNT (CLK - USECPERTICK*CLKSPERUSEC + CLKFUDGE) 
+#if defined (__AVR__)
 #define RESET_TIMER2 TCNT2 = INIT_TIMER_COUNT
 #define RESET_TIMER3 TCNT3 = INIT_TIMER_COUNT
 #define RESET_TIMER4 TCNT4 = INIT_TIMER_COUNT
+#elif defined (ESP32)
+#define LEDC_channel_IR   0
+#define LEDC_TIMER_8BIT   8
+#endif
 
 // pulse parameters in usec
 #define NEC_HDR_MARK	9000

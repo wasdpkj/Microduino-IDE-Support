@@ -12,6 +12,8 @@
 #ifndef IRremote_h
 #define IRremote_h
 
+#include <Arduino.h>
+
 // The following are compile-time library options.
 // If you change them, recompile the library.
 // If DEBUG is defined, a lot of debugging output will be printed during decoding.
@@ -68,7 +70,11 @@ private:
 class IRsend
 {
 public:
+  #if defined (ESP32)
+  IRsend(int sendpin=D3);
+  #else
   IRsend() {}
+  #endif
   void sendMedia(unsigned char *data, int length);
   void sendNEC(unsigned long data, int nbits);
   void sendSony(unsigned long data, int nbits);
