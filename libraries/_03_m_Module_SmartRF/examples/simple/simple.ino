@@ -25,6 +25,8 @@ void messageReceived() {
 }
 
 void setup() {
+    Serial.begin(115200);
+    delay(100);
     radio.init();
     radio.setSyncWord(syncWord);
     radio.setCarrierFreq(CFREQ_433);	//CFREQ_868 CFREQ_915 CFREQ_433

@@ -33,6 +33,9 @@ _Joypad::_Joypad() {
   for (byte p=0; p<4; p++) {
     pinMode(MUX_ADDR_PINS[p], OUTPUT);
   }
+#if defined (ESP32)
+  analogReadResolution(10);  //9-12 在此ADC设置为10bit精度
+#endif  
 }
 
 unsigned int _Joypad::readChannel(byte channel) {
