@@ -13,7 +13,7 @@
 
 
 /* 硬件配置: nRF24模块使用SPI通讯外加9脚和10脚 */
-RF24 radio(9, 10);
+RF24 radio(D9, D10);
 RF24Network network(radio);
 RF24Mesh mesh(radio, network);
 

@@ -26,7 +26,7 @@ nRF24模块工作在2.4G射频频段，实际有125个工作频道
 #include <RF24.h>
 
 /* 硬件配置: nRF24模块使用SPI通讯外加9脚和10脚 */
-RF24 radio(9,10);
+RF24 radio(D9,D10);
 
 //一共有126个射频通道
 const uint8_t num_channels = 126;
