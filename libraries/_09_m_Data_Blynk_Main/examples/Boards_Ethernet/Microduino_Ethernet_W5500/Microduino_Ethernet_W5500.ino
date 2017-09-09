@@ -28,6 +28,9 @@
 
 #define BLYNK_PRINT Serial    // Comment this out to disable prints and save space
 #include <SPI.h>
+#if defined (ESP32)
+#include <WiFi.h>
+#endif
 #include <Ethernet.h>
 #include <BlynkSimpleEthernet.h>
 
