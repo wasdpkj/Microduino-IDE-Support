@@ -82,7 +82,7 @@ void setup()
 
   Blynk.begin(auth, wifi, ssid, pass);
 
-  servo.attach(9);
+  servo.attach(D9);
 }
 
 void loop()
