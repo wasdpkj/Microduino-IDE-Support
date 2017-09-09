@@ -3,9 +3,8 @@
 
 //如果开启下面#define set_time的标志，则按照rtcTime中的时间设置RTC模块中的时间
 #define set_time
-#ifdef set_time
+
 DateTime rtcTime = {2017, 7, 12, 6, 15, 22, 50};//时间格式（年，月，日，时，分，秒）
-#endif
 
 RTC rtc;
 time_t prevDisplay = 0;
