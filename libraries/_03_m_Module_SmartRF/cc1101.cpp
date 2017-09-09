@@ -1,20 +1,21 @@
 /**
- * Copyright (c) 2011 Daniel Berenguer <dberenguer@usapiens.com>
+ * Copyright (c) 2011 panStamp <contact@panstamp.com>
+ * Copyright (c) 2016 Tyler Sommer <contact@tylersommer.pro>
  * 
- * This file is part of the panStamp project.
+ * This file is part of the CC1101 project.
  * 
- * panStamp  is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * CC1101 is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
  * any later version.
  * 
- * panLoader is distributed in the hope that it will be useful,
+ * CC1101 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
- * along with panLoader; if not, write to the Free Software
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with CC1101; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 
  * USA
  * 
@@ -23,32 +24,41 @@
  */
 
 #include "cc1101.h"
-#include "nvolat.h"
 
 /**
  * Macros
  */
 // Select (SPI) CC1101
-#define cc1101_Select()  bitClear(PORT_SPI_SS, BIT_SPI_SS)
+#define cc1101_Select()  digitalWrite(SS, LOW)
 // Deselect (SPI) CC1101
-#define cc1101_Deselect()  bitSet(PORT_SPI_SS, BIT_SPI_SS)
+#define cc1101_Deselect()  digitalWrite(SS, HIGH)
 // Wait until SPI MISO line goes low
-#define wait_Miso()  while(bitRead(PORT_SPI_MISO, BIT_SPI_MISO))
+#define wait_Miso()  while(digitalRead(MISO)>0)
 // Get GDO0 pin state
-#define getGDO0state()  bitRead(PORT_GDO0, BIT_GDO0)
+#define getGDO0state()  digitalRead(CC1101_GDO0)
 // Wait until GDO0 line goes high
 #define wait_GDO0_high()  while(!getGDO0state())
 // Wait until GDO0 line goes low
 #define wait_GDO0_low()  while(getGDO0state())
-// Read CC1101 Config register
-#define readConfigReg(regAddr)    readReg(regAddr, CC1101_CONFIG_REGISTER)
-// Read CC1101 Status register
-#define readStatusReg(regAddr)    readReg(regAddr, CC1101_STATUS_REGISTER)
 
  /**
   * PATABLE
   */
-const byte paTable[8] = {0x60, 0x60, 0x60, 0x60, 0x60, 0x60, 0x60, 0x60};
+//const byte paTable[8] = {0x60, 0x60, 0x60, 0x60, 0x60, 0x60, 0x60, 0x60};
+
+/**
+ * CC1101
+ * 
+ * Class constructor
+ */
+CC1101::CC1101(void)
+{
+  carrierFreq = CFREQ_868;
+  channel = CC1101_DEFVAL_CHANNR;
+  syncWord[0] = CC1101_DEFVAL_SYNC1;
+  syncWord[1] = CC1101_DEFVAL_SYNC0;
+  devAddress = CC1101_DEFVAL_ADDR;
+}
 
 /**
  * wakeUp
@@ -74,8 +84,8 @@ void CC1101::writeReg(byte regAddr, byte value)
 {
   cc1101_Select();                      // Select CC1101
   wait_Miso();                          // Wait until MISO goes low
-  spi.send(regAddr);                    // Send register address
-  spi.send(value);                      // Send value
+  SPI.transfer(regAddr);                // Send register address
+  SPI.transfer(value);                  // Send value
   cc1101_Deselect();                    // Deselect CC1101
 }
 
@@ -95,10 +105,10 @@ void CC1101::writeBurstReg(byte regAddr, byte* buffer, byte len)
   addr = regAddr | WRITE_BURST;         // Enable burst transfer
   cc1101_Select();                      // Select CC1101
   wait_Miso();                          // Wait until MISO goes low
-  spi.send(addr);                       // Send register address
+  SPI.transfer(addr);                   // Send register address
   
   for(i=0 ; i<len ; i++)
-    spi.send(buffer[i]);                // Send value
+    SPI.transfer(buffer[i]);            // Send value
 
   cc1101_Deselect();                    // Deselect CC1101  
 }
@@ -114,8 +124,8 @@ void CC1101::cmdStrobe(byte cmd)
 {
   cc1101_Select();                      // Select CC1101
   wait_Miso();                          // Wait until MISO goes low
-  spi.send(cmd);                        // Send strobe command
-  cc1101_Deselect();                    // Deselect CC1101 
+  SPI.transfer(cmd);                    // Send strobe command
+  cc1101_Deselect();                    // Deselect CC1101
 }
 
 /**
@@ -129,15 +139,15 @@ void CC1101::cmdStrobe(byte cmd)
  * Return:
  * 	Data byte returned by the CC1101 IC
  */
-byte CC1101::readReg(byte regAddr, byte regType) 
+byte CC1101::readReg(byte regAddr, byte regType)
 {
   byte addr, val;
 
   addr = regAddr | regType;
   cc1101_Select();                      // Select CC1101
   wait_Miso();                          // Wait until MISO goes low
-  spi.send(addr);                       // Send register address
-  val = spi.send(0x00);                 // Read result
+  SPI.transfer(addr);                   // Send register address
+  val = SPI.transfer(0x00);             // Read result
   cc1101_Deselect();                    // Deselect CC1101
 
   return val;
@@ -159,9 +169,9 @@ void CC1101::readBurstReg(byte * buffer, byte regAddr, byte len)
   addr = regAddr | READ_BURST;
   cc1101_Select();                      // Select CC1101
   wait_Miso();                          // Wait until MISO goes low
-  spi.send(addr);                       // Send register address
+  SPI.transfer(addr);                   // Send register address
   for(i=0 ; i<len ; i++)
-    buffer[i] = spi.send(0x00);         // Read result byte by byte
+    buffer[i] = SPI.transfer(0x00);     // Read result byte by byte
   cc1101_Deselect();                    // Deselect CC1101
 }
 
@@ -181,24 +191,21 @@ void CC1101::reset(void)
   cc1101_Select();                      // Select CC1101
 
   wait_Miso();                          // Wait until MISO goes low
-  spi.send(CC1101_SRES);                // Send reset command strobe
+  SPI.transfer(CC1101_SRES);            // Send reset command strobe
   wait_Miso();                          // Wait until MISO goes low
 
   cc1101_Deselect();                    // Deselect CC1101
 
-  setDefaultRegs();                     // Reconfigure CC1101
-  setRegsFromEeprom();                  // Take user settings from EEPROM
+  setCCregs();                          // Reconfigure CC1101
 }
 
 /**
- * setDefaultRegs
+ * setCCregs
  * 
  * Configure CC1101 registers
  */
-void CC1101::setDefaultRegs(void) 
+void CC1101::setCCregs(void) 
 {
-  byte defSyncWrd[] = {CC1101_DEFVAL_SYNC1, CC1101_DEFVAL_SYNC0};
-
   writeReg(CC1101_IOCFG2,  CC1101_DEFVAL_IOCFG2);
   writeReg(CC1101_IOCFG1,  CC1101_DEFVAL_IOCFG1);
   writeReg(CC1101_IOCFG0,  CC1101_DEFVAL_IOCFG0);
@@ -208,20 +215,26 @@ void CC1101::setDefaultRegs(void)
   writeReg(CC1101_PKTCTRL0,  CC1101_DEFVAL_PKTCTRL0);
 
   // Set default synchronization word
-  setSyncWord(defSyncWrd, false);
+  setSyncWord(syncWord);
 
   // Set default device address
-  setDevAddress(CC1101_DEFVAL_ADDR, false);
+  setDevAddress(devAddress);
+
   // Set default frequency channel
-  setChannel(CC1101_DEFVAL_CHANNR, false);
+  setChannel(channel);
   
   writeReg(CC1101_FSCTRL1,  CC1101_DEFVAL_FSCTRL1);
   writeReg(CC1101_FSCTRL0,  CC1101_DEFVAL_FSCTRL0);
 
   // Set default carrier frequency = 868 MHz
-  setCarrierFreq(CFREQ_433);
+  setCarrierFreq(carrierFreq);
 
-  writeReg(CC1101_MDMCFG4,  CC1101_DEFVAL_MDMCFG4);
+  // RF speed
+  if (workMode == MODE_LOW_SPEED)
+    writeReg(CC1101_MDMCFG4,  CC1101_DEFVAL_MDMCFG4_4800);
+  else
+    writeReg(CC1101_MDMCFG4,  CC1101_DEFVAL_MDMCFG4_38400);
+    
   writeReg(CC1101_MDMCFG3,  CC1101_DEFVAL_MDMCFG3);
   writeReg(CC1101_MDMCFG2,  CC1101_DEFVAL_MDMCFG2);
   writeReg(CC1101_MDMCFG1,  CC1101_DEFVAL_MDMCFG1);
@@ -252,22 +265,33 @@ void CC1101::setDefaultRegs(void)
   writeReg(CC1101_TEST2,  CC1101_DEFVAL_TEST2);
   writeReg(CC1101_TEST1,  CC1101_DEFVAL_TEST1);
   writeReg(CC1101_TEST0,  CC1101_DEFVAL_TEST0);
+  
+  // Send empty packet
+  CCPACKET packet;
+  packet.length = 0;
+  sendData(packet);
 }
 
 /**
  * init
  * 
- * Initialize CC1101
+ * Initialize CC1101 radio
+ *
+ * @param freq Carrier frequency
+ * @param mode Working mode (speed, ...)
  */
-void CC1101::init(void) 
+void CC1101::init(uint8_t freq, uint8_t mode)
 {
-  spi.init();                           // Initialize SPI interface
-  pinMode(GDO0, INPUT);                 // Config GDO0 as input
+  carrierFreq = freq;
+  workMode = mode;
+  Serial.println(CC1101_GDO0);
+  SPI.begin();                          // Initialize SPI interface
+  pinMode(CC1101_GDO0, INPUT);          // Config GDO0 as input
 
   reset();                              // Reset CC1101
 
   // Configure PATABLE
-  writeBurstReg(CC1101_PATABLE, (byte*)paTable, 8);
+  setTxPowerAmp(PA_LowPower);
 }
 
 /**
@@ -275,23 +299,27 @@ void CC1101::init(void)
  * 
  * Set synchronization word
  * 
- * 'sync'	Synchronization word
- * 'save' If TRUE, save parameter in EEPROM
+ * 'syncH'	Synchronization word - High byte
+ * 'syncL'	Synchronization word - Low byte
  */
-void CC1101::setSyncWord(byte *sync, bool save) 
+void CC1101::setSyncWord(uint8_t syncH, uint8_t syncL) 
 {
-  if ((syncWord[0] != sync[0]) || (syncWord[1] != sync[1]))
-  {
-    writeReg(CC1101_SYNC1, sync[0]);
-    writeReg(CC1101_SYNC0, sync[1]);
-    memcpy(syncWord, sync, sizeof(syncWord));
-    // Save in EEPROM
-    if (save)
-    {
-      EEPROM.write(EEPROM_SYNC_WORD, sync[0]);
-      EEPROM.write(EEPROM_SYNC_WORD + 1, sync[1]);
-    }
-  }
+  writeReg(CC1101_SYNC1, syncH);
+  writeReg(CC1101_SYNC0, syncL);
+  syncWord[0] = syncH;
+  syncWord[1] = syncL;
+}
+
+/**
+ * setSyncWord (overriding method)
+ * 
+ * Set synchronization word
+ * 
+ * 'syncH'	Synchronization word - pointer to 2-byte array
+ */
+void CC1101::setSyncWord(byte *sync) 
+{
+  CC1101::setSyncWord(sync[0], sync[1]);
 }
 
 /**
@@ -299,19 +327,12 @@ void CC1101::setSyncWord(byte *sync, bool save)
  * 
  * Set device address
  * 
- * 'addr'	Device address
- * 'save' If TRUE, save parameter in EEPROM
+ * @param addr	Device address
  */
-void CC1101::setDevAddress(byte addr, bool save) 
+void CC1101::setDevAddress(byte addr) 
 {
-  if (devAddress != addr)
-  {
-    writeReg(CC1101_ADDR, addr);
-    devAddress = addr;
-    // Save in EEPROM
-    if (save)
-      EEPROM.write(EEPROM_DEVICE_ADDR, addr);  
-  }
+  writeReg(CC1101_ADDR, addr);
+  devAddress = addr;
 }
 
 /**
@@ -320,18 +341,11 @@ void CC1101::setDevAddress(byte addr, bool save)
  * Set frequency channel
  * 
  * 'chnl'	Frequency channel
- * 'save' If TRUE, save parameter in EEPROM
  */
-void CC1101::setChannel(byte chnl, bool save) 
+void CC1101::setChannel(byte chnl) 
 {
-  if (channel != chnl)
-  {
-    writeReg(CC1101_CHANNR,  chnl);
-    channel = chnl;
-    // Save in EEPROM
-    if (save)
-      EEPROM.write(EEPROM_FREQ_CHANNEL, chnl);
-  }
+  writeReg(CC1101_CHANNR,  chnl);
+  channel = chnl;
 }
 
 /**
@@ -350,47 +364,24 @@ void CC1101::setCarrierFreq(byte freq)
       writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_915);
       writeReg(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_915);
       break;
-    case CFREQ_868:
-      writeReg(CC1101_FREQ2,  CC1101_DEFVAL_FREQ2_868);
-      writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_868);
-      writeReg(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_868);
-      break;
     case CFREQ_433:
       writeReg(CC1101_FREQ2,  CC1101_DEFVAL_FREQ2_433);
       writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_433);
       writeReg(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_433);
       break;
+    case CFREQ_918:
+      writeReg(CC1101_FREQ2,  CC1101_DEFVAL_FREQ2_918);
+      writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_918);
+      writeReg(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_918);
+      break;
+    default:
+      writeReg(CC1101_FREQ2,  CC1101_DEFVAL_FREQ2_868);
+      writeReg(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_868);
+      writeReg(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_868);
+      break;
   }
    
   carrierFreq = freq;  
-}
-
-/**
- * setRegsFromEeprom
- * 
- * Set registers from EEPROM
- */
-void CC1101::setRegsFromEeprom(void)
-{
-  byte bVal;
-  byte arrV[2];
-
-  // Read RF channel from EEPROM
-  bVal = EEPROM.read(EEPROM_FREQ_CHANNEL);
-  // Set RF channel
-  if (bVal < NUMBER_OF_FCHANNELS )
-    setChannel(bVal, false);
-  // Read Sync word from EEPROM
-  arrV[0] = EEPROM.read(EEPROM_SYNC_WORD);
-  arrV[1] = EEPROM.read(EEPROM_SYNC_WORD + 1);
-  // Set Sync word. 0x00 and 0xFF values are not allowed
-  if (((arrV[0] != 0x00) && (arrV[0] != 0xFF)) || ((arrV[1] != 0x00) && (arrV[1] != 0xFF)))
-    setSyncWord(arrV, false);
-  // Read device address from EEPROM
-  bVal = EEPROM.read(EEPROM_DEVICE_ADDR);
-  // Set device address
-  if (bVal > 0)
-    setDevAddress(bVal, false);
 }
 
 /**
@@ -411,32 +402,48 @@ void CC1101::setPowerDownState()
  * 
  * Send data packet via RF
  * 
- * 'packet'	Packet to be transmitted
+ * 'packet'	Packet to be transmitted. First byte is the destination address
  *
  *  Return:
  *    True if the transmission succeeds
  *    False otherwise
  */
-boolean CC1101::sendData(CCPACKET packet)
+bool CC1101::sendData(CCPACKET packet)
 {
   byte marcState;
+  bool res = false;
+ 
+  // Declare to be in Tx state. This will avoid receiving packets whilst
+  // transmitting
+  rfState = RFSTATE_TX;
 
   // Enter RX state
   setRxState();
 
+  int tries = 0;
   // Check that the RX state has been entered
-  while ((readStatusReg(CC1101_MARCSTATE) & 0x1F) != 0x0D)
-    delay(1);
+  while (tries++ < 1000 && ((marcState = readStatusReg(CC1101_MARCSTATE)) & 0x1F) != 0x0D)
+  {
+    if (marcState == 0x11)        // RX_OVERFLOW
+      flushRxFifo();              // flush receive queue
+  }
+  if (tries >= 1000) {
+    // TODO: MarcState sometimes never enters the expected state; this is a hack workaround.
+    return false;
+  }
+
   delayMicroseconds(500);
 
-  // Set data length at the first position of the TX FIFO
-  writeReg(CC1101_TXFIFO,  packet.length);
-  // Write data into the TX FIFO
-  writeBurstReg(CC1101_TXFIFO, packet.data, packet.length);
+  if (packet.length > 0)
+  {
+    // Set data length at the first position of the TX FIFO
+    writeReg(CC1101_TXFIFO,  packet.length);
+    // Write data into the TX FIFO
+    writeBurstReg(CC1101_TXFIFO, packet.data, packet.length);
 
-  // CCA enabled: will enter TX state only if the channel is clear
-  //cmdStrobe(CC1101_STX);
-  setTxState();
+    // CCA enabled: will enter TX state only if the channel is clear
+    setTxState();
+  }
 
   // Check that TX state is being entered (state = RXTX_SETTLING)
   marcState = readStatusReg(CC1101_MARCSTATE) & 0x1F;
@@ -445,6 +452,9 @@ boolean CC1101::sendData(CCPACKET packet)
     setIdleState();       // Enter IDLE state
     flushTxFifo();        // Flush Tx FIFO
     setRxState();         // Back to RX state
+
+    // Declare to be in Rx state
+    rfState = RFSTATE_RX;
     return false;
   }
 
@@ -454,43 +464,44 @@ boolean CC1101::sendData(CCPACKET packet)
   // Wait until the end of the packet transmission
   wait_GDO0_low();
 
+  // Check that the TX FIFO is empty
+  if((readStatusReg(CC1101_TXBYTES) & 0x7F) == 0)
+    res = true;
+
+  setIdleState();       // Enter IDLE state
+  flushTxFifo();        // Flush Tx FIFO
+
   // Enter back into RX state
   setRxState();
 
-  // Check that the TX FIFO is empty
-  if((readStatusReg(CC1101_TXBYTES) & 0x7F) == 0)
-    return true;
+  // Declare to be in Rx state
+  rfState = RFSTATE_RX;
 
-  return false;
+  return res;
 }
 
 /**
  * receiveData
  * 
  * Read data packet from RX FIFO
+ *
+ * 'packet'	Container for the packet received
  * 
  * Return:
- * 	Amount fo bytes received
- * 'packet'	Container for the packet received
+ * 	Amount of bytes received
  */
 byte CC1101::receiveData(CCPACKET * packet)
 {
   byte val;
+  byte rxBytes = readStatusReg(CC1101_RXBYTES);
 
-  // Rx FIFO overflow?
-  if ((readStatusReg(CC1101_MARCSTATE) & 0x1F) == 0x11)
-  {
-    setIdleState();       // Enter IDLE state
-    flushRxFifo();        // Flush Rx FIFO
-    packet->length = 0;
-  }
-  // Any byte waiting to be read?
-  else if (readStatusReg(CC1101_RXBYTES) & 0x7F)
+  // Any byte waiting to be read and no overflow?
+  if (rxBytes & 0x7F && !(rxBytes & 0x80))
   {
     // Read data length
     packet->length = readConfigReg(CC1101_RXFIFO);
     // If packet is too long
-    if (packet->length > CC1101_DATA_LEN)
+    if (packet->length > CCPACKET_DATA_LEN)
       packet->length = 0;   // Discard packet
     else
     {
@@ -507,9 +518,35 @@ byte CC1101::receiveData(CCPACKET * packet)
   else
     packet->length = 0;
 
+  setIdleState();       // Enter IDLE state
+  flushRxFifo();        // Flush Rx FIFO
+  //cmdStrobe(CC1101_SCAL);
+
   // Back to RX state
   setRxState();
 
   return packet->length;
+}
+
+/**
+ * setRxState
+ * 
+ * Enter Rx state
+ */
+void CC1101::setRxState(void)
+{
+  cmdStrobe(CC1101_SRX);
+  rfState = RFSTATE_RX;
+}
+
+/**
+ * setTxState
+ * 
+ * Enter Tx state
+ */
+void CC1101::setTxState(void)
+{
+  cmdStrobe(CC1101_STX);
+  rfState = RFSTATE_TX;
 }
 

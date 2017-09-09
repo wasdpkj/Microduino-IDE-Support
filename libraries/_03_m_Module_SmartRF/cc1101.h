@@ -1,20 +1,21 @@
 /**
- * Copyright (c) 2011 Daniel Berenguer <dberenguer@usapiens.com>
- * 
- * This file is part of the panStamp project.
- * 
- * panStamp  is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * Copyright (c) 2011 panStamp <contact@panstamp.com>
+ * Copyright (c) 2016 Tyler Sommer <contact@tylersommer.pro>
+ *
+ * This file is part of the CC1101 project.
+ *
+ * CC1101 is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
  * any later version.
- * 
- * panLoader is distributed in the hope that it will be useful,
+ *
+ * CC1101 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with panLoader; if not, write to the Free Software
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with CC1101; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 
  * USA
  * 
@@ -26,7 +27,7 @@
 #define _CC1101_H
 
 #include <Arduino.h>
-#include "spi.h"
+#include <SPI.h>
 #include "ccpacket.h"
 
 /**
@@ -34,10 +35,29 @@
  */
 enum CFREQ
 {
-  CFREQ_868,
+  CFREQ_868 = 0,
   CFREQ_915,
-  CFREQ_433
+  CFREQ_433,
+  CFREQ_918,
+  CFREQ_LAST
 };
+
+/**
+ * RF STATES
+ */
+enum RFSTATE
+{
+  RFSTATE_IDLE = 0,
+  RFSTATE_RX,
+  RFSTATE_TX
+};
+
+#define CC1101_GDO0 2   // GDO0 input interrupt pin
+
+/**
+ * Working modes
+ */
+#define MODE_LOW_SPEED  0x01  // RF speed = 4800 bps (default is 38 Kbps)
 
 /**
  * Frequency channels
@@ -190,13 +210,14 @@ enum CFREQ
  * or when the radio enters RXFIFO_OVERFLOW state. In TX the pin will de-assert if the TX FIFO underflows
  * Settings optimized for low current consumption
  */
-#define CC1101_DEFVAL_IOCFG2     0x29        // GDO2 Output Pin Configuration
+//#define CC1101_DEFVAL_IOCFG2     0x29        // GDO2 Output Pin Configuration
+#define CC1101_DEFVAL_IOCFG2     0x2E        // GDO2 Output Pin Configuration
 #define CC1101_DEFVAL_IOCFG1     0x2E        // GDO1 Output Pin Configuration
 #define CC1101_DEFVAL_IOCFG0     0x06        // GDO0 Output Pin Configuration
 #define CC1101_DEFVAL_FIFOTHR    0x07        // RX FIFO and TX FIFO Thresholds
 #define CC1101_DEFVAL_SYNC1      0xB5        // Synchronization word, high byte
 #define CC1101_DEFVAL_SYNC0      0x47        // Synchronization word, low byte
-#define CC1101_DEFVAL_PKTLEN     0xFF        // Packet Length
+#define CC1101_DEFVAL_PKTLEN     0x3D        // Packet Length
 #define CC1101_DEFVAL_PKTCTRL1   0x06        // Packet Automation Control
 #define CC1101_DEFVAL_PKTCTRL0   0x05        // Packet Automation Control
 #define CC1101_DEFVAL_ADDR       0xFF        // Device Address
@@ -211,12 +232,18 @@ enum CFREQ
 #define CC1101_DEFVAL_FREQ2_915  0x22        // Frequency Control Word, High Byte
 #define CC1101_DEFVAL_FREQ1_915  0xB1        // Frequency Control Word, Middle Byte
 #define CC1101_DEFVAL_FREQ0_915  0x3B        // Frequency Control Word, Low Byte
+// Carrier frequency = 918 MHz
+#define CC1101_DEFVAL_FREQ2_918  0x23        // Frequency Control Word, High Byte
+#define CC1101_DEFVAL_FREQ1_918  0x4E        // Frequency Control Word, Middle Byte
+#define CC1101_DEFVAL_FREQ0_918  0xC4        // Frequency Control Word, Low Byte
+
 // Carrier frequency = 433 MHz
 #define CC1101_DEFVAL_FREQ2_433  0x10        // Frequency Control Word, High Byte
 #define CC1101_DEFVAL_FREQ1_433  0xA7        // Frequency Control Word, Middle Byte
 #define CC1101_DEFVAL_FREQ0_433  0x62        // Frequency Control Word, Low Byte
 
-#define CC1101_DEFVAL_MDMCFG4    0xCA        // Modem Configuration
+#define CC1101_DEFVAL_MDMCFG4_4800    0xC7   // Modem configuration. Speed = 4800 bps
+#define CC1101_DEFVAL_MDMCFG4_38400    0xCA   // Modem configuration. Speed = 38 Kbps
 #define CC1101_DEFVAL_MDMCFG3    0x83        // Modem Configuration
 #define CC1101_DEFVAL_MDMCFG2    0x93        // Modem Configuration
 #define CC1101_DEFVAL_MDMCFG1    0x22        // Modem Configuration
@@ -250,12 +277,24 @@ enum CFREQ
 #define CC1101_DEFVAL_TEST0      0x09        // Various Test Settings
 
 /**
+ * Alias for some default values
+ */
+#define CCDEF_CHANNR  CC1101_DEFVAL_CHANNR
+#define CCDEF_SYNC0  CC1101_DEFVAL_SYNC0
+#define CCDEF_SYNC1  CC1101_DEFVAL_SYNC1
+#define CCDEF_ADDR  CC1101_DEFVAL_ADDR
+
+/**
  * Macros
  */
+// Read CC1101 Config register
+#define readConfigReg(regAddr)    readReg(regAddr, CC1101_CONFIG_REGISTER)
+// Read CC1101 Status register
+#define readStatusReg(regAddr)    readReg(regAddr, CC1101_STATUS_REGISTER)
 // Enter Rx state
-#define setRxState()              cmdStrobe(CC1101_SRX)
+//#define setRxState()              cmdStrobe(CC1101_SRX)
 // Enter Tx state
-#define setTxState()              cmdStrobe(CC1101_STX)
+//#define setTxState()              cmdStrobe(CC1101_STX)
 // Enter IDLE state
 #define setIdleState()            cmdStrobe(CC1101_SIDLE)
 // Flush Rx FIFO
@@ -270,6 +309,9 @@ enum CFREQ
 #define disableCCA()              writeReg(CC1101_MCSM1, 0)
 // Enable CCA
 #define enableCCA()               writeReg(CC1101_MCSM1, CC1101_DEFVAL_MCSM1)
+// PATABLE values
+#define PA_LowPower               0x60
+#define PA_LongDistance           0xC0
 
 /**
  * Class: CC1101
@@ -279,11 +321,7 @@ enum CFREQ
  */
 class CC1101
 {
-  private:  
-    /**
-     * Atmega's SPI interface
-     */
-    SPI spi;
+  private:
 
     /**
      * writeBurstReg
@@ -294,7 +332,79 @@ class CC1101
      * 'buffer'	Data to be writen
      * 'len'	Data length
      */
-    void writeBurstReg(byte regAddr, byte* buffer, byte len);
+    void writeBurstReg(uint8_t regAddr, uint8_t* buffer, uint8_t len);
+
+    /**
+     * readBurstReg
+     * 
+     * Read burst data from CC1101 via SPI
+     * 
+     * 'buffer'	Buffer where to copy the result to
+     * 'regAddr'	Register address
+     * 'len'	Data length
+     */
+    void readBurstReg(uint8_t * buffer, uint8_t regAddr, uint8_t len);
+
+    /**
+     * setRegsFromEeprom
+     * 
+     * Set registers from EEPROM
+     */
+    void setRegsFromEeprom(void);
+
+  public:
+    /*
+     * RF state
+     */
+    uint8_t rfState;
+
+    /**
+     * Carrier frequency
+     */
+    uint8_t carrierFreq;
+    
+    /**
+     * Working mode (speed, ...)
+     */
+    uint8_t workMode;
+
+    /**
+     * Frequency channel
+     */
+    uint8_t channel;
+
+    /**
+     * Synchronization word
+     */
+    uint8_t syncWord[2];
+
+    /**
+     * Device address
+     */
+    uint8_t devAddress;
+
+    /**
+     * CC1101
+     * 
+     * Class constructor
+     */
+    CC1101(void);
+
+    /**
+     * cmdStrobe
+     * 
+     * Send command strobe to the CC1101 IC via SPI
+     * 
+     * 'cmd'	Command strobe
+     */
+    void cmdStrobe(uint8_t cmd);
+
+    /**
+     * wakeUp
+     * 
+     * Wake up CC1101 from Power Down state
+     */
+    void wakeUp(void);
 
     /**
      * readReg
@@ -307,60 +417,7 @@ class CC1101
      * Return:
      * 	Data byte returned by the CC1101 IC
      */
-    byte readReg(byte regAddr, byte regType);
-
-    /**
-     * readBurstReg
-     * 
-     * Read burst data from CC1101 via SPI
-     * 
-     * 'buffer'	Buffer where to copy the result to
-     * 'regAddr'	Register address
-     * 'len'	Data length
-     */
-    void readBurstReg(byte * buffer, byte regAddr, byte len);
-
-    /**
-     * setDefaultRegs
-     * 
-     * Configure CC1101 registers
-     */
-    void setDefaultRegs(void);
-
-    /**
-     * setRegsFromEeprom
-     * 
-     * Set registers from EEPROM
-     */
-    void setRegsFromEeprom(void);
-
-  public:
-    /**
-     * Carrier frequency
-     */
-    byte carrierFreq;
-
-    /**
-     * Frequency channel
-     */
-    byte channel;
-
-    /**
-     * Synchronization word
-     */
-    byte syncWord[2];
-
-    /**
-     * Device address
-     */
-    byte devAddress;
-
-    /**
-     * wakeUp
-     * 
-     * Wake up CC1101 from Power Down state
-     */
-    void wakeUp(void);
+    uint8_t readReg(uint8_t regAddr, uint8_t regType);
 
     /**
      * writeReg
@@ -370,16 +427,14 @@ class CC1101
      * 'regAddr'	Register address
      * 'value'	Value to be writen
      */
-    void writeReg(byte regAddr, byte value);
+    void writeReg(uint8_t regAddr, uint8_t value);
 
     /**
-     * cmdStrobe
+     * setCCregs
      * 
-     * Send command strobe to the CC1101 IC via SPI
-     * 
-     * 'cmd'	Command strobe
+     * Configure CC1101 registers
      */
-    void cmdStrobe(byte cmd);
+    void setCCregs(void);
 
     /**
      * reset
@@ -391,19 +446,31 @@ class CC1101
     /**
      * init
      * 
-     * Initializa CC1101
+     * Initialize CC1101 radio
+     *
+     * @param freq Carrier frequency
+     * @param mode Working mode (speed, ...)
      */
-    void init(void);
+    void init(uint8_t freq=CFREQ_868, uint8_t mode=0);
 
     /**
      * setSyncWord
      * 
      * Set synchronization word
      * 
-     * 'sync'	Synchronization word
-     * 'save' If TRUE, save parameter in EEPROM
+     * 'syncH'	Synchronization word - High byte
+     * 'syncL'	Synchronization word - Low byte
      */
-    void setSyncWord(byte *sync, bool save);
+    void setSyncWord(uint8_t syncH, uint8_t syncL);
+
+    /**
+     * setSyncWord (overriding method)
+     * 
+     * Set synchronization word
+     * 
+     * 'syncH'	Synchronization word - pointer to 2-byte array
+     */
+    void setSyncWord(uint8_t *sync);
 
     /**
      * setDevAddress
@@ -411,9 +478,8 @@ class CC1101
      * Set device address
      * 
      * 'addr'	Device address
-     * 'save' If TRUE, save parameter in EEPROM
      */
-    void setDevAddress(byte addr, bool save);
+    void setDevAddress(uint8_t addr);
 
     /**
      * setCarrierFreq
@@ -422,7 +488,7 @@ class CC1101
      * 
      * 'freq'	New carrier frequency
      */
-    void setCarrierFreq(byte freq);
+    void setCarrierFreq(uint8_t freq);
     
     /**
      * setChannel
@@ -430,9 +496,8 @@ class CC1101
      * Set frequency channel
      * 
      * 'chnl'	Frequency channel
-     * 'save' If TRUE, save parameter in EEPROM
      */
-    void setChannel(byte chnl, bool save);
+    void setChannel(uint8_t chnl);
 
     /**
      * setPowerDownState
@@ -446,13 +511,13 @@ class CC1101
      * 
      * Send data packet via RF
      * 
-     * 'packet'	Packet to be transmitted
+     * 'packet'	Packet to be transmitted. First byte is the destination address
      *
      *  Return:
      *    True if the transmission succeeds
      *    False otherwise
      */
-    boolean sendData(CCPACKET packet);
+    bool sendData(CCPACKET packet);
 
     /**
      * receiveData
@@ -461,9 +526,34 @@ class CC1101
      * 
      * Return:
      * 	Amount of bytes received
-     * 'packet'	Container for the packet received
      */
-    byte receiveData(CCPACKET *packet);
+    uint8_t receiveData(CCPACKET *packet);
+    
+    /**
+     * setRxState
+     * 
+     * Enter Rx state
+     */
+    void setRxState(void);
+
+    /**
+     * setTxState
+     * 
+     * Enter Tx state
+     */
+    void setTxState(void);
+    
+    /**
+     * setTxPowerAmp
+     * 
+     * Set PATABLE value
+     * 
+     * @param paLevel amplification value
+     */
+    inline void setTxPowerAmp(uint8_t paLevel)
+    {
+      writeReg(CC1101_PATABLE, paLevel);
+    }
 };
 
 #endif

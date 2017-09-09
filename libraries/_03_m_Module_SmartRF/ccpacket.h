@@ -1,37 +1,36 @@
 /**
- * Copyright (c) 2011 Daniel Berenguer <dberenguer@usapiens.com>
- * 
- * This file is part of the panStamp project.
- * 
- * panStamp  is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * Copyright (c) 2011 panStamp <contact@panstamp.com>
+ * Copyright (c) 2016 Tyler Sommer <contact@tylersommer.pro>
+ *
+ * This file is part of the CC1101 project.
+ *
+ * CC1101 is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
  * any later version.
- * 
- * panLoader is distributed in the hope that it will be useful,
+ *
+ * CC1101 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with panLoader; if not, write to the Free Software
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with CC1101; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 
  * USA
  * 
  * Author: Daniel Berenguer
- * Creation date: 03/03/2011
+ * Creation date: 06/03/2013
  */
 
 #ifndef _CCPACKET_H
 #define _CCPACKET_H
 
-#include <Arduino.h>
-
 /**
  * Buffer and data lengths
  */
-#define CC1101_BUFFER_LEN        64
-#define CC1101_DATA_LEN          CC1101_BUFFER_LEN - 3
+#define CCPACKET_BUFFER_LEN        64
+#define CCPACKET_DATA_LEN          CCPACKET_BUFFER_LEN - 3
 
 /**
  * Class: CCPACKET
@@ -39,33 +38,33 @@
  * Description:
  * CC1101 data packet class
  */
-class CCPACKET
+struct CCPACKET
 {
   public:
     /**
      * Data length
      */
-    byte length;
+    unsigned char length;
 
     /**
      * Data buffer
      */
-    byte data[CC1101_DATA_LEN];
+    unsigned char data[CCPACKET_DATA_LEN];
 
     /**
      * CRC OK flag
      */
-    boolean crc_ok;
+    bool crc_ok;
 
     /**
      * Received Strength Signal Indication
      */
-    byte rssi;
+    unsigned char rssi;
 
     /**
      * Link Quality Index
      */
-    byte lqi;
+    unsigned char lqi;
 };
 
 #endif
