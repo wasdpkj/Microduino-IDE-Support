@@ -27,10 +27,14 @@
  *
  * 需要使用至少2个nRF24模块，并按照以下地址列表进行配置. 
  */
-
+#if defined(__AVR__)
 #include <avr/pgmspace.h>
+#endif
+#if defined(ESP32)
+#include <pgmspace.h>
+#endif
+
 #include <RF24Network.h>
-#include "printf.h"
 
 /***********************************************************************
 ************* Set the Node Address *************************************
