@@ -14,6 +14,8 @@
 
 RTC rtc;
 
+#define PIN_IRQ D2
+
 /* 设置RTC启动时间
  * 年, 月, 星期, 日, 时, 分, 秒 */
 DateTime dateTime = {2016, 6, 3, 1, 15, 30, 40};
@@ -29,7 +31,7 @@ void blink(){
 
 void setup()
 {
-  pinMode(2, INPUT);           // 设置中断引脚
+  pinMode(PIN_IRQ, INPUT);           // 设置中断引脚
   Serial.begin(9600);
   //清除所有寄存器
   rtc.begin();
@@ -42,7 +44,7 @@ void setup()
   Serial.println("debug set alarm");
 
   //设置外部中断，中断号0， 下降沿触发
-  attachInterrupt(0, blink, FALLING);
+  attachInterrupt(digitalPinToInterrupt(PIN_IRQ), blink, FALLING);
 }
 
 void loop()
