@@ -4,7 +4,7 @@
 /**************************************************************************/
 #include <Microduino_NFC.h>
 
-#define IRQ   (2)
+#define IRQ   (D2)
 
 NFC nfc(IRQ);
 
