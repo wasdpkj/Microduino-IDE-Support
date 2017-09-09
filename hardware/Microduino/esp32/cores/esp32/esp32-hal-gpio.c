@@ -79,6 +79,7 @@ static voidFuncPtr __pinInterruptHandlers[GPIO_PIN_COUNT] = {0,};
 
 extern void IRAM_ATTR __pinMode(uint8_t pin, uint8_t mode)
 {
+    if(pin > 5 && pin < 12) return;	//6 7 8 9 10 11 FLASH PIN
 
     if(!digitalPinIsValid(pin)) {
         return;
@@ -169,6 +170,7 @@ extern void IRAM_ATTR __pinMode(uint8_t pin, uint8_t mode)
 
 extern void IRAM_ATTR __digitalWrite(uint8_t pin, uint8_t val)
 {
+    if(pin > 5 && pin < 12) return;	//6 7 8 9 10 11 FLASH PIN
     if(val) {
         if(pin < 32) {
             GPIO.out_w1ts = ((uint32_t)1 << pin);
@@ -186,6 +188,7 @@ extern void IRAM_ATTR __digitalWrite(uint8_t pin, uint8_t val)
 
 extern int IRAM_ATTR __digitalRead(uint8_t pin)
 {
+    if(pin > 5 && pin < 12) return;	//6 7 8 9 10 11 FLASH PIN
     if(pin < 32) {
         return (GPIO.in >> pin) & 0x1;
     } else if(pin < 40) {
@@ -229,6 +232,7 @@ static void IRAM_ATTR __onPinInterrupt(void *arg)
 
 extern void __attachInterrupt(uint8_t pin, voidFuncPtr userFunc, int intr_type)
 {
+    if(pin > 5 && pin < 12) return;	//6 7 8 9 10 11 FLASH PIN
     static bool interrupt_initialized = false;
     static int core_id = 0;
     
@@ -255,6 +259,7 @@ extern void __attachInterrupt(uint8_t pin, voidFuncPtr userFunc, int intr_type)
 
 extern void __detachInterrupt(uint8_t pin)
 {
+    if(pin > 5 && pin < 12) return;	//6 7 8 9 10 11 FLASH PIN
     //lock gpio
     ESP_INTR_DISABLE(ETS_GPIO_INUM);
     __pinInterruptHandlers[pin] = NULL;

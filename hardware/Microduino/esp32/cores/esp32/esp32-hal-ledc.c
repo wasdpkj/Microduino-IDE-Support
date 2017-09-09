@@ -228,6 +228,7 @@ double ledcWriteNote(uint8_t chan, note_t note, uint8_t octave){
 
 void ledcAttachPin(uint8_t pin, uint8_t chan)
 {
+    if(pin > 5 && pin < 12) return;	//6 7 8 9 10 11 FLASH PIN
     if(chan > 15) {
         return;
     }
@@ -237,5 +238,6 @@ void ledcAttachPin(uint8_t pin, uint8_t chan)
 
 void ledcDetachPin(uint8_t pin)
 {
+    if(pin > 5 && pin < 12) return;	//6 7 8 9 10 11 FLASH PIN
     pinMatrixOutDetach(pin, false, false);
 }
