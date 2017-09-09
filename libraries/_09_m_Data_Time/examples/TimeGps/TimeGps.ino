@@ -2,24 +2,25 @@
 #include <TimeLib.h>
 
 
-/**
-**CoreUSB UART Port: [Serial1] [D0,D1]
-**Core+ UART Port: [Serial1] [D2,D3]
-**/
-#if defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega644P__) || defined(__AVR_ATmega128RFA1__)
-#define SerialGPS Serial1
-#endif
-
-/**
-**Core UART Port: [SoftSerial] [D2,D3]
-**/
-#if defined (__AVR_ATmega168__) || defined (__AVR_ATmega328__) || defined (__AVR_ATmega328P__)
+//Core UART Port: [SoftSerial] [D2,D3]
+#if defined (__AVR_ATmega168__) || defined (__AVR_ATmega328__) || defined (__AVR_ATmega328P__) || defined(__AVR_ATmega32U4__)
 #include <SoftwareSerial.h>
-SoftwareSerial SerialGPS(2, 3); /* RX:D2, TX:D3 */
+SoftwareSerial mySerial(2, 3); /* RX:D2, TX:D3 */
+#define GPSSerial mySerial
+Microduino_GPS GPS(&GPSSerial);
 #endif
 
+//Core+ UART Port: [Serial1] [D2,D3]
+#if defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega644P__) || defined(__AVR_ATmega128RFA1__)
+#define GPSSerial Serial1
+Microduino_GPS GPS(&GPSSerial);
+#endif
 
-Microduino_GPS GPS(&SerialGPS);
+//CoreESP32 UART Port: [D2,D3]
+#if defined (ESP32)
+HardwareSerial GPSSerial(1);
+Microduino_GPS GPS(&GPSSerial,D2,D3);
+#endif
 
 const int offset = 8;   // 北京时区
 time_t prevDisplay = 0;
