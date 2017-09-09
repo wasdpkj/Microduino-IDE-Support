@@ -133,6 +133,10 @@
   #define pgm_read_word(p) (*(p))
   #define PRIPSTR "%s"
 
+#elif defined(ESP32)
+	#include <pgmspace.h>
+	#define PRIPSTR "%S"
+  
 #elif defined(ARDUINO) && ! defined(__arm__) && !defined (__ARDUINO_X86__) || defined(XMEGA)
 	#include <avr/pgmspace.h>
 	#define PRIPSTR "%S"

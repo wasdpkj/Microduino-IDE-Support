@@ -23,11 +23,11 @@
   #include "RF24Network.h"
 #else  
   #include <RF24.h>
-  #include <RF24Network.h>
+  #include "RF24Network.h"
 #endif
 
-#if defined(ENABLE_SLEEP_MODE) && defined(ESP8266)
-        #warning "Disabling sleep mode because sleep doesn't work on ESP8266"
+#if defined(ENABLE_SLEEP_MODE) && (defined(ESP8266) || defined(ESP32))
+        #warning "Disabling sleep mode because sleep doesn't work on ESP8266 or ESP32"
 	#undef ENABLE_SLEEP_MODE
 #endif
 

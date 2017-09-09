@@ -16,7 +16,7 @@
 #define __RF24_H__
 
 #include <SPI.h>
-#include <RF24_config.h>
+#include "RF24_config.h"
 
 #if defined (RF24_LINUX) || defined (LITTLEWIRE)
   #include "utility/includes.h"

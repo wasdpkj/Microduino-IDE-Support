@@ -17,7 +17,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <RF24Network_config.h>
+#include "RF24Network_config.h"
 #include <RF24.h>
 
 #if (defined (__linux) || defined (linux)) && !defined (__ARDUINO_X86__)
