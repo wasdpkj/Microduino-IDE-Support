@@ -14,7 +14,13 @@
 #define TWITTER_H
 
 #include <inttypes.h>
+#if defined (__AVR__)
 #include <avr/pgmspace.h>
+#endif
+#if defined (ESP32)
+#include <pgmspace.h>
+#endif
+
 #if defined(ARDUINO) && ARDUINO > 18   // Arduino 0019 or later
 #include <SPI.h>
 #endif

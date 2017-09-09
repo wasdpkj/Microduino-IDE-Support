@@ -18,6 +18,10 @@
 
 #include <SPI.h>
 
+#if defined(ESP32) 
+#include <Arduino.h>
+#endif
+
 typedef uint8_t SOCKET;
 /*
 class MR {
@@ -376,6 +380,11 @@ private:
                                    PORT->Group[g_APinDescription[10].ulPort].OUTSET.reg = (1ul << g_APinDescription[10].ulPin) ; };
   inline static void setSS()     { PORT->Group[g_APinDescription[10].ulPort].OUTCLR.reg = (1ul << g_APinDescription[10].ulPin) ; };
   inline static void resetSS()   { PORT->Group[g_APinDescription[10].ulPort].OUTSET.reg = (1ul << g_APinDescription[10].ulPin) ; };
+#elif defined(ESP32) 
+  inline static void initSS()    { pinMode(D8, OUTPUT); 
+                                   digitalWrite(D8, HIGH); };
+  inline static void setSS()     { digitalWrite(D8, LOW); };
+  inline static void resetSS()   { digitalWrite(D8, HIGH); };
 #endif // ARDUINO_ARCH_AVR
 };
 

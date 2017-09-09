@@ -27,7 +27,7 @@ W5500Class w5500;
 void W5500Class::init(void)
 {
     delay(1000);
-#if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_SAMD)
+#if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_SAMD) || defined(ESP32) 
     initSS();
     SPI.begin();
 /*#elif defined(ARDUINO_ARCH_SAMD)
@@ -116,7 +116,7 @@ void W5500Class::read_data(SOCKET s, volatile uint16_t src, volatile uint8_t *ds
 
 uint8_t W5500Class::write(uint16_t _addr, uint8_t _cb, uint8_t _data)
 {
-#if defined(ARDUINO_ARCH_AVR)|| defined(ARDUINO_ARCH_SAMD)
+#if defined(ARDUINO_ARCH_AVR)|| defined(ARDUINO_ARCH_SAMD) || defined(ESP32)
     setSS();  
 	//SerialUSB.println("dentro avr");
     SPI.transfer(_addr >> 8);
@@ -143,7 +143,7 @@ uint8_t W5500Class::write(uint16_t _addr, uint8_t _cb, uint8_t _data)
 
 uint16_t W5500Class::write(uint16_t _addr, uint8_t _cb, const uint8_t *_buf, uint16_t _len)
 {
-#if defined(ARDUINO_ARCH_AVR)|| defined(ARDUINO_ARCH_SAMD)
+#if defined(ARDUINO_ARCH_AVR)|| defined(ARDUINO_ARCH_SAMD) || defined(ESP32)
     setSS();
     SPI.transfer(_addr >> 8);
     SPI.transfer(_addr & 0xFF);
@@ -177,7 +177,7 @@ uint16_t W5500Class::write(uint16_t _addr, uint8_t _cb, const uint8_t *_buf, uin
 
 uint8_t W5500Class::read(uint16_t _addr, uint8_t _cb)
 {
-#if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_SAMD)
+#if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_SAMD) || defined(ESP32)
     setSS();
     SPI.transfer(_addr >> 8);
     SPI.transfer(_addr & 0xFF);
@@ -203,7 +203,7 @@ uint8_t W5500Class::read(uint16_t _addr, uint8_t _cb)
 
 uint16_t W5500Class::read(uint16_t _addr, uint8_t _cb, uint8_t *_buf, uint16_t _len)
 { 
-#if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_SAMD)
+#if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_SAMD) || defined(ESP32)
     setSS();
     SPI.transfer(_addr >> 8);
     SPI.transfer(_addr & 0xFF);
