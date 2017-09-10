@@ -1,6 +1,6 @@
 #include "Microduino_Protocol.h"
 
-/****************************** Protocol ******************************/
+/****************************** ProtocolSer ******************************/
 
 ProtocolSer::ProtocolSer(HardwareSerial *ser, uint8_t _len){
 	commonInit();
@@ -87,6 +87,64 @@ void ProtocolSer::write(uint8_t cmd, uint8_t *_data, uint8_t _len){
 	}		
 }
 
+
+/****************************** ProtocolnRF ******************************/
+
+ProtocolnRF::ProtocolnRF(RF24Network *_network, uint8_t _len){
+	network = _network;
+	length = _len + 4;
+	if((dataBuf = (uint8_t *)malloc(length))) {
+		memset(dataBuf, 0, length);
+	}
+}
+
+
+void ProtocolnRF::begin(uint8_t _channel, uint8_t _node){
+	network->begin(_channel, _node);
+}
+
+
+bool ProtocolnRF::available(){	
+	network->update();
+	while ( network->available() ) {
+		RF24NetworkHeader header;
+		if(network->read(header, dataBuf, length) == length) {
+			cmd = header.type;
+			header.to_node = header.from_node;
+			uint32_t reTimer = millis();
+			network->write(header, &reTimer, sizeof(reTimer));
+			return true;
+		}
+	}
+	return false;
+}
+
+
+void ProtocolnRF::readBytes(uint8_t *_cmd, uint8_t *_data, uint8_t _len){	
+	*_cmd = cmd;
+	if(_len > length-4){
+		_len = length-4;
+	}
+	memcpy(_data, dataBuf+4, _len);
+}
+
+void ProtocolnRF::readWords(uint8_t *_cmd, uint16_t *_data, uint8_t _len){
+	readBytes(_cmd, (uint8_t *)_data, _len*2);
+}
+
+bool ProtocolnRF::write(uint8_t to_node, uint8_t cmd, uint8_t *_data, uint8_t _len){	
+	RF24NetworkHeader header(to_node, cmd);
+	uint32_t sendTime = millis();
+	memcpy(dataBuf, &sendTime, sizeof(sendTime));
+	if(_len > length-4){
+		_len = length-4;
+	}
+	memcpy(dataBuf, _data, _len);
+	return network->write(header, dataBuf, _len+4);
+}
+
+
+/****************************** ProtocolZig ******************************/
 
 #if defined (__AVR_ATmega128RFA1__)
 

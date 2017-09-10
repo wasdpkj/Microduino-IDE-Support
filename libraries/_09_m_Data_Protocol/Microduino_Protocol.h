@@ -1,9 +1,9 @@
 #ifndef _MICRODUINO_PROTOCOL_H_
 #define _MICRODUINO_PROTOCOL_H_
 
-#include <SoftwareSerial.h>
 #include "DataParse.h"
-
+#include <SoftwareSerial.h>
+#include <RF24Network.h>
 #include <Arduino.h>
 
 
@@ -36,6 +36,29 @@ class ProtocolSer{
 
 	void commonInit(void);
 };
+
+
+class ProtocolnRF{
+  public:
+
+	ProtocolnRF(RF24Network *_network, uint8_t _len);
+  
+	void begin(uint8_t _channel, uint8_t _node);
+  	bool available(void);
+  	void readBytes(uint8_t *_cmd, uint8_t *_data, uint8_t _len);
+  	void readWords(uint8_t *_cmd, uint16_t *_data, uint8_t _len);
+  	bool write(uint8_t to_node, uint8_t cmd, uint8_t *_data, uint8_t _len);
+
+  private:
+
+	RF24Network *network;
+	uint8_t cmd;
+	uint8_t *dataBuf;
+  	uint8_t length;
+
+  void commonInit(void);
+};
+
 
 
 #if defined (__AVR_ATmega128RFA1__)
