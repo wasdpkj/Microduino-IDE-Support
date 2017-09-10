@@ -8,6 +8,7 @@
 
 #define NRF_CHANNEL 70  //nRF通道
 #define this_node  	0  //设置本机ID
+#define other_node  1  //设置目标ID
 
 RF24 radio(9, 10);
 RF24Network network(radio);
@@ -33,7 +34,7 @@ void loop() {
   if(millis() - sendTime > 1000)
   {
 	  sendTime = millis();
-	  nrfProtocol.write(0x01, sendCmd, (uint8_t *)sendData, 16);
+	  nrfProtocol.write(other_node, sendCmd, (uint8_t *)sendData, 16);
     Serial.println("protocol send !");
   }
   delay(10);
