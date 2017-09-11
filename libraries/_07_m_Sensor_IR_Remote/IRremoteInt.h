@@ -38,7 +38,7 @@
 #define RESET_TIMER3 TCNT3 = INIT_TIMER_COUNT
 #define RESET_TIMER4 TCNT4 = INIT_TIMER_COUNT
 #elif defined (ESP32)
-#define LEDC_channel_IR   0
+#define LEDC_channel_IR   2
 #define LEDC_TIMER_8BIT   8
 #endif
 
