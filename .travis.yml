@@ -3,11 +3,9 @@ sudo: false
 before_install:
  - source <(curl -SLs https://raw.githubusercontent.com/${TRAVIS_REPO_SLUG}/${TRAVIS_BRANCH}/install.sh)
  
-env:
-  - build_platform coreesp
-  - build_platform core328
-
 script:
+  - build_platform coreesp
+#  - build_platform core328
 #  - build_platform coreplus644
 #  - build_platform coreplus1284
 #  - build_platform coreusb
