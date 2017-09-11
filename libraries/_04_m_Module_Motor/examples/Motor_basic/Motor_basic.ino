@@ -13,7 +13,7 @@
   
   如果使用核心Microduino_ESP32，任意引脚都可以用来驱动电机
   供电允许条件下最多可驱动四个电机
-  使用LEDC_PWM低8个通道驱动
+  四个电机分别使用LEDC_PWM的4、5、6、7通道驱动
   用数字引脚前要加D,例：D5
   Microduino/mCookie motor模块默认使用引脚D5，D6，D7，D8
   本示例可直接使用

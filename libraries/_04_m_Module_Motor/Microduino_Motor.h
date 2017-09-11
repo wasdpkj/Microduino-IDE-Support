@@ -64,7 +64,8 @@ class Motor {
 #endif
 #if defined (ESP32)
     uint8_t LEDC_channel_0;
-    uint8_t LEDC_channel_1;
+    bool ForwFlag;
+    bool ReveFlag;
 #endif
 
 };

@@ -26,13 +26,11 @@ Motor::Motor(uint8_t _pinA, uint8_t _pinB) {
   pinB = _pinB;
 #if defined (ESP32)
   if (motorNum < MAX_MOTOR) {
-    LEDC_channel_0 = motorNum*2;
-    LEDC_channel_1 = motorNum*2+1;
+    LEDC_channel_0 = motorNum + 4;
     motorNum++;
   }
   else {
     LEDC_channel_0 = INVALID_MOTOR;
-    LEDC_channel_1 = INVALID_MOTOR;
     motorNum == INVALID_MOTOR;
   }
 #endif
@@ -46,10 +44,9 @@ Motor::Motor(uint8_t _pinA, uint8_t _pinB) {
 
 void Motor::begin() {
 #if defined (ESP32)
+  ForwFlag = true;
+  ReveFlag = true;
   ledcSetup(LEDC_channel_0, LEDC_BASEFREQ, LEDC_TIMER_8BIT);
-  ledcAttachPin(pinA, LEDC_channel_0);
-  ledcSetup(LEDC_channel_1, LEDC_BASEFREQ, LEDC_TIMER_8BIT);
-  ledcAttachPin(pinB, LEDC_channel_1);
 #endif
   pinMode(pinA, OUTPUT);
   pinMode(pinB, OUTPUT);
@@ -61,16 +58,36 @@ void Motor::setSpeed(int16_t _speed) {
 
 #if defined (ESP32)
   if (_speed == FREE) {
-    ledcWrite(LEDC_channel_0, 0);
-    ledcWrite(LEDC_channel_1, 0);
+    if (ForwFlag && !ReveFlag) {
+      ledcDetachPin(pinA);
+      ReveFlag = true;
+    }
+    else if (!ForwFlag && ReveFlag) {
+      ledcDetachPin(pinB);
+      ForwFlag = true;
+    }
+    digitalWrite(pinA, LOW);
+    digitalWrite(pinB, LOW);
   }
   else if (_speed > 0)  {
+    ForwFlag = true;
+    if (ForwFlag && ReveFlag) {
+      ReveFlag = false;
+      ledcDetachPin(pinB);
+      ledcAttachPin(pinA, LEDC_channel_0);
+    }
     ledcWrite(LEDC_channel_0, _speed);
-    ledcWrite(LEDC_channel_1, 0);
+    digitalWrite(pinB, LOW);
   }
   else {
-    ledcWrite(LEDC_channel_0, 0);
-    ledcWrite(LEDC_channel_1, abs(_speed));
+    ReveFlag = true;
+    if (ForwFlag && ReveFlag) {
+      ForwFlag = false;
+      ledcDetachPin(pinA);
+      ledcAttachPin(pinB, LEDC_channel_0);
+    }
+    digitalWrite(pinA, LOW);
+    ledcWrite(LEDC_channel_0, abs(_speed));
   }
 #endif
 
@@ -104,13 +121,17 @@ void Motor::setSpeed(int16_t _speed) {
 
 void Motor::Brake() {
 #if defined (ESP32)
-  ledcWrite(LEDC_channel_0, SPEED_MAX);
-  ledcWrite(LEDC_channel_1, SPEED_MAX);
+  if (ForwFlag && !ReveFlag) {
+    ledcDetachPin(pinA);
+    ReveFlag = true;
+  }
+  else if (!ForwFlag && ReveFlag) {
+    ledcDetachPin(pinB);
+    ForwFlag = true;
+  }
 #endif
 
-#if defined(__AVR__)
   digitalWrite(pinA, HIGH);
   digitalWrite(pinB, HIGH);
-#endif
 }
 
