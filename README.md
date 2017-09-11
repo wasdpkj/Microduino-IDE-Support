@@ -29,13 +29,17 @@ How to add support libraries for Microduino：
   - for example Servo, We have modified the code to support more cores
 - Copy the libraries folder to the Arduino installation directory
 
-FAQ:
+Website:
 ------------
 - [Microduino EN](http://www.microduino.cc)
 - [Microduino CN](http://www.microduino.cn)
 
 - [Microduino wiki EN](http://wiki.microduino.cc)
 - [Microduino wiki CN](http://wiki.microduino.cn)
+
+Pinmap:
+------------
+![Pin Functions](_doc/pinmap-coreesp.jpg)
 
 
 - E-mail:
