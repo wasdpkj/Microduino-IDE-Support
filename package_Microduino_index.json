@@ -1,82 +1,238 @@
 {
   "packages": [
     {
-      "name": "Microduino",
-      "maintainer": "Makermodule",
-      "websiteURL": "https://github.com/wasdpkj/Microduino-IDE-Support",
-      "email": "pankejia@microduino.cc",
+      "maintainer": "Microduino",
       "help": {
-        "online": "https://www.microduino.cc"
+        "online": "https://wiki.microduino.cn"
       },
+      "websiteURL": "https://www.microduino.cn",
       "platforms": [
         {
-          "name": "Microduino",
-          "architecture": "avr",
-          "version": "1.6.9",
-          "category": "Contributed",
+          "category": "Microduino",
           "help": {
-			"online": "https://www.microduino.cc"
+            "online": "https://wiki.microduino.cn"
           },
-          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/package/Microduino-ide-Support-1.6.9.zip",
-          "archiveFileName": "Microduino-ide-Support-1.6.9.zip",
-          "checksum": "SHA-256:4faf61e683c4f5d83de29cf702bcb25336a5016255793ee7dd7056cf3ce0f203",
-          "size": "3209129",
-          "boards": [
-            {"name": "ATmega168pa"},
-            {"name": "ATmega328p"},
-            {"name": "ATmega644pa"},
-            {"name": "ATmega1284pa"},
-            {"name": "ATmega32u4"},
-            {"name": "ATmega128rfa1"}
-          ],
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-avr-1.6.9+2.0.tar.gz",
+          "checksum": "SHA-256:69AC14C77376823224456505A0109C6891E37E935CF53442C88C374D79D0A8F4",
+          "name": "Microduino AVR Boards",
+          "version": "1.6.9+2.0",
+          "architecture": "avr",
+          "archiveFileName": "microduino-avr-1.6.9+2.0.tar.gz",
+          "size": "288316",
           "toolsDependencies": [
+          ],
+          "boards": [
             {
-              "packager": "arduino",
-              "name": "avr-gcc",
-              "version": "4.8.1-arduino5"
+              "name": "Core (328p)@16M,5V"
             },
             {
-              "packager": "arduino",
-              "name": "avrdude",
-              "version": "6.0.1-arduino5"
+              "name": "Core (328p)@8M,3.3V"
+            },
+            {
+              "name": "Core+ (644pa)@16M,5V)"
+            },
+            {
+              "name": "Core+ (644pa)@8M,3.3V"
+            },
+            {
+              "name": "Core+ (1284pa)@16M,5V)"
+            },
+            {
+              "name": "Core+ (1284pa)@8M,3.3V"
+            },
+            {
+              "name": "Core USB (32u4)"
             }
           ]
         },
         {
-          "name": "Microduino",
-          "architecture": "avr",
-          "version": "1.8.4",
-          "category": "Contributed",
+          "category": "Microduino",
           "help": {
-			"online": "https://www.microduino.cc"
+            "online": "https://wiki.microduino.cn"
           },
-          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/package/Microduino-ide-Support-1.8.4.zip",
-          "archiveFileName": "Microduino-ide-Support-1.8.4.zip",
-          "checksum": "SHA-256:c7723d90b581c7f3b2e9893b1fe234745c23d98b7ef1bc31da0de9047c353fae",
-          "size": "3209309",
-          "boards": [
-            {"name": "ATmega168pa"},
-            {"name": "ATmega328p"},
-            {"name": "ATmega644pa"},
-            {"name": "ATmega1284pa"},
-            {"name": "ATmega32u4"},
-            {"name": "ATmega128rfa1"}
-          ],
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-avr-1.8.4+2.0.tar.gz",
+          "checksum": "SHA-256:A3EC8CFBA7417667096E8098B63C09608BEA83232B35D40147D4E29B57429767",
+          "name": "Microduino AVR Boards",
+          "version": "1.8.4+2.0",
+          "architecture": "avr",
+          "archiveFileName": "microduino-avr-1.8.4+2.0.tar.gz",
+          "size": "288493",
           "toolsDependencies": [
+          ],
+          "boards": [
             {
-              "packager": "arduino",
-              "name": "avr-gcc",
-              "version": "4.9.2-atmel3.5.4-arduino2"
+              "name": "Core (328p)@16M,5V"
             },
             {
-              "packager": "arduino",
-              "name": "avrdude",
-              "version": "6.3.0-arduino9"
+              "name": "Core (328p)@8M,3.3V"
+            },
+            {
+              "name": "Core+ (644pa)@16M,5V)"
+            },
+            {
+              "name": "Core+ (644pa)@8M,3.3V"
+            },
+            {
+              "name": "Core+ (1284pa)@16M,5V)"
+            },
+            {
+              "name": "Core+ (1284pa)@8M,3.3V"
+            },
+            {
+              "name": "Core USB (32u4)"
+            },
+            {
+              "name": "Core RF (128rfa1)"
+            }
+          ]
+        },
+        {
+          "category": "Microduino",
+          "help": {
+            "online": "https://wiki.microduino.cn"
+          },
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4+2.0.tar.gz",
+          "checksum": "SHA-256:909761E374AB1978542BB17613E80E398C3A86F711F2BBEEF2AB8E414BFBE1C7",
+          "name": "Microduino ESP32 Boards",
+          "version": "1.8.4+2.0",
+          "architecture": "esp32",
+          "archiveFileName": "microduino-esp32-1.8.4+2.0.tar.gz",
+          "size": "32973582",
+          "toolsDependencies": [
+            {
+              "packager": "microduino",
+              "version": "1.22.0-61-gab8375a-5.2.0",
+              "name": "xtensa-esp32-elf-gcc"
+            }
+          ],
+          "boards": [
+            {
+              "name": "Microduino-CoreESP32"
+            },
+            {
+              "name": "Microduino-mAI"
+            },
+            {
+              "name": "Node32s"
+            },
+            {
+              "name": "ESP32 Dev Module"
+            },
+            {
+              "name": "Noduino Quantum"
+            }
+          ]
+        },
+        {
+          "category": "Microduino",
+          "help": {
+            "online": "https://wiki.microduino.cn"
+          },
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4+2.1.tar.gz",
+          "checksum": "SHA-256:23A55F8BC05A04189CC31E5E8FB7F77A601B7097F9F42DF7861E9DD60EEF729B",
+          "name": "Microduino ESP32 Boards",
+          "version": "1.8.4+2.1",
+          "architecture": "esp32",
+          "archiveFileName": "microduino-esp32-1.8.4+2.1.tar.gz",
+          "size": "33156470",
+          "toolsDependencies": [
+            {
+              "packager": "microduino",
+              "version": "1.22.0-61-gab8375a-5.2.0",
+              "name": "xtensa-esp32-elf-gcc"
+            }
+          ],
+          "boards": [
+            {
+              "name": "Microduino-CoreESP32"
+            },
+            {
+              "name": "Microduino-mAI"
+            },
+            {
+              "name": "Node32s"
+            },
+            {
+              "name": "ESP32 Dev Module"
+            },
+            {
+              "name": "Noduino Quantum"
             }
           ]
         }
       ],
-      "tools": []
+      "tools": [
+        {
+          "version": "1.22.0-61-gab8375a-5.2.0", 
+          "name": "xtensa-esp32-elf-gcc", 
+          "systems": [
+            {
+              "url": "https://dl.espressif.com/dl/xtensa-esp32-elf-win32-1.22.0-61-gab8375a-5.2.0.zip", 
+              "checksum": "SHA-256:c00dbdab8e8acc273d4aa319a74f7bb1d9496c843159823201d685359174168f", 
+              "host": "i686-mingw32", 
+              "archiveFileName": "xtensa-esp32-elf-win32-1.22.0-61-gab8375a-5.2.0.zip", 
+              "size": "76346909"
+            },
+            {
+              "url": "https://dl.espressif.com/dl/xtensa-esp32-elf-osx-1.22.0-61-gab8375a-5.2.0.tar.gz", 
+              "checksum": "SHA-256:89a9a6084ec032ddcd4bdae37b428e533ed5fd0c0ab6b66ddf703e4b3f83d6e4", 
+              "host": "x86_64-apple-darwin", 
+              "archiveFileName": "xtensa-esp32-elf-osx-1.22.0-61-gab8375a-5.2.0.tar.gz",   
+              "size": "40481812"
+            },
+            {
+              "host": "x86_64-pc-linux-gnu",
+              "url": "https://dl.espressif.com/dl/xtensa-esp32-elf-linux64-1.22.0-61-gab8375a-5.2.0.tar.gz",
+              "archiveFileName": "xtensa-esp32-elf-linux64-1.22.0-61-gab8375a-5.2.0.tar.gz",
+              "checksum": "SHA-256:b74333fd7f622f035fee7c4e0ca57c3e2ccb2515de5d901f33e87e79cdf0d4f9",
+              "size": "37674568"
+            },
+            {
+              "host": "i686-pc-linux-gnu",
+              "url": "https://dl.espressif.com/dl/xtensa-esp32-elf-linux32-1.22.0-61-gab8375a-5.2.0.tar.gz",
+              "archiveFileName": "xtensa-esp32-elf-linux32-1.22.0-59.tar.gz",
+              "checksum": "SHA-256:dbb342b7c377a7c3a1fcccc60fa1193332d0c37e6a90c5075d3471c13c9e94ad",
+              "size": "41032647"
+            }
+          ]
+        },
+        {
+          "version": "a420774",
+          "name": "esptool",
+          "systems": [
+            {
+              "host": "i686-mingw32",
+              "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/tools/esptool-a420774-windows.tar.gz",
+              "archiveFileName": "esptool-a420774-windows.tar.gz",
+              "checksum": "SHA-256:0F7DE4A98EA1F2A09AD042B9B3E2B0490840E515839D90CD720E135865272F9D",
+              "size": "3392844"
+            },
+            {
+              "host": "x86_64-apple-darwin",
+              "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/tools/esptool-a420774-macos.tar.gz",
+              "archiveFileName": "esptool-a420774-macos.tar.gz",
+              "checksum": "SHA-256:0713F29FE681C64A3605A60E399911344B42483C17BCDA249D470CA5C699BB3C",
+              "size": "3808935"
+            },
+            {
+              "host": "x86_64-pc-linux-gnu",
+              "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/tools/esptool-a420774-linux.tar.gz",
+              "archiveFileName": "esptool-a420774-linux.tar.gz",
+              "checksum": "SHA-256:4DDCA0B3AE2196CC612534A1B930F622522FB78B14B8E13E7B32596279A629BB",
+              "size": "3806580"
+            },
+            {
+              "host": "i686-pc-linux-gnu",
+              "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/tools/esptool-a420774-linux.tar.gz",
+              "archiveFileName": "esptool-a420774-linux.tar.gz",
+              "checksum": "SHA-256:4DDCA0B3AE2196CC612534A1B930F622522FB78B14B8E13E7B32596279A629BB",
+              "size": "3806580"
+            }
+          ]
+        }
+      ],  
+      "email": "pankejia@microduino.cc",
+      "name": "microduino"
     }
   ]
 }
