@@ -37,14 +37,14 @@ Website:
 - [Microduino wiki EN](http://wiki.microduino.cc)
 - [Microduino wiki CN](http://wiki.microduino.cn)
 
-Pinmap:
-------------
-![Pin Functions](_doc/pinmap-coreesp.jpg)
-
-
 - E-mail:
   - Kejia Pan
   + pankejia@microduino.cc
 
 - Weibo:
   - @老潘orz
+
+Core Pinmap:
+------------
+![Pin Functions](_doc/pinmap-coreesp.jpg)
+
