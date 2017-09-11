@@ -22,12 +22,13 @@ How to add support packages for Microduino：
   - "Microduino/mCookie-device"
   - "Microduino CoreESP32"
 
+FAQ:
 ------------
-- [Microduino Getting start](http://www.microduino.cc/download/)
+- [Microduino EN](http://www.microduino.cc)
+- [Microduino CN](http://www.microduino.cn)
 
-- [Microduino IDE Support](https://github.com/wasdpkj/Microduino-IDE-Support/)
-
-- [Microduino wiki](http://wiki.microduino.cc)
+- [Microduino wiki EN](http://wiki.microduino.cc)
+- [Microduino wiki CN](http://wiki.microduino.cn)
 
 
 - E-mail:
