@@ -3,7 +3,7 @@
 
 #include "DataParse.h"
 #include <SoftwareSerial.h>
-#include <RF24Network.h>
+#include <RF24.h>
 #include <Arduino.h>
 
 
@@ -41,22 +41,18 @@ class ProtocolSer{
 class ProtocolnRF{
   public:
 
-	ProtocolnRF(RF24Network *_network, uint8_t _len);
-  
-	void begin(uint8_t _channel, uint8_t _node);
+		ProtocolnRF(RF24 *_rf24, uint8_t _len); 
+		bool begin(uint8_t _channel, const uint8_t *rxAddress, const uint8_t *txAddress);
   	bool available(void);
   	void readBytes(uint8_t *_cmd, uint8_t *_data, uint8_t _len);
   	void readWords(uint8_t *_cmd, uint16_t *_data, uint8_t _len);
-  	bool write(uint8_t to_node, uint8_t cmd, uint8_t *_data, uint8_t _len);
+  	bool write(uint8_t cmd, uint8_t *_data, uint8_t _len);
 
   private:
 
-	RF24Network *network;
-	uint8_t cmd;
-	uint8_t *dataBuf;
+		RF24 *rf24;
+		uint8_t *dataBuf;
   	uint8_t length;
-
-  void commonInit(void);
 };
 
 

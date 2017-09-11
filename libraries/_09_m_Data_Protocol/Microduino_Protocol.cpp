@@ -90,29 +90,32 @@ void ProtocolSer::write(uint8_t cmd, uint8_t *_data, uint8_t _len){
 
 /****************************** ProtocolnRF ******************************/
 
-ProtocolnRF::ProtocolnRF(RF24Network *_network, uint8_t _len){
-	network = _network;
-	length = _len + 4;
+ProtocolnRF::ProtocolnRF(RF24 *_rf24, uint8_t _len){
+	rf24 = _rf24;
+	length = _len + 3;
 	if((dataBuf = (uint8_t *)malloc(length))) {
 		memset(dataBuf, 0, length);
 	}
 }
 
 
-void ProtocolnRF::begin(uint8_t _channel, uint8_t _node){
-	network->begin(_channel, _node);
+bool ProtocolnRF::begin(uint8_t _channel, const uint8_t *rxAddress, const uint8_t *txAddress){
+	if(!rf24->begin())
+		return false;
+	rf24->setPALevel(RF24_PA_MAX);
+	rf24->setChannel(_channel);
+	rf24->openReadingPipe(1, rxAddress);
+	rf24->openWritingPipe(txAddress);
+	rf24->startListening();
+	return true;
 }
 
 
-bool ProtocolnRF::available(){	
-	network->update();
-	while ( network->available() ) {
-		RF24NetworkHeader header;
-		if(network->read(header, dataBuf, length) == length) {
-			cmd = header.type;
-			header.to_node = header.from_node;
-			uint32_t reTimer = millis();
-			network->write(header, &reTimer, sizeof(reTimer));
+bool ProtocolnRF::available(){
+	while (rf24->available() ) {
+		memset(dataBuf, 0, length);
+		rf24->read(dataBuf, length);
+		if(dataBuf[0]==0xAA && dataBuf[1]==0xBB) {
 			return true;
 		}
 	}
@@ -121,26 +124,30 @@ bool ProtocolnRF::available(){
 
 
 void ProtocolnRF::readBytes(uint8_t *_cmd, uint8_t *_data, uint8_t _len){	
-	*_cmd = cmd;
-	if(_len > length-4){
-		_len = length-4;
+	*_cmd = dataBuf[2];
+	if(_len > length-3){
+		_len = length-3;
 	}
-	memcpy(_data, dataBuf+4, _len);
+	memcpy(_data, dataBuf+3, _len);
 }
 
 void ProtocolnRF::readWords(uint8_t *_cmd, uint16_t *_data, uint8_t _len){
 	readBytes(_cmd, (uint8_t *)_data, _len*2);
 }
 
-bool ProtocolnRF::write(uint8_t to_node, uint8_t cmd, uint8_t *_data, uint8_t _len){	
-	RF24NetworkHeader header(to_node, cmd);
-	uint32_t sendTime = millis();
-	memcpy(dataBuf, &sendTime, sizeof(sendTime));
-	if(_len > length-4){
-		_len = length-4;
+bool ProtocolnRF::write(uint8_t cmd, uint8_t *_data, uint8_t _len){	
+	memset(dataBuf, 0, length); 
+	dataBuf[0] = 0xAA;
+	dataBuf[1] = 0xBB;
+	if(_len > length-3){
+		_len = length-3;
 	}
-	memcpy(dataBuf, _data, _len);
-	return network->write(header, dataBuf, _len+4);
+	dataBuf[2] = cmd;
+	memcpy(dataBuf+3, _data, _len);
+	rf24->stopListening();
+	bool result = rf24->write(dataBuf, _len+3);
+	rf24->startListening(); 
+	return result;
 }
 
 
