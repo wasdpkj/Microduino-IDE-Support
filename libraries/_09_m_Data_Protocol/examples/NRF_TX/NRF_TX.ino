@@ -10,7 +10,7 @@
 #define this_node  	0  //设置本机ID
 #define other_node  1  //设置目标ID
 
-RF24 radio(9, 10);
+RF24 radio(D9, D10);
 RF24Network network(radio);
 ProtocolnRF nrfProtocol(&network, 16);   //采用ProtocolnRF，数据长度为16个字节
 
