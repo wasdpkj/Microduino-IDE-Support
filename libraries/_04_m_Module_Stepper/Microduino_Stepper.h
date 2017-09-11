@@ -20,20 +20,30 @@
 #include <stdlib.h>
 #include <Arduino.h>
 
+#if defined (__AVR__)
 #define _useTimer1
 #if F_CPU == 16000000
 #define TIMER_COMP	160	//12.5K
 #elif F_CPU == 8000000
 #define TIMER_COMP	80 //12.5K
 #endif
+#elif defined (ESP32)
+#define TIMER_COMP	80 //12.5K
+#endif
 
-
+#if defined (__AVR__)
 #define PIN_SET(pin) (*portOutputRegister(digitalPinToPort(pin)) |= digitalPinToBitMask(pin))
 #define PIN_CLR(pin) (*portOutputRegister(digitalPinToPort(pin)) &= ~digitalPinToBitMask(pin))
+#elif defined (ESP32)
+#define PIN_SET(pin) (digitalWrite(pin, HIGH))
+#define PIN_CLR(pin) (digitalWrite(pin, LOW))
+#endif
+
 
 #define MAX_STEPPERS 		4
 #define INVALID_STEPPER		255 
 
+#if defined (__AVR__)
 #define PIN_EN  	4      //PORTB,0
 #define PIN_DIRA 	A0    //PORTA,7
 #define PIN_STEPA 	5   //PORTB,1
@@ -43,6 +53,17 @@
 #define PIN_STEPC 	7   //PORTB,3
 #define PIN_DIRD 	A3    //PORTA,4
 #define PIN_STEPD 	8   //PORTD,6
+#elif defined (ESP32)
+#define PIN_EN  	D4
+#define PIN_DIRA 	A0
+#define PIN_STEPA 	D5
+#define PIN_DIRB 	A1
+#define PIN_STEPB 	D6
+#define PIN_DIRC 	A2
+#define PIN_STEPC 	D7
+#define PIN_DIRD 	A3
+#define PIN_STEPD 	D8
+#endif
 
 #define DEFAULT_ACCEL 120
 #define MOTOR_MAX_SPEED	1024

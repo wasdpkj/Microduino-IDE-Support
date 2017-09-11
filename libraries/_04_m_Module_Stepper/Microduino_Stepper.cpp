@@ -39,7 +39,7 @@ static inline void handle_interrupts(){
 }
 
 static void initISR(){
-
+#if defined (__AVR__)
 #if defined(_useTimer1)
     cli();
 	TCCR1A = 0;
@@ -49,17 +49,25 @@ static void initISR(){
 	TIMSK1 = _BV(OCIE1A);
 	sei();  
 #endif
+#elif defined (ESP32)
+	hw_timer_t *timer;
+	timer = timerBegin(1, 80, 1); 
+	timerAttachInterrupt(timer, &handle_interrupts, 1); 
+	// every 50ns, autoreload = true 
+	timerAlarmWrite(timer, TIMER_COMP, true); 
+	timerAlarmEnable(timer);  
+#endif
 	pinMode(PIN_EN, OUTPUT);
 	stepperAllEnable();
 }
 
-
+#if defined (__AVR__)
 #if defined(_useTimer1)
 ISR(TIMER1_COMPA_vect){
 	
 	handle_interrupts();
 }
-
+#endif
 #endif
 
 
@@ -373,7 +381,6 @@ bool StepServo::runSpeed(){
 
 // Subclasses can override
 void StepServo::step(){
-			Serial.println("12");
 	direction ? PIN_CLR(dirPin) : PIN_SET(dirPin);
 	PIN_SET(stepPin);
 	delayMicroseconds(1);
