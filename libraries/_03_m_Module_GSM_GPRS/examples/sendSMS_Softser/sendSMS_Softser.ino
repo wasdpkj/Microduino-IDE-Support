@@ -14,8 +14,17 @@
 //#define SerialAT Serial1
 
 // or Software Serial on Microduino/mCookie Core
+#if defined (__AVR_ATmega168__) || defined (__AVR_ATmega328__) || defined (__AVR_ATmega328P__)
 #include <SoftwareSerial.h>
-SoftwareSerial SerialAT(2, 3); // RX, TX
+SoftwareSerial SerialAT(2, 3); /* RX:D2, TX:D3 */
+#endif
+
+/**
+**CoreESP32 UART: [HardwareSerial]
+**/
+#if defined (ESP32)
+HardwareSerial SerialAT(1);
+#endif
 
 TinyGsm modem(SerialAT);
 TinyGsmClient client(modem);
@@ -29,7 +38,11 @@ void setup() {
   delay(10);
 
   // Set GSM module baud rate
+#if defined (__AVR__)
   SerialAT.begin(9600);
+#elif defined (ESP32)
+  SerialAT.begin(9600, SERIAL_8N1, D2, D3); /* RX:D2, TX:D3 */
+#endif
   delay(3000);
 
   // Restart takes quite some time

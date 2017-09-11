@@ -50,6 +50,13 @@ const char pass[] = "";
 SoftwareSerial SerialAT(2, 3); /* RX:D2, TX:D3 */
 #endif
 
+/**
+**CoreESP32 UART: [HardwareSerial]
+**/
+#if defined (ESP32)
+HardwareSerial SerialAT(1);
+#endif
+
 TinyGsm modem(SerialAT);
 TinyGsmClient client(modem);
 PubSubClient mqtt(client);
@@ -73,7 +80,11 @@ void setup() {
   delay(10);
 
   // Set GSM module baud rate
+#if defined (__AVR__)
   SerialAT.begin(9600);
+#elif defined (ESP32)
+  SerialAT.begin(9600, SERIAL_8N1, D2, D3); /* RX:D2, TX:D3 */
+#endif
   delay(3000);
 
   // Restart takes quite some time

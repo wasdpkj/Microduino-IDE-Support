@@ -7,12 +7,28 @@
 
 #define SerialMon Serial
 
-// Use Hardware Serial on Microduino/mCookie Core+
-//#define SerialAT Serial1
+/**
+**CoreUSB UART Port: [Serial1] [D0,D1]
+**Core+ UART Port: [Serial1] [D2,D3]
+**/
+#if defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega644P__) || defined(__AVR_ATmega128RFA1__)
+#define SerialAT Serial1
+#endif
 
-// or Software Serial on Microduino/mCookie Core
+/**
+**Core UART Port: [SoftSerial] [D2,D3]
+**/
+#if defined (__AVR_ATmega168__) || defined (__AVR_ATmega328__) || defined (__AVR_ATmega328P__)
 #include <SoftwareSerial.h>
-SoftwareSerial SerialAT(2, 3); // RX, TX
+SoftwareSerial SerialAT(2, 3); /* RX:D2, TX:D3 */
+#endif
+
+/**
+**CoreESP32 UART: [HardwareSerial]
+**/
+#if defined (ESP32)
+HardwareSerial SerialAT(1);
+#endif
 
 TinyGsm modem(SerialAT);
 
@@ -22,7 +38,11 @@ void setup() {
   delay(10);
 
   // Set GSM module baud rate
+#if defined (__AVR__)
   SerialAT.begin(9600);
+#elif defined (ESP32)
+  SerialAT.begin(9600, SERIAL_8N1, D2, D3); /* RX:D2, TX:D3 */
+#endif
   delay(3000);
 
   if (!modem.init()) {

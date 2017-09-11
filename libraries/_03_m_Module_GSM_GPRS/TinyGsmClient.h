@@ -15,7 +15,7 @@
   #include <TinyGsmClientA6.h>
 #elif defined(TINY_GSM_MODEM_M590)
   #include <TinyGsmClientM590.h>
-#elif defined(TINY_GSM_MODEM_ESP8266)
+#elif defined(TINY_GSM_MODEM_ESP8266) || defined(TINY_GSM_MODEM_ESP32)
   #include <TinyWiFiClientESP8266.h>
 #else
   #include <TinyGsmClientSIM800.h>
