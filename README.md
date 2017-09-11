@@ -5,7 +5,7 @@ Microduino-IDE ![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Supp
 - Library进行了一次大更新，可能会和之前的程序有不兼容
 - 如需下载更新前的老版本，可去OLD分支下载：[OLD-Download](https://github.com/wasdpkj/Microduino-IDE-Support/tree/OLD)
 
-### We do a lot of library related work, to better support Microduino and mCookie
+### We do a lot of libraries related work, to better support Microduino and mCookie Module
 ### libraries are not included in the support package, you need to install separately
 
 How to add support packages for Microduino：
