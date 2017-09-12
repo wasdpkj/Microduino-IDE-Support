@@ -49,5 +49,6 @@ Website:
 
 Core Pinmap:
 ------------
-![Pin Functions](_doc/pinmap-coreesp.jpg)
+![Pin Functions](_doc/pinmap-core.png)
+![Pin Functions](_doc/pinmap-coreesp.png)
 
