@@ -36,24 +36,58 @@ VirtualKey::VirtualKey(){
 
 
 void VirtualKey::begin(){
-	keyCache = true;
+	keyCache = false;
 	keyVal = false;
 	keyTimer = 0;
 }
 
 
-uint8_t VirtualKey::readVal(uint8_t _val){ // return the value as degrees
-    keyCache = keyVal; //缓存作判断用
-    keyVal = _val; //触发时
-
-    if(!keyCache && keyVal)
-		return KEY_PRESSING;
-	else if(keyCache && !keyVal)
-		return KEY_RELEASING;
-	else if(!keyCache && !keyVal)
-		return KEY_RELEASED;
-	else if(keyCache && keyVal)
-		return KEY_PRESSED;
+uint8_t VirtualKey::readVal(uint8_t _val, uint8_t _sta) { // return the value as degrees
+  keyVal = _val; //触发时
+  if (!keyCache && keyVal) {
+    if (_sta == KEY_NONE) {
+      keyCache = keyVal; //缓存作判断用
+      return KEY_PRESSING;
+    }
+    if (_sta == KEY_PRESSING) {
+      keyCache = keyVal; //缓存作判断用
+      return true;
+    }
+    return false;
+  }
+  else if (keyCache && !keyVal) {
+    if (_sta == KEY_NONE) {
+      keyCache = keyVal; //缓存作判断用
+      return KEY_RELEASING;
+    }
+    if (_sta == KEY_RELEASING) {
+      keyCache = keyVal; //缓存作判断用
+      return true;
+    }
+    return false;
+  }
+  else if (!keyCache && !keyVal) {
+    if (_sta == KEY_NONE) {
+      keyCache = keyVal; //缓存作判断用
+      return KEY_RELEASED;
+    }
+    if (_sta == KEY_RELEASED) {
+      keyCache = keyVal; //缓存作判断用
+      return true;
+    }
+    return false;
+  }
+  else if (keyCache && keyVal) {
+    if (_sta == KEY_NONE) {
+      keyCache = keyVal; //缓存作判断用
+      return KEY_PRESSED;
+    }
+    if (_sta == KEY_PRESSED) {
+      keyCache = keyVal; //缓存作判断用
+      return true;
+    }
+    return false;
+  }
 }
 
 
@@ -95,8 +129,8 @@ void DigitalKey::begin(uint8_t _mode){
 }
 
 
-uint8_t DigitalKey::readVal(){ // return the value as degrees
-	return (vKey->readVal(!digitalRead(pin)));
+uint8_t DigitalKey::readVal(uint8_t _sta){ // return the value as degrees
+	return (vKey->readVal(!digitalRead(pin), _sta));
 }
 
 
@@ -121,9 +155,9 @@ void AnalogKey::begin(uint8_t _mode){
 	vKey->begin();
 }
 
-uint8_t AnalogKey::readVal(uint16_t _min, uint16_t _max){ // return the value as degrees
+uint8_t AnalogKey::readVal(uint16_t _min, uint16_t _max, uint8_t _sta){ // return the value as degrees
     uint16_t keyBuf = analogRead(pin);
-	return (vKey->readVal(keyBuf>=_min && keyBuf<_max));
+	return (vKey->readVal(keyBuf>=_min && keyBuf<_max, _sta));
 }
 
 
