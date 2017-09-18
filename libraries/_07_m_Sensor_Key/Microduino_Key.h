@@ -31,21 +31,27 @@
 
 #include <Arduino.h>
 
-#define KEY_RELEASED	0
-#define KEY_PRESSED		1
-#define KEY_PRESSING	2
-#define KEY_RELEASING	3
+enum{
+  KEY_NONE = 0,
+  KEY_RELEASED = 1,
+  KEY_PRESSED,
+  KEY_PRESSING,
+  KEY_RELEASING,
+} key_val;
 
-#define NOT_PRESS 		0
-#define SHORT_PRESS 	1
-#define LONG_PRESS 		2
+
+enum{
+  NOT_PRESS = 0,
+  SHORT_PRESS = 1,
+  LONG_PRESS,
+} key_event;
 
 class VirtualKey
 {
 public:
   VirtualKey();  
   void begin();
-  uint8_t readVal(uint8_t _val);
+  uint8_t readVal(uint8_t _val, uint8_t _sta = KEY_NONE);
   uint8_t readEvent(uint8_t _val, uint16_t _time = 1000);
 
 private:  
@@ -53,6 +59,7 @@ private:
   uint8_t keyVal;
   uint8_t keyCache;
   uint32_t keyTimer;
+  uint8_t buttonsta[4];
 };
 
 class DigitalKey
@@ -61,7 +68,7 @@ public:
   VirtualKey* vKey;
   DigitalKey(uint8_t _pin);  
   void begin(uint8_t _mode = INPUT);
-  uint8_t readVal();
+  uint8_t readVal(uint8_t _sta = KEY_NONE);
   uint8_t readEvent(uint16_t _time = 1000);
 
 private:  
@@ -78,7 +85,7 @@ public:
   VirtualKey* vKey;
   AnalogKey(uint8_t _pin);
   void begin(uint8_t _mode = INPUT);
-  uint8_t readVal(uint16_t _min, uint16_t _max);
+  uint8_t readVal(uint16_t _min, uint16_t _max, uint8_t _sta = KEY_NONE);
   uint8_t readEvent(uint16_t _min, uint16_t _max, uint16_t _time = 1000);
 
 private:  
