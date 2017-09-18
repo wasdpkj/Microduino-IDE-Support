@@ -1,5 +1,10 @@
-Microduino-IDE ![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Support.svg?branch=master)
+Microduino-IDE ![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Support.svg?branch=master) [![GitHub version](https://img.shields.io/github/release/wasdpkj/Microduino-IDE-Support.svg)](https://github.com/wasdpkj/Microduino-IDE-Support/releases/latest)
 ========
+
+Release:
+------------
+- **Latest: [1.8.4-V2.0]**
+    - https://github.com/wasdpkj/Microduino-IDE-Support/releases/latest
 
 Readme:
 ------------
@@ -12,12 +17,6 @@ Readme:
 - The libraries are not included in the support package, so you need to install the support package and the libraries separately
 - 我们为了让Microduino和mCookie模块的库更好使用，做了很多工作
 - 支持包中未包含库，你需要分别安装支持包和库
-
-
-Release:
-------------
-- **Latest: [1.8.4-V2.0]**
-    - https://github.com/wasdpkj/Microduino-IDE-Support/releases/latest
 
 How to add the support package for Microduino：
 ------------
