@@ -16,10 +16,10 @@ Microduino-IDE ![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Supp
 2. [Installation](#installation)
    1. [How to add the support package for Microduino](#how-to-add-the-support-package-for-microduino)
    2. [How to add the libraries for Microduino](#how-to-add-the-libraries-for-microduino)
-3. [Website](#website)
-4. [Core Pinmap](#core-pinmap)
+3. [Core Pinmap](#core-pinmap)
    1. [Core](#core)
    2. [CoreESP](#core-esp)
+4. [Website](#website)
 
 
 ## Release
@@ -59,6 +59,17 @@ Microduino-IDE ![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Supp
 - Copy the libraries folder to the Arduino installation directory
 
 
+## Core Pinmap
+
+### Core
+
+![Pin Functions](_doc/pinmap-core.png)
+
+### Core ESP
+
+![Pin Functions](_doc/pinmap-coreesp.png)
+
+
 ## Website
 
 - [Microduino EN](http://www.microduino.cc)
@@ -73,15 +84,3 @@ Microduino-IDE ![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Supp
 
 - Weibo:
   - @老潘orz
-
-
-## Core Pinmap
-
-### Core
-
-![Pin Functions](_doc/pinmap-core.png)
-
-### Core ESP
-
-![Pin Functions](_doc/pinmap-coreesp.png)
-
