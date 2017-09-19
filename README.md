@@ -33,9 +33,9 @@ Microduino-IDE ![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Supp
 ## Installation
 
 - We do a lot of work related to the libraries for better support of Microduino and mCookie Modules
-- The libraries are not included in the support package, so you need to install the support package and the libraries separately
+- **The libraries are not included in the support package, so the libraries needs additional installation**
 - 我们为了让Microduino和mCookie模块的库更好使用，做了很多工作
-- `支持包中未包含库，你需要分别安装支持包和库`
+- **支持包中未包含库，库需要另外安装**
 
 ### How to add the support package for Microduino
 
