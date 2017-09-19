@@ -1,12 +1,7 @@
 Microduino-IDE ![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Support.svg?branch=master) [![GitHub version](https://img.shields.io/github/release/wasdpkj/Microduino-IDE-Support.svg)](https://github.com/wasdpkj/Microduino-IDE-Support/releases/latest)
 ========
 
-Release:
-------------
-- **Latest:**
-    - https://github.com/wasdpkj/Microduino-IDE-Support/releases/latest
-
-Readme:
+## Readme
 ------------
 - 2017-07-14：
   - `Library进行了一次大更新，可能会和之前的程序有不兼容`
@@ -18,8 +13,22 @@ Readme:
 - 我们为了让Microduino和mCookie模块的库更好使用，做了很多工作
 - `支持包中未包含库，你需要分别安装支持包和库`
 
-How to add the support package for Microduino：
-------------
+## Table of Contents
+
+1. [Release](#release)
+2. [Installation](#installation)
+   1. [How to add the support package for Microduino](#how-to-add-the-support-package-for-Microduino)
+   2. [How to add the libraries for Microduino](#how-to-add-the-libraries-for-Microduino)
+
+## Release
+
+- **Latest:**
+    - https://github.com/wasdpkj/Microduino-IDE-Support/releases/latest
+
+## Installation
+
+### How to add the support package for Microduino
+
 - Add the URL for the package to `"File>Preferences>Additional Boards Manager URLs"`
   - URL:https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/package_Microduino_index.json
 - `"Tools>Board>Boards Manager"`...
@@ -32,8 +41,8 @@ How to add the support package for Microduino：
   - `"Microduino/mCookie-device"`
   - `"Microduino CoreESP32"`
 
-How to add the libraries for Microduino：
-------------
+### How to add the libraries for Microduino
+
 - Clone this project or Download: [Microduino-IDE-Support-master.zip](https://github.com/wasdpkj/Microduino-IDE-Support/archive/master.zip)
 - We recommend: first clear the Arduino installation directory libraries folder, to prevent the conflict between libraries: 
   - For example Servo, we have modified the code to support more cores
