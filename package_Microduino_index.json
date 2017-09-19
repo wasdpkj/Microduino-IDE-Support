@@ -159,6 +159,43 @@
               "name": "Noduino Quantum"
             }
           ]
+        },
+        {
+          "category": "Microduino",
+          "help": {
+            "online": "https://wiki.microduino.cn"
+          },
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4+2.5.tar.gz",
+          "checksum": "SHA-256:85B55F50198DE38BCA961A9AAFD3258D31902ABD34BA4D90093DEF4AC210C9FE",
+          "name": "Microduino ESP32 Boards",
+          "version": "1.8.4+2.5",
+          "architecture": "esp32",
+          "archiveFileName": "microduino-esp32-1.8.4+2.5.tar.gz",
+          "size": "34460844",
+          "toolsDependencies": [
+            {
+              "packager": "microduino",
+              "version": "1.22.0-61-gab8375a-5.2.0",
+              "name": "xtensa-esp32-elf-gcc"
+            }
+          ],
+          "boards": [
+            {
+              "name": "Microduino-CoreESP32"
+            },
+            {
+              "name": "Microduino-mAI"
+            },
+            {
+              "name": "Node32s"
+            },
+            {
+              "name": "ESP32 Dev Module"
+            },
+            {
+              "name": "Noduino Quantum"
+            }
+          ]
         }
       ],
       "tools": [
