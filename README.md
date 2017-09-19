@@ -17,8 +17,8 @@ Microduino-IDE ![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Supp
 
 1. [Release](#release)
 2. [Installation](#installation)
-   1. [How to add the support package for Microduino](#how-to-add-the-support-package-for-Microduino)
-   2. [How to add the libraries for Microduino](#how-to-add-the-libraries-for-Microduino)
+   1. [How to add the support package for Microduino](#how-to-add-the-support-package-for-microduino)
+   2. [How to add the libraries for Microduino](#how-to-add-the-libraries-for-microduino)
 
 ## Release
 
