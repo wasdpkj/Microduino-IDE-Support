@@ -8,7 +8,7 @@ Release:
 
 Readme:
 ------------
-- 2017-07-14：
+- `2017-07-14：`
   - Library进行了一次大更新，可能会和之前的程序有不兼容
   - 如需下载更新前的老版本，可去OLD分支下载：[OLD-Download](https://github.com/wasdpkj/Microduino-IDE-Support/tree/OLD)
   - The libraries have been updated greatly and the new ones maybe incompatible with the previous programs.
