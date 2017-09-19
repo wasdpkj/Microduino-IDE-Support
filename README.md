@@ -18,6 +18,8 @@ Microduino-IDE ![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Supp
    2. [How to add the libraries for Microduino](#how-to-add-the-libraries-for-microduino)
 3. [Website](#website)
 4. [Core Pinmap](#core-pinmap)
+   1. [Core](#core)
+   2. [CoreESP](#core-esp)
 
 
 ## Release
@@ -74,7 +76,12 @@ Microduino-IDE ![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Supp
 
 
 ## Core Pinmap
-------------
+
+### Core
+
 ![Pin Functions](_doc/pinmap-core.png)
+
+### Core ESP
+
 ![Pin Functions](_doc/pinmap-coreesp.png)
 
