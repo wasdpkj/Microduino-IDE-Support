@@ -13,21 +13,26 @@ Microduino-IDE ![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Supp
 - 我们为了让Microduino和mCookie模块的库更好使用，做了很多工作
 - `支持包中未包含库，你需要分别安装支持包和库`
 
+
 ## Table of Contents
 
 1. [Release](#release)
-   1. [Latest](#latest)
+   1. [Latest Releases](#latest-releases) [![GitHub version](https://img.shields.io/github/release/wasdpkj/Microduino-IDE-Support.svg)](https://github.com/wasdpkj/Microduino-IDE-Support/releases/latest)
    2. [Previous Releases](#previous-releases)
 2. [Installation](#installation)
    1. [How to add the support package for Microduino](#how-to-add-the-support-package-for-microduino)
    2. [How to add the libraries for Microduino](#how-to-add-the-libraries-for-microduino)
+3. [Website](#website)
+4. [Core Pinmap](#core-pinmap)
+
 
 ## Release
 
-### Latest
+### Latest Releases
     - https://github.com/wasdpkj/Microduino-IDE-Support/releases/latest
 ### Previous Releases
     - https://github.com/wasdpkj/Microduino-IDE-Support/releases
+
 
 ## Installation
 
@@ -52,8 +57,9 @@ Microduino-IDE ![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Supp
   - For example Servo, we have modified the code to support more cores
 - Copy the libraries folder to the Arduino installation directory
 
-Website:
-------------
+
+## Website
+
 - [Microduino EN](http://www.microduino.cc)
 - [Microduino CN](http://www.microduino.cn)
 
@@ -67,7 +73,8 @@ Website:
 - Weibo:
   - @老潘orz
 
-Core Pinmap:
+
+## Core Pinmap
 ------------
 ![Pin Functions](_doc/pinmap-core.png)
 ![Pin Functions](_doc/pinmap-coreesp.png)
