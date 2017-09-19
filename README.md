@@ -23,9 +23,9 @@ Microduino-IDE ![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Supp
 ## Release
 
 ### Latest Releases
-    - https://github.com/wasdpkj/Microduino-IDE-Support/releases/latest
+- https://github.com/wasdpkj/Microduino-IDE-Support/releases/latest
 ### Previous Releases
-    - https://github.com/wasdpkj/Microduino-IDE-Support/releases
+- https://github.com/wasdpkj/Microduino-IDE-Support/releases
 
 
 ## Installation
