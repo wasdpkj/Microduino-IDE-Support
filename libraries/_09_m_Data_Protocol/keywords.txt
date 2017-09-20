@@ -7,6 +7,8 @@
 #######################################
 ProtocolSer	KEYWORD1
 ProtocolZig	KEYWORD1
+ProtocolnRF	KEYWORD1
+SoftwareSerial	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
