@@ -80,7 +80,7 @@ void Microduino_GPS::begin(uint32_t baud) {
       gpsHwSerial->begin(_baud[_n], SERIAL_8N1, pinRX, pinTX);
       set_baud(baud);
     }
-    gpsHwSerial->begin(baud, SERIAL_8N1, pinRX, D3);
+    gpsHwSerial->begin(baud, SERIAL_8N1, pinRX, pinTX);
   }
 #elif defined (__AVR__)
   if (gpsHwSerial) {
