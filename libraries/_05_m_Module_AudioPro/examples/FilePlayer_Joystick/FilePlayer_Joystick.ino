@@ -2,9 +2,7 @@
    Microduino_AudioPro支持库例程
    模块WIKI：https://wiki.microduino.cn/index.php/MCookie-Module_AudioPro
    简易的MP3，需配合Microduino_SD模块、Sensor Joystick传感器使用
-   本例程中 getMusicFile 可以获取SD卡中曲目列表以及数量
-   为了防止内存不足：
-     SD卡中的 歌曲最大数量通过 MUSIC_MAX 设置,并且要和字符串 FileName 数量对应上
+   本例程中 getMusicNum 可以获取SD卡中曲目列表以及数量
 */
 
 #include <Microduino_Key.h>
