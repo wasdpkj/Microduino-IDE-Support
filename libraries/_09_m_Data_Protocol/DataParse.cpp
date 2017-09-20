@@ -31,7 +31,7 @@ void DataParse::read(uint8_t *_cmd, uint8_t *_data, uint8_t _len){
 }	
 
 
-//数据处理函数�������ݴ�����
+//数据处理函数
 bool DataParse::parse(uint8_t tempChar)		{
 	if(step == STEP_WAIT_AA){	        //等待接收0xAA 
 		if(tempChar == STXA){

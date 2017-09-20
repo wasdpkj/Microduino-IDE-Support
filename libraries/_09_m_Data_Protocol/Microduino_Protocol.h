@@ -2,7 +2,9 @@
 #define _MICRODUINO_PROTOCOL_H_
 
 #include "DataParse.h"
+#if defined (__AVR__)
 #include <SoftwareSerial.h>
+#endif
 #include <RF24.h>
 #include <Arduino.h>
 
@@ -13,13 +15,20 @@
 //将两个字节组合成一个WORD
 #define MAKE_WORD(HI,LO)		(((((uint16_t)((uint8_t)HI)))<<8)| ((uint16_t)((uint8_t)LO)))
 
+#ifndef SERIAL_RX_BUFFER_SIZE
+#define SERIAL_RX_BUFFER_SIZE 64
+#endif /* SERIAL_RX_BUFFER_SIZE */
 
 class ProtocolSer{
   public:
   
-	ProtocolSer(HardwareSerial *ser, uint8_t _len);
+#if defined (__AVR__)
 	ProtocolSer(SoftwareSerial *ser, uint8_t _len);
-	
+	ProtocolSer(HardwareSerial *ser, uint8_t _len);
+#elif defined (ESP32)
+	ProtocolSer(HardwareSerial *ser, uint8_t _len, int _rx = D2, int _tx = D3);
+#endif
+
     void begin(uint16_t _baud);
 	bool available(void);
     void readBytes(uint8_t *_cmd, uint8_t *_data, uint8_t _len);
@@ -28,8 +37,13 @@ class ProtocolSer{
 
   private:
   
-  	SoftwareSerial *pSwSerial;
 	HardwareSerial *pHwSerial;
+#if defined (__AVR__)
+  	SoftwareSerial *pSwSerial;
+#elif defined (ESP32)
+    uint8_t pinRX = D2;
+    uint8_t pinTX = D3;
+#endif
 	DataParse *dataParse;
 	uint16_t baud;
 	uint8_t length;

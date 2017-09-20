@@ -2,6 +2,16 @@
 
 /****************************** ProtocolSer ******************************/
 
+#if defined (ESP32)
+ProtocolSer::ProtocolSer(HardwareSerial *ser, uint8_t _len, int _rx, int _tx){
+	commonInit();
+	pHwSerial = ser;
+	length = _len;
+	pinRX = _rx;
+	pinTX = _tx;
+	dataParse = new DataParse(length);	
+}
+#elif defined (__AVR__)
 ProtocolSer::ProtocolSer(HardwareSerial *ser, uint8_t _len){
 	commonInit();
 	pHwSerial = ser;
@@ -15,35 +25,34 @@ ProtocolSer::ProtocolSer(SoftwareSerial *ser, uint8_t _len){
 	length = _len;
 	dataParse = new DataParse(length);
 }
+#endif
 
 void ProtocolSer::commonInit(void){
+#if defined (__AVR__)
 	pSwSerial = NULL;
+#endif
 	pHwSerial = NULL;
 }
 
 void ProtocolSer::begin(uint16_t _baud){
 	baud = _baud;
-	if(pSwSerial){
-		pSwSerial->begin(baud);
-	}else{
-		pHwSerial->begin(baud);
+#if defined (ESP32)
+	if(pHwSerial){
+		pHwSerial->begin(baud, SERIAL_8N1, pinRX, pinTX);
 	}
+#elif defined (__AVR__)
+	if(pHwSerial){
+		pHwSerial->begin(baud);
+	}else{
+		pSwSerial->begin(baud);
+	}
+#endif
 }
 
 
 bool ProtocolSer::available(){
 	uint8_t inChar = 0x00;
-	if(pSwSerial){
-		if(pSwSerial->available() > 0){
-			inChar = pSwSerial->read();
-			if(dataParse->parse(inChar)){
-//				pSwSerial->clear();		
-				pSwSerial->stopListening();
-				pSwSerial->listen();
-				return true;
-			}			
-		}
-	}else{
+	if(pHwSerial){
 		if(pHwSerial->available() > 0){
 			inChar = pHwSerial->read();
 			if(dataParse->parse(inChar)){
@@ -53,7 +62,20 @@ bool ProtocolSer::available(){
 				return true;
 			}
 		}
-	}	
+	}
+#if defined (__AVR__)
+	else{
+		if(pSwSerial->available() > 0){
+			inChar = pSwSerial->read();
+			if(dataParse->parse(inChar)){
+//				pSwSerial->clear();		
+				pSwSerial->stopListening();
+				pSwSerial->listen();
+				return true;
+			}			
+		}
+	}
+#endif
 	return false;	
 }
 
@@ -72,19 +94,22 @@ void ProtocolSer::write(uint8_t cmd, uint8_t *_data, uint8_t _len){
 		_len = length;
 	memcpy(buf, _data, _len);
 	uint8_t checkSum = dataParse->getChecksum(cmd, buf, length);	
-	if(pSwSerial){
-		pSwSerial->write(STXA);
-		pSwSerial->write(STXB);
-		pSwSerial->write(cmd);
-		pSwSerial->write(buf, length);
-		pSwSerial->write(checkSum);		
-	}else{
+	if(pHwSerial){
 		pHwSerial->write(STXA);
 		pHwSerial->write(STXB);
 		pHwSerial->write(cmd);
 		pHwSerial->write(buf, length);
 		pHwSerial->write(checkSum);			
-	}		
+	}
+#if defined (__AVR__)
+	else{
+		pSwSerial->write(STXA);
+		pSwSerial->write(STXB);
+		pSwSerial->write(cmd);
+		pSwSerial->write(buf, length);
+		pSwSerial->write(checkSum);		
+	}
+#endif
 }
 
 
