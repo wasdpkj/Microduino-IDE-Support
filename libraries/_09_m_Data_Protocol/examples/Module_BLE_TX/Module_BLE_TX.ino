@@ -11,14 +11,19 @@
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(2, 3); /* RX:D2, TX:D3 */
 #define ProSerial mySerial
+ProtocolSer protocol(&ProSerial, 16);  //采用ProSerial，数据长度为16个字节
 #endif
 
 //Core+ UART Port: [Serial1] [D2,D3]
 #if defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega644P__) || defined(__AVR_ATmega128RFA1__)
 #define ProSerial Serial1
+ProtocolSer protocol(&ProSerial, 16);  //采用ProSerial，数据长度为16个字节
 #endif
 
-ProtocolSer protocol(&ProSerial, 16);	//采用ProSerial，数据长度为16个字节
+#if defined (ESP32)
+HardwareSerial mySerial1(1);  //UART1
+ProtocolSer protocol(&mySerial1, 16, D2, D3);  //采用mySerial1，数据长度为16个字节
+#endif
 
 uint16_t sendData[8] = {1500, 1500, 1500, 1500, 1000, 1000, 1000, 1000};
 uint32_t sendTime;
