@@ -1,11 +1,11 @@
-Microduino-IDE ![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Support.svg?branch=master) [![GitHub version](https://img.shields.io/github/release/wasdpkj/Microduino-IDE-Support.svg)](https://github.com/wasdpkj/Microduino-IDE-Support/releases/latest)
+Microduino-IDE [![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Support.svg?branch=master)](https://travis-ci.org/wasdpkj/Microduino-IDE-Support) [![GitHub version](https://img.shields.io/github/release/wasdpkj/Microduino-IDE-Support.svg?branch=master)](https://github.com/wasdpkj/Microduino-IDE-Support/releases/latest)
 ========
 
 - `2017-07-14：`
   - `Library进行了一次大更新，可能会和之前的程序有不兼容`
-  - `如需下载更新前的老版本，可去OLD分支下载：`[`OLD-Download`](https://github.com/wasdpkj/Microduino-IDE-Support/tree/OLD)
+  - `如需下载更新前的老版本，可去OLD分支下载：`[**`OLD-Download`**](https://github.com/wasdpkj/Microduino-IDE-Support/tree/OLD)
   - `The libraries have been updated greatly and the new ones maybe incompatible with the previous programs`
-  - `To download the old version before the update, please go to OLD branch：`[`OLD-Download`](https://github.com/wasdpkj/Microduino-IDE-Support/tree/OLD)
+  - `To download the old version before the update, please go to OLD branch：`[**`OLD-Download`**](https://github.com/wasdpkj/Microduino-IDE-Support/tree/OLD)
 
 
 ## Table of Contents
@@ -63,11 +63,11 @@ Microduino-IDE ![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Supp
 
 ### Core
 
-![Pin Functions](_doc/pinmap-core.png)
+![Pin Functions](https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_doc/pinmap-core.png)
 
 ### Core ESP
 
-![Pin Functions](_doc/pinmap-coreesp.png)
+![Pin Functions](https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_doc/pinmap-coreesp.png)
 
 
 ## Website
