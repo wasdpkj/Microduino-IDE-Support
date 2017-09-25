@@ -21,7 +21,8 @@ Microduino-IDE [![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Sup
    2. [Drivers for macox](#drivers-for-macox)
 4. [Core Pinmap](#core-pinmap)
    1. [Core](#core)
-   2. [CoreESP](#core-esp)
+   2. [CorePlus](#core-plus)
+   3. [CoreESP](#core-esp)
 5. [Website](#website)
 
 
@@ -84,6 +85,10 @@ Microduino-IDE [![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Sup
 ### Core
 
 ![Pin Functions](https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_doc/pinmap-core.png)
+
+### Core Plus
+
+![Pin Functions](https://github.com/wasdpkj/Microduino-IDE-Support/blob/master/_doc/pinmap-core%2B.png)
 
 ### Core ESP
 
