@@ -87,7 +87,7 @@ void TwoWire::begin(uint32_t frequency, int sdaPin, int sclPin)
 
     flush();
 
-    //i2cInitFix(i2c);	//此处会引起死机 先屏蔽掉
+    i2cInitFix(i2c);
 }
 
 void TwoWire::setClock(uint32_t frequency)
@@ -209,6 +209,13 @@ void TwoWire::flush(void)
     rxLength = 0;
     txIndex = 0;
     txLength = 0;
+}
+
+void TwoWire::reset(void)
+{
+    i2cReset( i2c );
+    i2c = NULL;
+    begin( 100000, sda, scl );
 }
 
 TwoWire Wire = TwoWire(0);

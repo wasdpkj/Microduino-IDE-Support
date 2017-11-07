@@ -197,6 +197,7 @@ extern int IRAM_ATTR __digitalRead(uint8_t pin)
     return 0;
 }
 
+static intr_handle_t gpio_intr_handle = NULL;
 
 static void IRAM_ATTR __onPinInterrupt(void *arg)
 {
@@ -234,39 +235,30 @@ extern void __attachInterrupt(uint8_t pin, voidFuncPtr userFunc, int intr_type)
 {
     if(pin > 5 && pin < 12) return;	//6 7 8 9 10 11 FLASH PIN
     static bool interrupt_initialized = false;
-    static int core_id = 0;
     
     if(!interrupt_initialized) {
         interrupt_initialized = true;
-        core_id = xPortGetCoreID();
-        ESP_INTR_DISABLE(ETS_GPIO_INUM);
-        intr_matrix_set(core_id, ETS_GPIO_INTR_SOURCE, ETS_GPIO_INUM);
-        xt_set_interrupt_handler(ETS_GPIO_INUM, &__onPinInterrupt, NULL);
-        ESP_INTR_ENABLE(ETS_GPIO_INUM);
+        esp_intr_alloc(ETS_GPIO_INTR_SOURCE, (int)ESP_INTR_FLAG_IRAM, __onPinInterrupt, NULL, &gpio_intr_handle);
     }
     __pinInterruptHandlers[pin] = userFunc;
-    //lock gpio
-    ESP_INTR_DISABLE(ETS_GPIO_INUM);
-    if(core_id) { //APP_CPU
+    esp_intr_disable(gpio_intr_handle);
+    if(esp_intr_get_cpu(gpio_intr_handle)) { //APP_CPU
         GPIO.pin[pin].int_ena = 1;
     } else { //PRO_CPU
         GPIO.pin[pin].int_ena = 4;
     }
     GPIO.pin[pin].int_type = intr_type;
-    ESP_INTR_ENABLE(ETS_GPIO_INUM);
-    //unlock gpio
+    esp_intr_enable(gpio_intr_handle);
 }
 
 extern void __detachInterrupt(uint8_t pin)
 {
     if(pin > 5 && pin < 12) return;	//6 7 8 9 10 11 FLASH PIN
-    //lock gpio
-    ESP_INTR_DISABLE(ETS_GPIO_INUM);
+    esp_intr_disable(gpio_intr_handle);
     __pinInterruptHandlers[pin] = NULL;
     GPIO.pin[pin].int_ena = 0;
     GPIO.pin[pin].int_type = 0;
-    ESP_INTR_ENABLE(ETS_GPIO_INUM);
-    //unlock gpio
+    esp_intr_enable(gpio_intr_handle);
 }
 
 

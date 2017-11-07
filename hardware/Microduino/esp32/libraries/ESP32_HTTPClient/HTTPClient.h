@@ -129,6 +129,7 @@ public:
     bool begin(String url, const char* CAcert);
     bool begin(String host, uint16_t port, String uri = "/");
     bool begin(String host, uint16_t port, String uri, const char* CAcert);
+    bool begin(String host, uint16_t port, String uri, const char* CAcert, const char* cli_cert, const char* cli_key);
 
     void end(void);
 
@@ -196,6 +197,7 @@ protected:
     bool _reuse = false;
     uint16_t _tcpTimeout = HTTPCLIENT_DEFAULT_TCP_TIMEOUT;
     bool _useHTTP10 = false;
+    bool _secure = false;
 
     String _uri;
     String _protocol;
