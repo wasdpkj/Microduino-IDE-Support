@@ -9,6 +9,9 @@ Ultrasonic	KEYWORD1
 #######################################
 
 requstDistance	KEYWORD2
+setBlind	KEYWORD2
+requstBlind	KEYWORD2
+requstVersion	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
@@ -18,3 +21,4 @@ ULTRASONIC_ADDR_1	LITERAL1
 ULTRASONIC_ADDR_2	LITERAL1
 ULTRASONIC_ADDR_3	LITERAL1
 ULTRASONIC_ADDR_4	LITERAL1
+ULTRA_VERSION	LITERAL1

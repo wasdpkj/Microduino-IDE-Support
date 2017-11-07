@@ -16,19 +16,25 @@
 // Weibo:
 // @路蝶-6
 
-//日期：2017.06
+//日期：2017.11
 *********************************************************/
 
 #ifndef ULTRASONIC_H_
 #define ULTRASONIC_H_
+
+#include <Arduino.h>
+#include <Wire.h>
 
 #define ULTRASONIC_ADDR_1  0X31
 #define ULTRASONIC_ADDR_2  0X32
 #define ULTRASONIC_ADDR_3  0X33
 #define ULTRASONIC_ADDR_4  0X34
 
-#include <Arduino.h>
-#include <Wire.h>
+#define ULTRA_VERSION          3
+
+#define ADDR16_DISTANCE       0
+#define ADDR8_VERSION         2
+#define ADDR8_BLIND           3
 
 class Ultrasonic {
 
@@ -36,6 +42,9 @@ class Ultrasonic {
     Ultrasonic(uint8_t _UltrasonicAddress=ULTRASONIC_ADDR_1);
     boolean begin();  
     uint16_t requstDistance();
+	void setBlind(uint8_t); 
+    uint8_t requstBlind();
+    uint8_t requstVersion();
 
   private:
     uint8_t UltrasonicAddress;
@@ -43,6 +52,7 @@ class Ultrasonic {
     uint8_t second_byte;
     uint16_t distance;
     uint8_t flag;
+	uint8_t UltrasonicVersion;
 };
 
 #endif 

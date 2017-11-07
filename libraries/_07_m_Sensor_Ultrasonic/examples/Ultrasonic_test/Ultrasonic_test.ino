@@ -2,7 +2,7 @@
   LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
 
   版权所有：
-  @小崔  cuiwenjing@microduino.cc
+  cuiwenjing@microduino.cc
 
   Sensor_Ultrasonic维基网址:
   https://wiki.microduino.cn/index.php/Sensor-Ultrasonic/zh
@@ -26,6 +26,12 @@ void setup() {
   else {                                   //如果超声波初始化不成功
     Serial.println("error");              //串口打印信息
     while (1);                             //程序在此循环运行，即不再向下运行
+  }
+
+  if (Ultrasonic1.requstVersion() >= ULTRA_VERSION) { //固件版本为3及以上版本,以下版本无设置获取盲区功能
+    Serial.print("Blind:");
+    Serial.println(Ultrasonic1.requstBlind()); //将已设置的盲区值打印出来
+    //    Ultrasonic1.setBlind(15);            //设置盲区值为15cm,一般情况下不使用此函数
   }
 }
 
