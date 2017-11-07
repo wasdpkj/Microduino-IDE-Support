@@ -249,7 +249,7 @@
           "toolsDependencies": [
             {
               "packager": "microduino",
-              "version": "1.22.0-73-ge28a011-5.2.0"
+              "version": "1.22.0-73-ge28a011-5.2.0",
               "name": "xtensa-esp32-elf-gcc"
             }
           ],
