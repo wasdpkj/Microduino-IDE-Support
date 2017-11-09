@@ -23,6 +23,7 @@
 
 Pulse::Pulse(uint8_t _Pin) {
   pulseKey = new DigitalKey(_Pin);
+  pulse_pin = _Pin;
 }
 
 void Pulse::begin() {
@@ -31,6 +32,8 @@ void Pulse::begin() {
 
 /*获取两个脉冲之间的时间差*/
 uint32_t Pulse::getInterval() {
+  randomSeed(analogRead(pulse_pin));
+  delay(random(1,5));
   pinState = pulseKey->readVal();
   if (pinState == KEY_RELEASING) {
     lastTime = thisTime;

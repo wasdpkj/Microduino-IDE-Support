@@ -54,6 +54,7 @@ class Pulse {
     uint32_t pulse_vol = 0;
     uint32_t pulse_cache = 0;
     uint16_t pulse_t;
+    int8_t pulse_pin;
 };
 
 #endif
