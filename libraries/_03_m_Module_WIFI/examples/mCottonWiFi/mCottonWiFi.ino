@@ -173,6 +173,21 @@ void loop(void) {
 			wifi.setMqttConnected(false);
 			digitalWrite(stateLEDPin,LOW);
 		} else if (mCottenData.equals("MQTT: Connected")) {
+			if (wifi.mqttSetDiveceIDToken(ID, PASS)) {
+				Serial.print(F("mqtt set device ID Token ok\r\n"));
+			} else {
+				Serial.print(F("mqtt set device ID Token err\r\n"));
+			}
+			if (wifi.mqttSetSubscrib(SUBSCRIBTOPIC)) {
+				Serial.print(F("mqtt set subscrib ca topic ok\r\n"));
+			} else {
+				Serial.print(F("mqtt set subscrib ca topic err\r\n"));
+			}
+			if (wifi.mqttSetSubscrib(SUBSCRIBTOPICP)) {
+				Serial.print(F("mqtt set subscrib cp topic ok\r\n"));
+			} else {
+				Serial.print(F("mqtt set subscrib cp topic err\r\n"));
+			}
 			wifi.setMqttConnected(true);
 			digitalWrite(stateLEDPin,HIGH);
 		}

@@ -17,9 +17,9 @@ LinerCCD::LinerCCD(uint8_t pixsCommand, uint8_t lightPin) :
 
 void LinerCCD::setCCDPixs(uint8_t pixsCommand) {
 	_pixsCommand = pixsCommand;
-	_pixsNum=pow(2, _pixsCommand+1)+1;
+	_pixsNum=pow(2, _pixsCommand+1);
 
-	_times=128/_pixsNum;
+	_times=128/_pixsNum+1;
 
 	Wire.beginTransmission(_CCDAddress);
 	Wire.write(_pixsCommand);
