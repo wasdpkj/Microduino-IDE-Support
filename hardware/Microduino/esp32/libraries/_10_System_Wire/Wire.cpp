@@ -150,7 +150,11 @@ void TwoWire::beginTransmission(int address)
 
 uint8_t TwoWire::endTransmission(void)
 {
-    return endTransmission(true);
+    int8_t ret = endTransmission(true);
+    if(ret != I2C_ERROR_OK){
+        reset();
+    }
+    return ret;
 }
 
 size_t TwoWire::write(uint8_t data)
