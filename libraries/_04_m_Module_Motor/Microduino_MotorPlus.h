@@ -1,22 +1,15 @@
 /*********************************************************
-//  LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
+  //  LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
 
-//  版权所有：
-//  @小崔  cuiwenjing@microduino.cc
+  // 支持Microduino_MotorPlus
 
-// 支持Microduino_MotorPlus
+  // Microduino wiki:
+  // http://wiki.microduino.cn
 
-// Microduino wiki:
-// http://wiki.microduino.cn
+  // E-mail:
+  // cuiwenjing@microduino.cc
 
-// E-mail:
-// Wenjing Cui
-// cuiwenjing@microduino.cc
-
-// Weibo:
-// @路蝶-6
-
-//日期：2017.06
+  //日期：2017.11
 *********************************************************/
 
 #ifndef _MICRODUINO_MOTOR_PLUSE_H_
@@ -40,26 +33,34 @@
 
 #define FREE  	0   //释放
 #define BRAKE  	20000  //刹车
-#define SLEEP  -20000   //休眠
 
-#define ADDR16_MOTOR1   0x00
-#define ADDR16_MOTOR2   0x02
+#define ADDR16_SPEED1     0X00
+#define ADDR16_SPEED2     0X01
+#define ADDR8_FAULT       0X04
+#define ADDR8_VERSION     0X1F
+#define ADDR8_RESET       0X20
+
+#define MOTO_VERSION      2
 
 class MotorPlus {
 
   public:
-    MotorPlus(uint8_t _addr=0X73); 
+    MotorPlus(uint8_t _addr = 0X73);
     bool begin(uint8_t _bit = BIT_8);
+    void reset(void);
+    uint8_t getVersion(void);
     bool setSpeed1(int16_t _speed);
     bool setSpeed2(int16_t _speed);
     bool setSpeed(int16_t _speed1, int16_t _speed2);
 
-  private:  
-	uint8_t devAddr;
+  private:
+    uint8_t devAddr;
     uint8_t multiple;
-	
+    int16_t speedRange;
+
     bool write16(uint8_t writeAddr, uint16_t *data, uint8_t len);
-	bool requestData();
+    uint8_t requestData(uint8_t);
+    uint8_t motorPlusVersion;
 };
 
 #endif /* LINERCCDLIB_LINERCCD_H_ */
