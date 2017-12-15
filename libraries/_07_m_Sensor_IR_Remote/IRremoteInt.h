@@ -76,8 +76,8 @@
 
 #ifndef DEBUG
 #define MATCH(measured_ticks, desired_us) ((measured_ticks) >= TICKS_LOW(desired_us) && (measured_ticks) <= TICKS_HIGH(desired_us))
-#define MATCH_MARK(measured_ticks, desired_us) MATCH(measured_ticks, (desired_us) + MARK_EXCESS)
-#define MATCH_SPACE(measured_ticks, desired_us) MATCH((measured_ticks), (desired_us) - MARK_EXCESS)
+#define MATCH_MARK(measured_ticks, desired_us) MATCH(measured_ticks, (desired_us))
+#define MATCH_SPACE(measured_ticks, desired_us) MATCH(measured_ticks, (desired_us))
 // Debugging versions are in IRremote.cpp
 #endif
 
