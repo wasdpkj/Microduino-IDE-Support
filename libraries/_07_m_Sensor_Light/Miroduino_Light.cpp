@@ -107,9 +107,8 @@ boolean Light_D1::begin(tsl2561IntegrationTime_t _it, tsl2561Gain_t _gain)
   Wire.begin();
 
   /* Make sure we're actually connected */
-  I2Cdev::readByte(devAddr, TSL2561_REGISTER_ID, &buf);
-  if (!(buf & 0x0A))
-  {
+  Wire.beginTransmission(TSL2561_ADDR_LOW);
+  if(Wire.endTransmission()){
     return false;
   }
 
