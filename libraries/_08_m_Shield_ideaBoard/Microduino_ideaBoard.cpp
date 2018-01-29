@@ -177,6 +177,15 @@ void IdeaBoard::setColorLED(uint8_t _r, uint8_t _g, uint8_t _b) {
   Wire.endTransmission();    // stop transmitting
 }
 
+void IdeaBoard::setColorLED(uint32_t _rgb) {
+  Wire.beginTransmission(IdeaBoard_ADDR); //硬件IIC地址
+  Wire.write(I2C_W_8_RGB_R);             // 数据地址
+  Wire.write((uint8_t)(_rgb>>16));
+  Wire.write((uint8_t)(_rgb>>8));
+  Wire.write((uint8_t)_rgb);
+  Wire.endTransmission();    // stop transmitting
+}
+
 void IdeaBoard::setSensitive(uint8_t _range) {
   constrain(_range, 8, 96);
   Wire.beginTransmission(IdeaBoard_ADDR); //硬件IIC地址

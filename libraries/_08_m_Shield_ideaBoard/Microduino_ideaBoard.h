@@ -89,6 +89,7 @@ class IdeaBoard {
     void setLED(uint8_t _number, bool _state);
     void setLED(uint8_t _state);
     void setColorLED(uint8_t _r, uint8_t _g, uint8_t _b);
+	void setColorLED(uint32_t _rgb);
     void tone(uint16_t _frequency, uint16_t _duration = -1);
     void noTone(void);
     void setOUT(uint8_t _numb, uint8_t _pwm);
