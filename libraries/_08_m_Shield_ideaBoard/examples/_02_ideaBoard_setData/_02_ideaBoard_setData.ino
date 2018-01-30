@@ -28,19 +28,22 @@ void setup() {
 void loop() {
   //*****************set*******输出控制
   ideaBoard.setLED(0, HIGH);
+  ideaBoard.setColorLED(10, 0, 0);
   delay(150);
   ideaBoard.setLED(0, LOW);
   ideaBoard.setLED(1, HIGH);
+  ideaBoard.setColorLED(0, 10, 0);
   delay(150);
   ideaBoard.setLED(1, LOW);
   ideaBoard.setLED(2, HIGH);
+  ideaBoard.setColorLED(0, 0, 10);
   delay(150);
   ideaBoard.setLED(2, LOW);
+  ideaBoard.setColorLED(0, 0, 0);
   
-  ideaBoard.setColorLED(10, 0, 0);
-  ideaBoard.setOUT(0, map(10, 0, 50, 0, 255));
-  ideaBoard.setOUT(1, map(30, 0, 50, 0, 255));
-  ideaBoard.setOUT(2, map(50, 0, 50, 0, 255));  
+  ideaBoard.setOUT(0, map(25, 0, 50, 0, 255));
+  ideaBoard.setOUT(1, map(25, 0, 50, 0, 255));
+  ideaBoard.setOUT(2, map(25, 0, 50, 0, 255));  
 
   delay(100);
 }
