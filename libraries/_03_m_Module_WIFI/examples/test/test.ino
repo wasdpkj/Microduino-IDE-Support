@@ -95,14 +95,14 @@ void setup(void)
   }
   Serial.print(F("get the station mac: "));
   Serial.println(wifi.getStationMac().c_str());
-  if (wifi.setStationMac("18:fe:35:98:d3:7b")) {
-    Serial.println(F("set station mac is ok "));
-  }
-  else {
-    Serial.println(F("it is error"));
-  }
-  Serial.print(F("get the station mac: "));
-  Serial.println(wifi.getStationMac().c_str());
+  // if (wifi.setStationMac("18:fe:35:98:d3:7b")) {
+  //   Serial.println(F("set station mac is ok "));
+  // }
+  // else {
+  //   Serial.println(F("it is error"));
+  // }
+  // Serial.print(F("get the station mac: "));
+  // Serial.println(wifi.getStationMac().c_str());
   Serial.print(F("get the station's ip"));
   Serial.println(wifi.getStationIp().c_str());
 
@@ -142,12 +142,12 @@ void setup(void)
   }
   Serial.print(F("get the current status of connection:"));
   Serial.println(wifi.getIPStatus().c_str());
-  if (wifi.saveTransLink(1, "192.168.1.18", 1006)) {
-    Serial.println(F("save trans link is ok"));
-  }
-  else {
-    Serial.println(F("save trans link is error"));
-  }
+  // if (wifi.saveTransLink(1, "192.168.1.18", 1006)) {
+  //   Serial.println(F("save trans link is ok"));
+  // }
+  // else {
+  //   Serial.println(F("save trans link is error"));
+  // }
   Serial.println(F("setup end\r\n"));
 }
 
