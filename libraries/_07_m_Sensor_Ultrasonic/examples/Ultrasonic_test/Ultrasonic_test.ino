@@ -25,7 +25,7 @@ void setup() {
 }
 
 void loop() {
-  Distance = Ultrasonic1.requstDistance(); //获取超声波测得的距离
+  Distance = Ultrasonic1.getDistance(); //获取超声波测得的距离
   Serial.println(Distance);               //串口打印距离值
   delay(30);                              //延时30ms
 }

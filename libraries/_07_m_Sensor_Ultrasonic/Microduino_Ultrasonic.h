@@ -41,10 +41,8 @@ class Ultrasonic {
   public:
     Ultrasonic(uint8_t _UltrasonicAddress=ULTRASONIC_ADDR_1);
     boolean begin();  
-    uint16_t requstDistance();
-	void setBlind(uint8_t); 
-    uint8_t requstBlind();
-    uint8_t requstVersion();
+    uint16_t getDistance();
+    uint8_t getVersion();
 
   private:
     uint8_t UltrasonicAddress;

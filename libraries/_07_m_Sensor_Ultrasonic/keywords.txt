@@ -8,10 +8,8 @@ Ultrasonic	KEYWORD1
 # Methods and Functions (KEYWORD2)
 #######################################
 
-requstDistance	KEYWORD2
-setBlind	KEYWORD2
-requstBlind	KEYWORD2
-requstVersion	KEYWORD2
+getDistance	KEYWORD2
+getVersion	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

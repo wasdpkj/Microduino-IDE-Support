@@ -30,14 +30,12 @@ boolean Ultrasonic::begin() {
   Wire.beginTransmission(UltrasonicAddress);
   first_byte = Wire.endTransmission();
   
-  UltrasonicVersion = Ultrasonic::requstVersion(); //获取固件版本号
-  Serial.print("UltrasonicVersion:");
-  Serial.println(UltrasonicVersion);
+  UltrasonicVersion = Ultrasonic::getVersion(); //获取固件版本号
 
   return !first_byte;
 }
 
-uint16_t Ultrasonic::requstDistance() {
+uint16_t Ultrasonic::getDistance() {
 
   if (UltrasonicVersion >= ULTRA_VERSION) { //固件版本大于等于3时执行此函数
     Wire.beginTransmission(UltrasonicAddress); // transmit to device #8
@@ -60,40 +58,11 @@ uint16_t Ultrasonic::requstDistance() {
   return distance;
 }
 
-void Ultrasonic::setBlind(uint8_t _blind) {
-  if (UltrasonicVersion >= ULTRA_VERSION) { //版本大于等于3时执行此函数
-    Wire.beginTransmission(UltrasonicAddress); // transmit to device #8
-    Wire.write(ADDR8_BLIND);
-    Wire.write(_blind);              // sends one byte
-    Wire.endTransmission();    // stop transmitting
-  }
-  else {
-    return;
-  }
-}
-
-uint8_t Ultrasonic::requstBlind() {
-  if (UltrasonicVersion >= ULTRA_VERSION) { //版本大于等于3时执行此函数
-    Wire.beginTransmission(UltrasonicAddress); // transmit to device #8
-    Wire.write(ADDR8_BLIND);              // sends one byte
-    Wire.endTransmission();    // stop transmitting
-    Wire.requestFrom(UltrasonicAddress, 1);
-    while (Wire.available())
-    {
-      uint8_t i = Wire.read();
-      return  i;
-    }
-  }
-  else {
-    return 0;
-  }
-}
-
-uint8_t Ultrasonic::requstVersion() {
+uint8_t Ultrasonic::getVersion() {
     Wire.beginTransmission(UltrasonicAddress); // transmit to device #8
     Wire.write(ADDR8_VERSION);              // sends one byte
     Wire.endTransmission();    // stop transmitting
-    Wire.requestFrom(UltrasonicAddress, 1);
+    Wire.requestFrom(UltrasonicAddress, (uint8_t)1);
     while (Wire.available())
     {
       uint8_t i = Wire.read();
