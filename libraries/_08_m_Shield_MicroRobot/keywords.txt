@@ -1,0 +1,80 @@
+#######################################
+# 
+####################################### 
+# Datatypes (KEYWORD1)
+#######################################
+
+MicroRobot	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+getVersion	KEYWORD2
+reset	KEYWORD2
+getVoltage	KEYWORD2
+servoWrite	KEYWORD2
+servoRead	KEYWORD2
+servoWriteRaw	KEYWORD2
+servoReadRaw	KEYWORD2
+motorInit	KEYWORD2
+getMotorVersion	KEYWORD2
+setRatio	KEYWORD2
+setResolution	KEYWORD2
+setMode	KEYWORD2
+setS_PID	KEYWORD2
+setS_PID_P	KEYWORD2
+setS_PID_I	KEYWORD2
+setS_PID_D	KEYWORD2
+setP_PID	KEYWORD2
+setP_PID_P	KEYWORD2
+setP_PID_I	KEYWORD2
+setP_PID_D	KEYWORD2
+setSpeed	KEYWORD2
+setPosition	KEYWORD2
+getRatio	KEYWORD2
+getResolution	KEYWORD2
+getMode	KEYWORD2
+getFault	KEYWORD2
+getS_PID_P	KEYWORD2
+getS_PID_I	KEYWORD2
+getS_PID_D	KEYWORD2
+getP_PID_P	KEYWORD2
+getP_PID_I	KEYWORD2
+getP_PID_D	KEYWORD2
+getSetSpeed	KEYWORD2
+getSetPosition	KEYWORD2
+getSpeed	KEYWORD2
+getPosition	KEYWORD2
+getSpeedRaw	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+FREE	LITERAL1
+BRAKE	LITERAL1
+BIT_14
+	LITERAL1
+BIT_13	LITERAL1
+BIT_12	LITERAL1
+BIT_11	LITERAL1
+BIT_10	LITERAL1
+BIT_9	LITERAL1
+BIT_8	LITERAL1
+MODE_OPEN	LITERAL1
+MODE_SPEED	LITERAL1
+MODE_POSITION	LITERAL1    
+
+MODE_DIR_OPEN	LITERAL1   
+
+MODE_DIR_SPEED	LITERAL1
+MODE_DIR_POSITION	LITERAL1
+MOTORPRO_ADDR1	LITERAL1
+MOTORPRO_ADDR2	LITERAL1
+MOTORPRO_ADDR3	LITERAL1
+MOTORPRO_ADDR4	LITERAL1
+MAX_SERVOS	LITERAL1
+MIN_PULSE_WIDTH	LITERAL1
+MAX_PULSE_WIDTH	LITERAL1
