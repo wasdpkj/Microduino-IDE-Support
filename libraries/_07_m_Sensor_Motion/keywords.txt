@@ -1,26 +1,19 @@
-#######################################
-# Syntax Coloring Map For Sensor_Motion
-#######################################
+
 
 #######################################
-# Datatypes (KEYWORD1)
-#######################################
-
-sensorMotion	KEYWORD1
-
-#######################################
-# Methods and Functions (KEYWORD2)
-#######################################
-
-begin	KEYWORD2
-getData	KEYWORD2
-setFullScaleGyroRange	KEYWORD2
-setFullScaleAccelRange	KEYWORD2
-set_transmit_interval	KEYWORD2
-set_smoothness	KEYWORD2
-
+begin    KEYWORD2
+getMotionRaw6    KEYWORD2
+getAccelerationRaw    KEYWORD2
+getAccelerationRawX    KEYWORD2
+getAccelerationRawY    KEYWORD2
+getAccelerationRawZ    KEYWORD2
+getRotationRaw    KEYWORD2
+getRotationRawX    KEYWORD2
+getRotationRawY    KEYWORD2
+getRotationRawZ    KEYWORD2
+getYawPitchRoll    KEYWORD2
+getYaw    KEYWORD2
+getPitch    KEYWORD2
+getRoll    KEYWORD2
 #######################################
 # Constants (LITERAL1)
-#######################################
-
-
