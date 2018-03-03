@@ -1,7 +1,7 @@
 #ifndef __MBATTERY_PMU_H__
 #define __MBATTERY_PMU_H__
 
-#include <arduino.h>
+#include <Arduino.h>
 #include <inttypes.h>
 
 #define ADDR8_VERSION    0
