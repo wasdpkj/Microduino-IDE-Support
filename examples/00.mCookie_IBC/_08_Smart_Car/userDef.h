@@ -17,7 +17,7 @@
 //===============================================================================================================//
 #define BRIGHT_MAX    128   //Max LED brightness. Max brightness is 255. Minimum brightness is 0.
 
-#define MAX_THROTTLE  150   //How quickly the Smart Car moves. Fastest speed is 255. A negative value will make
+#define MAX_THROTTLE  100   //How quickly the Smart Car moves. Fastest speed is 255. A negative value will make
 //the Motor spin in the other direction. Note: 255 is very fast. Be careful!
 
 #define STEER          40   //How quickly the Smart Car turns. Max value is 255. 
