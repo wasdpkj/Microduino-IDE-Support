@@ -1,0 +1,25 @@
+#######################################
+# 
+####################################### 
+# Datatypes (KEYWORD1)
+#######################################
+
+MicroMV	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+Init	KEYWORD2
+getData	KEYWORD2
+getTarget	KEYWORD2
+getX	KEYWORD2
+getY	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+THE_RED	LITERAL1
+THE_GREEN	LITERAL1
+THE_BLUE	LITERAL1
