@@ -29,7 +29,7 @@ class ProtocolSer{
 	ProtocolSer(HardwareSerial *ser, uint8_t _len, int _rx = D2, int _tx = D3);
 #endif
 
-    void begin(uint16_t _baud);
+    void begin(uint32_t _baud);
 	bool available(void);
     void readBytes(uint8_t *_cmd, uint8_t *_data, uint8_t _len);
 	void readWords(uint8_t *_cmd, uint16_t *_data, uint8_t _len);
@@ -45,7 +45,7 @@ class ProtocolSer{
     uint8_t pinTX = D3;
 #endif
 	DataParse *dataParse;
-	uint16_t baud;
+	uint32_t baud;
 	uint8_t length;
 
 	void commonInit(void);

@@ -34,7 +34,7 @@ void ProtocolSer::commonInit(void){
 	pHwSerial = NULL;
 }
 
-void ProtocolSer::begin(uint16_t _baud){
+void ProtocolSer::begin(uint32_t _baud){
 	baud = _baud;
 #if defined (ESP32)
 	if(pHwSerial){
