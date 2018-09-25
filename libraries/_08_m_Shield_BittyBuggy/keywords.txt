@@ -1,0 +1,44 @@
+#######################################
+# 
+####################################### 
+# Datatypes (KEYWORD1)
+#######################################
+
+BittyBuggy	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+setSpeedA	KEYWORD2
+setSpeedB	KEYWORD2
+setSpeed	KEYWORD2
+setColorLEDA	KEYWORD2
+setColorLEDB	KEYWORD2
+setAllLED	KEYWORD2
+tone	KEYWORD2
+noTone	KEYWORD2
+getVersion	KEYWORD2
+getLine	KEYWORD2
+getLineAlone	KEYWORD2
+getLineA	KEYWORD2
+getLineB	KEYWORD2
+getLineLowpassFilter	KEYWORD2
+getLineAverageFilter	KEYWORD2
+getColor	KEYWORD2
+getColorA	KEYWORD2
+getColorB	KEYWORD2
+getColorRaw	KEYWORD2
+connectionErr	KEYWORD2
+	
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+FREE	LITERAL1
+BRAKE	LITERAL1
+BLACK	LITERAL1
+RED	LITERAL1
+GREEN	LITERAL1
+BLUE	LITERAL1
