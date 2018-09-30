@@ -42,13 +42,19 @@ bool SensorUV::begin(void) {
 
 uint8_t SensorUV::requestData(uint8_t _dataAddr) {
   uint8_t returnByte = false;
+  long previous;
   if (SensorUVVersion >= UV_VERSION) {
     Wire.beginTransmission(devAddr); // transmit to device
     Wire.write(_dataAddr);              // sends one byte
     Wire.endTransmission();
   }
   Wire.requestFrom(devAddr, (uint8_t)1);
+  previous = millis();
   while (Wire.available())  {
+	  if(millis() - previous > INTERVAL)
+	  {
+		  return 0;
+	  }
     returnByte = Wire.read(); // receive a byte as character
   }
   return returnByte;
@@ -109,11 +115,17 @@ uint8_t SensorUV::getUVIndex(void)
 }
 uint8_t SensorUV::getVersion(void) {
   uint8_t returnByte = false;
+  long previous;
   Wire.beginTransmission(devAddr); // transmit to device
   Wire.write(ADDR8_VERSION);              // sends one byte
   Wire.endTransmission();
   Wire.requestFrom(devAddr, (uint8_t)1);
+  previous = millis();
   while (Wire.available())  {
+	  	  if(millis() - previous > INTERVAL)
+	  {
+		  return 0;
+	  }
     returnByte = Wire.read(); // receive a byte as character
   }
   return returnByte;

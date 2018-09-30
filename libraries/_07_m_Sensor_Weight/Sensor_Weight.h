@@ -34,6 +34,7 @@
 
 #define WEIGHT_VERSION 0x00
 
+#define INTERVAL 2000
 class SensorWeight {
 
   public:

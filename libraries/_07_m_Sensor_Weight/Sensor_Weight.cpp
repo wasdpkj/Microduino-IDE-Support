@@ -47,13 +47,19 @@ void SensorWeight::setGain(uint8_t gain)
 
 uint8_t SensorWeight::requestData(uint8_t _dataAddr) {
   uint8_t returnByte = false;
+  long previous;
   if (SensorWeightVersion >= WEIGHT_VERSION) {
     Wire.beginTransmission(devAddr); 		// transmit to device
     Wire.write(_dataAddr);            	  // sends one byte
     Wire.endTransmission();
   }
   Wire.requestFrom(devAddr, (uint8_t)1);
+  previous = millis();
   while (Wire.available())  {        //timeout
+  	  if(millis() - previous > INTERVAL)
+	  {
+		  return 0;
+	  }
     returnByte = Wire.read(); // receive a byte as character
   }
   return returnByte;
@@ -62,13 +68,19 @@ uint8_t SensorWeight::requestData(uint8_t _dataAddr) {
 uint16_t SensorWeight::getGap(){
   uint32_t returnByte;
   uint8_t first_byte, second_byte;
+  long previous;
   cnt = 0;
   Wire.beginTransmission(devAddr); // transmit to device
   Wire.write(ADDR16_GAP);              // sends one byte
   Wire.endTransmission();
   Wire.requestFrom(devAddr, (uint8_t)2);
+  previous = millis();
   while (Wire.available())
   {
+	if(millis() - previous > INTERVAL)
+	{
+		return 0;
+	}
     if (cnt == 0)
     {
       cnt++;
@@ -129,12 +141,18 @@ uint32_t SensorWeight::getWeight(void) {
 uint32_t SensorWeight::getData(void) {   
   uint32_t returnByte;
   uint8_t first_byte, second_byte, third_byte;
+  long previous;
   Wire.beginTransmission(devAddr); // transmit to device
   Wire.write(ADDR24_WEIGHT);              // sends one byte
   Wire.endTransmission();
   Wire.requestFrom(devAddr, (uint8_t)3);
+  previous = millis();
   while (Wire.available())
   {
+	  if(millis() - previous > INTERVAL)
+	  {
+		  return 0;
+	  }
     if (cnt == 0)
     {
       cnt++;
@@ -165,11 +183,17 @@ void SensorWeight::setZero(void) {
 //==============================================================================
 uint8_t SensorWeight::getVersion(void) {
   uint8_t returnByte = false;
+  long previous;
   Wire.beginTransmission(devAddr); // transmit to device
   Wire.write(ADDR8_VERSION);              // sends one byte
   Wire.endTransmission();
   Wire.requestFrom(devAddr, (uint8_t)1);
+  previous = millis();
   while (Wire.available())  {
+	  if(millis() - previous > INTERVAL)
+	  {
+		  return 0;
+	  }
     returnByte = Wire.read(); // receive a byte as character
   }
   return returnByte;
@@ -177,11 +201,17 @@ uint8_t SensorWeight::getVersion(void) {
 //调试用
 uint8_t SensorWeight::getCheck(void) {
   uint8_t returnByte = false;
+  long previous;
   Wire.beginTransmission(devAddr); // transmit to device
   Wire.write(ADDR8_CHECK);              // sends one byte
   Wire.endTransmission();
   Wire.requestFrom(devAddr, (uint8_t)1);
+  previous = millis();
   while (Wire.available())  {
+	  	  if(millis() - previous > INTERVAL)
+	  {
+		  return 0;
+	  }
     returnByte = Wire.read(); // receive a byte as character
   }
   return returnByte;

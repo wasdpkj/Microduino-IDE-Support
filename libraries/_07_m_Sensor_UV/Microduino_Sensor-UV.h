@@ -32,6 +32,8 @@
 #define STRONG		4
 #define EXTREME		5
 
+#define INTERVAL 2000
+
 #define VREF 3.34
 class SensorUV {
   public:
