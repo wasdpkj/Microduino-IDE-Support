@@ -10,3 +10,5 @@
 #include "Microduino_AM2321.h"
 
 #include "Microduino_lm75.h"
+
+#include "Microduino_IR_TEM.h"
