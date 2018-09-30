@@ -1,0 +1,29 @@
+#######################################
+# 
+####################################### 
+# Datatypes (KEYWORD1)
+#######################################
+
+SensorWeight	KEYWORD1
+WT	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+setGap	KEYWORD2
+getMaopi	KEYWORD2
+getWeight	KEYWORD2
+getVersion	KEYWORD2
+getData		KEYWORD2
+setReset	KEYWORD2
+setGain		KEYWORD2
+getCheck	KEYWORD2
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+WEIGHT_ADDRESS	LITERAL1
+ADDR24_WEIGHT	LITERAL1
+ADDR8_VERSION	LITERAL1

@@ -1,0 +1,24 @@
+#######################################
+# 
+####################################### 
+# Datatypes (KEYWORD1)
+#######################################
+
+SensorUV	KEYWORD1
+UV	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+getUV	KEYWORD2
+getVersion	KEYWORD2
+getIntensity	KEYWORD2
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+UV_ADDRESS	LITERAL1
+ADDR16_UV	LITERAL1
+ADDR8_VERSION	LITERAL1
