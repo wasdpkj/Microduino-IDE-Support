@@ -312,6 +312,7 @@ void BittyBuggy::setSpeed(int16_t left, int16_t right)
       left = map(left, 1, MAXSPEED, MINSPEED, MAXSPEED);
     else if (left < 0)
       left = map(left, -1, -MAXSPEED, -MINSPEED, -MAXSPEED);
+      motorspeed[0]=left;
     carmotorData[2] = (-left) & 0xFF;
     carmotorData[3] = (-left) >> 8;
   } else {
@@ -329,6 +330,7 @@ void BittyBuggy::setSpeed(int16_t left, int16_t right)
       right = map(right, 1, MAXSPEED, MINSPEED, MAXSPEED);
     else if (right < 0)
       right = map(right, -1, -MAXSPEED, -MINSPEED, -MAXSPEED);
+      motorspeed[1]=right;
   }
   carmotorData[0] = right & 0xFF;
   carmotorData[1] = right >> 8;
