@@ -1,51 +1,57 @@
 /***************************************************
-  This is an example sketch for the Adafruit 1.8" SPI display.
-  This library works with the Adafruit 1.8" TFT Breakout w/SD card
-  ----> http://www.adafruit.com/products/358
-  as well as Adafruit raw 1.8" TFT display
-  ----> http://www.adafruit.com/products/618
-
-  Check out the links above for our tutorials and wiring diagrams
-  These displays use SPI to communicate, 4 or 5 pins are required to
-  interface (RST is optional)
-  Adafruit invests time and resources providing this open source code,
-  please support Adafruit and open-source hardware by purchasing
-  products from Adafruit!
-
   Written by Limor Fried/Ladyada for Adafruit Industries.
   MIT license, all text above must be included in any redistribution
  ****************************************************/
 
 #include <Adafruit_GFX.h>    // Core graphics library
-#include <Adafruit_ST7735.h> // Hardware-specific library
+#include <Adafruit_TFT.h> // Hardware-specific library
 #include <SPI.h>
 #include <SD.h>
 
-#if defined(__SAM3X8E__)
-    #undef __FlashStringHelper::F(string_literal)
-    #define F(string_literal) string_literal
-#endif
-
-// TFT display and SD card will share the hardware SPI interface.
-// Hardware SPI pins are specific to the Arduino board type and
-// cannot be remapped to alternate pins.  For Arduino Uno,
-// Duemilanove, etc., pin 11 = MOSI, pin 12 = MISO, pin 13 = SCK.
 #define SD_CS    7  // Chip select line for SD card
-#define TFT_CS  5  // Chip select line for TFT display
-#define TFT_DC   4  // Data/command line for TFT
-#define TFT_RST  -1  // Reset line for TFT (or connect to +5V)
 
-//Use these pins for the shield!
-//#define TFT_CS   5
-//#define TFT_DC   4
-//#define TFT_RST  -1  // you can also connect this to the Arduino reset
+//#define BOARD_TYPE JOYPAD_ESP
+//#define BOARD_TYPE MICROBIT_ESP
 
+#define NORMAL    0       //Cube-S2 + ST7735
+#define JOYPAD_ESP    1   //ESP32 + ST7789
+#define MICROBIT_ESP  2   //ESP32 + ST7789
+
+#if BOARD_TYPE == MICROBIT_ESP
+#define TFT_CLK   18
+#define TFT_MOSI  23
+#define TFT_MISO  -1
+#define TFT_CS    25
+#define TFT_DC    26   //0
+#define TFT_RST   -1   //15
+#define TFT_BL    5
+#define SPI_PORT  SPI
+Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS,  TFT_DC, TFT_RST);
+#elif BOARD_TYPE == JOYPAD_ESP
+#define TFT_CLK   14
+#define TFT_MOSI  13
+#define TFT_MISO  -1
+#define TFT_CS    4
+#define TFT_DC    15  //0
+#define TFT_RST   -1   //15
+#define TFT_BL    2
+#define SPI_PORT  TFTSPI
+Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST);
+#else
+#define TFT_CLK   D13
+#define TFT_MOSI  D11
+#define TFT_MISO  -1
+#define TFT_CS     D5
+#define TFT_RST    -1  // you can also connect this to the Arduino reset
+#define TFT_DC     D4
+#define TFT_BL     D6
+#define SPI_PORT  SPI
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
+#endif
 
 void setup(void) {
   Serial.begin(9600);
 
-  // Our supplier changed the 1.8" display slightly after Jan 10, 2012
   // so that the alignment of the TFT had to be shifted by a few pixels
   // this just means the init code is slightly different. Check the
   // color of the tab to see which init code to try. If the display is
@@ -53,12 +59,11 @@ void setup(void) {
   // other option!
   // If you are seeing red and green color inversion, use Black Tab
 
-  // If your TFT's plastic wrap has a Black Tab, use the following:
-  tft.initR(INITR_BLACKTAB);   // initialize a ST7735S chip, black tab
-  // If your TFT's plastic wrap has a Red Tab, use the following:
-  //tft.initR(INITR_REDTAB);   // initialize a ST7735R chip, red tab
-  // If your TFT's plastic wrap has a Green Tab, use the following:
-  //tft.initR(INITR_GREENTAB); // initialize a ST7735R chip, green tab
+#ifdef ESP32
+  tft.begin(SPI_DEFAULT_FREQ, SPI_PORT);
+#else
+  tft.begin(SPI_DEFAULT_FREQ);
+#endif
 
   Serial.print("Initializing SD card...");
   if (!SD.begin(SD_CS)) {
@@ -90,7 +95,7 @@ void bmpDraw(char *filename, uint8_t x, uint8_t y) {
   uint8_t  bmpDepth;              // Bit depth (currently must be 24)
   uint32_t bmpImageoffset;        // Start of image data in file
   uint32_t rowSize;               // Not always = bmpWidth; may have padding
-  uint8_t  sdbuffer[3*BUFFPIXEL]; // pixel buffer (R+G+B per pixel)
+  uint8_t  sdbuffer[3 * BUFFPIXEL]; // pixel buffer (R+G+B per pixel)
   uint8_t  buffidx = sizeof(sdbuffer); // Current position in sdbuffer
   boolean  goodBmp = false;       // Set to true on valid header parse
   boolean  flip    = true;        // BMP is stored bottom-to-top
@@ -98,7 +103,7 @@ void bmpDraw(char *filename, uint8_t x, uint8_t y) {
   uint8_t  r, g, b;
   uint32_t pos = 0, startTime = millis();
 
-  if((x >= tft.width()) || (y >= tft.height())) return;
+  if ((x >= tft.width()) || (y >= tft.height())) return;
 
   Serial.println();
   Serial.print("Loading image '");
@@ -112,7 +117,7 @@ void bmpDraw(char *filename, uint8_t x, uint8_t y) {
   }
 
   // Parse BMP header
-  if(read16(bmpFile) == 0x4D42) { // BMP signature
+  if (read16(bmpFile) == 0x4D42) { // BMP signature
     Serial.print("File size: "); Serial.println(read32(bmpFile));
     (void)read32(bmpFile); // Read & ignore creator bytes
     bmpImageoffset = read32(bmpFile); // Start of image data
@@ -121,10 +126,10 @@ void bmpDraw(char *filename, uint8_t x, uint8_t y) {
     Serial.print("Header size: "); Serial.println(read32(bmpFile));
     bmpWidth  = read32(bmpFile);
     bmpHeight = read32(bmpFile);
-    if(read16(bmpFile) == 1) { // # planes -- must be '1'
+    if (read16(bmpFile) == 1) { // # planes -- must be '1'
       bmpDepth = read16(bmpFile); // bits per pixel
       Serial.print("Bit Depth: "); Serial.println(bmpDepth);
-      if((bmpDepth == 24) && (read32(bmpFile) == 0)) { // 0 = uncompressed
+      if ((bmpDepth == 24) && (read32(bmpFile) == 0)) { // 0 = uncompressed
 
         goodBmp = true; // Supported BMP format -- proceed!
         Serial.print("Image size: ");
@@ -137,7 +142,7 @@ void bmpDraw(char *filename, uint8_t x, uint8_t y) {
 
         // If bmpHeight is negative, image is in top-down order.
         // This is not canon but has been observed in the wild.
-        if(bmpHeight < 0) {
+        if (bmpHeight < 0) {
           bmpHeight = -bmpHeight;
           flip      = false;
         }
@@ -145,13 +150,13 @@ void bmpDraw(char *filename, uint8_t x, uint8_t y) {
         // Crop area to be loaded
         w = bmpWidth;
         h = bmpHeight;
-        if((x+w-1) >= tft.width())  w = tft.width()  - x;
-        if((y+h-1) >= tft.height()) h = tft.height() - y;
+        if ((x + w - 1) >= tft.width())  w = tft.width()  - x;
+        if ((y + h - 1) >= tft.height()) h = tft.height() - y;
 
         // Set TFT address window to clipped image bounds
-        tft.setAddrWindow(x, y, x+w-1, y+h-1);
+        tft.setAddrWindow(x, y, x + w - 1, y + h - 1);
 
-        for (row=0; row<h; row++) { // For each scanline...
+        for (row = 0; row < h; row++) { // For each scanline...
 
           // Seek to start of scan line.  It might seem labor-
           // intensive to be doing this on every line, but this
@@ -159,16 +164,16 @@ void bmpDraw(char *filename, uint8_t x, uint8_t y) {
           // and scanline padding.  Also, the seek only takes
           // place if the file position actually needs to change
           // (avoids a lot of cluster math in SD library).
-          if(flip) // Bitmap is stored bottom-to-top order (normal BMP)
+          if (flip) // Bitmap is stored bottom-to-top order (normal BMP)
             pos = bmpImageoffset + (bmpHeight - 1 - row) * rowSize;
           else     // Bitmap is stored top-to-bottom
             pos = bmpImageoffset + row * rowSize;
-          if(bmpFile.position() != pos) { // Need seek?
+          if (bmpFile.position() != pos) { // Need seek?
             bmpFile.seek(pos);
             buffidx = sizeof(sdbuffer); // Force buffer reload
           }
 
-          for (col=0; col<w; col++) { // For each pixel...
+          for (col = 0; col < w; col++) { // For each pixel...
             // Time to read more pixel data?
             if (buffidx >= sizeof(sdbuffer)) { // Indeed
               bmpFile.read(sdbuffer, sizeof(sdbuffer));
@@ -179,7 +184,7 @@ void bmpDraw(char *filename, uint8_t x, uint8_t y) {
             b = sdbuffer[buffidx++];
             g = sdbuffer[buffidx++];
             r = sdbuffer[buffidx++];
-            tft.pushColor(tft.Color565(r,g,b));
+            tft.pushColor(tft.color565(r, g, b));
           } // end pixel
         } // end scanline
         Serial.print("Loaded in ");
@@ -190,7 +195,7 @@ void bmpDraw(char *filename, uint8_t x, uint8_t y) {
   }
 
   bmpFile.close();
-  if(!goodBmp) Serial.println("BMP format not recognized.");
+  if (!goodBmp) Serial.println("BMP format not recognized.");
 }
 
 // These read 16- and 32-bit types from the SD card file.
