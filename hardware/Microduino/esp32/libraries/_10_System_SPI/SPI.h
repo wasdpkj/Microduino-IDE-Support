@@ -81,5 +81,6 @@ public:
 };
 
 extern SPIClass SPI;
+extern SPIClass TFTSPI;
 
 #endif
