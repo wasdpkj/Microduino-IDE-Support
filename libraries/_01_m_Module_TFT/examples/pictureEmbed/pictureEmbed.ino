@@ -68,6 +68,8 @@ void setup() {
 #else
   tft.begin(SPI_DEFAULT_FREQ);
 #endif
+  pinMode(TFT_BL, OUTPUT);
+  digitalWrite(TFT_BL, HIGH);
 }
 
 void loop(void) {

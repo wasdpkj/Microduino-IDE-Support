@@ -1,6 +1,8 @@
 #ifndef _ADAFRUIT_SPITFT_MACROS
 #define _ADAFRUIT_SPITFT_MACROS
 
+#include <SPI.h>
+
 /*
  * Control Pins
  * */

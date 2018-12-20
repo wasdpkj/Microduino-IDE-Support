@@ -58,7 +58,9 @@ void setup(void) {
 #else
   tft.begin(SPI_DEFAULT_FREQ);
 #endif
-
+  pinMode(TFT_BL, OUTPUT);
+  digitalWrite(TFT_BL, HIGH);
+  
   Serial.println("Initialized");
 
   uint16_t time = millis();

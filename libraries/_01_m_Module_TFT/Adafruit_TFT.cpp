@@ -640,7 +640,9 @@ void Adafruit_TFT::setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h)
     @param   color 16-bits of 5-6-5 color data
 /**************************************************************************/
 void Adafruit_TFT::pushColor(uint16_t color) {
-    SPI_WRITE16(color);
+	startWrite();
+	SPI_WRITE16(color);
+	endWrite();
 }
 
 /**************************************************************************/
@@ -672,37 +674,34 @@ void Adafruit_TFT::writePixels(uint16_t * colors, uint32_t len){
 */
 /**************************************************************************/
 void Adafruit_TFT::writeColor(uint16_t color, uint32_t len){
+	if(!len) return; // Avoid 0-byte transfers
+
+	uint8_t hi = color >> 8, lo = color;
+	
 #ifdef SPI_HAS_WRITE_PIXELS
-    if(_sclk >= 0){
-        for (uint32_t t=0; t<len; t++){
-            writePixel(color);
-        }
-        return;
-    }
-    static uint16_t temp[SPI_MAX_PIXELS_AT_ONCE];
-    size_t blen = (len > SPI_MAX_PIXELS_AT_ONCE)?SPI_MAX_PIXELS_AT_ONCE:len;
-    uint16_t tlen = 0;
+    #define TMPBUF_LONGWORDS (SPI_MAX_PIXELS_AT_ONCE + 1) / 2
+    #define TMPBUF_PIXELS    (TMPBUF_LONGWORDS * 2)
+    static uint32_t temp[TMPBUF_LONGWORDS];
+    uint32_t        c32    = color * 0x00010001;
+    uint16_t        bufLen = (len < TMPBUF_PIXELS) ? len : TMPBUF_PIXELS,
+                    xferLen, fillLen;
 
-    for (uint32_t t=0; t<blen; t++){
-        temp[t] = color;
+    // Fill temp buffer 32 bits at a time
+    fillLen = (bufLen + 1) / 2; // Round up to next 32-bit boundary
+    for(uint32_t t=0; t<fillLen; t++) {
+        temp[t] = c32;
     }
 
-    while(len){
-        tlen = (len>blen)?blen:len;
-        writePixels(temp, tlen);
-        len -= tlen;
+    // Issue pixels in blocks from temp buffer
+    while(len) {                                 // While pixels remain
+        xferLen = (bufLen < len) ? bufLen : len; // How many this pass?
+        writePixels((uint16_t *)temp, xferLen);
+        len -= xferLen;
     }
 #else
-    uint8_t hi = color >> 8, lo = color;
- //AVR Optimization
-    for (uint32_t t=len; t; t--){
+    while(len--) {
         HSPI_WRITE(hi);
         HSPI_WRITE(lo);
-    }
-    return;
-    for (uint32_t t=len; t; t--){
-        spiWrite(hi);
-        spiWrite(lo);
     }
 #endif
 }

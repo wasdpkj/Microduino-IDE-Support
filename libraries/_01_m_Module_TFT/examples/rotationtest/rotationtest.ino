@@ -55,7 +55,9 @@ void setup(void) {
 #else
   tft.begin(SPI_DEFAULT_FREQ);
 #endif
-
+  pinMode(TFT_BL, OUTPUT);
+  digitalWrite(TFT_BL, HIGH);
+  
   Serial.println("init");
 
   tft.setTextWrap(false); // Allow text to run off right edge

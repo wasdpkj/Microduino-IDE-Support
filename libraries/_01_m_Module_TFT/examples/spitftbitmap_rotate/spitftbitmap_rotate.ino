@@ -64,6 +64,8 @@ void setup(void) {
 #else
   tft.begin(SPI_DEFAULT_FREQ);
 #endif
+  pinMode(TFT_BL, OUTPUT);
+  digitalWrite(TFT_BL, HIGH);
 
   Serial.print("Initializing SD card...");
   if (!SD.begin(SD_CS)) {
