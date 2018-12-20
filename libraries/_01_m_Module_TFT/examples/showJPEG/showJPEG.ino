@@ -1,6 +1,7 @@
-// Include the sketch header file that contains the image stored as an array of bytes
-// More than one image array could be stored in each header file.
-#include "jpeg1.h"
+//JPEGDecoder库： https://github.com/MakotoKurauchi/JPEGDecoder
+//JPEG转hex工具：https://www.microduino.cn/wiki/index.php/File:DataToHex.zip
+
+#include "jpegFile.h"
 
 // JPEG decoder library
 #include <JPEGDecoder.h>
@@ -55,10 +56,10 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 //====================================================================================
 void setup()
 {
-  Serial.begin(115200); // Used for messages and the C array generator
+  Serial.begin(9600); // Used for messages and the C array generator
 
   delay(10);
-  Serial.println("JPEG decoder test!");
+  Serial.println(F("JPEG decoder test!"));
 
 #ifdef ESP32
   tft.begin(SPI_DEFAULT_FREQ, SPI_PORT);
@@ -71,7 +72,7 @@ void setup()
   //  tft.setRotation(0);  // 0 & 2 Portrait. 1 & 3 landscape
   tft.fillScreen(BACKGROUNT_COLOR);
 
-  Serial.println("\r\nInitialisation done.");
+  Serial.println(F("\r\nInitialisation done."));
 }
 
 //====================================================================================
@@ -86,12 +87,13 @@ void loop() {
   tft.fillScreen(BACKGROUNT_COLOR);
 
   // Draw a jpeg image stored in memory
-  drawArrayJpeg(Baboon, sizeof(Baboon), 0, 0);
-  Serial.print("file Sizeof:");
-  Serial.print(sizeof(Baboon));
-  Serial.print("byte,");
-  Serial.print(sizeof(Baboon) / 1024.0);
-  Serial.print("Kbyte");
+  drawArrayJpeg(jpeg_File1, sizeof(jpeg_File1), 0, 0);
+
+  Serial.print(F("file Sizeof:"));
+  Serial.print(sizeof(jpeg_File1));
+  Serial.print(F("byte,"));
+  Serial.print(sizeof(jpeg_File1) / 1024.0);
+  Serial.print(F("Kbyte"));
   Serial.println();
 
   // calculate how long it took to draw the image
