@@ -1,4 +1,4 @@
-#include "Microduino_AI.h"
+#include "Microduino_Ai.h"
 
 // 参数说明:  
 // in， 源字符串  
