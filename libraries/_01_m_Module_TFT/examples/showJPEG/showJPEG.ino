@@ -10,8 +10,6 @@
 #include <Adafruit_TFT.h> // Hardware-specific library
 #include <SPI.h>
 
-#define BACKGROUNT_COLOR tft.color565(10, 10, 10)
-
 //#define BOARD_TYPE JOYPAD_ESP
 //#define BOARD_TYPE MICROBIT_ESP
 
@@ -56,9 +54,7 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 //====================================================================================
 void setup()
 {
-  Serial.begin(9600); // Used for messages and the C array generator
-
-  delay(10);
+  Serial.begin(115200); // Used for messages and the C array generator
   Serial.println(F("JPEG decoder test!"));
 
 #ifdef ESP32
@@ -70,7 +66,7 @@ void setup()
   digitalWrite(TFT_BL, HIGH);
 
   //  tft.setRotation(0);  // 0 & 2 Portrait. 1 & 3 landscape
-  tft.fillScreen(BACKGROUNT_COLOR);
+  tft.fillScreen(TFT_BLACK);
 
   Serial.println(F("\r\nInitialisation done."));
 }
@@ -84,7 +80,7 @@ void loop() {
   uint32_t clearTime = millis();
 
   //  tft.setRotation(0);  // portrait
-  tft.fillScreen(BACKGROUNT_COLOR);
+  tft.fillScreen(TFT_BLACK);
 
   // Draw a jpeg image stored in memory
   drawArrayJpeg(jpeg_File1, sizeof(jpeg_File1), 0, 0);

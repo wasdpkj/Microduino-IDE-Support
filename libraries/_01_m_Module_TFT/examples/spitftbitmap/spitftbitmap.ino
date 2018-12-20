@@ -8,7 +8,7 @@
 #include <SPI.h>
 #include <SD.h>
 
-#define SD_CS    7  // Chip select line for SD card
+#define SD_CS    D7  // Chip select line for SD card
 
 //#define BOARD_TYPE JOYPAD_ESP
 //#define BOARD_TYPE MICROBIT_ESP
@@ -50,7 +50,7 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 #endif
 
 void setup(void) {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   // so that the alignment of the TFT had to be shifted by a few pixels
   // this just means the init code is slightly different. Check the

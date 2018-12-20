@@ -147,7 +147,9 @@ void drawBMP(int16_t x, int16_t y, const uint8_t *bitmap) {
 
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
+  Serial.println(F("BOM decoder test!"));
+
 #ifdef ESP32
   tft.begin(SPI_DEFAULT_FREQ, SPI_PORT);
 #else

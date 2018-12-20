@@ -63,6 +63,9 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 #endif
 
 void setup() {
+  Serial.begin(115200);
+  Serial.print("Hello! TFT Test");
+
 #ifdef ESP32
   tft.begin(SPI_DEFAULT_FREQ, SPI_PORT);
 #else

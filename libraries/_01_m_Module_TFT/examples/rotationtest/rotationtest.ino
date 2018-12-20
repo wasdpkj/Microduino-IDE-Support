@@ -47,7 +47,7 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 #endif
 
 void setup(void) {
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.print("Hello! TFT Test");
 
 #ifdef ESP32
@@ -57,7 +57,7 @@ void setup(void) {
 #endif
   pinMode(TFT_BL, OUTPUT);
   digitalWrite(TFT_BL, HIGH);
-  
+
   Serial.println("init");
 
   tft.setTextWrap(false); // Allow text to run off right edge
