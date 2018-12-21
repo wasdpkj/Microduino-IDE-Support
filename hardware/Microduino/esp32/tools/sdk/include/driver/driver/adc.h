@@ -113,6 +113,19 @@ typedef enum {
 } adc_i2s_source_t;
 
 /**
+ * @brief Get the gpio number of a specific ADC1 channel.
+ * 
+ * @param channel Channel to get the gpio number
+ * 
+ * @param gpio_num output buffer to hold the gpio number
+ * 
+ * @return 
+ *   - ESP_OK if success
+ *   - ESP_ERR_INVALID_ARG if channal not valid 
+ */
+esp_err_t adc1_pad_get_io_num(adc1_channel_t channel, gpio_num_t *gpio_num);
+
+/**
  * @brief Configure ADC1 capture width, meanwhile enable output invert for ADC1.
  * The configuration is for all channels of ADC1
  * @param width_bit Bit capture width for ADC1
@@ -134,11 +147,15 @@ esp_err_t adc1_config_width(adc_bits_width_t width_bit);
 esp_err_t adc_set_data_width(adc_unit_t adc_unit, adc_bits_width_t width_bit);
 
 /**
- * @brief Configure the ADC1 channel, including setting attenuation.
+ * @brief Set the attenuation of a particular channel on ADC1, and configure its
+ * associated GPIO pin mux.
  *
- * @note This function also configures the input GPIO pin mux to
- * connect it to the ADC1 channel. It must be called before calling
- * adc1_get_raw() for this channel.
+ * @note For any given channel, this function must be called before the first time
+ * adc1_get_raw() is called for that channel.
+ *
+ * @note This function can be called multiple times to configure multiple
+ * ADC channels simultaneously. adc1_get_raw() can then be called for any configured
+ * channel.
  *
  * The default ADC full-scale voltage is 1.1V. To read higher voltages (up to the pin maximum voltage,
  * usually 3.3V) requires setting >0dB signal attenuation for that ADC channel.
@@ -155,6 +172,15 @@ esp_err_t adc_set_data_width(adc_unit_t adc_unit, adc_bits_width_t width_bit);
  *
  * @note At 11dB attenuation the maximum voltage is limited by VDD_A, not the full scale voltage.
  *
+ * Due to ADC characteristics, most accurate results are obtained within the following approximate voltage ranges:
+ *
+ * - 0dB attenuaton (ADC_ATTEN_DB_0) between 100 and 950mV
+ * - 2.5dB attenuation (ADC_ATTEN_DB_2_5) between 100 and 1250mV
+ * - 6dB attenuation (ADC_ATTEN_DB_6) between 150 to 1750mV
+ * - 11dB attenuation (ADC_ATTEN_DB_11) between 150 to 2450mV
+ *
+ * For maximum accuracy, use the ADC calibration APIs and measure voltages within these recommended ranges.
+ *
  * @param channel ADC1 channel to configure
  * @param atten  Attenuation level
  *
@@ -165,13 +191,18 @@ esp_err_t adc_set_data_width(adc_unit_t adc_unit, adc_bits_width_t width_bit);
 esp_err_t adc1_config_channel_atten(adc1_channel_t channel, adc_atten_t atten);
 
 /**
- * @brief Take an ADC1 reading on a single channel
+ * @brief Take an ADC1 reading from a single channel.
+ * @note When the power switch of SARADC1, SARADC2, HALL sensor and AMP sensor is turned on,
+ *       the input of GPIO36 and GPIO39 will be pulled down for about 80ns.
+ *       When enabling power for any of these peripherals, ignore input from GPIO36 and GPIO39.
+ *       Please refer to section 3.11 of 'ECO_and_Workarounds_for_Bugs_in_ESP32' for the description of this issue.
  *
  * @note Call adc1_config_width() before the first time this
  * function is called.
  *
- * @note For a given channel, adc1_config_channel_atten(channel)
- * must be called before the first time this function is called.
+ * @note For any given channel, adc1_config_channel_atten(channel)
+ * must be called before the first time this function is called. Configuring
+ * a new channel does not prevent a previously configured channel from being read.
  *
  * @param  channel ADC1 channel to read
  *
@@ -183,6 +214,11 @@ int adc1_get_raw(adc1_channel_t channel);
 
 /** @cond */    //Doxygen command to hide deprecated function from API Reference
 /*
+ * @note When the power switch of SARADC1, SARADC2, HALL sensor and AMP sensor is turned on,
+ *       the input of GPIO36 and GPIO39 will be pulled down for about 80ns.
+ *       When enabling power for any of these peripherals, ignore input from GPIO36 and GPIO39.
+ *       Please refer to section 3.11 of 'ECO_and_Workarounds_for_Bugs_in_ESP32' for the description of this issue.
+ *       
  * @deprecated This function returns an ADC1 reading but is deprecated due to
  * a misleading name and has been changed to directly call the new function.
  * Use the new function adc1_get_raw() instead
@@ -191,12 +227,13 @@ int adc1_get_voltage(adc1_channel_t channel) __attribute__((deprecated));
 /** @endcond */
 
 /**
- * @brief Power on SAR ADC
+ * @brief Enable ADC power
  */
 void adc_power_on();
 
 /**
  * @brief Power off SAR ADC
+ * This function will force power down for ADC
  */
 void adc_power_off();
 
@@ -260,6 +297,11 @@ void adc1_ulp_enable();
 /**
  * @brief Read Hall Sensor
  *
+ * @note When the power switch of SARADC1, SARADC2, HALL sensor and AMP sensor is turned on,
+ *       the input of GPIO36 and GPIO39 will be pulled down for about 80ns.
+ *       When enabling power for any of these peripherals, ignore input from GPIO36 and GPIO39.
+ *       Please refer to section 3.11 of 'ECO_and_Workarounds_for_Bugs_in_ESP32' for the description of this issue.
+ *
  * @note The Hall Sensor uses channels 0 and 3 of ADC1. Do not configure
  * these channels for use as ADC channels.
  *
@@ -272,6 +314,75 @@ void adc1_ulp_enable();
  * @return The hall sensor reading.
  */
 int hall_sensor_read();
+
+/**
+ * @brief Get the gpio number of a specific ADC2 channel.
+ * 
+ * @param channel Channel to get the gpio number
+ * 
+ * @param gpio_num output buffer to hold the gpio number
+ * 
+ * @return 
+ *   - ESP_OK if success
+ *   - ESP_ERR_INVALID_ARG if channal not valid 
+ */
+esp_err_t adc2_pad_get_io_num(adc2_channel_t channel, gpio_num_t *gpio_num);
+
+/**
+ * @brief Configure the ADC2 channel, including setting attenuation.
+ *
+ * @note This function also configures the input GPIO pin mux to
+ * connect it to the ADC2 channel. It must be called before calling
+ * ``adc2_get_raw()`` for this channel.
+ *
+ * The default ADC full-scale voltage is 1.1V. To read higher voltages (up to the pin maximum voltage,
+ * usually 3.3V) requires setting >0dB signal attenuation for that ADC channel.
+ *
+ * When VDD_A is 3.3V:
+ *
+ * - 0dB attenuaton (ADC_ATTEN_0db) gives full-scale voltage 1.1V
+ * - 2.5dB attenuation (ADC_ATTEN_2_5db) gives full-scale voltage 1.5V
+ * - 6dB attenuation (ADC_ATTEN_6db) gives full-scale voltage 2.2V
+ * - 11dB attenuation (ADC_ATTEN_11db) gives full-scale voltage 3.9V (see note below)
+ *
+ * @note The full-scale voltage is the voltage corresponding to a maximum reading 
+ * (depending on ADC2 configured bit width, this value is: 4095 for 12-bits, 2047 
+ * for 11-bits, 1023 for 10-bits, 511 for 9 bits.)
+ *
+ * @note At 11dB attenuation the maximum voltage is limited by VDD_A, not the full scale voltage.
+ *
+ * @param channel ADC2 channel to configure
+ * @param atten  Attenuation level
+ *
+ * @return
+ *     - ESP_OK success
+ *     - ESP_ERR_INVALID_ARG Parameter error
+ */
+esp_err_t adc2_config_channel_atten(adc2_channel_t channel, adc_atten_t atten);
+
+/**
+ * @brief Take an ADC2 reading on a single channel
+ *
+ * @note When the power switch of SARADC1, SARADC2, HALL sensor and AMP sensor is turned on,
+ *       the input of GPIO36 and GPIO39 will be pulled down for about 80ns.
+ *       When enabling power for any of these peripherals, ignore input from GPIO36 and GPIO39.
+ *       Please refer to section 3.11 of 'ECO_and_Workarounds_for_Bugs_in_ESP32' for the description of this issue.
+ *
+ * @note For a given channel, ``adc2_config_channel_atten()``
+ * must be called before the first time this function is called. If Wi-Fi is started via ``esp_wifi_start()``, this
+ * function will always fail with ``ESP_ERR_TIMEOUT``.
+ *
+ * @param  channel ADC2 channel to read
+ * 
+ * @param width_bit Bit capture width for ADC2
+ * 
+ * @param raw_out the variable to hold the output data.
+ *
+ * @return
+ *     - ESP_OK if success
+ *     - ESP_ERR_TIMEOUT the WIFI is started, using the ADC2
+ */
+esp_err_t adc2_get_raw(adc2_channel_t channel, adc_bits_width_t width_bit, int* raw_out);
 
 /**
  *  @brief Output ADC2 reference voltage to gpio 25 or 26 or 27

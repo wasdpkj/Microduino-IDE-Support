@@ -33,6 +33,7 @@ extern "C" {
 #include <string.h>
 #include <math.h>
 #include "sdkconfig.h"
+#include "esp_system.h"
 
 #ifndef F_CPU
 #define F_CPU (CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ * 1000000U)
@@ -56,13 +57,29 @@ void yield(void);
 #include "esp32-hal-spi.h"
 #include "esp32-hal-i2c.h"
 #include "esp32-hal-ledc.h"
+#include "esp32-hal-rmt.h"
 #include "esp32-hal-sigmadelta.h"
 #include "esp32-hal-timer.h"
 #include "esp32-hal-bt.h"
-#include "esp_system.h"
+#include "esp32-hal-psram.h"
+
+#ifndef BOARD_HAS_PSRAM
+#ifdef CONFIG_SPIRAM_SUPPORT
+#undef CONFIG_SPIRAM_SUPPORT
+#endif
+#endif
 
 //returns chip temperature in Celsius
 float temperatureRead();
+
+//function takes the following frequencies as valid values:
+//  240, 160, 80                     <<< For all XTAL types
+//  40, 20, 13, 10, 8, 5, 4, 3, 2, 1 <<< For 40MHz XTAL
+//  26, 13, 5, 4, 3, 2, 1            <<< For 26MHz XTAL
+//  24, 12, 8, 6, 4, 3, 2, 1         <<< For 24MHz XTAL
+bool setCpuFrequency(uint32_t cpu_freq_mhz);
+uint32_t getCpuFrequency();
+uint32_t getApbFrequency();
 
 unsigned long micros();
 unsigned long millis();

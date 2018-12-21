@@ -212,6 +212,7 @@ public:
     unsigned char operator <=(const String &rhs) const;
     unsigned char operator >=(const String &rhs) const;
     unsigned char equalsIgnoreCase(const String &s) const;
+    unsigned char equalsConstantTime(const String &s) const;
     unsigned char startsWith(const String &prefix) const;
     unsigned char startsWith(const String &prefix, unsigned int offset) const;
     unsigned char endsWith(const String &suffix) const;
@@ -259,6 +260,7 @@ public:
     // parsing/conversion
     long toInt(void) const;
     float toFloat(void) const;
+    double toDouble(void) const;
 
 protected:
     char *buffer;	        // the actual char array

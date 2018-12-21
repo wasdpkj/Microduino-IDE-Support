@@ -37,9 +37,14 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/fcntl.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/select.h>
 #include "esp_task.h"
 #include "esp_system.h"
 #include "sdkconfig.h"
+
+#include "netif/dhcp_state.h"
 
 /* Enable all Espressif-only options */
 
@@ -111,26 +116,26 @@
  * MEMP_NUM_RAW_PCB: Number of raw connection PCBs
  * (requires the LWIP_RAW option)
  */
-#define MEMP_NUM_RAW_PCB                16
+#define MEMP_NUM_RAW_PCB                CONFIG_LWIP_MAX_RAW_PCBS
 
 /**
- * MEMP_NUM_TCP_PCB: the number of simulatenously active TCP connections.
+ * MEMP_NUM_TCP_PCB: the number of simultaneously active TCP connections.
  * (requires the LWIP_TCP option)
  */
-#define MEMP_NUM_TCP_PCB                16
+#define MEMP_NUM_TCP_PCB                CONFIG_LWIP_MAX_ACTIVE_TCP
 
 /**
  * MEMP_NUM_TCP_PCB_LISTEN: the number of listening TCP connections.
  * (requires the LWIP_TCP option)
  */
-#define MEMP_NUM_TCP_PCB_LISTEN         16
+#define MEMP_NUM_TCP_PCB_LISTEN         CONFIG_LWIP_MAX_LISTENING_TCP
 
 /**
  * MEMP_NUM_UDP_PCB: the number of UDP protocol control blocks. One
  * per active UDP "connection".
  * (requires the LWIP_UDP option)
  */
-#define MEMP_NUM_UDP_PCB                16
+#define MEMP_NUM_UDP_PCB                CONFIG_LWIP_MAX_UDP_PCBS
 
 /*
    --------------------------------
@@ -217,6 +222,19 @@
  */
 #define DHCP_DOES_ARP_CHECK             CONFIG_LWIP_DHCP_DOES_ARP_CHECK
 
+
+/**
+ * CONFIG_LWIP_DHCP_RESTORE_LAST_IP==1: Last valid IP address obtained from DHCP server
+ * is restored after reset/power-up.
+ */
+#if CONFIG_LWIP_DHCP_RESTORE_LAST_IP
+
+#define LWIP_DHCP_IP_ADDR_RESTORE()     dhcp_ip_addr_restore(netif)
+#define LWIP_DHCP_IP_ADDR_STORE()       dhcp_ip_addr_store(netif)
+#define LWIP_DHCP_IP_ADDR_ERASE()       dhcp_ip_addr_erase(esp_netif[tcpip_if])
+
+#endif
+
 /*
    ------------------------------------
    ---------- AUTOIP options ----------
@@ -293,6 +311,12 @@
  */
 #define TCP_QUEUE_OOSEQ                 CONFIG_TCP_QUEUE_OOSEQ
 
+/**
+ * ESP_TCP_KEEP_CONNECTION_WHEN_IP_CHANGES==1: Keep TCP connection when IP changed
+ * scenario happens: 192.168.0.2 -> 0.0.0.0 -> 192.168.0.2 or 192.168.0.2 -> 0.0.0.0
+ */
+
+#define ESP_TCP_KEEP_CONNECTION_WHEN_IP_CHANGES  CONFIG_ESP_TCP_KEEP_CONNECTION_WHEN_IP_CHANGES 
 /*
  *     LWIP_EVENT_API==1: The user defines lwip_tcp_event() to receive all
  *         events (accept, sent, etc) that happen in the system.
@@ -617,7 +641,6 @@
    ---------------------------------------
 */
 #define LWIP_HOOK_IP4_ROUTE_SRC         ip4_route_src_hook
-
 /*
    ---------------------------------------
    ---------- Debugging options ----------
@@ -697,18 +720,21 @@
  */
 #define LWIP_POSIX_SOCKETS_IO_NAMES     0
 
-
 /**
- * Socket offset is also determined via the VFS layer at
- * filesystem registration time (see port/vfs_lwip.c)
+ * FD_SETSIZE from sys/types.h is the maximum number of supported file
+ * descriptors and CONFIG_LWIP_MAX_SOCKETS defines the number of sockets;
+ * LWIP_SOCKET_OFFSET is configured to use the largest numbers of file
+ * descriptors for sockets. File descriptors from 0 to LWIP_SOCKET_OFFSET-1
+ * are non-socket descriptors and from LWIP_SOCKET_OFFSET to FD_SETSIZE are
+ * socket descriptors.
  */
-#define LWIP_SOCKET_OFFSET              lwip_socket_offset
+#define LWIP_SOCKET_OFFSET              (FD_SETSIZE - CONFIG_LWIP_MAX_SOCKETS)
 
 /* Enable all Espressif-only options */
 
 #define ESP_LWIP                        1
 #define ESP_LWIP_ARP                    1
-#define ESP_PER_SOC_TCP_WND             1
+#define ESP_PER_SOC_TCP_WND             0
 #define ESP_THREAD_SAFE                 1
 #define ESP_THREAD_SAFE_DEBUG           LWIP_DBG_OFF
 #define ESP_DHCP                        1
@@ -723,11 +749,18 @@
 #define ESP_STATS_DROP                  CONFIG_LWIP_STATS
 #define ESP_STATS_TCP                   0
 #define ESP_DHCP_TIMER                  1
+#define ESP_DHCPS_TIMER                 1
 #define ESP_LWIP_LOGI(...)              ESP_LOGI("lwip", __VA_ARGS__)
 #define ESP_PING                        1
+#define ESP_HAS_SELECT                  1
+#define ESP_AUTO_RECV                   1
+#define ESP_GRATUITOUS_ARP              CONFIG_ESP_GRATUITOUS_ARP
 
-#define TCP_WND_DEFAULT                 CONFIG_TCP_WND_DEFAULT
-#define TCP_SND_BUF_DEFAULT             CONFIG_TCP_SND_BUF_DEFAULT
+#if CONFIG_LWIP_IRAM_OPTIMIZATION
+#define ESP_IRAM_ATTR                   IRAM_ATTR
+#else
+#define ESP_IRAM_ATTR                   
+#endif
 
 #if ESP_PERF
 #define DBG_PERF_PATH_SET(dir, point)
@@ -753,9 +786,18 @@ enum {
 #define DBG_PERF_FILTER_LEN             1000
 #endif
 
+#define TCP_SND_BUF                     CONFIG_TCP_SND_BUF_DEFAULT
+#define TCP_WND                         CONFIG_TCP_WND_DEFAULT
+
 #if ESP_PER_SOC_TCP_WND
+#define TCP_WND_DEFAULT                 CONFIG_TCP_WND_DEFAULT
+#define TCP_SND_BUF_DEFAULT             CONFIG_TCP_SND_BUF_DEFAULT
 #define TCP_WND(pcb)                    (pcb->per_soc_tcp_wnd)
 #define TCP_SND_BUF(pcb)                (pcb->per_soc_tcp_snd_buf)
+#define TCP_SND_QUEUELEN(pcb)           ((4 * (TCP_SND_BUF((pcb))) + (TCP_MSS - 1))/(TCP_MSS))
+#define TCP_SNDLOWAT(pcb)               LWIP_MIN(LWIP_MAX(((TCP_SND_BUF((pcb)))/2), (2 * TCP_MSS) + 1), (TCP_SND_BUF((pcb))) - 1)
+#define TCP_SNDQUEUELOWAT(pcb)          LWIP_MAX(((TCP_SND_QUEUELEN((pcb)))/2), 5)
+#define TCP_WND_UPDATE_THRESHOLD(pcb)   LWIP_MIN((TCP_WND((pcb)) / 4), (TCP_MSS * 4))
 #endif
 
 /**

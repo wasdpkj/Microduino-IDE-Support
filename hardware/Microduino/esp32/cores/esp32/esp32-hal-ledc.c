@@ -68,8 +68,8 @@ static void _ledcSetupTimer(uint8_t chan, uint32_t div_num, uint8_t bit_num, boo
 #endif
     }
     LEDC_MUTEX_LOCK();
-    LEDC_TIMER(group, timer).conf.div_num = div_num;//18 bit (10.8) This register is used to configure parameter for divider in timer the least significant eight bits represent the decimal part.
-    LEDC_TIMER(group, timer).conf.bit_num = bit_num;//5 bit This register controls the range of the counter in timer. the counter range is [0 2**bit_num] the max bit width for counter is 20.
+    LEDC_TIMER(group, timer).conf.clock_divider = div_num;//18 bit (10.8) This register is used to configure parameter for divider in timer the least significant eight bits represent the decimal part.
+    LEDC_TIMER(group, timer).conf.duty_resolution = bit_num;//5 bit This register controls the range of the counter in timer. the counter range is [0 2**bit_num] the max bit width for counter is 20.
     LEDC_TIMER(group, timer).conf.tick_sel = apb_clk;//apb clock
     if(group) {
         LEDC_TIMER(group, timer).conf.low_speed_update = 1;//This bit is only useful for low speed timer channels, reserved for high speed timers
@@ -84,7 +84,7 @@ static void _ledcSetupTimer(uint8_t chan, uint32_t div_num, uint8_t bit_num, boo
 //max bit_num 0x1F (31)
 static double _ledcSetupTimerFreq(uint8_t chan, double freq, uint8_t bit_num)
 {
-    uint64_t clk_freq = APB_CLK_FREQ;
+    uint64_t clk_freq = getApbFrequency();
     clk_freq <<= 8;//div_num is 8 bit decimal
     uint32_t div_num = (clk_freq >> bit_num) / freq;
     bool apb_clk = true;
@@ -111,13 +111,13 @@ static double _ledcTimerRead(uint8_t chan)
     bool apb_clk;
     uint8_t group=(chan/8), timer=((chan/2)%4);
     LEDC_MUTEX_LOCK();
-    div_num = LEDC_TIMER(group, timer).conf.div_num;//18 bit (10.8) This register is used to configure parameter for divider in timer the least significant eight bits represent the decimal part.
-    bit_num = LEDC_TIMER(group, timer).conf.bit_num;//5 bit This register controls the range of the counter in timer. the counter range is [0 2**bit_num] the max bit width for counter is 20.
+    div_num = LEDC_TIMER(group, timer).conf.clock_divider;//18 bit (10.8) This register is used to configure parameter for divider in timer the least significant eight bits represent the decimal part.
+    bit_num = LEDC_TIMER(group, timer).conf.duty_resolution;//5 bit This register controls the range of the counter in timer. the counter range is [0 2**bit_num] the max bit width for counter is 20.
     apb_clk = LEDC_TIMER(group, timer).conf.tick_sel;//apb clock
     LEDC_MUTEX_UNLOCK();
     uint64_t clk_freq = 1000000;
     if(apb_clk) {
-        clk_freq *= 80;
+        clk_freq = getApbFrequency();
     }
     clk_freq <<= 8;//div_num is 8 bit decimal
     return (clk_freq >> bit_num) / (double)div_num;
@@ -228,7 +228,6 @@ double ledcWriteNote(uint8_t chan, note_t note, uint8_t octave){
 
 void ledcAttachPin(uint8_t pin, uint8_t chan)
 {
-    if(pin > 5 && pin < 12) return;	//6 7 8 9 10 11 FLASH PIN
     if(chan > 15) {
         return;
     }
@@ -238,6 +237,5 @@ void ledcAttachPin(uint8_t pin, uint8_t chan)
 
 void ledcDetachPin(uint8_t pin)
 {
-    if(pin > 5 && pin < 12) return;	//6 7 8 9 10 11 FLASH PIN
     pinMatrixOutDetach(pin, false, false);
 }

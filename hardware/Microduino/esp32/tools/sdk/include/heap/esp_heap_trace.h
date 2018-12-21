@@ -17,6 +17,10 @@
 #include <stdint.h>
 #include <esp_err.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if !defined(CONFIG_HEAP_TRACING) && !defined(HEAP_TRACE_SRCFILE)
 #warning "esp_heap_trace.h is included but heap tracing is disabled in menuconfig, functions are no-ops"
 #endif
@@ -34,7 +38,7 @@ typedef enum {
  * @brief Trace record data type. Stores information about an allocated region of memory.
  */
 typedef struct {
-    uint32_t ccount; ///< CCOUNT of the CPU when the allocation was made. LSB (bit value 1) is the CPU number (0 or 1). */
+    uint32_t ccount; ///< CCOUNT of the CPU when the allocation was made. LSB (bit value 1) is the CPU number (0 or 1).
     void *address;   ///< Address which was allocated
     size_t size;     ///< Size of the allocation
     void *alloced_by[CONFIG_HEAP_TRACING_STACK_DEPTH]; ///< Call stack of the caller which allocated the memory.
@@ -134,3 +138,7 @@ esp_err_t heap_trace_get(size_t index, heap_trace_record_t *record);
  *
  */
 void heap_trace_dump(void);
+
+#ifdef __cplusplus
+}
+#endif

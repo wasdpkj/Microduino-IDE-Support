@@ -1,4 +1,4 @@
-// Copyright 2016 Espressif Systems (Shanghai) PTE LTD
+// Copyright 2016-2018 Espressif Systems (Shanghai) PTE LTD
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,11 +17,14 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include "esp_err.h"
+#include "soc/soc.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#define ULP_FSM_PREPARE_SLEEP_CYCLES 2    /*!< Cycles spent by FSM preparing ULP for sleep */
+#define ULP_FSM_WAKEUP_SLEEP_CYCLES  2    /*!< Cycles spent by FSM waking up ULP from sleep */
 
 /**
  * @defgroup ulp_registers ULP coprocessor registers
@@ -50,6 +53,7 @@ extern "C" {
 #define RD_REG_PERIPH_RTC_CNTL 0    /*!< Identifier of RTC_CNTL peripheral for RD_REG and WR_REG instructions */
 #define RD_REG_PERIPH_RTC_IO   1    /*!< Identifier of RTC_IO peripheral for RD_REG and WR_REG instructions */
 #define RD_REG_PERIPH_SENS     2    /*!< Identifier of SARADC peripheral for RD_REG and WR_REG instructions */
+#define RD_REG_PERIPH_RTC_I2C  3    /*!< Identifier of RTC_I2C peripheral for RD_REG and WR_REG instructions */
 
 #define OPCODE_I2C 3            /*!< Instruction: read/write I2C (not implemented yet) */
 
@@ -266,9 +270,9 @@ _Static_assert(sizeof(ulp_insn_t) == 4, "ULP coprocessor instruction size should
  * Delay (nop) for a given number of cycles
  */
 #define I_DELAY(cycles_) { .delay = {\
-    .opcode = OPCODE_DELAY, \
+    .cycles = cycles_, \
     .unused = 0, \
-    .cycles = cycles_ } }
+    .opcode = OPCODE_DELAY } }
 
 /**
  * Halt the coprocessor.
@@ -286,7 +290,7 @@ _Static_assert(sizeof(ulp_insn_t) == 4, "ULP coprocessor instruction size should
  * Map SoC peripheral register to periph_sel field of RD_REG and WR_REG
  * instructions.
  *
- * @param reg peripheral register in RTC_CNTL_, RTC_IO_, SENS_ peripherals.
+ * @param reg peripheral register in RTC_CNTL_, RTC_IO_, SENS_, RTC_I2C peripherals.
  * @return periph_sel value for the peripheral to which this register belongs.
  */
 static inline uint32_t SOC_REG_TO_ULP_PERIPH_SEL(uint32_t reg) {
@@ -297,8 +301,10 @@ static inline uint32_t SOC_REG_TO_ULP_PERIPH_SEL(uint32_t reg) {
         ret = RD_REG_PERIPH_RTC_CNTL;
     } else if (reg < DR_REG_SENS_BASE) {
         ret = RD_REG_PERIPH_RTC_IO;
-    } else if (reg < DR_REG_RTCMEM0_BASE){
+    } else if (reg < DR_REG_RTC_I2C_BASE){
         ret = RD_REG_PERIPH_SENS;
+    } else if (reg < DR_REG_IO_MUX_BASE){
+        ret = RD_REG_PERIPH_RTC_I2C;
     } else {
         assert(0 && "invalid register base");
     }
@@ -309,7 +315,7 @@ static inline uint32_t SOC_REG_TO_ULP_PERIPH_SEL(uint32_t reg) {
  * Write literal value to a peripheral register
  *
  * reg[high_bit : low_bit] = val
- * This instruction can access RTC_CNTL_, RTC_IO_, and SENS_ peripheral registers.
+ * This instruction can access RTC_CNTL_, RTC_IO_, SENS_, and RTC_I2C peripheral registers.
  */
 #define I_WR_REG(reg, low_bit, high_bit, val) {.wr_reg = {\
     .addr = (reg & 0xff) / sizeof(uint32_t), \
@@ -323,7 +329,7 @@ static inline uint32_t SOC_REG_TO_ULP_PERIPH_SEL(uint32_t reg) {
  * Read from peripheral register into R0
  *
  * R0 = reg[high_bit : low_bit]
- * This instruction can access RTC_CNTL_, RTC_IO_, and SENS_ peripheral registers.
+ * This instruction can access RTC_CNTL_, RTC_IO_, SENS_, and RTC_I2C peripheral registers.
  */
 #define I_RD_REG(reg, low_bit, high_bit) {.rd_reg = {\
     .addr = (reg & 0xff) / sizeof(uint32_t), \
@@ -337,7 +343,7 @@ static inline uint32_t SOC_REG_TO_ULP_PERIPH_SEL(uint32_t reg) {
  * Set or clear a bit in the peripheral register.
  *
  * Sets bit (1 << shift) of register reg to value val.
- * This instruction can access RTC_CNTL_, RTC_IO_, and SENS_ peripheral registers.
+ * This instruction can access RTC_CNTL_, RTC_IO_, SENS_, and RTC_I2C peripheral registers.
  */
 #define I_WR_REG_BIT(reg, shift, val) I_WR_REG(reg, shift, shift, val)
 
@@ -857,7 +863,7 @@ esp_err_t ulp_process_macros_and_load(uint32_t load_addr, const ulp_insn_t* prog
  * 3. TEXT_SIZE, size of .text section (2 bytes)
  * 4. DATA_SIZE, size of .data section (2 bytes)
  * 5. BSS_SIZE, size of .bss section (2 bytes)
- * 6. (TEXT_OFFSET - 16) bytes of arbitrary data (will not be loaded into RTC memory)
+ * 6. (TEXT_OFFSET - 12) bytes of arbitrary data (will not be loaded into RTC memory)
  * 7. .text section
  * 8. .data section
  *
@@ -892,8 +898,17 @@ esp_err_t ulp_run(uint32_t entry_point);
  * i.e. period number 0. ULP program code can use SLEEP instruction to select
  * which of the SENS_ULP_CP_SLEEP_CYCx_REG should be used for subsequent wakeups.
  *
+ * However, please note that SLEEP instruction issued (from ULP program) while the system
+ * is in deep sleep mode does not have effect, and sleep cycle count 0 is used.
+ *
  * @param period_index wakeup period setting number (0 - 4)
  * @param period_us wakeup period, us
+ * @note  The ULP FSM requires two clock cycles to wakeup before being able to run the program.
+ *        Then additional 16 cycles are reserved after wakeup waiting until the 8M clock is stable.
+ *        The FSM also requires two more clock cycles to go to sleep after the program execution is halted.
+ *        The minimum wakeup period that may be set up for the ULP
+ *        is equal to the total number of cycles spent on the above internal tasks.
+ *        For a default configuration of the ULP running at 150kHz it makes about 133us.
  * @return
  *      - ESP_OK on success
  *      - ESP_ERR_INVALID_ARG if period_index is out of range

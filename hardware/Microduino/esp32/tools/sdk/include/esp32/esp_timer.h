@@ -29,11 +29,11 @@
  * use RTOS notification mechanisms (queues, semaphores, event groups, etc.) to
  * pass information to other tasks.
  *
- * <to be implemented> It should be possible to request the callback to be called
+ * To be implemented: it should be possible to request the callback to be called
  * directly from the ISR. This reduces the latency, but has potential impact on
  * all other callbacks which need to be dispatched. This option should only be
  * used for simple callback functions, which do not take longer than a few
- * microseconds to run. </to be implemented>
+ * microseconds to run.
  *
  * Implementation note: on the ESP32, esp_timer APIs use the "legacy" FRC2
  * timer. Timer callbacks are called from a task running on the PRO CPU.
@@ -188,6 +188,13 @@ esp_err_t esp_timer_delete(esp_timer_handle_t timer);
  *          happens early during application startup).
  */
 int64_t esp_timer_get_time();
+
+/**
+ * @brief Get the timestamp when the next timeout is expected to occur
+ * @return Timestamp of the nearest timer event, in microseconds.
+ *         The timebase is the same as for the values returned by esp_timer_get_time.
+ */
+int64_t esp_timer_get_next_alarm();
 
 /**
  * @brief Dump the list of timers to a stream

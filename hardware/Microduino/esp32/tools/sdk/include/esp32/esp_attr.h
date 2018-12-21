@@ -26,6 +26,12 @@
 // Forces data into DRAM instead of flash
 #define DRAM_ATTR __attribute__((section(".dram1")))
 
+// Forces data to be 4 bytes aligned
+#define WORD_ALIGNED_ATTR __attribute__((aligned(4)))
+
+// Forces data to be placed to DMA-capable places
+#define DMA_ATTR WORD_ALIGNED_ATTR DRAM_ATTR
+
 // Forces a string into DRAM instead of flash
 // Use as ets_printf(DRAM_STR("Hello world!\n"));
 #define DRAM_STR(str) (__extension__({static const DRAM_ATTR char __c[] = (str); (const char *)&__c;}))
@@ -33,12 +39,36 @@
 // Forces code into RTC fast memory. See "docs/deep-sleep-stub.rst"
 #define RTC_IRAM_ATTR __attribute__((section(".rtc.text")))
 
+#if CONFIG_SPIRAM_ALLOW_BSS_SEG_EXTERNAL_MEMORY
+// Forces bss variable into external memory. "
+#define EXT_RAM_ATTR __attribute__((section(".ext_ram.bss")))
+#else
+#define EXT_RAM_ATTR 
+#endif
+
 // Forces data into RTC slow memory. See "docs/deep-sleep-stub.rst"
 // Any variable marked with this attribute will keep its value
 // during a deep sleep / wake cycle.
 #define RTC_DATA_ATTR __attribute__((section(".rtc.data")))
 
-// Forces read-only data into RTC slow memory. See "docs/deep-sleep-stub.rst"
+// Forces read-only data into RTC memory. See "docs/deep-sleep-stub.rst"
 #define RTC_RODATA_ATTR __attribute__((section(".rtc.rodata")))
+
+// Allows to place data into RTC_SLOW memory.
+#define RTC_SLOW_ATTR __attribute__((section(".rtc.force_slow")))
+
+// Allows to place data into RTC_FAST memory.
+#define RTC_FAST_ATTR __attribute__((section(".rtc.force_fast")))
+
+// Forces data into noinit section to avoid initialization after restart.
+#define __NOINIT_ATTR __attribute__((section(".noinit")))
+
+// Forces data into RTC slow memory of .noinit section.
+// Any variable marked with this attribute will keep its value
+// after restart or during a deep sleep / wake cycle.
+#define RTC_NOINIT_ATTR  __attribute__((section(".rtc_noinit")))
+
+// Forces to not inline function
+#define NOINLINE_ATTR __attribute__((noinline))
 
 #endif /* __ESP_ATTR_H__ */

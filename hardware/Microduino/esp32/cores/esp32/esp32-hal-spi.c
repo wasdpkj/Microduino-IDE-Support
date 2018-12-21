@@ -26,6 +26,7 @@
 #include "soc/io_mux_reg.h"
 #include "soc/gpio_sig_map.h"
 #include "soc/dport_reg.h"
+#include "soc/rtc.h"
 
 #define SPI_CLK_IDX(p)  ((p==0)?SPICLK_OUT_IDX:((p==1)?SPICLK_OUT_IDX:((p==2)?HSPICLK_OUT_IDX:((p==3)?VSPICLK_OUT_IDX:0))))
 #define SPI_MISO_IDX(p) ((p==0)?SPIQ_OUT_IDX:((p==1)?SPIQ_OUT_IDX:((p==2)?HSPIQ_OUT_IDX:((p==3)?VSPIQ_OUT_IDX:0))))
@@ -309,9 +310,9 @@ uint8_t spiGetDataMode(spi_t * spi)
     bool outEdge = spi->dev->user.ck_out_edge;
     if(idleEdge) {
         if(outEdge) {
-            return SPI_MODE3;
+            return SPI_MODE2;
         }
-        return SPI_MODE2;
+        return SPI_MODE3;
     }
     if(outEdge) {
         return SPI_MODE1;
@@ -713,11 +714,11 @@ void spiTransaction(spi_t * spi, uint32_t clockDiv, uint8_t dataMode, uint8_t bi
             break;
         case SPI_MODE2:
             spi->dev->pin.ck_idle_edge = 1;
-            spi->dev->user.ck_out_edge = 0;
+            spi->dev->user.ck_out_edge = 1;
             break;
         case SPI_MODE3:
             spi->dev->pin.ck_idle_edge = 1;
-            spi->dev->user.ck_out_edge = 1;
+            spi->dev->user.ck_out_edge = 0;
             break;
         case SPI_MODE0:
         default:
@@ -750,7 +751,7 @@ void spiEndTransaction(spi_t * spi)
     SPI_MUTEX_UNLOCK();
 }
 
-void spiWriteByteNL(spi_t * spi, uint8_t data)
+void IRAM_ATTR spiWriteByteNL(spi_t * spi, uint8_t data)
 {
     if(!spi) {
         return;
@@ -776,7 +777,7 @@ uint8_t spiTransferByteNL(spi_t * spi, uint8_t data)
     return data;
 }
 
-void spiWriteShortNL(spi_t * spi, uint16_t data)
+void IRAM_ATTR spiWriteShortNL(spi_t * spi, uint16_t data)
 {
     if(!spi) {
         return;
@@ -811,7 +812,7 @@ uint16_t spiTransferShortNL(spi_t * spi, uint16_t data)
     return data;
 }
 
-void spiWriteLongNL(spi_t * spi, uint32_t data)
+void IRAM_ATTR spiWriteLongNL(spi_t * spi, uint32_t data)
 {
     if(!spi) {
         return;
@@ -959,7 +960,7 @@ void spiTransferBitsNL(spi_t * spi, uint32_t data, uint32_t * out, uint8_t bits)
     }
 }
 
-void spiWritePixelsNL(spi_t * spi, const void * data_in, size_t len){
+void IRAM_ATTR spiWritePixelsNL(spi_t * spi, const void * data_in, size_t len){
     size_t longs = len >> 2;
     if(len & 3){
         longs++;
@@ -1017,18 +1018,20 @@ typedef union {
     };
 } spiClk_t;
 
-#define ClkRegToFreq(reg) (CPU_CLK_FREQ / (((reg)->regPre + 1) * ((reg)->regN + 1)))
+#define ClkRegToFreq(reg) (apb_freq / (((reg)->regPre + 1) * ((reg)->regN + 1)))
 
 uint32_t spiClockDivToFrequency(uint32_t clockDiv)
 {
+    uint32_t apb_freq = getApbFrequency();
     spiClk_t reg = { clockDiv };
     return ClkRegToFreq(&reg);
 }
 
 uint32_t spiFrequencyToClockDiv(uint32_t freq)
 {
+    uint32_t apb_freq = getApbFrequency();
 
-    if(freq >= CPU_CLK_FREQ) {
+    if(freq >= apb_freq) {
         return SPI_CLK_EQU_SYSCLK;
     }
 
@@ -1051,7 +1054,7 @@ uint32_t spiFrequencyToClockDiv(uint32_t freq)
         reg.regN = calN;
 
         while(calPreVari++ <= 1) {
-            calPre = (((CPU_CLK_FREQ / (reg.regN + 1)) / freq) - 1) + calPreVari;
+            calPre = (((apb_freq / (reg.regN + 1)) / freq) - 1) + calPreVari;
             if(calPre > 0x1FFF) {
                 reg.regPre = 0x1FFF;
             } else if(calPre <= 0) {
