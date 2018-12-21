@@ -286,8 +286,18 @@
           "toolsDependencies": [
             {
               "packager": "microduino",
-              "version": "1.22.0-80-g6c4433a-5.2.0",
-              "name": "xtensa-esp32-elf-gcc"
+              "name": "xtensa-esp32-elf-gcc",
+              "version": "1.22.0-80-g6c4433a-5.2.0"
+            },
+            {
+              "packager": "microduino",
+              "name": "esptool",
+              "version": "2.3.1"
+            },
+            {
+              "packager": "microduino",
+              "name": "mkspiffs",
+              "version": "0.2.3"
             }
           ],
           "boards": [
