@@ -2,13 +2,16 @@
   //  LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
 
   // 支持Microduino_Sensor_Weight
-
+  // 库版本
+  // B1.0 新建传感器支持库
+  // B1.1 更改函数名称，更易理解。
+  //	  重量获取细化到小数(一位最佳)
+  //	  固件更新为版本2
   // Microduino wiki:
   // http://wiki.microduino.cn
 
   // E-mail:
   // jinqipeng@mircoduino.cc
-
   //日期：2018.8
 *********************************************************/
 #include "Sensor_Weight.h"
@@ -122,18 +125,20 @@ uint16_t SensorWeight::calibration(uint16_t weight) {
 	write8(ADDR8_CHECK,ADDR8_SAVEGAP,1);
 	return GapValue;
 }
-uint32_t SensorWeight::getWeight(void) {
-  uint32_t returnWeight = 0;
+float SensorWeight::getWeight(void) {
+  float returnWeight = 0;
   Weight = getData();
-//  Serial.print(Weight);
-//  Serial.print(" and ");
-//  Serial.println(Maopi);
+  /*
+  Serial.print(Weight);
+ Serial.print(" and ");
+ Serial.println(Maopi);
+ */
   if (Weight < Maopi)
   {
     Weight = Maopi;
   }
   returnWeight = Weight - Maopi;
-  returnWeight = (uint32_t)((uint32_t)returnWeight / GapValue);
+  returnWeight = (float)((float)returnWeight / GapValue);
   return returnWeight;
 }
 //==============================================================================

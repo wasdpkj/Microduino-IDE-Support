@@ -42,19 +42,13 @@ bool SensorUV::begin(void) {
 
 uint8_t SensorUV::requestData(uint8_t _dataAddr) {
   uint8_t returnByte = false;
-  long previous;
   if (SensorUVVersion >= UV_VERSION) {
     Wire.beginTransmission(devAddr); // transmit to device
     Wire.write(_dataAddr);              // sends one byte
     Wire.endTransmission();
   }
   Wire.requestFrom(devAddr, (uint8_t)1);
-  previous = millis();
   while (Wire.available())  {
-	  if(millis() - previous > INTERVAL)
-	  {
-		  return 0;
-	  }
     returnByte = Wire.read(); // receive a byte as character
   }
   return returnByte;
@@ -68,20 +62,19 @@ uint16_t SensorUV::getUV(void) {
   b = requestData(ADDR16_UV + 1);
   returnByte = (a << 8) + b;
   return returnByte;
-  // }
 }
 float SensorUV::getIntensity(void)
 {
-	  float voltage = getUV();
-  voltage = (VREF * voltage) / 1023;
+  UV_voltage = getUV();
+  UV_voltage = (VREF * UV_voltage) / 1023;
   //The UV Index is a linear scale,range from 0~15
-  float uvIntensity = mapfloat(voltage, 0.98, 2.9, 0.0, 15.0);   //限制大小
-  if(uvIntensity < 0)
+  uvIntensity = mapfloat(UV_voltage, 0.98, VREF, 0.0, 15.0);   //限制大小
+  if(uvIntensity < 0.0)
   {
-	  uvIntensity = 0;
-  }else if(uvIntensity > 15)
+	  uvIntensity = 0.0;
+  }else if(uvIntensity > 15.0)
   {
-	  uvIntensity = 15;
+	  uvIntensity = 15.0;
   }
   return uvIntensity;
 }
@@ -93,21 +86,21 @@ float SensorUV::mapfloat(float x, float in_min, float in_max, float out_min, flo
 
 uint8_t SensorUV::getUVIndex(void)
 {
-	float uvIntensity = getIntensity();
+	//uvIntensity = getIntensity();
 	uint8_t UVIndex;
-	if(uvIntensity >= 0 && uvIntensity< 3)
+	if(uvIntensity >= 0.0 && uvIntensity< 3.0)
 	{
 		UVIndex = LOWER;
-	}else if(uvIntensity >= 3 && uvIntensity < 6)
+	}else if(uvIntensity >= 3.0 && uvIntensity < 6.0)
 	{
 		UVIndex = MODERATE;
-	}else if(uvIntensity >=6 && uvIntensity < 8)
+	}else if(uvIntensity >=6.0 && uvIntensity < 8.0)
 	{
 		UVIndex = NORMAL;
-	}else if(uvIntensity >=8 && uvIntensity < 11)
+	}else if(uvIntensity >=8.0 && uvIntensity < 11.0)
 	{
 		UVIndex = STRONG;
-	}else if(uvIntensity >= 11)
+	}else if(uvIntensity >= 11.0)
 	{
 		UVIndex = EXTREME;
 	}
@@ -115,17 +108,11 @@ uint8_t SensorUV::getUVIndex(void)
 }
 uint8_t SensorUV::getVersion(void) {
   uint8_t returnByte = false;
-  long previous;
   Wire.beginTransmission(devAddr); // transmit to device
   Wire.write(ADDR8_VERSION);              // sends one byte
   Wire.endTransmission();
   Wire.requestFrom(devAddr, (uint8_t)1);
-  previous = millis();
   while (Wire.available())  {
-	  	  if(millis() - previous > INTERVAL)
-	  {
-		  return 0;
-	  }
     returnByte = Wire.read(); // receive a byte as character
   }
   return returnByte;

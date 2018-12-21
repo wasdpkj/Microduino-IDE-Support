@@ -9,6 +9,8 @@
   // E-mail:
   // jinqipeng@mircoduino.cc
   //USE MICRODUINO - OLED TO SHOW.
+  //OR COM PORT IS OK TOO.
+  //THE OUTPUT IS VOLTAGE(FROM 0.98~3.3V power)
   //日期：2018.2
 *********************************************************/
 #include <Microduino_Sensor-UV.h>
@@ -51,7 +53,7 @@ void loop()
     char c = Serial.read();
     UV.setReset();
   }
-  float voltage=0;
+
   voltage = UV.getUV();
   voltage = (VREF * voltage) / 1023;
   Serial.print("OUTPUT : ");
@@ -61,4 +63,3 @@ void loop()
     draw();
   } while ( u8g.nextPage() );
 }
-
