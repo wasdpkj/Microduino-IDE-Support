@@ -5,24 +5,31 @@
 
 #define EXTERNAL_NUM_INTERRUPTS 16
 #define NUM_DIGITAL_PINS        40
-#define NUM_ANALOG_INPUTS       16
+#define NUM_ANALOG_INPUTS       18
 
 #define analogInputToDigitalPin(p)  (((p)<20)?(esp32_adc2gpio[(p)]):-1)
 #define digitalPinToInterrupt(p)    (((p)<40)?(p):-1)
 #define digitalPinHasPWM(p)         (p < 34)
 
+static const uint8_t LED_BUILTIN = 0; // ->2812 RGB !!!
+#define BUILTIN_LED  LED_BUILTIN // backward compatibility
+
+#define ANT_SELECT 21   // GPIO21 - External Antenna Switch
+
 static const uint8_t TX = 1;
 static const uint8_t RX = 3;
 
-static const uint8_t SDA = 21;
-static const uint8_t SCL = 22;
+static const uint8_t SDA = 12;
+static const uint8_t SCL = 13;
 
-static const uint8_t SS    = 5;
-static const uint8_t MOSI  = 23;
-static const uint8_t MISO  = 19;
-static const uint8_t SCK   = 18;
+static const uint8_t SS    = 2;
+static const uint8_t MOSI  = 22;
+static const uint8_t MISO  = 37;
+static const uint8_t SCK   = 13;
 
 static const uint8_t A0 = 36;
+static const uint8_t A1 = 37;
+static const uint8_t A2 = 38;
 static const uint8_t A3 = 39;
 static const uint8_t A4 = 32;
 static const uint8_t A5 = 33;
