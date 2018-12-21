@@ -32,8 +32,6 @@
 #define STRONG		4
 #define EXTREME		5
 
-#define INTERVAL 2000
-
 #define VREF 3.34
 class SensorUV {
   public:
@@ -45,9 +43,12 @@ class SensorUV {
 	uint8_t getUVIndex(void);
 	void setReset(void);
     uint8_t requestData(uint8_t);
+	float UV_voltage;
+	float uvIntensity;
   private:
     uint8_t devAddr;
     int16_t uv_value;
+
 	float mapfloat(float x, float in_min, float in_max, float out_min, float out_max);
 	bool write8(uint8_t writeAddr, uint8_t data, uint8_t len);
     uint8_t SensorUVVersion;

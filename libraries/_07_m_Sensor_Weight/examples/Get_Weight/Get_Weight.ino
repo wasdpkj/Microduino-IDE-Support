@@ -15,7 +15,7 @@
 
 SensorWeight WT(WEIGHT_ADDRESS);
 
-uint32_t Weight = 0;
+float Weight = 0;
 uint16_t gap = 0;
 void setup() {
   // put your setup code here, to run once:
@@ -43,7 +43,8 @@ void loop() {
     char c = Serial.read();
   }
   Serial.print("OUTPUT : ");
-  Serial.println(WT.getWeight());
+  Weight = WT.getWeight();
+  Serial.println(Weight,1);
   //A more-than-100MS delay is highly recommended since the Firmware based on HX711 got a sequence of 10Hz.
   delay(400);
 }

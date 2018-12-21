@@ -2,13 +2,16 @@
   //  LICENSE: GPL v3 (http://www.gnu.org/licenses/gpl.html)
 
   // 支持Microduino_Sensor_Weight
-
+  // 库版本
+  // B1.0 新建传感器支持库
+  // B1.1 更改函数名称，更易理解。
+  //	  重量获取细化到小数(一位最佳)
+  //	  固件更新为版本2
   // Microduino wiki:
   // http://wiki.microduino.cn
 
   // E-mail:
   // jinqipeng@mircoduino.cc
- 
   //日期：2018.8
 *********************************************************/
 #ifndef _SENSOR_WEIGHT_H_
@@ -42,7 +45,7 @@ class SensorWeight {
     bool begin(void);
     uint8_t getVersion(void);
 	uint8_t getCheck(void);
-    uint32_t getWeight(void);
+    float getWeight(void);
     void  getMaopi(void);
 	void  setZero(void);
     uint16_t calibration(uint16_t);

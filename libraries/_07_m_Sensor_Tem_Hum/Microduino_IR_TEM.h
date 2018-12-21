@@ -46,7 +46,7 @@
 
 class IR_TEM {
   public:
-    MLX90614();
+    IR_TEM();
     bool begin(uint8_t address = MLX90614_DEFAULT_ADDRESS);
     void setUnit(temperature_units unit);
     uint8_t read(void);

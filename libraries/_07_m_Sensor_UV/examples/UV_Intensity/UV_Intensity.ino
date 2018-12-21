@@ -30,7 +30,6 @@
 SensorUV UV(UV_ADDRESS);
 //CHECK THE +3.3V VOLTAGE ON YOUR BOARD AND FIX VREF TO GET A CORRECT FEED IF NEEDED.
 #define VREF 3.34
-
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600); //串口初始化
@@ -44,14 +43,8 @@ void setup() {
 }
 
 void loop() {
-  float voltage = UV.getUV();
-  voltage = (VREF * voltage) / 1023;
-  Serial.print("RAW Voltage");
-  Serial.print(voltage);
-  Serial.print("   |   ");
-  Serial.print(" UV Intensity (mW/cm^2): ");
+  Serial.print("Intensity : ");
   Serial.println(UV.getIntensity(),1);
-  Serial.print("Level : ");
   switch(UV.getUVIndex()){
   case 1:
 	Serial.println("LOW");

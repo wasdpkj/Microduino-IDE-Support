@@ -13,7 +13,7 @@
 *********************************************************/
 #include "Microduino_IR_TEM.h"
 
-IR_TEM::MLX90614() {
+IR_TEM::IR_TEM() {
   _deviceAddress = 0;
   _defaultUnit = TEMP_C;
   _rawObject = 0;
@@ -24,6 +24,7 @@ IR_TEM::MLX90614() {
 bool IR_TEM::begin(uint8_t address)
 {
   _deviceAddress = address;
+  delay(150);
   Wire.begin();
   Wire.beginTransmission(_deviceAddress);
   bool sta = (Wire.endTransmission() == 0);
@@ -38,7 +39,13 @@ uint8_t IR_TEM::read()
 {
   if (readObject() && readAmbient())
   {
+	  /*
+	Serial.print(_rawObject);
+	Serial.print("   ||   ");
+	Serial.println(_rawAmbient);
+	*/
     return 1;
+	
   }
   return 0;
 }
@@ -56,7 +63,6 @@ float IR_TEM::object(void)
 uint8_t IR_TEM::readObject()
 {
   int16_t rawObj;
-
   if (I2CReadWord(MLX90614_REGISTER_TOBJ1, &rawObj))
   {
     if (rawObj & 0x8000) //flag error?
@@ -64,6 +70,7 @@ uint8_t IR_TEM::readObject()
       return 0;
     }
     _rawObject = rawObj;
+	delay(2);
     return 1;
   }
   return 0;
@@ -92,6 +99,7 @@ uint8_t IR_TEM::readAmbient()
   if (I2CReadWord(MLX90614_REGISTER_TA, &rawAmb))
   {
     _rawAmbient = rawAmb;
+	delay(2);
     return 1;
   }
   return 0;
@@ -99,13 +107,24 @@ uint8_t IR_TEM::readAmbient()
 
 uint8_t IR_TEM::setEmissivity(float emis)
 {
+	uint8_t sta;
+	float temp_emm;
   if ((emis > 1.0) || (emis < 0.1))
   {
-    return 0;
+    return 3;
   }
+  temp_emm = readEmissivity();
+  
+  if(abs(temp_emm - emis)<1)
+  {
+	  return 2;
+  }else{  
   uint16_t ke = uint16_t(65535.0 * emis);
   ke = constrain(ke, 0x2000, 0xFFFF);
-  return writeEEPROM(MLX90614_REGISTER_KE, (int16_t)ke);
+  sta = writeEEPROM(MLX90614_REGISTER_KE, (int16_t)ke);
+  delay(10); //EEP WRITE 5MS
+  return sta;
+  }
 }
 
 float IR_TEM::readEmissivity(void)
@@ -113,6 +132,7 @@ float IR_TEM::readEmissivity(void)
   int16_t ke;
   if (I2CReadWord(MLX90614_REGISTER_KE, &ke))
   {
+	delay(10); //EEP READ 5MS
     return (((float)((uint16_t)ke)) / 65535.0);
   }
   return 0;
@@ -219,6 +239,10 @@ float IR_TEM::calcTemperature(int16_t rawTemp)
         retTemp = retTemp * 9.0 / 5.0 + 32;
       }
     }
+  }
+  if(retTemp < -30 || retTemp > 100)
+  {
+	  return 999;
   }
   return retTemp;
 }
