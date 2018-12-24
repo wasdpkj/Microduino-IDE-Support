@@ -1,11 +1,28 @@
 #include <Microduino_Key.h>
 #include <Microduino_Ai.h>
 
+//Core UART Port: [SoftSerial] [D2,D3]
+#if defined (__AVR_ATmega168__) || defined (__AVR_ATmega328__) || defined (__AVR_ATmega328P__) || defined(__AVR_ATmega32U4__)
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(2, 3); /* RX:D2, TX:D3 */
+MicroAi mAi(&mySerial);
+#endif
+
+//Core+ UART Port: [Serial1] [D2,D3]
+#if defined(__AVR_ATmega1284P__) || defined (__AVR_ATmega644P__) || defined(__AVR_ATmega128RFA1__)
+MicroAi mAi(&Serial1);
+#endif
+
+#if defined (ESP32)
+HardwareSerial mySerial1(1);  //UART1
+MicroAi mAi(&mySerial1, D2, D3);
+#endif
+
 #define WIFI_SSID   "ssid"
 #define WIFI_PWD    "password"
 #define WEB_NUM     4
 
-const char* webRadioUrl[WEB_NUM] = {
+char* webRadioUrl[WEB_NUM] = {
   "https://http.qingting.fm/386.mp3",
   "https://http.qingting.fm/387.mp3",
   "https://http.qingting.fm/388.mp3",
@@ -15,7 +32,6 @@ const char* webRadioUrl[WEB_NUM] = {
 static uint8_t webRadioIndex = 0xFF;
 DigitalKey touch1(D4);
 DigitalKey touch2(D6);
-MicroAi mAi(&Serial1);
 
 char strBuf[64] = {0};
 
@@ -81,8 +97,3 @@ void loop() {
   
   delay(50);
 }
-
-
-
-
-
