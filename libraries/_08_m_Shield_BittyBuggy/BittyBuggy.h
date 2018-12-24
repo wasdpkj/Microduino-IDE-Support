@@ -145,9 +145,9 @@ class BittyBuggy
 
     void common_init(void);
     uint8_t isValid(uint8_t value);
-    uint8_t GetMax(uint8_t _R , uint8_t _G , uint8_t _B);
-    uint8_t GetMin(uint8_t _R , uint8_t _G , uint8_t _B);
-    boolean RGBtoHSV(uint8_t _R , uint8_t _G , uint8_t _B , float  HSV[3]);
+    uint8_t GetMax(uint8_t __R , uint8_t __G , uint8_t __B);
+    uint8_t GetMin(uint8_t __R , uint8_t __G , uint8_t __B);
+    boolean RGBtoHSV(uint8_t __R , uint8_t __G , uint8_t __B , float  HSV[3]);
 
     uint8_t uartRxstep;
     uint8_t uartRxindex;
