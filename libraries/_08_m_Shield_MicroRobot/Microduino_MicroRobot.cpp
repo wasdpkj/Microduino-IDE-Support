@@ -6,10 +6,10 @@ MicroRobot::MicroRobot() {
 }
 
 //***********************PMU*********************************
-float MicroRobot::getVoltage() {
+float MicroRobot::getVoltage(float pmu_Voltage) {
   uint16_t batRaw = 0;
   I2Cdev::readWord(I2C_ADDR_PMU, ADDR16_BAT * 2, &batRaw);
-  return batRaw * 5.0 * 2.01 / 1024.0;
+  return batRaw * pmu_Voltage * 2.04 / 1024.0;
 }
 
 //***********************servo*********************************

@@ -16,7 +16,7 @@ public:
   uint8_t getVersion();
   uint8_t isLow();
   void reset();
-  float getVoltage();
+  float getVoltage(float pmu_Voltage = 3.3);
   
 protected:
   uint8_t I2C_ADDR_PMU=0x52;  

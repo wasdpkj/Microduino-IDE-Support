@@ -17,7 +17,7 @@
 #define __MICRO_ROBOT_H__
 
 #include <inttypes.h>
-#include "mBattery_Pmu.h"
+#include <mBattery_Pmu.h>
 
 //****************servo预定义*****************
 #define MAX_SERVOS        5
@@ -96,7 +96,7 @@ class MicroRobot: public MbaPmu {
     MicroRobot();
 
     //***********************public：servo*********************************
-    float getVoltage();
+    float getVoltage(float pmu_Voltage = 5.0);
     void servoWrite(uint8_t index, int16_t value);
     uint16_t servoRead(uint8_t index);
     void servoWriteRaw(uint8_t index, int16_t value);

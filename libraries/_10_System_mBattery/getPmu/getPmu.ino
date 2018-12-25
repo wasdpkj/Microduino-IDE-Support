@@ -4,34 +4,33 @@
   版权所有：
   @cuiwenjing@microduino.cc
 
-   本示例给出了MicroRobot的PMU部分监测方法
+   本示例给出了mBattery的PMU部分监测方法
    包括PMU固件版本号、电池电压、是否低电量状态
 
  ****************************************/
 
-#include <Microduino_MicroRobot.h>
+#include <mBattery_Pmu.h>
 
-MicroRobot microRobot;
+MbaPmu pmu;
 
 void setup()
 {
   //******串口初始化
   Serial.begin(115200);
 
-  //******microRobot初始化,包含舵机与PMU的初始化
-  microRobot.begin();
+  //******PMU的初始化
+  pmu.begin();
 
 }
 
 void loop()
 {
   Serial.print("Ver:");
-  Serial.print(microRobot.getVersion());
+  Serial.print(pmu.getVersion());
   Serial.print(" Bat:");
-  Serial.print(microRobot.getVoltage(5.0));  //5.0为PMU芯片电压
+  Serial.print(pmu.getVoltage(3.3));  //3.3为PMU芯片电压
   Serial.print(" isLow:");
-  Serial.print(microRobot.isLow());
+  Serial.print(pmu.isLow());
   Serial.println(" ");
   delay(20);
 }
-
