@@ -163,8 +163,6 @@ void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val);
 
 using std::isinf;
 using std::isnan;
-using std::max;
-using std::min;
 using ::round;
 
 uint16_t makeWord(uint16_t w);
