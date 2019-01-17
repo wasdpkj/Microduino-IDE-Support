@@ -88,7 +88,7 @@ void drawBMP(int16_t x, int16_t y, const uint8_t *bitmap) {
         goodBmp = true; // Supported BMP format -- proceed!
         Serial.print(F("Image size: "));
         Serial.print(bmpWidth);
-        Serial.print(F('x'));
+        Serial.print("x");
         Serial.println(bmpHeight);
 
         // BMP rows are padded (if needed) to 4-byte boundary
@@ -108,8 +108,8 @@ void drawBMP(int16_t x, int16_t y, const uint8_t *bitmap) {
         if ((y + h - 1) >= tft.height()) h = tft.height() - y;
 
         // Set TFT address window to clipped image bounds
-        //tft.setAddrWindow(x, y, w, h);
         tft.startWrite();
+        tft.setAddrWindow(x, y, w, h);
         for (row = 0; row < h; row++) { // For each scanline...
           if (flip) // Bitmap is stored bottom-to-top order (normal BMP)
             pos = bmpImageoffset + (bmpHeight - 1 - row) * rowSize;
@@ -133,7 +133,8 @@ void drawBMP(int16_t x, int16_t y, const uint8_t *bitmap) {
             g = sdbuffer[buffidx++];
             r = sdbuffer[buffidx++];
             //tft.pushColor(tft.color565(r, g, b));
-            tft.writePixel(x + col, y + row, tft.color565(r, g, b));
+            //tft.writePixel(x + col, y + row, tft.color565(r, g, b));
+            tft.writePixel(tft.color565(r, g, b));
           } // end pixel
         } // end scanline
         tft.endWrite();
