@@ -1,5 +1,6 @@
 #ifndef _ironmanIRremote_H_
 #define _ironmanIRremote_H_
+#include "Arduino.h"
 
 #define SENSOR_ID          0x08
 #define IRremote_ADDRESS   SENSOR_ID
@@ -27,7 +28,23 @@
 #define NEC_BITS 32
 #define SONY_BITS 12
 
-#include "Arduino.h"
+#define KEY_REPEAT 	0xffffffff
+#define KEY_POWER	  0x01FE48B7
+#define KEY_UP		  0x01FEA05F
+#define KEY_LEFT	  0x01FEE01F
+#define KEY_RIGHT 	0x01FE906F
+#define KEY_DOWN  	0x01FED827
+#define KEY_A		    0x01FE807F
+#define KEY_B	    	0x01FE40BF
+#define KEY_C	    	0x01FEC03F
+#define KEY_D	    	0x01FE20DF
+#define KEY_E	    	0x01FE609F
+#define KEY_OK	   	0x01FE10EF
+#define KEY_VOLP  	0x01FEF807
+#define KEY_VOLD  	0x01FE708F
+#define KEY_BACK  	0x01FE50AF
+#define KEY_PLAY  	0x01FE30CF
+#define KEY_MUTE  	0x01FEB04F
 
 class ironmanIRremote {
 
