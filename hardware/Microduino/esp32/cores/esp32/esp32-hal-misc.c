@@ -27,7 +27,9 @@
 #include <sys/time.h>
 #include "soc/rtc.h"
 #include "soc/rtc_cntl_reg.h"
+#include "soc/apb_ctrl_reg.h"
 #include "rom/rtc.h"
+#include "esp_task_wdt.h"
 #include "esp32-hal.h"
 
 //Undocumented!!! Get chip temperature in Farenheit
@@ -44,57 +46,81 @@ void yield()
     vPortYield();
 }
 
-static uint32_t _cpu_freq_mhz = CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ;
-static uint32_t _sys_time_multiplier = 1;
+#if CONFIG_AUTOSTART_ARDUINO
 
-bool setCpuFrequency(uint32_t cpu_freq_mhz){
-    rtc_cpu_freq_config_t conf, cconf;
-    rtc_clk_cpu_freq_get_config(&cconf);
-    if(cconf.freq_mhz == cpu_freq_mhz && _cpu_freq_mhz == cpu_freq_mhz){
-        return true;
+extern TaskHandle_t loopTaskHandle;
+extern bool loopTaskWDTEnabled;
+
+void enableLoopWDT(){
+    if(loopTaskHandle != NULL){
+        if(esp_task_wdt_add(loopTaskHandle) != ESP_OK){
+            log_e("Failed to add loop task to WDT");
+        } else {
+            loopTaskWDTEnabled = true;
+        }
     }
-    if(!rtc_clk_cpu_freq_mhz_to_config(cpu_freq_mhz, &conf)){
-        log_e("CPU clock could not be set to %u MHz", cpu_freq_mhz);
-        return false;
+}
+
+void disableLoopWDT(){
+    if(loopTaskHandle != NULL && loopTaskWDTEnabled){
+        loopTaskWDTEnabled = false;
+        if(esp_task_wdt_delete(loopTaskHandle) != ESP_OK){
+            log_e("Failed to remove loop task from WDT");
+        }
     }
-#if ARDUHAL_LOG_LEVEL >= ARDUHAL_LOG_LEVEL_INFO
-    log_i("%s: %u / %u = %u Mhz", (conf.source == RTC_CPU_FREQ_SRC_PLL)?"PLL":((conf.source == RTC_CPU_FREQ_SRC_APLL)?"APLL":((conf.source == RTC_CPU_FREQ_SRC_XTAL)?"XTAL":"8M")), conf.source_freq_mhz, conf.div, conf.freq_mhz);
-    delay(10);
+}
+
+void feedLoopWDT(){
+    esp_err_t err = esp_task_wdt_reset();
+    if(err != ESP_OK){
+        log_e("Failed to feed WDT! Error: %d", err);
+    }
+}
 #endif
-    rtc_clk_cpu_freq_set_config_fast(&conf);
-    _cpu_freq_mhz = conf.freq_mhz;
-    _sys_time_multiplier = 80000000 / getApbFrequency();
-    return true;
-}
 
-uint32_t getCpuFrequency(){
-    rtc_cpu_freq_config_t conf;
-    rtc_clk_cpu_freq_get_config(&conf);
-    return conf.freq_mhz;
-}
-
-uint32_t getApbFrequency(){
-    rtc_cpu_freq_config_t conf;
-    rtc_clk_cpu_freq_get_config(&conf);
-    if(conf.freq_mhz >= 80){
-        return 80000000;
+void enableCore0WDT(){
+    TaskHandle_t idle_0 = xTaskGetIdleTaskHandleForCPU(0);
+    if(idle_0 == NULL || esp_task_wdt_add(idle_0) != ESP_OK){
+        log_e("Failed to add Core 0 IDLE task to WDT");
     }
-    return (conf.source_freq_mhz * 1000000) / conf.div;
 }
+
+void disableCore0WDT(){
+    TaskHandle_t idle_0 = xTaskGetIdleTaskHandleForCPU(0);
+    if(idle_0 == NULL || esp_task_wdt_delete(idle_0) != ESP_OK){
+        log_e("Failed to remove Core 0 IDLE task from WDT");
+    }
+}
+
+#ifndef CONFIG_FREERTOS_UNICORE
+void enableCore1WDT(){
+    TaskHandle_t idle_1 = xTaskGetIdleTaskHandleForCPU(1);
+    if(idle_1 == NULL || esp_task_wdt_add(idle_1) != ESP_OK){
+        log_e("Failed to add Core 1 IDLE task to WDT");
+    }
+}
+
+void disableCore1WDT(){
+    TaskHandle_t idle_1 = xTaskGetIdleTaskHandleForCPU(1);
+    if(idle_1 == NULL || esp_task_wdt_delete(idle_1) != ESP_OK){
+        log_e("Failed to remove Core 1 IDLE task from WDT");
+    }
+}
+#endif
 
 unsigned long IRAM_ATTR micros()
 {
-    return (unsigned long) (esp_timer_get_time()) * _sys_time_multiplier;
+    return (unsigned long) (esp_timer_get_time());
 }
 
 unsigned long IRAM_ATTR millis()
 {
-    return (unsigned long) (micros() / 1000);
+    return (unsigned long) (esp_timer_get_time() / 1000);
 }
 
 void delay(uint32_t ms)
 {
-    vTaskDelay((ms * _cpu_freq_mhz) / (portTICK_PERIOD_MS * 240));
+    vTaskDelay(ms / portTICK_PERIOD_MS);
 }
 
 void IRAM_ATTR delayMicroseconds(uint32_t us)
@@ -127,8 +153,10 @@ bool btInUse(){ return false; }
 
 void initArduino()
 {
+    //init proper ref tick value for PLL (uncomment if REF_TICK is different than 1MHz)
+    //ESP_REG(APB_CTRL_PLL_TICK_CONF_REG) = APB_CLK_FREQ / REF_CLK_FREQ - 1;
 #ifdef F_CPU
-    setCpuFrequency(F_CPU/1000000L);
+    setCpuFrequencyMhz(F_CPU/1000000);
 #endif
 #if CONFIG_SPIRAM_SUPPORT
     psramInit();
