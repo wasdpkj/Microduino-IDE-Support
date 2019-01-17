@@ -62,8 +62,12 @@ void SPIClass::begin(int8_t sck, int8_t miso, int8_t mosi, int8_t ss)
     }
 
     spiAttachSCK(_spi, _sck);
-    spiAttachMISO(_spi, _miso);
-    spiAttachMOSI(_spi, _mosi);
+    if(_miso != -1) {
+		spiAttachMISO(_spi, _miso);
+	}
+    if(_mosi != -1) {
+		spiAttachMOSI(_spi, _mosi);
+	}
 
 }
 
@@ -73,8 +77,12 @@ void SPIClass::end()
         return;
     }
     spiDetachSCK(_spi, _sck);
-    spiDetachMISO(_spi, _miso);
-    spiDetachMOSI(_spi, _mosi);
+    if(_miso != -1) {
+		spiDetachMISO(_spi, _miso);
+	}
+    if(_mosi != -1) {
+		spiDetachMOSI(_spi, _mosi);
+	}
     setHwCs(false);
     spiStopBus(_spi);
     _spi = NULL;
@@ -293,3 +301,4 @@ void SPIClass::writePattern_(uint8_t * data, uint8_t size, uint8_t repeat)
 }
 
 SPIClass SPI(VSPI);
+SPIClass TFTSPI(HSPI);
