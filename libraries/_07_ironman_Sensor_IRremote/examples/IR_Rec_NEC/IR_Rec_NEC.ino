@@ -14,6 +14,5 @@ void loop() {
       Serial.print("0x");
       Serial.println(IRremote.irrecvValue(), HEX);
     }
-    delay(150);
   }
 }

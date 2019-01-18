@@ -72,6 +72,7 @@ uint32_t ironmanIRremote::getReg40_7bitto32(uint8_t _reg) {
     _result32 = (uint32_t)readByte5 << 28 | (uint32_t)readByte4 << 21 | (uint32_t)readByte3 << 14 |
                 ((uint32_t)readByte2) << 7 | (uint32_t)readByte1;
   }
+  delay(50);
   return _result32;
 }
 
@@ -145,7 +146,8 @@ void ironmanIRremote::setPower(uint8_t _power) {
 
 boolean ironmanIRremote::irrecvAvailable() {
   irrecdata = getReg40_7bitto32(ADDR40_IRRECED_NECDATA);
-  if (irrecdata) {
+  if (irrecdataCache!=irrecdata||irrecdata==0xFFFFFFFF) {
+    irrecdataCache=irrecdata;
     return true;
   }
 
