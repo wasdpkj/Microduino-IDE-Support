@@ -14,18 +14,18 @@
 
 #include <Microduino_Ultrasonic.h>         //引用超声波库文件
 
-Ultrasonic Ultrasonic1(ULTRASONIC_ADDR_1);//将Ultrasonic实例化
+Ultrasonic sonic(ULTRASONIC_ADDR_1);//将Ultrasonic实例化
 
 uint16_t Distance;   //定义变量
 
 void setup() {
   Serial.begin(9600);  // 串口初始化
-  Ultrasonic1.begin();  //超声波初始化
+  sonic.begin();  //超声波初始化
   delay(2000);
 }
 
 void loop() {
-  Distance = Ultrasonic1.getDistance(); //获取超声波测得的距离
+  Distance = sonic.getDistance(); //获取超声波测得的距离
   Serial.println(Distance);               //串口打印距离值
   delay(30);                              //延时30ms
 }

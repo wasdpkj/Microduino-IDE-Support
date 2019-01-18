@@ -32,7 +32,7 @@ https://github.com/Bodmer/JPEGDecoder
 		//#endif
 
 		#ifdef ESP32  // SDFAT library not compatible with ESP32
-			//#undef LOAD_SD_LIBRARY
+			#undef LOAD_SD_LIBRARY
 			#undef LOAD_SDFAT_LIBRARY
 		#endif
 
