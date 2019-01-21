@@ -111,21 +111,18 @@ void drawBMP(int16_t x, int16_t y, const uint8_t *bitmap) {
         tft.startWrite();
         tft.setAddrWindow(x, y, w, h);
         for (row = 0; row < h; row++) { // For each scanline...
-          if (flip) // Bitmap is stored bottom-to-top order (normal BMP)
-            pos = bmpImageoffset + (bmpHeight - 1 - row) * rowSize;
-          else     // Bitmap is stored top-to-bottom
-            pos = bmpImageoffset + row * rowSize;
+          pos = bmpImageoffset + (flip ? (bmpHeight - 1 - row) : row) * rowSize;;
           buffidx = sizeof(sdbuffer); //Current position in _dataBuffer
 
-          int pkj = 0;
+          uint32_t pkj = 0;
           for (col = 0; col < w; col++) { // For each pixel...
             if (buffidx >= sizeof(sdbuffer)) { //Indeed
+              buffidx = 0; //Set index to beginning
+              uint32_t cwj = pkj * sizeof(sdbuffer) + pos;
               for (int a = 0; a < sizeof(sdbuffer); a++) {
-                sdbuffer[a] = pgm_read_byte(bitmap + (pos + a) + (pkj * sizeof(sdbuffer)));
-                uint32_t pkj = (uint32_t)bitmap + (pos + a);
+                sdbuffer[a] = pgm_read_byte(bitmap + a + cwj);
               }
               pkj++;
-              buffidx = 0; //Set index to beginning
             }
 
             // Convert pixel from BMP to TFT format, push to display
