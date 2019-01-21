@@ -1,4 +1,4 @@
-#include "ironmanIRremote.h"
+#include <ironman_Sensor_IRremote.h>
 ironmanIRremote IRremote;
 
 void setup() {
@@ -8,11 +8,12 @@ void setup() {
 }
 
 void loop() {
-
+  
   if (IRremote.available()) {
     if (IRremote.irrecvAvailable()) {
       Serial.print("0x");
       Serial.println(IRremote.irrecvValue(), HEX);
     }
   }
+  
 }
