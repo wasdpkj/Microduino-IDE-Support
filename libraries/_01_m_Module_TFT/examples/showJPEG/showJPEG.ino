@@ -179,7 +179,7 @@ void renderJPEG(int xpos, int ypos) {
     // draw image MCU block only if it will fit on the screen
     if (( mcu_x + win_w ) <= tft.width() && ( mcu_y + win_h ) <= tft.height()) {
       tft.startWrite();
-      tft.setAddrWindow(mcu_x + xpos, mcu_y + ypos, win_w, win_h);
+      tft.setAddrWindow(mcu_x, mcu_y, win_w, win_h);
       for (int y = 0; y < win_h; y++) {
         for (int x = 0; x < win_w; x++) {
           //tft.writePixel(mcu_x + x, mcu_y + y, *pImg++);
