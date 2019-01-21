@@ -1,0 +1,41 @@
+#######################################
+# Syntax Coloring Map For ironman_Sensor_Gesture
+####################################### 
+# Datatypes (KEYWORD1)
+#######################################
+
+ironman_shield_coreNrf	KEYWORD1
+ironmanShieldNrf	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+write8	KEYWORD2
+available	KEYWORD2
+sdVersion	KEYWORD2
+hardwareVersion	KEYWORD2
+firmwareVersion	KEYWORD2
+priorityVal	KEYWORD2
+micVal	KEYWORD2
+batteryVal	KEYWORD2
+keyVal	KEYWORD2
+overtimeVal	KEYWORD2
+priorityEN	KEYWORD2
+setColorLED	KEYWORD2
+tone	KEYWORD2
+readKey	KEYWORD2
+shieldbuttonSta	KEYWORD2
+
+#######################################
+# LITERALs (LITERAL1)
+#######################################
+
+SENSOR_ID	LITERAL1
+NRFMODE	LITERAL1
+AVRMODE	LITERAL1
+PRESSED	LITERAL1
+RELEASED	LITERAL1
+KEY_X	LITERAL1
+KEY_Y	LITERAL1
