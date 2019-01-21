@@ -1,0 +1,44 @@
+#######################################
+# Syntax Coloring Map For ironman_Sensor_Light
+####################################### 
+# Datatypes (KEYWORD1)
+#######################################
+
+ironman_Sensor_Light	KEYWORD1
+ironmanLight	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+available	KEYWORD2
+getReg8	KEYWORD2
+getReg7to8	KEYWORD2
+getID	KEYWORD2
+getPower	KEYWORD2
+getHandware	KEYWORD2
+getSoftware	KEYWORD2
+getErr	KEYWORD2
+write8	KEYWORD2
+setColorLEDA	KEYWORD2
+setColorLEDB	KEYWORD2
+setAllLED	KEYWORD2
+
+getLine	KEYWORD2
+getLineA	KEYWORD2
+getLineB	KEYWORD2
+getColorRaw	KEYWORD2
+getColor	KEYWORD2
+getColorA	KEYWORD2
+getColorB	KEYWORD2
+
+#######################################
+# LITERALs (LITERAL1)
+#######################################
+
+SENSOR_ID	LITERAL1
+BLACK	LITERAL1
+RED	LITERAL1
+GREEN	LITERAL1
+BLUE	LITERAL1
