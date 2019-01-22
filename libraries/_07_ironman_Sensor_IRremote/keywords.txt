@@ -1,0 +1,55 @@
+#######################################
+# Syntax Coloring Map For ironman_Sensor_IRremote
+####################################### 
+# Datatypes (KEYWORD1)
+#######################################
+
+ironman_Sensor_IRremote	KEYWORD1
+ironmanIRremote	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+available	KEYWORD2
+getReg8	KEYWORD2
+getReg7to8	KEYWORD2
+getID	KEYWORD2
+getPower	KEYWORD2
+getHandware	KEYWORD2
+getSoftware	KEYWORD2
+getErr	KEYWORD2
+write8	KEYWORD2
+
+irrecvAvailable	KEYWORD2
+irrecvValue	KEYWORD2
+sendNEC	KEYWORD2
+sendSony	KEYWORD2
+remoteSta	KEYWORD2
+remotecontrolSta	KEYWORD2
+
+#######################################
+# LITERALs (LITERAL1)
+#######################################
+
+SENSOR_ID	LITERAL1
+PRESSED	LITERAL1
+RELEASED	LITERAL1
+KEY_REPEAT	LITERAL1
+KEY_POWER	LITERAL1
+KEY_UP	LITERAL1
+KEY_LEFT	LITERAL1
+KEY_RIGHT	LITERAL1
+KEY_DOWN	LITERAL1
+KEY_A	LITERAL1
+KEY_B	LITERAL1
+KEY_C	LITERAL1
+KEY_D	LITERAL1
+KEY_E	LITERAL1
+KEY_OK	LITERAL1
+KEY_VOLP	LITERAL1
+KEY_VOLD	LITERAL1
+KEY_BACK	LITERAL1
+KEY_PLAY	LITERAL1
+KEY_MUTE	LITERAL1

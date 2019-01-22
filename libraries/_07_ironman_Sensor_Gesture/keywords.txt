@@ -1,0 +1,39 @@
+#######################################
+# Syntax Coloring Map For ironman_Sensor_Gesture
+####################################### 
+# Datatypes (KEYWORD1)
+#######################################
+
+ironmanGesture	KEYWORD1
+ironman_Sensor_Gesture	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+available	KEYWORD2
+getReg8	KEYWORD2
+getReg7to8	KEYWORD2
+getID	KEYWORD2
+getPower	KEYWORD2
+getHandware	KEYWORD2
+getSoftware	KEYWORD2
+getErr	KEYWORD2
+write8	KEYWORD2
+setMode	KEYWORD2
+readGesture	KEYWORD2
+readProximity	KEYWORD2
+
+#######################################
+# LITERALs (LITERAL1)
+#######################################
+
+SENSOR_ID	LITERAL1
+MODE_Gesture	LITERAL1
+MODE_Proximity	LITERAL1
+DIR_NONE	LITERAL1
+DIR_LEFT	LITERAL1
+DIR_RIGHT	LITERAL1
+DIR_UP	LITERAL1
+DIR_DOWN	LITERAL1

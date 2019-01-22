@@ -1,5 +1,5 @@
-#include "irconmanGesture.h"
-irconmanGesture Gesture;
+#include <ironman_Sensor_Gesture.h>
+ironmanGesture Gesture;
 
 void setup() {
   Serial.begin(115200);

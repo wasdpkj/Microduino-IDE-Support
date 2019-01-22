@@ -11,12 +11,9 @@ boolean ironmanColorLED::begin(uint8_t addr)
 {
   _i2cAddr = addr;
   Wire.begin ();
-  if (Wire.endTransmission()) {
-    return false;
-  }
-  setPower(getPower());
-  iicsta = true;
-  return true;
+  Wire.beginTransmission(_i2cAddr);
+  iicsta = !Wire.endTransmission();
+  return iicsta;
 }
 
 boolean ironmanColorLED::available () {
