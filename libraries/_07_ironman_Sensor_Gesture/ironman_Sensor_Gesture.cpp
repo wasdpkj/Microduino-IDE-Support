@@ -2,12 +2,12 @@
 #include <I2Cdev.h>
 #include "ironman_Sensor_Gesture.h"
 
-irconmanGesture::irconmanGesture ()
+ironmanGesture::ironmanGesture ()
 {
 
 }
 
-boolean irconmanGesture::begin(uint8_t addr)
+boolean ironmanGesture::begin(uint8_t addr)
 {
   _i2cAddr = addr;
   Wire.begin ();
@@ -16,7 +16,7 @@ boolean irconmanGesture::begin(uint8_t addr)
   return iicsta;
 }
 
-boolean irconmanGesture::available () {
+boolean ironmanGesture::available () {
   if (iicsta) {
     if (getID() == SENSOR_ID)
       return true;
@@ -30,7 +30,7 @@ boolean irconmanGesture::available () {
   }
 }
 
-uint8_t irconmanGesture::getReg8(uint8_t _reg)
+uint8_t ironmanGesture::getReg8(uint8_t _reg)
 {
   uint8_t result8, resultsta;
   resultsta = I2Cdev::readByte(_i2cAddr, _reg, &result8);
@@ -40,7 +40,7 @@ uint8_t irconmanGesture::getReg8(uint8_t _reg)
     return 0;
 }
 
-uint16_t irconmanGesture::getReg7to8(uint8_t _reg) {
+uint16_t ironmanGesture::getReg7to8(uint8_t _reg) {
   uint8_t readH, readL;
   uint8_t ressta[2] = {0};
   uint16_t result16;
@@ -54,74 +54,74 @@ uint16_t irconmanGesture::getReg7to8(uint8_t _reg) {
   return result16;
 }
 
-uint16_t irconmanGesture::getID()
+uint16_t ironmanGesture::getID()
 {
   return getReg7to8(GestureID);
 }
 
-uint8_t irconmanGesture::getPower()
+uint8_t ironmanGesture::getPower()
 {
   return getReg8(GesturePOWER);
 }
 
-uint8_t irconmanGesture::getHandware()
+uint8_t ironmanGesture::getHandware()
 {
   return getReg8(GestureHANDWARE);
 }
 
-uint8_t irconmanGesture::getSoftware()
+uint8_t ironmanGesture::getSoftware()
 {
   return getReg8(GestureSOFTWARE);
 }
 
-uint8_t irconmanGesture::getErr()
+uint8_t ironmanGesture::getErr()
 {
   return getReg8(GestureERR);
 }
 
-uint8_t irconmanGesture::getNrfEn()
+uint8_t ironmanGesture::getNrfEn()
 {
   return getReg8(NRFENABLE);
 }
 
-void irconmanGesture::write8(uint8_t dataaddr, uint8_t data) {
+void ironmanGesture::write8(uint8_t dataaddr, uint8_t data) {
   Wire.beginTransmission(_i2cAddr);
   Wire.write(dataaddr);
   Wire.write(data);
   Wire.endTransmission();
 }
 
-void irconmanGesture::Rest() {
+void ironmanGesture::Rest() {
   write8(SENSORREST, 1);
 }
 
-void irconmanGesture::setNrfEN(boolean _en) {
+void ironmanGesture::setNrfEN(boolean _en) {
   write8(NRFENABLE, _en);
 }
 
-void irconmanGesture::setPort(uint8_t port) {
+void ironmanGesture::setPort(uint8_t port) {
   write8(SENSORPORT, port);
 }
 
-void irconmanGesture::setAddr(uint8_t addr) {
+void ironmanGesture::setAddr(uint8_t addr) {
   write8(SETAVRADDR, addr);
 }
 
-void irconmanGesture::setPower(uint8_t power) {
+void ironmanGesture::setPower(uint8_t power) {
   write8(SETPOWER, power);
 }
 
-void irconmanGesture::setMove(uint8_t _move) {
+void ironmanGesture::setMove(uint8_t _move) {
   write8(SETMOVE, _move);
 }
 
-void irconmanGesture::setMode(uint8_t _mode) {
+void ironmanGesture::setMode(uint8_t _mode) {
   if (_mode > 1)
     return ;
   write8(SETMODE, _mode);
 }
 
-uint8_t irconmanGesture::readGesture() {
+uint8_t ironmanGesture::readGesture() {
   uint8_t data = getReg8(GestureValue);
   if (dir != data && data <= DIR_DOWN) {
     dir = data;
@@ -130,6 +130,6 @@ uint8_t irconmanGesture::readGesture() {
   return 0;
 }
 
-uint16_t irconmanGesture::readProximity() {
+uint16_t ironmanGesture::readProximity() {
   return getReg7to8(GestureProximity);
 }

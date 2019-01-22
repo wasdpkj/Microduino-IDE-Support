@@ -1,5 +1,5 @@
-#ifndef _irconmanGesture_H_
-#define _irconmanGesture_H_
+#ifndef _ironmanGesture_H_
+#define _ironmanGesture_H_
 
 #define SENSOR_ID         0x07
 
@@ -37,10 +37,10 @@ enum {
   DIR_DOWN,
 };
 
-class irconmanGesture {
+class ironmanGesture {
 
   public:
-    irconmanGesture ();
+    ironmanGesture ();
     boolean begin(uint8_t i2cAddr = Gesture_ADDRESS);
     boolean available();
     uint8_t getReg8(uint8_t _reg);

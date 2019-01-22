@@ -4,7 +4,7 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-irconmanGesture	KEYWORD1
+ironmanGesture	KEYWORD1
 ironman_Sensor_Gesture	KEYWORD1
 
 #######################################
