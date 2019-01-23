@@ -1,7 +1,8 @@
 language: c
 sudo: false
 before_install:
- - travis_wait 3600 source <(curl -SLs https://raw.githubusercontent.com/${TRAVIS_REPO_SLUG}/${TRAVIS_BRANCH}/install.sh)
+ - travis_wait 3600
+ - source <(curl -SLs https://raw.githubusercontent.com/${TRAVIS_REPO_SLUG}/${TRAVIS_BRANCH}/install.sh)
  
 script:
   - build_platform coreesp
