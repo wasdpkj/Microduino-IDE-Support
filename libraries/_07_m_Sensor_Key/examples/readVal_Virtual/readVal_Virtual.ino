@@ -24,16 +24,16 @@ void loop() {
   bool val = !digitalRead(A0);  //val 可以是任何bool变量
   switch (keyVirtual.readVal(val)) {
     case KEY_RELEASED:
-      Serial.println("KEY (digital) RELEASED---1");   //按键释放状态
+      Serial.println("KEY (digital) RELEASED---1");   //按键释放
       break;
     case KEY_PRESSED:
-      Serial.println("KEY (digital) PRESSED-------2");    //按键按下状态
+      Serial.println("KEY (digital) PRESSED-------2");    //按键按下
       break;
     case KEY_PRESSING:
-      Serial.println("KEY (digital) PRESSING--------3");  //按键按下动作
+      Serial.println("KEY (digital) PRESSING--------3");  //按键一直按下
       break;
     case KEY_RELEASING:
-      Serial.println("KEY (digital) RELEASING---------4");    //按键释放动作
+      Serial.println("KEY (digital) RELEASING---------4");    //按键一直释放
       break;
   }
 

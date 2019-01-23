@@ -10,7 +10,7 @@
   请将碰撞开关传感器连接到A0口进行实验
 */
 
-#define MODE_SWITCH
+//#define MODE_SWITCH
 
 #include <Microduino_Key.h>
 
@@ -25,31 +25,31 @@ void loop() {
 #if defined (MODE_SWITCH)
   switch (keyDigital.readVal()) {
     case KEY_RELEASED:
-      Serial.println("KEY (digital) RELEASED---1");   //按键释放状态
+      Serial.println("KEY (digital) RELEASED---1");   //按键松开
       break;
     case KEY_PRESSED:
-      Serial.println("KEY (digital) PRESSED-------2");    //按键按下状态
+      Serial.println("KEY (digital) PRESSED-------2");    //按键按下
       break;
     case KEY_PRESSING:
-      Serial.println("KEY (digital) PRESSING--------3");  //按键按下动作
+      Serial.println("KEY (digital) PRESSING--------3");  //按键一直按下
       break;
     case KEY_RELEASING:
-      Serial.println("KEY (digital) RELEASING---------4");    //按键释放动作
+      Serial.println("KEY (digital) RELEASING---------4");    //按键一直松开
       break;
   }
 
 #else
-  if (keyDigital.readVal(KEY_RELEASED)) {
-    Serial.println("KEY (digital) RELEASED---1");   //按键释放状态
-  }
-  if (keyDigital.readVal(KEY_PRESSING)) {
-    Serial.println("KEY (digital) PRESSING--------3");  //按键按下动作
+  if (keyDigital.readVal(KEY_RELEASING)) {
+    Serial.println("KEY (digital) RELEASING---------4");    //按键一直松开
   }
   if (keyDigital.readVal(KEY_PRESSED)) {
-    Serial.println("KEY (digital) PRESSED-------2");    //按键按下状态
+    Serial.println("KEY (digital) PRESSED-------2");    //按键按下
   }
-  if (keyDigital.readVal(KEY_RELEASING)) {
-    Serial.println("KEY (digital) RELEASING---------4");    //按键释放动作
+    if (keyDigital.readVal(KEY_PRESSING)) {
+    Serial.println("KEY (digital) PRESSING--------3");  //按键一直按下
+  }
+  if (keyDigital.readVal(KEY_RELEASED)) {
+    Serial.println("KEY (digital) RELEASED---1");   //按键松开
   }
 #endif
 

@@ -24,31 +24,32 @@ void loop() {
 #if defined (MODE_SWITCH)
   switch (keyAnalog.readVal(0, 50)) {  //(模拟最小值,模拟最大值)
     case KEY_RELEASED:
-      Serial.println("KEY (analog)  RELEASED---1");     //按键释放状态
+      Serial.println("KEY (analog)  RELEASED---1");     //按键松开
       break;
     case KEY_PRESSED:
-      Serial.println("KEY (analog)  PRESSED-------2");    //按键按下状态
+      Serial.println("KEY (analog)  PRESSED-------2");    //按键按下
       break;
     case KEY_PRESSING:
-      Serial.println("KEY (analog)  PRESSING--------3");    //按键按下动作
+      Serial.println("KEY (analog)  PRESSING--------3");    //按键一直按下
       break;
     case KEY_RELEASING:
-      Serial.println("KEY (analog)  RELEASING---------4");    //按键释放动作
+      Serial.println("KEY (analog)  RELEASING---------4");    //按键一直松开
       break;
   }
 #else
-  if (keyAnalog.readVal(0, 50, KEY_RELEASED)) {
-    Serial.println("KEY (analog) RELEASED---1");   //按键释放状态
-  }
-  if (keyAnalog.readVal(0, 50, KEY_PRESSING)) {
-    Serial.println("KEY (analog) PRESSING--------3");  //按键按下动作
+  if (keyAnalog.readVal(0, 50, KEY_RELEASING)) {
+    Serial.println("KEY (analog) RELEASING---------4");    //按键一直松开
   }
   if (keyAnalog.readVal(0, 50, KEY_PRESSED)) {
-    Serial.println("KEY (analog) PRESSED-------2");    //按键按下状态
+    Serial.println("KEY (analog) PRESSED-------2");    //按键按下
   }
-  if (keyAnalog.readVal(0, 50, KEY_RELEASING)) {
-    Serial.println("KEY (analog) RELEASING---------4");    //按键释放动作
+  if (keyAnalog.readVal(0, 50, KEY_PRESSING)) {
+    Serial.println("KEY (analog) PRESSING--------3");  //按键一直按下
   }
+  if (keyAnalog.readVal(0, 50, KEY_RELEASED)) {
+    Serial.println("KEY (analog) RELEASED---1");   //按键释放
+  }
+
 #endif
 
   delay(100);

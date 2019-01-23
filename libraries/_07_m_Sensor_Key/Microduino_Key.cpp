@@ -53,11 +53,11 @@ uint8_t VirtualKey::readVal(uint8_t _val, uint8_t _sta) { // return the value as
         if(!keyCache && keyVal)
 		return KEY_PRESSING;
 	else if(keyCache && !keyVal)
-		return KEY_RELEASING;
-	else if(!keyCache && !keyVal)
 		return KEY_RELEASED;
+	else if(!keyCache && !keyVal)
+		return KEY_RELEASING;
 	else if(keyCache && keyVal)
-		return KEY_PRESSED;
+		return KEY_PRESSING;
   }
   else{
     if (!keyCache && keyVal) {//按下
@@ -80,17 +80,17 @@ uint8_t VirtualKey::readVal(uint8_t _val, uint8_t _sta) { // return the value as
     else if (keyCache && keyVal) {//一直按住
       buttonsta[0] = true;
     }
-    if (_sta == KEY_RELEASED && !buttonsta[0] && !_val) {//一直松开
+    if (_sta == KEY_RELEASING && !buttonsta[0] && !_val) {//一直松开
       return true;
     }
-    else if (_sta == KEY_PRESSING && buttonsta[1]) {//按下
+    else if (_sta == KEY_PRESSED && buttonsta[1]) {//按下
       buttonsta[1] = false;
       return true;
     }
-    else if (_sta == KEY_PRESSED && buttonsta[0] && _val) {//一直按着
+    else if (_sta == KEY_PRESSING && buttonsta[0] && _val) {//一直按着
       return true;
     }
-    else if (_sta == KEY_RELEASING && buttonsta[2]) {//松开
+    else if (_sta == KEY_RELEASED && buttonsta[2]) {//松开
       buttonsta[2] = false;
       return true;
     }
@@ -102,7 +102,7 @@ uint8_t VirtualKey::readVal(uint8_t _val, uint8_t _sta) { // return the value as
 uint8_t VirtualKey::readEvent(uint8_t _val, uint16_t _time){ // return the value as degrees
 	uint8_t keyBuf = readVal(_val);
 	
-	if(keyBuf == KEY_PRESSING){
+	if(keyBuf == KEY_PRESSED){
 		keyTimer = millis();
 	}
 	
@@ -112,7 +112,7 @@ uint8_t VirtualKey::readEvent(uint8_t _val, uint16_t _time){ // return the value
       else
         return NOT_PRESS;
     }
-    else if (keyBuf == KEY_RELEASING) {  //按下松开后
+    else if (keyBuf == KEY_RELEASED) {  //按下松开后
       keyTimer = 0;
       return SHORT_PRESS;
     }
