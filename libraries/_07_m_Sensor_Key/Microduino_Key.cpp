@@ -51,7 +51,7 @@ uint8_t VirtualKey::readVal(uint8_t _val, uint8_t _sta) { // return the value as
 
   if(_sta == KEY_NONE){
         if(!keyCache && keyVal)
-		return KEY_PRESSING;
+		return KEY_PRESSED;
 	else if(keyCache && !keyVal)
 		return KEY_RELEASED;
 	else if(!keyCache && !keyVal)
