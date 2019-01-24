@@ -1,0 +1,57 @@
+#######################################
+# Syntax Coloring Map For ironman_Sensor_Gesture
+####################################### 
+# Datatypes (KEYWORD1)
+#######################################
+
+ironmanmotorPro	KEYWORD1
+ironman_Sensor_motorPro	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+available	KEYWORD2
+getID	KEYWORD2
+getPower	KEYWORD2
+getHandwareVersion	KEYWORD2
+getSoftwareVersion	KEYWORD2
+getMode	KEYWORD2
+getSetSpeed	KEYWORD2
+getSetPosition	KEYWORD2
+getSpeed	KEYWORD2
+getSpeedRaw	KEYWORD2
+getPosition	KEYWORD2
+getS_PID_P	KEYWORD2
+getS_PID_I	KEYWORD2
+getS_PID_D	KEYWORD2
+getP_PID_P	KEYWORD2
+getP_PID_I	KEYWORD2
+getP_PID_D	KEYWORD2
+setSpeed	KEYWORD2
+setPosition	KEYWORD2
+setMode	KEYWORD2
+setS_PID_P	KEYWORD2
+setS_PID_I	KEYWORD2
+setS_PID_D	KEYWORD2
+setP_PID_P	KEYWORD2
+setP_PID_I	KEYWORD2
+setP_PID_D	KEYWORD2
+
+
+#######################################
+# LITERALs (LITERAL1)
+#######################################
+
+SENSOR_ID	LITERAL1
+MODE_OPEN	LITERAL1
+MODE_POSITION	LITERAL1
+BRAKE	LITERAL1
+FREE	LITERAL1
+BIT_13	LITERAL1
+BIT_12	LITERAL1
+BIT_11	LITERAL1
+BIT_10	LITERAL1
+BIT_9	LITERAL1
+BIT_8	LITERAL1
