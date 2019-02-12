@@ -26,6 +26,8 @@ priorityEN	KEYWORD2
 setColorLED	KEYWORD2
 tone	KEYWORD2
 readKey	KEYWORD2
+readKeyX	KEYWORD2
+readKeyY	KEYWORD2
 shieldbuttonSta	KEYWORD2
 
 #######################################

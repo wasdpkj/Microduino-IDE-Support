@@ -49,6 +49,8 @@ class ironmanShieldNrf {
     void setColorLED(uint8_t colorR, uint8_t colorG, uint8_t colorB);
     void tone(uint16_t freq);
     void tone(uint16_t freq, uint16_t timer);
+    boolean readKeyX();
+    boolean readKeyY();
     void readKey();
     boolean shieldbuttonSta(uint8_t key, uint8_t mode);
 

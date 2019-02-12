@@ -97,6 +97,14 @@ void ironmanShieldNrf::tone(uint16_t freq, uint16_t timer) {
   writedata(I2C_W_BEEP_FH, tonefretime, 4);
 }
 
+boolean ironmanShieldNrf::readKeyX() {
+  return keyVal() & 0x01;
+}
+
+boolean ironmanShieldNrf::readKeyY() {
+  return keyVal() & 0x02;
+}
+
 void ironmanShieldNrf::readKey() {
   uint8_t _key = keyVal();
   ironmankey[0] = _key & 0x01;
