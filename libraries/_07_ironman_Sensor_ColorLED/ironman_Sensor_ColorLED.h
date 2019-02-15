@@ -19,7 +19,7 @@
 class ironmanColorLED {
 
   public:
-    ironmanColorLED ();
+    ironmanColorLED();
     bool begin(uint8_t i2cAddr = ColorLED_ADDRESS);
     boolean available();
     uint8_t getReg8(uint8_t _reg);

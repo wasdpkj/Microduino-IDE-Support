@@ -22,7 +22,7 @@
 class ironmanUltrasonic {
 
   public:
-    ironmanUltrasonic ();
+    ironmanUltrasonic();
     boolean begin(uint8_t i2cAddr = Ultrasonic_ADDRESS);
     boolean available();
     uint8_t getReg8(uint8_t _reg);
