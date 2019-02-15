@@ -65,7 +65,7 @@
 class ironmanLight {
 
   public:
-    ironmanLight ();
+    ironmanLight();
     boolean begin (uint8_t i2cAddr = COLORLIFHT_ADDRESS);
     boolean available();
     void write8(uint8_t addr, uint8_t d);

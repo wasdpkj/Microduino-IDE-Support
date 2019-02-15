@@ -19,7 +19,7 @@ uint8_t ironmanmotorPro::begin(uint8_t _bit)
   return beginFlag;
 }
 
-boolean ironmanmotorPro::available () {
+boolean ironmanmotorPro::available() {
   if (beginFlag) {
     if (getID() == MOTORPRO_ID)
       return true;

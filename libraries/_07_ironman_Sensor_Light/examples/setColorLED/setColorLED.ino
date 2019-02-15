@@ -7,7 +7,7 @@ void setup() {
 }
 
 void loop() {
-  if (light.available ()) {
+  if (light.available()) {
     light.setAllLED(5, 0, 0);
     delay(300);
     light.setAllLED(0, 5, 0);

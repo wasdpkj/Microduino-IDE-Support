@@ -40,7 +40,7 @@ enum {
 class ironmanGesture {
 
   public:
-    ironmanGesture ();
+    ironmanGesture();
     boolean begin(uint8_t i2cAddr = Gesture_ADDRESS);
     boolean available();
     uint8_t getReg8(uint8_t _reg);

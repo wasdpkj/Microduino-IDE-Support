@@ -72,7 +72,7 @@ const uint32_t remoteCode[16] = {
 class ironmanIRremote {
 
   public:
-    ironmanIRremote ();
+    ironmanIRremote();
     bool begin(uint8_t i2cAddr = IRremote_ADDRESS);
     boolean available();
     uint8_t getReg8(uint8_t _reg);

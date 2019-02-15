@@ -2,7 +2,7 @@
 #include <I2Cdev.h>
 #include "ironman_Sensor_ColorLED.h"
 
-ironmanColorLED::ironmanColorLED ()
+ironmanColorLED::ironmanColorLED()
 {
 
 }
@@ -16,7 +16,7 @@ boolean ironmanColorLED::begin(uint8_t addr)
   return iicsta;
 }
 
-boolean ironmanColorLED::available () {
+boolean ironmanColorLED::available() {
   if (iicsta) {
     if (getID() == SENSOR_ID)
       return true;

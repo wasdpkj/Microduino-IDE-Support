@@ -2,7 +2,7 @@
 #include <I2Cdev.h>
 #include "ironman_Sensor_Ultrasonic.h"
 
-ironmanUltrasonic::ironmanUltrasonic ()
+ironmanUltrasonic::ironmanUltrasonic()
 {
 
 }
@@ -17,7 +17,7 @@ boolean ironmanUltrasonic::begin(uint8_t addr)
   return iicsta;
 }
 
-boolean ironmanUltrasonic::available () {
+boolean ironmanUltrasonic::available() {
   if (iicsta) {
     if (getID() == SENSOR_ID){
       setPower(1);

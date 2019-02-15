@@ -2,7 +2,7 @@
 #include <I2Cdev.h>
 #include "ironman_Sensor_Gesture.h"
 
-ironmanGesture::ironmanGesture ()
+ironmanGesture::ironmanGesture()
 {
 
 }
@@ -16,7 +16,7 @@ boolean ironmanGesture::begin(uint8_t addr)
   return iicsta;
 }
 
-boolean ironmanGesture::available () {
+boolean ironmanGesture::available() {
   if (iicsta) {
     if (getID() == SENSOR_ID)
       return true;

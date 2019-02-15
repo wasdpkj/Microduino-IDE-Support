@@ -10,7 +10,7 @@ void setup() {
 }
 
 void loop() {
-  if (light.available ()) {
+  if (light.available()) {
     light.getColor(colorAB);
     Serial.print(colorAB[0]);
     Serial.print(" , ");

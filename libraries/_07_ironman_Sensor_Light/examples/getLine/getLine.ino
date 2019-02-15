@@ -9,7 +9,7 @@ void setup() {
 }
 
 void loop() {
-  if (light.available ()) {
+  if (light.available()) {
     light.getLine(line, RED, RED);
     Serial.print(line[0]);
     Serial.print(" , ");

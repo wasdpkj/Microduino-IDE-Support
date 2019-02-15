@@ -7,7 +7,7 @@ void setup() {
 }
 
 void loop() {
-  if (Ultrasonic1.available ()) {
+  if (Ultrasonic1.available()) {
     Serial.print(Ultrasonic1.getDistance());
     Serial.println("mm");
     delay(100);

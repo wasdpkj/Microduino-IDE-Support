@@ -9,7 +9,7 @@ void setup() {
 }
 
 void loop() {
-  if (Gesture.available ()) {
+  if (Gesture.available()) {
     switch (Gesture.readGesture()) {
       case DIR_UP:
         Serial.println("UP");

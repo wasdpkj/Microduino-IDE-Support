@@ -2,7 +2,7 @@
 #include <I2Cdev.h>
 #include "ironman_Sensor_IRremote.h"
 
-ironmanIRremote::ironmanIRremote ()
+ironmanIRremote::ironmanIRremote()
 {
 
 }
@@ -16,7 +16,7 @@ boolean ironmanIRremote::begin(uint8_t addr)
   return iicsta;
 }
 
-boolean ironmanIRremote::available () {
+boolean ironmanIRremote::available() {
   if (iicsta) {
     if (getID() == SENSOR_ID)
       return true;

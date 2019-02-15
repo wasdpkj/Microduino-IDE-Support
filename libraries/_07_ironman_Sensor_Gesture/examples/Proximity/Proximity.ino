@@ -9,7 +9,7 @@ void setup() {
 }
 
 void loop() {
-  if (Gesture.available ()) {
+  if (Gesture.available()) {
     Serial.println(Gesture.readProximity());
     delay(100);
   }

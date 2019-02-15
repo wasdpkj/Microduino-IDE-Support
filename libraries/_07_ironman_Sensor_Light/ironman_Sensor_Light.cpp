@@ -2,7 +2,7 @@
 #include <I2Cdev.h>
 #include "ironman_Sensor_Light.h"
 
-ironmanLight::ironmanLight ()
+ironmanLight::ironmanLight()
 {
 
 }
@@ -16,7 +16,7 @@ boolean ironmanLight::begin (uint8_t addr)
   return iicsta;
 }
 
-boolean ironmanLight::available () {
+boolean ironmanLight::available() {
   if (iicsta) {
     if (getID() == SENSOR_ID)
       return true;
