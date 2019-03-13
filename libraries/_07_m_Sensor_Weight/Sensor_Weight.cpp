@@ -35,7 +35,7 @@ bool SensorWeight::write8(uint8_t writeAddr, uint8_t data, uint8_t len) {
   for (uint8_t i = 0; i < len; i++) {
     Wire.write(data & 0xFF);            // sends one byte
   }
-  return Wire.endTransmission();    // stop transmitting
+  return (Wire.endTransmission() == 0);    // stop transmitting
 }
 
 void SensorWeight::setReset()
