@@ -15,6 +15,5 @@ void loop() {
       IRremote.sendNEC(0x1FEA05F);
       Serial.println("Send...");
     }
-    delay(250);
   }
 }

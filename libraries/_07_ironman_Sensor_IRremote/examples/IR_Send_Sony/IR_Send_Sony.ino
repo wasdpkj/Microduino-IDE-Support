@@ -15,6 +15,5 @@ void loop() {
       IRremote.sendSony(0xAFF);
       Serial.println("Send...");
     }
-    delay(250);
   }
 }

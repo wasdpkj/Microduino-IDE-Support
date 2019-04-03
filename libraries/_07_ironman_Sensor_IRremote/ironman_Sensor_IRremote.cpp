@@ -164,6 +164,7 @@ void ironmanIRremote::sendNEC(uint32_t data) {
     return;
   setReg32to40_7bit(data);
   writecmddata(ADDR8_SEND_MODE, NEC, irsenddata , 5);
+  delay(150);
 }
 
 void ironmanIRremote::sendSony(uint16_t data) {
@@ -175,6 +176,7 @@ void ironmanIRremote::sendSony(uint16_t data) {
   Wire.write(data & 0x7F);
   Wire.write(data >> 7 & 0x7F);
   Wire.endTransmission();
+  delay(150);
 }
 
 void ironmanIRremote::remoteSta() {
