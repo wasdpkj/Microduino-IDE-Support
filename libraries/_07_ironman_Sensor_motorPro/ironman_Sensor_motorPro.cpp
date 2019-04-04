@@ -9,6 +9,7 @@ ironmanmotorPro::ironmanmotorPro(uint8_t i2caddr)
 
 uint8_t ironmanmotorPro::begin(uint8_t _bit)
 {
+  delay(2000);
   Wire.begin ();
   _bit = constrain(_bit, 8, 13);
   Multiple = 0X2000 >> _bit;

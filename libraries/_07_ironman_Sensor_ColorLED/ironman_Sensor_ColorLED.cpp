@@ -9,6 +9,7 @@ ironmanColorLED::ironmanColorLED()
 
 boolean ironmanColorLED::begin(uint8_t addr)
 {
+  delay(2000);
   _i2cAddr = addr;
   Wire.begin ();
   Wire.beginTransmission(_i2cAddr);
