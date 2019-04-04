@@ -10,10 +10,10 @@ ironmanIRremote IRremote;
 ironmanmotorPro MOTOR_L(ADDR_MOTORL);
 ironmanmotorPro MOTOR_R(ADDR_MOTORR);
 
-#define S_PID_P      10
+#define S_PID_P      6
 #define S_PID_I      75
 #define S_PID_D      3
-#define RATIO        48
+#define RATIO        37
 #define RESOLUTION   24
 #define MAXSPEED     550
 

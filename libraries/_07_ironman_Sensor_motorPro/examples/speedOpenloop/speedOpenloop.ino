@@ -2,7 +2,7 @@
 
 ironmanmotorPro MOTOR(0x03);
 
-#define RATIO        48 //电机齿轮减速比
+#define RATIO        37 //电机齿轮减速比
 #define RESOLUTION   24 //速度分辨率 测速箱比例
 
 void setup() {

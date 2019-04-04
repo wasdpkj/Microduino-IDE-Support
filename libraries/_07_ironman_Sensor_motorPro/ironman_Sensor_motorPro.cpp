@@ -53,6 +53,7 @@ void ironmanmotorPro::reset(uint8_t _reset) {
 
 void ironmanmotorPro::setSpeed(int16_t speed) {
   int16_t speedBuf;
+  int16_t _speed;
   if (speed == BRAKE) {
     speedBuf = speed;
   }
@@ -70,7 +71,8 @@ void ironmanmotorPro::setSpeed(int16_t speed) {
       speedBuf = speed * Multiple;
     }
     else {
-      float _speedBuf = ((float)speed / 100.0);
+      _speed=map(speed,-255,255,-CLOSEMAXSPEED,CLOSEMAXSPEED);
+      float _speedBuf = ((float)_speed / 100.0);
       speedBuf = ratio * resolution * _speedBuf;
     }
   }
@@ -162,7 +164,7 @@ int16_t ironmanmotorPro::getSetSpeed() {
     getSpeedBuf = (float)speedBuf / (float)(ratio * resolution);
     speedBuf = getSpeedBuf * 100;
   }
-  return speedBuf;
+  return map(speedBuf,-CLOSEMAXSPEED,CLOSEMAXSPEED,-255,255);
 }
 
 int32_t ironmanmotorPro::getSetPosition() {
@@ -184,7 +186,13 @@ int16_t ironmanmotorPro::getSpeedRaw() {
 int16_t ironmanmotorPro::getSpeed() {
   int16_t _realSpeed = getReg14to16(ADDR16_REAL_SPEED);
   float realSpeed = (_realSpeed * 100.0) / (ratio * resolution);
-  return (int16_t)realSpeed;
+  if (motorMode == MODE_OPEN) {
+    return (int16_t)realSpeed;
+  }
+  else if (motorMode == MODE_SPEED) {
+    return (int16_t)map(realSpeed,-CLOSEMAXSPEED,CLOSEMAXSPEED,-255,255);
+  }
+  
 }
 
 uint16_t ironmanmotorPro::getS_PID_P() {

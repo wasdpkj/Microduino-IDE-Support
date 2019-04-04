@@ -3,11 +3,11 @@
 ironmanmotorPro MOTOR(0x03);
 
 //1:48电机的PID参数
-#define S_PID_P 10
+#define S_PID_P 6
 #define S_PID_I 75
 #define S_PID_D 3
 
-#define RATIO        48 //电机齿轮减速比
+#define RATIO        37 //电机齿轮减速比
 #define RESOLUTION   24 //速度分辨率 测速箱比例
 
 void setup() {
@@ -35,7 +35,7 @@ void setup() {
 
 void loop() {
   if (MOTOR.available ()) {
-    MOTOR.setSpeed(600);//-550 - 650
+    MOTOR.setSpeed(255);//-255 - 255
     int16_t setspeed = MOTOR.getSetSpeed();//设置的速度
     int16_t measuringspeed = MOTOR.getSpeed();//测量速度
     Serial.print(setspeed);

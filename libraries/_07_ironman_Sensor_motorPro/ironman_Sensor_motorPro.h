@@ -10,6 +10,8 @@
 #define MODE_SPEED       0x01
 #define MODE_POSITION    0x02
 
+#define CLOSEMAXSPEED    500
+
 //电机可设参数预定义
 #define BRAKE   16383  //刹车
 #define FREE    0       //释放 
