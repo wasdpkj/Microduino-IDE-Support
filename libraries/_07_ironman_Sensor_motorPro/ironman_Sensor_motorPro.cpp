@@ -9,14 +9,13 @@ ironmanmotorPro::ironmanmotorPro(uint8_t i2caddr)
 
 uint8_t ironmanmotorPro::begin(uint8_t _bit)
 {
-  delay(2000);
   Wire.begin ();
   _bit = constrain(_bit, 8, 13);
   Multiple = 0X2000 >> _bit;
   Wire.beginTransmission(_i2cAddr);
   beginFlag = !Wire.endTransmission();
   reset();
-  delay(500);
+  delay(2000);
   return beginFlag;
 }
 
@@ -71,7 +70,12 @@ void ironmanmotorPro::setSpeed(int16_t speed) {
       speedBuf = speed * Multiple;
     }
     else {
-      _speed=map(speed,-255,255,-CLOSEMAXSPEED,CLOSEMAXSPEED);
+      if(speed>255)
+        _speed=255;
+      else if(speed<-255)
+        _speed=-255;
+      else
+        _speed=map(speed,-255,255,-CLOSEMAXSPEED,CLOSEMAXSPEED);
       float _speedBuf = ((float)_speed / 100.0);
       speedBuf = ratio * resolution * _speedBuf;
     }
@@ -164,7 +168,11 @@ int16_t ironmanmotorPro::getSetSpeed() {
     getSpeedBuf = (float)speedBuf / (float)(ratio * resolution);
     speedBuf = getSpeedBuf * 100;
   }
-  return map(speedBuf,-CLOSEMAXSPEED,CLOSEMAXSPEED,-255,255);
+  int16_t _speedBuf=map(speedBuf,-CLOSEMAXSPEED,CLOSEMAXSPEED,-255,255);
+  if(_speedBuf>0)
+    return _speedBuf+1;
+  else 
+    return _speedBuf;
 }
 
 int32_t ironmanmotorPro::getSetPosition() {
@@ -241,7 +249,7 @@ uint16_t ironmanmotorPro::getReg14to16(uint8_t _reg) {
   } else {
     result16 = (uint16_t)readH << 7 | (uint16_t)readL;
     if (_reg < ADDR16_SPD_KP) {
-      if (result16 > 0x1fff) result16 -= 0x4000;
+      if (result16 > 0x1fff) result16 -= 0x3fff;
     }
   }
   return result16;

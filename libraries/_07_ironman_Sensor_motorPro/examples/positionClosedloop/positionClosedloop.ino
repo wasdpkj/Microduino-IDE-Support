@@ -33,7 +33,7 @@ void setup() {
 }
 
 void loop() {
-  if (MOTOR.available ()) {
+  if (MOTOR.available()) {
     //位置环
     MOTOR.setPosition(12346);
     int32_t Position = MOTOR.getSetPosition();
