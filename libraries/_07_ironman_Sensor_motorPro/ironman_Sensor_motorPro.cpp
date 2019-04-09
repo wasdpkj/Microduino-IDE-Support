@@ -162,17 +162,21 @@ int16_t ironmanmotorPro::getSetSpeed() {
   int16_t speedBuf = getReg14to16(ADDR16_SET_SPEED);
   if ((motorMode == MODE_OPEN)) {
     speedBuf = speedBuf / Multiple;
+    if(speedBuf<0)
+      return speedBuf-1;
+    else
+      return speedBuf;
   }
   else if ((motorMode == MODE_SPEED)) {
     float getSpeedBuf;
     getSpeedBuf = (float)speedBuf / (float)(ratio * resolution);
     speedBuf = getSpeedBuf * 100;
+    int16_t _speedBuf=map(speedBuf,-CLOSEMAXSPEED,CLOSEMAXSPEED,-255,255);
+    if(_speedBuf>0&&_speedBuf!=255)
+      return _speedBuf+1;
+    else 
+      return _speedBuf;
   }
-  int16_t _speedBuf=map(speedBuf,-CLOSEMAXSPEED,CLOSEMAXSPEED,-255,255);
-  if(_speedBuf>0)
-    return _speedBuf+1;
-  else 
-    return _speedBuf;
 }
 
 int32_t ironmanmotorPro::getSetPosition() {
@@ -321,4 +325,3 @@ void ironmanmotorPro::writeInt32(uint8_t dataaddr, int32_t data) {
   Wire.write(_data32 >> 21 & 0x7F);
   Wire.endTransmission();
 }
-
