@@ -71,13 +71,17 @@ void ironmanmotorPro::setSpeed(int16_t speed) {
     }
     else {
       if(speed>255)
-        _speed=255;
+        _speed=CLOSEMAXSPEED;
       else if(speed<-255)
-        _speed=-255;
+        _speed=-CLOSEMAXSPEED;
       else
         _speed=map(speed,-255,255,-CLOSEMAXSPEED,CLOSEMAXSPEED);
-      float _speedBuf = ((float)_speed / 100.0);
-      speedBuf = ratio * resolution * _speedBuf;
+      if(_speed==0){
+        speedBuf=BRAKE;
+      }else{
+        float _speedBuf = ((float)_speed / 100.0);
+        speedBuf = ratio * resolution * _speedBuf;
+      }
     }
   }
   writeInt16(ADDR16_SET_SPEED, speedBuf);
