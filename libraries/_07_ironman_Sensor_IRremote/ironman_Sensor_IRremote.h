@@ -110,7 +110,7 @@ class ironmanIRremote {
     uint32_t irrecdataCache;
     uint8_t irsenddata[5];
     uint32_t remotevalue, remotevalueCache;
-    boolean twoirsta[2];
+    boolean twoirsta[3];
 
 };
 

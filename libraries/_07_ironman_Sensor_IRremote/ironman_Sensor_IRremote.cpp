@@ -146,12 +146,12 @@ void ironmanIRremote::setPower(uint8_t _power) {
 boolean ironmanIRremote::irrecvAvailable() {
   if(getReg8(ADDR8_SEND_ALLOW)){
     irrecdata = getReg40_7bitto32(ADDR40_IRRECED_NECDATA);
+    // Serial.print("irrecdata:");
+    // Serial.println(irrecdata,HEX);
   }
   
-  if (irrecdataCache!=irrecdata||irrecdata==0xFFFFFFFF) {
-    irrecdataCache=irrecdata;
+  if(irrecdata>0)
     return true;
-  }
 
   return false;
 }
@@ -183,16 +183,21 @@ void ironmanIRremote::sendSony(uint16_t data) {
 void ironmanIRremote::remoteSta() {
   if (irrecvAvailable()) {
     remotevalue = irrecvValue();
-    if (remotevalue > 0) {
-      for (uint8_t i = 0; i < 16; i++) {
-        if (remotevalue == remoteCode[i]) {
-          remotevalueCache = remotevalue;
-          twoirsta[0] = true;
+    if (irrecdataCache!=remotevalue||remotevalue==0xFFFFFFFF){
+      if (remotevalue > 0) {
+        for (uint8_t i = 0; i < 16; i++) {
+          if (remotevalue == remoteCode[i]) {
+            remotevalueCache = remotevalue;
+            twoirsta[0] = true;
+            twoirsta[2] = true;
+          }
         }
       }
-    } else {
-      twoirsta[1] = true;
+      irrecdataCache=remotevalue;
     }
+  }else if(twoirsta[2]){
+    twoirsta[1] = true;
+    twoirsta[2] = false;
   }
 }
 
