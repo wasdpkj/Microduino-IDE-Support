@@ -206,13 +206,13 @@ uint8_t ironmanLight::getLineB(uint8_t _colorB) {
   return linecache[1];
 }
 
-void ironmanLight::getColorRaw(uint8_t *_color, uint8_t _ar, uint8_t _ag, uint8_t _ab, uint8_t _br, uint8_t _bg, uint8_t _bb) {
+void ironmanLight::getColorRaw(uint8_t *_color, uint8_t _ar, uint8_t _ag, uint8_t _ab, uint8_t __Br, uint8_t __Bg, uint8_t __Bb) {
   colorledcolor[0] = _ar;
   colorledcolor[2] = _ag;
   colorledcolor[4] = _ab;
-  colorledcolor[6] = _br;
-  colorledcolor[8] = _bg;
-  colorledcolor[10] = _bb;
+  colorledcolor[6] = __Br;
+  colorledcolor[8] = __Bg;
+  colorledcolor[10] = __Bb;
 
   writecmddata(SETMODE, COLORMODE, colorledcolor, 12);
 
@@ -228,28 +228,28 @@ uint8_t ironmanLight::isValid(uint8_t value)
   return 0;
 }
 
-uint8_t ironmanLight::GetMax(uint8_t _R , uint8_t _G , uint8_t _B)
+uint8_t ironmanLight::GetMax(uint8_t __R , uint8_t __G , uint8_t __B)
 {
-  Max = _G;
-  if (_R > _G)Max = _R;
-  if (Max < _B)Max = _B;
+  Max = __G;
+  if (__R > __G)Max = __R;
+  if (Max < __B)Max = __B;
   return Max;
 }
 
-uint8_t ironmanLight::GetMin(uint8_t _R , uint8_t _G , uint8_t _B)
+uint8_t ironmanLight::GetMin(uint8_t __R , uint8_t __G , uint8_t __B)
 {
-  Min = _G;
-  if (_R < _G) Min = _R;
-  if (Min > _B) Min = _B;
+  Min = __G;
+  if (__R < __G) Min = __R;
+  if (Min > __B) Min = __B;
   return Min ;
 }
 
-boolean ironmanLight::RGBtoHSV(uint8_t _R , uint8_t _G , uint8_t _B , float  HSV[3])
+boolean ironmanLight::RGBtoHSV(uint8_t __R , uint8_t __G , uint8_t __B , float  HSV[3])
 {
-  if (isValid(_R) && isValid(_G) && isValid(_B))
+  if (isValid(__R) && isValid(__G) && isValid(__B))
   {
-    uint8_t Max_value =  GetMax(_R , _G , _B);
-    uint8_t Min_value  = GetMin(_R , _G , _B )  ;
+    uint8_t Max_value =  GetMax(__R , __G , __B);
+    uint8_t Min_value  = GetMin(__R , __G , __B )  ;
 
     float H ;
     //compute H
@@ -257,14 +257,14 @@ boolean ironmanLight::RGBtoHSV(uint8_t _R , uint8_t _G , uint8_t _B , float  HSV
       H = 0;
     else
     {
-      if (Max_value == _G)
-        H =  60.0 * (_B - _R) / (Max_value - Min_value) + 120;
-      if (Max_value == _B)
-        H =  60.0 * (_R - _G) / (Max_value - Min_value) + 240;
-      if (Max_value == _R  &&  _G >= _B)
-        H = 60.0 * (_G - _B) / (Max_value - Min_value);
-      if (Max_value == _R  &&  _G < _B)
-        H  = 60.0 * (_G - _B) / (Max_value - Min_value) + 360;
+      if (Max_value == __G)
+        H =  60.0 * (__B - __R) / (Max_value - Min_value) + 120;
+      if (Max_value == __B)
+        H =  60.0 * (__R - __G) / (Max_value - Min_value) + 240;
+      if (Max_value == __R  &&  __G >= __B)
+        H = 60.0 * (__G - __B) / (Max_value - Min_value);
+      if (Max_value == __R  &&  __G < __B)
+        H  = 60.0 * (__G - __B) / (Max_value - Min_value) + 360;
     }
     //end compute H
     //GOTO: ;

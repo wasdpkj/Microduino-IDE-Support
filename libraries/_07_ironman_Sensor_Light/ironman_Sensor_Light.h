@@ -92,16 +92,16 @@ class ironmanLight {
     void getLine(uint8_t *_line, uint8_t _colorA = RED, uint8_t _colorB = RED);
     uint8_t getLineA(uint8_t _colorA = RED);
     uint8_t getLineB(uint8_t _colorB = RED);
-    void getColorRaw(uint8_t *_color, uint8_t _ar = 1, uint8_t _ag = 1, uint8_t _ab = 1, uint8_t _br = 1, uint8_t _bg = 1, uint8_t _bb = 1);
+    void getColorRaw(uint8_t *_color, uint8_t _ar = 1, uint8_t _ag = 1, uint8_t _ab = 1, uint8_t __Br = 1, uint8_t __Bg = 1, uint8_t __Bb = 1);
     void getColor(uint8_t *_array);
     uint8_t getColorA();
     uint8_t getColorB();
 
   private:
     uint8_t isValid(uint8_t value);
-    uint8_t GetMax(uint8_t _R , uint8_t _G , uint8_t _B);
-    uint8_t GetMin(uint8_t _R , uint8_t _G , uint8_t _B);
-    boolean RGBtoHSV(uint8_t _R , uint8_t _G , uint8_t _B , float  HSV[3]);
+    uint8_t GetMax(uint8_t __R , uint8_t __G , uint8_t __B);
+    uint8_t GetMin(uint8_t __R , uint8_t __G , uint8_t __B);
+    boolean RGBtoHSV(uint8_t __R , uint8_t __G , uint8_t __B , float  HSV[3]);
 
     boolean iicsta;
 
