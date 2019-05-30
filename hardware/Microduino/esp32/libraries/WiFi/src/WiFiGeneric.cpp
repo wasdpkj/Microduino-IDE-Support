@@ -50,12 +50,6 @@ extern "C" {
 
 #include "sdkconfig.h"
 
-#if CONFIG_FREERTOS_UNICORE
-#define ARDUINO_RUNNING_CORE 0
-#else
-#define ARDUINO_RUNNING_CORE 1
-#endif
-
 static xQueueHandle _network_event_queue;
 static TaskHandle_t _network_event_task_handle = NULL;
 static EventGroupHandle_t _network_event_group = NULL;
@@ -96,7 +90,7 @@ static bool _start_network_event_task(){
         }
     }
     if(!_network_event_task_handle){
-        xTaskCreatePinnedToCore(_network_event_task, "network_event", 4096, NULL, ESP_TASKD_EVENT_PRIO - 1, &_network_event_task_handle, ARDUINO_RUNNING_CORE);
+        xTaskCreateUniversal(_network_event_task, "network_event", 4096, NULL, ESP_TASKD_EVENT_PRIO - 1, &_network_event_task_handle, CONFIG_ARDUINO_EVENT_RUNNING_CORE);
         if(!_network_event_task_handle){
             log_e("Network Event Task Start Failed!");
             return false;
@@ -168,7 +162,7 @@ static bool espWiFiStop(){
     _esp_wifi_started = false;
     err = esp_wifi_stop();
     if(err){
-        log_e("Could not stop WiFi! %u", err);
+        log_e("Could not stop WiFi! %d", err);
         _esp_wifi_started = true;
         return false;
     }
@@ -187,7 +181,7 @@ typedef struct WiFiEventCbList {
     WiFiEventSysCb scb;
     system_event_id_t event;
 
-    WiFiEventCbList() : id(current_id++) {}
+    WiFiEventCbList() : id(current_id++), cb(NULL), fcb(NULL), scb(NULL), event(SYSTEM_EVENT_WIFI_READY) {}
 } WiFiEventCbList_t;
 wifi_event_id_t WiFiEventCbList::current_id = 1;
 
@@ -371,8 +365,7 @@ esp_err_t WiFiGenericClass::_eventCallback(void *arg, system_event_t *event)
             (reason >= WIFI_REASON_BEACON_TIMEOUT && reason != WIFI_REASON_AUTH_FAIL)) &&
             WiFi.getAutoReconnect())
         {
-            WiFi.enableSTA(false);
-            WiFi.enableSTA(true);
+            WiFi.disconnect(true);
             WiFi.begin();
         }
     } else if(event->event_id == SYSTEM_EVENT_STA_GOT_IP) {
@@ -497,7 +490,7 @@ bool WiFiGenericClass::mode(wifi_mode_t m)
     esp_err_t err;
     err = esp_wifi_set_mode(m);
     if(err){
-        log_e("Could not set mode! %u", err);
+        log_e("Could not set mode! %d", err);
         return false;
     }
     return true;

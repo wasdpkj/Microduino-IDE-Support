@@ -3,6 +3,7 @@ set(CORE_SRCS
   cores/esp32/cbuf.cpp
   cores/esp32/esp32-hal-adc.c
   cores/esp32/esp32-hal-bt.c
+  cores/esp32/esp32-hal-cpu.c
   cores/esp32/esp32-hal-dac.c
   cores/esp32/esp32-hal-gpio.c
   cores/esp32/esp32-hal-i2c.c
@@ -41,7 +42,7 @@ set(LIBRARY_SRCS
   libraries/AsyncUDP/src/AsyncUDP.cpp
   libraries/BluetoothSerial/src/BluetoothSerial.cpp
   libraries/DNSServer/src/DNSServer.cpp
-  libraries/EEPROM/EEPROM.cpp
+  libraries/EEPROM/src/EEPROM.cpp
   libraries/ESPmDNS/src/ESPmDNS.cpp
   libraries/FFat/src/FFat.cpp
   libraries/FS/src/FS.cpp
@@ -180,6 +181,7 @@ set(COMPONENT_ADD_INCLUDEDIRS
   libraries/BLE/src
   libraries/BluetoothSerial/src
   libraries/DNSServer/src
+  libraries/EEPROM/src
   libraries/ESP32/src
   libraries/ESPmDNS/src
   libraries/FFat/src

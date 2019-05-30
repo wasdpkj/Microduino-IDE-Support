@@ -1,0 +1,6 @@
+Library:
+SPI
+
+Core:
+\cores\esp32\Arduino.h
+\cores\esp32\esp32-hal-gpio.c

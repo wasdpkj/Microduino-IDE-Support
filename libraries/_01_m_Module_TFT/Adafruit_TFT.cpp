@@ -89,6 +89,126 @@ static const uint8_t PROGMEM
 	  255 								//     255 = max (500 ms) delay
   };                          	
 
+
+/*
+static const uint8_t PROGMEM
+  cmd_ST7789_240x240[] =  {             // Init commands for 7789 screens
+    19,                              	//  9 commands in list:
+    //TFT_SWRESET,   ST_CMD_DELAY,	 	//  1: Software reset, no args, w/delay
+    //  150,                         	//    150 ms delay
+    TFT_SLPOUT ,   ST_CMD_DELAY, 		//  2: Out of sleep mode, no args, w/delay
+      255,                          	//     255 = 500 ms delay
+
+    TFT_MADCTL 	, 1,            		//  4: Mem access ctrl (directions), 1 arg:
+      0x00,                        	    //     Row/col addr, bottom-top refresh
+    TFT_COLMOD 	, 1+ST_CMD_DELAY,		//  3: Set color mode, 1 arg + delay:
+      0x55,                         	//     16-bit color
+      10,                           	//     10 ms delay
+    TFT_INVON  ,   ST_CMD_DELAY,  		//  7: hack
+      10,
+    TFT_CASET  , 4,              		//  5: Column addr set, 4 args, no delay:
+      0x00,
+      ST7789_240x240_XSTART,        	//     XSTART = 0
+      (ST7789_TFTWIDTH+ST7789_240x240_XSTART)>>8,
+      (ST7789_TFTWIDTH+ST7789_240x240_XSTART)&0xFF, //     XEND = 240
+    TFT_RASET  , 4,              		//  6: Row addr set, 4 args, no delay:
+      0x00,
+      ST7789_240x240_YSTART,            //     YSTART = 0
+      (ST7789_TFTHEIGHT+ST7789_240x240_YSTART)>>8,
+      (ST7789_TFTHEIGHT+ST7789_240x240_YSTART)&0xFF, //     YEND = 240
+
+    ST7789_PORCTL  	, 5,             
+      0x0C,0x0C,0x00,0x33,0x33,
+	ST7789_GCCTL  	, 1,
+	  0x35,								//VGH=13.26V,VGL=-10.43
+
+	ST7789_VCMOSET	, 1,				//VCM control
+	  0x1F,								//Vcom=1.35V
+	ST7789_LCMCTRL , 1,			
+	  0x2c,							
+	ST7789_VDVVRHEN , 1,			
+	  0x01,							
+	ST7789_VRHSET  	, 1,				
+	  0x12,								//GVDD=4.8V
+	ST7789_VDVSET  	, 1,				
+	  0x20,								//VDV=0v
+	ST7789_FRMCTR2 	, 1,				//In Normal Mode	
+	  0x0F,								//0x0F:60Hz
+	ST7789_PWCTR1 	, 2,				//Power control
+	  0xA4,0xA1,						//AVDD=6.8V,AVCL=-4.8V,VDDS=2.3V
+
+										
+	TFT_GAMMASET , 1,					//Gamma curve selected
+	  0x01,								
+	TFT_GMCTRP1 , 14,					//Set Gamma
+      0xd0,0x08,0x11,0x08,
+      0x0c,0x15,0x39,0x33,
+      0x50,0x36,0x13,0x14,
+      0x29,0x2d,				
+	TFT_GMCTRN1 ,14,					//Set Gamma
+      0xd0,0x08,0x10,0x08,
+      0x06,0x06,0x39,0x44,
+      0x51,0x0b,0x16,0x14,
+      0x2f,0x31,  											
+
+//    TFT_NORON  ,   ST_CMD_DELAY, 		//  8: Normal display on, no args, w/delay
+//      10,                           	//     10 ms delay
+    TFT_DISPON ,   ST_CMD_DELAY, 		//  9: Main screen turn on, no args, delay
+	  255 								//     255 = max (500 ms) delay
+  };   
+*/
+
+/*
+static const uint8_t PROGMEM
+  cmd_ST7789_240x240[] =  {             // Init commands for 7789 screens
+    17,                              	//  9 commands in list:
+    //TFT_SWRESET,   ST_CMD_DELAY,	 	//  1: Software reset, no args, w/delay
+    //  150,                         	//    150 ms delay
+    TFT_SLPOUT ,   ST_CMD_DELAY, 		//  2: Out of sleep mode, no args, w/delay
+      255,                          	//     255 = 500 ms delay
+    ST7789_PORCTL  	, 5,             
+      0x0C,0x0C,0x00,0x33,0x33,
+	ST7789_GCCTL  	, 1,
+	  0x45,								//VGH=13.26V,VGL=-10.43
+	ST7789_VCMOSET	, 1,				//VCM control
+	  0x2B,								//Vcom=1.35V
+	ST7789_LCMCTRL , 1,			
+	  0x2c,							
+	ST7789_VDVVRHEN , 2,			
+	  0x01,0xFF,							
+	ST7789_VRHSET  	, 1,				
+	  0x11,								//GVDD=4.8V
+	ST7789_VDVSET  	, 1,				
+	  0x20,								//VDV=0v
+	ST7789_FRMCTR2 	, 1,				//In Normal Mode	
+	  0x0F,								//0x0F:60Hz
+	ST7789_PWCTR1 	, 2,				//Power control
+	  0xA4,0xA1,						//AVDD=6.8V,AVCL=-4.8V,VDDS=2.3V
+	TFT_GMCTRP1 , 14,					//Set Gamma
+      0xD0,0x00,0x05,0x0E,
+	  0x15,0x0D,0x37,0x43,
+	  0x47,0x09,0x15,0x12,
+	  0x16,0x19,				
+	TFT_GMCTRN1 ,14,					//Set Gamma
+      0xD0,0x00,0x05,0x0D,
+	  0x0C,0x06,0x2D,0x44,
+	  0x40,0x0E,0x1C,0x18,
+	  0x16,0x19,											
+    TFT_MADCTL 	, 1,            		//  4: Mem access ctrl (directions), 1 arg:
+      0x00,                        	    //     Row/col addr, bottom-top refresh
+    TFT_COLMOD 	, 1+ST_CMD_DELAY,		//  3: Set color mode, 1 arg + delay:
+      0x55,                         	//     16-bit color
+      10,                           	//     10 ms delay
+    TFT_SLPOUT ,   ST_CMD_DELAY, 		//  2: Out of sleep mode, no args, w/delay
+      255,                          	//     255 = 500 ms delay
+    TFT_INVON  ,   ST_CMD_DELAY,  		//  7: hack
+      10,
+
+    TFT_DISPON ,   ST_CMD_DELAY, 		//  9: Main screen turn on, no args, delay
+	  255 								//     255 = max (500 ms) delay
+  };                          	
+*/
+
 static const uint8_t PROGMEM
   cmd_ST7735_128x160[] =  {       		// Init commands for 7789 screens
     21,                       	  		// 21 commands in list:

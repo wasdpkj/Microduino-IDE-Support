@@ -116,6 +116,7 @@ typedef volatile uint32_t RwReg;
 #define ST7789_GCCTL      0xB7      ///< Gate Control
 #define ST7789_PWCTR1     0xD0      ///< Power Control 1
 #define ST7789_PWCTR2     0xE8      ///< Power Control 2
+#define ST7789_LCMCTRL    0xC0      ///< LCM Control
 #define ST7789_VDVVRHEN   0xC2      ///< VDV and VRH Command Enable
 #define ST7789_VRHSET     0xC3      ///< VRH set
 #define ST7789_VDVSET     0xC4      ///< VDV set

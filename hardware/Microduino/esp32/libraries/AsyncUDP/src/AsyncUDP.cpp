@@ -150,7 +150,7 @@ static bool _udp_task_start(){
         }
     }
     if(!_udp_task_handle){
-        xTaskCreate(_udp_task, "async_udp", 4096, NULL, 3, (TaskHandle_t*)&_udp_task_handle);
+        xTaskCreateUniversal(_udp_task, "async_udp", 4096, NULL, 3, (TaskHandle_t*)&_udp_task_handle, CONFIG_ARDUINO_UDP_RUNNING_CORE);
         if(!_udp_task_handle){
             return false;
         }
@@ -561,26 +561,48 @@ static esp_err_t joinMulticastGroup(const ip_addr_t *addr, bool join, tcpip_adap
             return ESP_ERR_INVALID_ARG;
         }
         netif = (struct netif *)nif;
-    }
 
-    if (addr->type == IPADDR_TYPE_V4) {
-        if(join){
-            if (igmp_joingroup_netif(netif, (const ip4_addr *)&(addr->u_addr.ip4))) {
-                return ESP_ERR_INVALID_STATE;
+        if (addr->type == IPADDR_TYPE_V4) {
+            if(join){
+                if (igmp_joingroup_netif(netif, (const ip4_addr *)&(addr->u_addr.ip4))) {
+                    return ESP_ERR_INVALID_STATE;
+                }
+            } else {
+                if (igmp_leavegroup_netif(netif, (const ip4_addr *)&(addr->u_addr.ip4))) {
+                    return ESP_ERR_INVALID_STATE;
+                }
             }
         } else {
-            if (igmp_leavegroup_netif(netif, (const ip4_addr *)&(addr->u_addr.ip4))) {
-                return ESP_ERR_INVALID_STATE;
+            if(join){
+                if (mld6_joingroup_netif(netif, &(addr->u_addr.ip6))) {
+                    return ESP_ERR_INVALID_STATE;
+                }
+            } else {
+                if (mld6_leavegroup_netif(netif, &(addr->u_addr.ip6))) {
+                    return ESP_ERR_INVALID_STATE;
+                }
             }
         }
-    } else {
-        if(join){
-            if (mld6_joingroup_netif(netif, &(addr->u_addr.ip6))) {
-                return ESP_ERR_INVALID_STATE;
+    }  else {
+        if (addr->type == IPADDR_TYPE_V4) {
+            if(join){
+                if (igmp_joingroup((const ip4_addr *)IP4_ADDR_ANY, (const ip4_addr *)&(addr->u_addr.ip4))) {
+                    return ESP_ERR_INVALID_STATE;
+                }
+            } else {
+                if (igmp_leavegroup((const ip4_addr *)IP4_ADDR_ANY, (const ip4_addr *)&(addr->u_addr.ip4))) {
+                    return ESP_ERR_INVALID_STATE;
+                }
             }
         } else {
-            if (mld6_leavegroup_netif(netif, &(addr->u_addr.ip6))) {
-                return ESP_ERR_INVALID_STATE;
+            if(join){
+                if (mld6_joingroup((const ip6_addr *)IP6_ADDR_ANY, &(addr->u_addr.ip6))) {
+                    return ESP_ERR_INVALID_STATE;
+                }
+            } else {
+                if (mld6_leavegroup((const ip6_addr *)IP6_ADDR_ANY, &(addr->u_addr.ip6))) {
+                    return ESP_ERR_INVALID_STATE;
+                }
             }
         }
     }
