@@ -1,3 +1,5 @@
+platform.txt
+
 Library:
 SPI
 
