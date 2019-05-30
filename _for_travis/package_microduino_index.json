@@ -12,44 +12,6 @@
           "help": {
             "online": "https://wiki.microduino.cn"
           },
-          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-avr-1.6.9+2.0.tar.gz",
-          "checksum": "SHA-256:69AC14C77376823224456505A0109C6891E37E935CF53442C88C374D79D0A8F4",
-          "name": "Microduino AVR Boards",
-          "version": "1.6.9+2.0",
-          "architecture": "avr",
-          "archiveFileName": "microduino-avr-1.6.9+2.0.tar.gz",
-          "size": "288316",
-          "toolsDependencies": [
-          ],
-          "boards": [
-            {
-              "name": "Core (328p)@16M,5V"
-            },
-            {
-              "name": "Core (328p)@8M,3.3V"
-            },
-            {
-              "name": "Core+ (644pa)@16M,5V)"
-            },
-            {
-              "name": "Core+ (644pa)@8M,3.3V"
-            },
-            {
-              "name": "Core+ (1284pa)@16M,5V)"
-            },
-            {
-              "name": "Core+ (1284pa)@8M,3.3V"
-            },
-            {
-              "name": "Core USB (32u4)"
-            }
-          ]
-        },
-        {
-          "category": "Microduino",
-          "help": {
-            "online": "https://wiki.microduino.cn"
-          },
           "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-avr-1.8.4+2.0.tar.gz",
           "checksum": "SHA-256:A3EC8CFBA7417667096E8098B63C09608BEA83232B35D40147D4E29B57429767",
           "name": "Microduino AVR Boards",
@@ -91,17 +53,149 @@
           "help": {
             "online": "https://wiki.microduino.cn"
           },
-          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4+2.0.tar.gz",
-          "checksum": "SHA-256:909761E374AB1978542BB17613E80E398C3A86F711F2BBEEF2AB8E414BFBE1C7",
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-avr-1.6.9+2.0.tar.gz",
+          "checksum": "SHA-256:69AC14C77376823224456505A0109C6891E37E935CF53442C88C374D79D0A8F4",
+          "name": "Microduino AVR Boards",
+          "version": "1.6.9+2.0",
+          "architecture": "avr",
+          "archiveFileName": "microduino-avr-1.6.9+2.0.tar.gz",
+          "size": "288316",
+          "toolsDependencies": [
+          ],
+          "boards": [
+            {
+              "name": "Core (328p)@16M,5V"
+            },
+            {
+              "name": "Core (328p)@8M,3.3V"
+            },
+            {
+              "name": "Core+ (644pa)@16M,5V)"
+            },
+            {
+              "name": "Core+ (644pa)@8M,3.3V"
+            },
+            {
+              "name": "Core+ (1284pa)@16M,5V)"
+            },
+            {
+              "name": "Core+ (1284pa)@8M,3.3V"
+            },
+            {
+              "name": "Core USB (32u4)"
+            }
+          ]
+        },
+        {
+          "category": "Microduino",
+          "help": {
+            "online": "https://wiki.microduino.cn"
+          },
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4+6.0.tar.gz",
+          "checksum": "SHA-256:87C45BB6CF276AB27646D5FA174394665F03EBD2CD6E9A2305705680A8DD8FC0",
           "name": "Microduino ESP32 Boards",
-          "version": "1.8.4+2.0",
+          "version": "1.8.4+6.0",
           "architecture": "esp32",
-          "archiveFileName": "microduino-esp32-1.8.4+2.0.tar.gz",
-          "size": "32973582",
+          "archiveFileName": "microduino-esp32-1.8.4+6.0.tar.gz",
+          "size": "33506952",
           "toolsDependencies": [
             {
               "packager": "microduino",
-              "version": "1.22.0-61-gab8375a-5.2.0",
+              "name": "xtensa-esp32-elf-gcc",
+              "version": "1.22.0-80-g6c4433a-5.2.0"
+            },
+            {
+              "packager": "microduino",
+              "name": "esptool_py",
+              "version": "2.6.1"
+            },
+            {
+              "packager": "microduino",
+              "name": "mkspiffs",
+              "version": "0.2.3"
+            }
+          ],
+          "boards": [
+            {
+              "name": "Microduino-CoreESP32"
+            },
+            {
+              "name": "ESP32 Dev Module"
+            },
+            {
+              "name": "ESP32 Wrover Module"
+            },
+            {
+              "name": "NodeMCU-32S"
+            },
+            {
+              "name": "WiPy 3.0"
+            }
+          ]
+        },		
+        {
+          "category": "Microduino",
+          "help": {
+            "online": "https://wiki.microduino.cn"
+          },
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4+5.0.tar.gz",
+          "checksum": "SHA-256:4E6CE95F38AA008CCF121834ECDA9F4E285F73A2B5999473045D8CE06451D85B",
+          "name": "Microduino ESP32 Boards",
+          "version": "1.8.4+5.0",
+          "architecture": "esp32",
+          "archiveFileName": "microduino-esp32-1.8.4+5.0.tar.gz",
+          "size": "26998224",
+          "toolsDependencies": [
+            {
+              "packager": "microduino",
+              "name": "xtensa-esp32-elf-gcc",
+              "version": "1.22.0-80-g6c4433a-5.2.0"
+            },
+            {
+              "packager": "microduino",
+              "name": "esptool_py",
+              "version": "2.6.0"
+            },
+            {
+              "packager": "microduino",
+              "name": "mkspiffs",
+              "version": "0.2.3"
+            }
+          ],
+          "boards": [
+            {
+              "name": "Microduino-CoreESP32"
+            },
+            {
+              "name": "ESP32 Dev Module"
+            },
+            {
+              "name": "ESP32 Wrover Module"
+            },
+            {
+              "name": "NodeMCU-32S"
+            },
+            {
+              "name": "WiPy 3.0"
+            }
+          ]
+        },        
+		{
+          "category": "Microduino",
+          "help": {
+            "online": "https://wiki.microduino.cn"
+          },
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4+4.0.tar.gz",
+          "checksum": "SHA-256:0C5EA385C1990B9432230FC81E8702D32C2CFA83264F7DCE8A20AE6AA256EC8E",
+          "name": "Microduino ESP32 Boards",
+          "version": "1.8.4+4.0",
+          "architecture": "esp32",
+          "archiveFileName": "microduino-esp32-1.8.4+4.0.tar.gz",
+          "size": "32667797",
+          "toolsDependencies": [
+            {
+              "packager": "microduino",
+              "version": "1.22.0-73-ge28a011-5.2.0",
               "name": "xtensa-esp32-elf-gcc"
             }
           ],
@@ -128,13 +222,13 @@
           "help": {
             "online": "https://wiki.microduino.cn"
           },
-          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4+2.1.tar.gz",
-          "checksum": "SHA-256:23A55F8BC05A04189CC31E5E8FB7F77A601B7097F9F42DF7861E9DD60EEF729B",
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4+3.0.tar.gz",
+          "checksum": "SHA-256:25CDB377BE7883A04A182AB4CEADBA7BFE054DCD12402455F672AADB9C18356A",
           "name": "Microduino ESP32 Boards",
-          "version": "1.8.4+2.1",
+          "version": "1.8.4+3.0",
           "architecture": "esp32",
-          "archiveFileName": "microduino-esp32-1.8.4+2.1.tar.gz",
-          "size": "33156470",
+          "archiveFileName": "microduino-esp32-1.8.4+3.0.tar.gz",
+          "size": "34461931",
           "toolsDependencies": [
             {
               "packager": "microduino",
@@ -202,13 +296,13 @@
           "help": {
             "online": "https://wiki.microduino.cn"
           },
-          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4+3.0.tar.gz",
-          "checksum": "SHA-256:25CDB377BE7883A04A182AB4CEADBA7BFE054DCD12402455F672AADB9C18356A",
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4+2.1.tar.gz",
+          "checksum": "SHA-256:23A55F8BC05A04189CC31E5E8FB7F77A601B7097F9F42DF7861E9DD60EEF729B",
           "name": "Microduino ESP32 Boards",
-          "version": "1.8.4+3.0",
+          "version": "1.8.4+2.1",
           "architecture": "esp32",
-          "archiveFileName": "microduino-esp32-1.8.4+3.0.tar.gz",
-          "size": "34461931",
+          "archiveFileName": "microduino-esp32-1.8.4+2.1.tar.gz",
+          "size": "33156470",
           "toolsDependencies": [
             {
               "packager": "microduino",
@@ -239,17 +333,17 @@
           "help": {
             "online": "https://wiki.microduino.cn"
           },
-          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4+4.0.tar.gz",
-          "checksum": "SHA-256:0C5EA385C1990B9432230FC81E8702D32C2CFA83264F7DCE8A20AE6AA256EC8E",
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4+2.0.tar.gz",
+          "checksum": "SHA-256:909761E374AB1978542BB17613E80E398C3A86F711F2BBEEF2AB8E414BFBE1C7",
           "name": "Microduino ESP32 Boards",
-          "version": "1.8.4+4.0",
+          "version": "1.8.4+2.0",
           "architecture": "esp32",
-          "archiveFileName": "microduino-esp32-1.8.4+4.0.tar.gz",
-          "size": "32667797",
+          "archiveFileName": "microduino-esp32-1.8.4+2.0.tar.gz",
+          "size": "32973582",
           "toolsDependencies": [
             {
               "packager": "microduino",
-              "version": "1.22.0-73-ge28a011-5.2.0",
+              "version": "1.22.0-61-gab8375a-5.2.0",
               "name": "xtensa-esp32-elf-gcc"
             }
           ],
@@ -270,101 +364,7 @@
               "name": "Noduino Quantum"
             }
           ]
-        },
-        {
-          "category": "Microduino",
-          "help": {
-            "online": "https://wiki.microduino.cn"
-          },
-          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4+5.0.tar.gz",
-          "checksum": "SHA-256:4E6CE95F38AA008CCF121834ECDA9F4E285F73A2B5999473045D8CE06451D85B",
-          "name": "Microduino ESP32 Boards",
-          "version": "1.8.4+5.0",
-          "architecture": "esp32",
-          "archiveFileName": "microduino-esp32-1.8.4+5.0.tar.gz",
-          "size": "26998224",
-          "toolsDependencies": [
-            {
-              "packager": "microduino",
-              "name": "xtensa-esp32-elf-gcc",
-              "version": "1.22.0-80-g6c4433a-5.2.0"
-            },
-            {
-              "packager": "microduino",
-              "name": "esptool_py",
-              "version": "2.6.0"
-            },
-            {
-              "packager": "microduino",
-              "name": "mkspiffs",
-              "version": "0.2.3"
-            }
-          ],
-          "boards": [
-            {
-              "name": "Microduino-CoreESP32"
-            },
-            {
-              "name": "ESP32 Dev Module"
-            },
-            {
-              "name": "ESP32 Wrover Module"
-            },
-            {
-              "name": "NodeMCU-32S"
-            },
-            {
-              "name": "WiPy 3.0"
-            }
-          ]
-        },
-        {
-          "category": "Microduino",
-          "help": {
-            "online": "https://wiki.microduino.cn"
-          },
-          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-esp32-1.8.4+6.0.tar.gz",
-          "checksum": "SHA-256:504BE44BFE2C55F0D304A01F8748D189A617DFA65705CF165230AF94E7034977",
-          "name": "Microduino ESP32 Boards",
-          "version": "1.8.4+6.0",
-          "architecture": "esp32",
-          "archiveFileName": "microduino-esp32-1.8.4+6.0.tar.gz",
-          "size": "33506959",
-          "toolsDependencies": [
-            {
-              "packager": "microduino",
-              "name": "xtensa-esp32-elf-gcc",
-              "version": "1.22.0-80-g6c4433a-5.2.0"
-            },
-            {
-              "packager": "microduino",
-              "name": "esptool_py",
-              "version": "2.6.1"
-            },
-            {
-              "packager": "microduino",
-              "name": "mkspiffs",
-              "version": "0.2.3"
-            }
-          ],
-          "boards": [
-            {
-              "name": "Microduino-CoreESP32"
-            },
-            {
-              "name": "ESP32 Dev Module"
-            },
-            {
-              "name": "ESP32 Wrover Module"
-            },
-            {
-              "name": "NodeMCU-32S"
-            },
-            {
-              "name": "WiPy 3.0"
-            }
-          ]
-        }
+        }		
       ],
       "tools": [
         {
