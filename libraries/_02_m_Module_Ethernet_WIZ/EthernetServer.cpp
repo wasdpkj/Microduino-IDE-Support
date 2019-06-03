@@ -13,6 +13,7 @@ EthernetServer::EthernetServer(uint16_t port)
   _port = port;
 }
 
+#ifdef ESP32
 void EthernetServer::begin(uint16_t port)
 {
   if(port != 0) {
@@ -29,6 +30,21 @@ void EthernetServer::begin(uint16_t port)
     }
   }  
 }
+#else
+void EthernetServer::begin()
+{
+
+  for (int sock = 0; sock < MAX_SOCK_NUM; sock++) {
+    EthernetClient client(sock);
+    if (client.status() == SnSR::CLOSED) {
+      socket(sock, SnMR::TCP, _port, 0);
+      listen(sock);
+      EthernetClass::_server_port[sock] = _port;
+      break;
+    }
+  }  
+}
+#endif
 
 void EthernetServer::accept()
 {

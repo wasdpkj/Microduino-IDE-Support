@@ -70,6 +70,61 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
   return 1;
 }
 
+#ifdef ESP32
+int EthernetClient::connect(const char* host, uint16_t port, int timeout) {
+  // Look up the host first
+  int ret = 0;
+  DNSClient dns;
+  IPAddress remote_addr;
+
+  dns.begin(Ethernet.dnsServerIP());
+  ret = dns.getHostByName(host, remote_addr);
+  if (ret == 1) {
+    return connect(remote_addr, port);
+  } else {
+    return ret;
+  }
+}
+
+int EthernetClient::connect(IPAddress ip, uint16_t port, int timeout) {
+  if (_sock != MAX_SOCK_NUM)
+    return 0;
+
+  for (int i = 0; i < MAX_SOCK_NUM; i++) {
+    uint8_t s = w5500.readSnSR(i);
+    if (s == SnSR::CLOSED || s == SnSR::FIN_WAIT || s == SnSR::CLOSE_WAIT) {
+      _sock = i;
+      break;
+    }
+  }
+
+  if (_sock == MAX_SOCK_NUM)
+    return 0;
+
+  _srcport++;
+  if (_srcport == 0) _srcport = 1024;
+  socket(_sock, SnMR::TCP, _srcport, 0);
+
+  if (!::connect(_sock, rawIPAddress(ip), port)) {
+    _sock = MAX_SOCK_NUM;
+    return 0;
+  }
+
+  int _t = millis();
+  while (status() != SnSR::ESTABLISHED) {
+    delay(1);
+    if (status() == SnSR::CLOSED) {
+      _sock = MAX_SOCK_NUM;
+      return 0;
+    }
+	if(millis() - _t > timeout)
+	  return 0;
+  }
+
+  return 1;
+}
+#endif
+
 size_t EthernetClient::write(uint8_t b) {
   return write(&b, 1);
 }
