@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo -e "\n\n install Version:V77 \n\n";
+echo -e "\n\n install Version:V88 \n\n";
 
 # we need bash 4 for associative arrays
 if [ "${BASH_VERSION%%[^0-9]*}" -lt "4" ]; then
@@ -64,7 +64,7 @@ DEPENDENCY_OUTPUT=$(arduino --pref "boardsmanager.additional.urls=https://github
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 
 echo -n "MICRODUINO ESP32: "
-DEPENDENCY_OUTPUT=$(arduino --install-boards microduino:esp32 2>&1)
+DEPENDENCY_OUTPUT=$(arduino --install-boards microduino:esp32:1.8.4+6.0 2>&1)
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 
 #- ln -s $TRAVIS_BUILD_DIR esp32
