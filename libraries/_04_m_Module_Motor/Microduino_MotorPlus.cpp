@@ -22,7 +22,8 @@ MotorPlus::MotorPlus(uint8_t _addr) {
 bool MotorPlus::begin(uint8_t _bit) {
   _bit = constrain(_bit, BIT_8, BIT_14);
   multiple = 0X4000 >> _bit;
-  speedRange = 1 << _bit - 1;
+  speedRange = (1 << _bit) - 1;
+  speedRange*=2;
   Wire.begin();
   Wire.beginTransmission(devAddr);
   bool sta = (Wire.endTransmission() == 0);
