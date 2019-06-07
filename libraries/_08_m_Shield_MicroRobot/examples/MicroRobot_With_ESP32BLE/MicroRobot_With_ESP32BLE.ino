@@ -25,7 +25,7 @@ Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST
 GFXcanvas16 FULLLCD = GFXcanvas16(200, 200);
 U8G2_FOR_ADAFRUIT_GFX u8g2;
 
-#define TIME_GUI    200   //GUI刷新时间ms 建议大于100 不可调的太低 否则会影响BLE服务稳定性
+#define TIME_GUI    100   //GUI刷新时间ms 建议大于100 不可调的太低 否则会影响BLE服务稳定性
 #define TIME_ROBOT  25
 
 uint16_t rxChannel[8];
@@ -145,7 +145,6 @@ void loop() {
   }
 
 
-
   //GUI
   if (timeGUI > millis()) timeGUI = millis();
   if (millis() - timeGUI > TIME_GUI) {
@@ -160,4 +159,5 @@ void loop() {
     }
   }
 
+  delay(5);
 }

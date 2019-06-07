@@ -219,6 +219,7 @@ bool getBLEConnection() {
 
 
 void refreshBLEConnection() {
+  delay(5); //给BLE服务执行时间
   // disconnecting
   if (!deviceConnected && oldDeviceConnected) {
     delay(500); // give the bluetooth stack the chance to get things ready
