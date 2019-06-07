@@ -8,7 +8,7 @@
   可用Joypad+遥控器，选择BLE小车模式进行遥控
 
  ****************************************/
- 
+
 #include "ESP32Pin.h"
 #include "ESP32Tone.h"
 #include "userBLE.h"
@@ -22,12 +22,17 @@ MicroRobot microRobot;
 int16_t throttle, steering;
 
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO); //TFT屏的类的实例化
-GFXcanvas16 FULLLCD = GFXcanvas16(220, 208);
+GFXcanvas16 FULLLCD = GFXcanvas16(200, 200);
 U8G2_FOR_ADAFRUIT_GFX u8g2;
+
+#define TIME_GUI    200   //GUI刷新时间ms 建议大于100 不可调的太低 否则会影响BLE服务稳定性
+#define TIME_ROBOT  25
 
 uint16_t rxChannel[8];
 bool rxSta = false;
 
+uint32_t timeGUI;
+uint32_t timeRobot;
 
 void setup() {
   Serial.begin(NORMAL_BAUD);
@@ -48,7 +53,7 @@ void setup() {
   //******TFT初始化******
   ledcAttachPin(TFT_BL, PWM_CH_BL); //将屏幕背光引脚关联到PWM通道
   ledcSetup(PWM_CH_BL, 10000, 8); // 10 kHz PWM, 8-bit resolution
-  tft.begin(SPI_DEFAULT_FREQ, SPI_PORT);
+  tft.begin(8000000L, SPI_PORT);
   //tft.softReset();
   tft.setRotation(0);
   tft.fillScreen(BACKGROUNT_COLOR);
@@ -77,73 +82,82 @@ void setup() {
     noTone(PIN_BUZZER);
     delay(100);
   }
-
 }
 
 void loop() {
+  //刷新蓝牙服务
   refreshBLEConnection();
-  //如果蓝牙连接正常
-  if (getBLEConnection()) {
-    rxSta = getChannel(rxChannel);
-    DrawChannel_AtMain_Loop(rxChannel);
-    /*
-      Serial.print(F("\t getChannel,"));
-      Serial.print(F("rxSta:"));
-      Serial.print(rxSta);
-      Serial.print((",rxChannel:"));
-      for (int i = 0; i < 8; i++) {
-      Serial.print(" ");
-      Serial.print(rxChannel[i], DEC);
-      }
-      Serial.println();
-    */
 
-    //安全模式
-    if (!rxSta) {
-      microRobot.setSpeed(3, FREE);
-      microRobot.setSpeed(4, FREE);
+
+  //Robot
+  if (timeRobot > millis()) timeRobot = millis();
+  if (millis() - timeRobot > TIME_ROBOT) {
+    timeRobot = millis();
+
+    //如果蓝牙连接正常
+    if (getBLEConnection()) {
+      rxSta = getChannel(rxChannel);
+
+      //安全模式
+      if (!rxSta) {
+        microRobot.setSpeed(3, FREE);
+        microRobot.setSpeed(4, FREE);
+      }
+      else {
+        throttle = map(rxChannel[3], 1000, 2000, -MAX_THROTTLE, MAX_THROTTLE);
+        steering = map(rxChannel[0], 1000, 2000, MAX_STEERING, -MAX_STEERING);
+        if (throttle < 0) {
+          steering = -steering;
+        }
+        //计算电机差速
+        int16_t _motor_vol[2];
+        for (int a = 0; a < 2; a++) {
+          _motor_vol[a] = throttle;
+          _motor_vol[a] += (a == 0 ? -1 : 1) * (steering / 2);
+          if (_motor_vol[a] > 255)
+            _motor_vol[a] = 255;
+          else if (_motor_vol[a] < -255)
+            _motor_vol[a] = -255;
+        }
+        Serial.print(rxChannel[3]);
+        Serial.print(",");
+        Serial.print(rxChannel[0]);
+        Serial.print(" | ");
+        Serial.print(throttle);
+        Serial.print(",");
+        Serial.print(steering);
+        Serial.print(" | ");
+        Serial.print(_motor_vol[0]);
+        Serial.print(",");
+        Serial.println(_motor_vol[1]);
+
+
+        microRobot.setSpeed(3, -_motor_vol[1]);
+        microRobot.setSpeed(4, _motor_vol[0]);
+      }
+
+      //发送蓝牙数据到主机
+      //    pCharacteristic->setValue(&txValue, 1);
+      //    pCharacteristic->notify();
+      //    txValue++;
+      //    delay(10); // bluetooth stack will go into congestion, if too many packets are sent
+    }
+  }
+
+
+
+  //GUI
+  if (timeGUI > millis()) timeGUI = millis();
+  if (millis() - timeGUI > TIME_GUI) {
+    timeGUI = millis();
+
+    //如果蓝牙连接正常
+    if (getBLEConnection()) {
+      DrawChannel_AtMain_Loop(rxChannel);
     }
     else {
-      throttle = map(rxChannel[3], 1000, 2000, -MAX_THROTTLE, MAX_THROTTLE);
-      steering = map(rxChannel[0], 1000, 2000, MAX_STEERING, -MAX_STEERING);
-      if (throttle < 0) {
-        steering = -steering;
-      }
-      //计算电机差速
-      int16_t _motor_vol[2];
-      for (int a = 0; a < 2; a++) {
-        _motor_vol[a] = throttle;
-        _motor_vol[a] += (a == 0 ? -1 : 1) * (steering / 2);
-        if (_motor_vol[a] > 255)
-          _motor_vol[a] = 255;
-        else if (_motor_vol[a] < -255)
-          _motor_vol[a] = -255;
-      }
-      Serial.print(rxChannel[3]);
-      Serial.print(",");
-      Serial.print(rxChannel[0]);
-      Serial.print(" | ");
-      Serial.print(throttle);
-      Serial.print(",");
-      Serial.print(steering);
-      Serial.print(" | ");
-      Serial.print(_motor_vol[0]);
-      Serial.print(",");
-      Serial.println(_motor_vol[1]);
-
-      microRobot.setSpeed(3, -_motor_vol[1]);
-      microRobot.setSpeed(4, _motor_vol[0]);
+      DrawOffline_AtMain_Loop(getBLEName());
     }
-
-    //发送蓝牙数据到主机
-    //    pCharacteristic->setValue(&txValue, 1);
-    //    pCharacteristic->notify();
-    //    txValue++;
-    //    delay(10); // bluetooth stack will go into congestion, if too many packets are sent
   }
-  else {
-    DrawOffline_AtMain_Loop(getBLEName());
-  }
-
 
 }

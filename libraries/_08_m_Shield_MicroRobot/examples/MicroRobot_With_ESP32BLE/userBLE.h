@@ -222,15 +222,15 @@ void refreshBLEConnection() {
   // disconnecting
   if (!deviceConnected && oldDeviceConnected) {
     delay(500); // give the bluetooth stack the chance to get things ready
-    pServer->startAdvertising(); // restart advertising
-    Serial.println("start advertising");
-    oldDeviceConnected = deviceConnected;
     for (int a = 0; a < 2; a++) {
       tone(PIN_BUZZER, NOTE_D6);
       delay(100);
       noTone(PIN_BUZZER);
       delay(100);
     }
+    pServer->startAdvertising(); // restart advertising
+    Serial.println("start advertising");
+    oldDeviceConnected = deviceConnected;
   }
 
   // connecting

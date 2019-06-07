@@ -10,11 +10,3 @@
 
 //*****BUZZER*****
 #define PIN_BUZZER A3
-
-//*****UPIN*****
-#define PIN_UPIN_SDA  25
-#define PIN_UPIN_SCL  26
-#define PIN_UPIN_RXD  27
-#define PIN_UPIN_TXD  12
-#define PIN_UPIN_CS   4
-

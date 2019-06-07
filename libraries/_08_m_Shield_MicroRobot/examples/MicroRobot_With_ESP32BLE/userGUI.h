@@ -70,7 +70,7 @@ void DrawOffline_AtMain_Loop(String _name) {
   BLE离线\n\r\
   \n\r\
   "));
-  u8g2.print(F("请连接设备:\""));
+  u8g2.print(F("请连设备:\""));
   u8g2.print(_name);
   u8g2.print(F("\""));
 
