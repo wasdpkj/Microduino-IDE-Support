@@ -124,7 +124,9 @@ bool recvStringAt(String begin, String end, String &data, uint32_t timeout = 100
         }
       }
       else if (String(cache_data).indexOf(begin) != -1) {
-        data += cache_data;      //开始标志赋值
+        for (int a = 0; a < begin.length(); a++) {
+          data += cache_data[a];      //开始标志赋值
+        }
         s = true;
 
         if (sEnd) { //有end

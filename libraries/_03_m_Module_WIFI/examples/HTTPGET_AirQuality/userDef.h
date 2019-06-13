@@ -16,19 +16,14 @@ static const byte  GETDATA[]  PROGMEM = {
 #define string_data    F("\":{\"v\":")
 #define string_time    F("\"time\":{\"s\":\"")
 
-#define MSGNUM 12
+#define MSGNUM 7
 static const char string_head[MSGNUM][5] = {
   "co",   //一氧化碳
-  "d",    //结露
-  "h",    //湿度
   "no2",  //二氧化氮
   "o3",   //臭氧
-  "p",    //气压
   "pm10", //PM10
   "pm25", //PM2.5
   "so2",  //二氧化硫
-  "t",    //温度
-  "w",    //风力
-  "wd"    //风向
+  "t"    //温度
 };
 
