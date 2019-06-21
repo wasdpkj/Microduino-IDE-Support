@@ -34,7 +34,7 @@ uint32_t Pulse::getInterval() {
   randomSeed(analogRead(A7));
   delay(random(1,5));
   pinState = pulseKey->readVal();
-  if (pinState == KEY_RELEASING) {
+  if (pinState == KEY_RELEASED) {
     lastTime = thisTime;
     thisTime = millis();
     return (thisTime - lastTime);
