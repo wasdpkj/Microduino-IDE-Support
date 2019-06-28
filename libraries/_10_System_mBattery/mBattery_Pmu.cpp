@@ -26,10 +26,10 @@ void MbaPmu::reset(){
   I2Cdev::writeByte(I2C_ADDR_PMU, ADDR8_RST, 0x01);     
 }
 
-float MbaPmu::getVoltage(float pmu_Voltage){
+float MbaPmu::getVoltage(float pmu_Voltage,float resX){
   uint16_t batRaw = 0;
   I2Cdev::readWord(I2C_ADDR_PMU, ADDR16_BAT*2, &batRaw);     
-  return batRaw*pmu_Voltage*2.0/1024.0;
+  return batRaw*pmu_Voltage*resX/1024.0;
 }
 
 
