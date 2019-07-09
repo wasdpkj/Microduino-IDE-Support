@@ -16,6 +16,10 @@
       setS_PID_I(uint8_t index, float i);
       setS_PID_D(uint8_t index, float d);
 
+	  
+	  或者
+	  
+	  setS_PID(1, 20.0, 3, 15.0); //电机端口号[范围1~4], p：比例, i：积分, d：微分
  ****************************************/
 
 
