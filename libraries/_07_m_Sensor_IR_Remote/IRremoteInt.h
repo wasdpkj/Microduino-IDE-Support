@@ -17,7 +17,11 @@
 #define CLKFUDGE 5      // fudge factor for clock interrupt overhead
 #define CLK 256      // max value for clock (timer 2)
 #define PRESCALE 8      // timer2 clock prescale
-#define SYSCLOCK 16000000  // main Arduino clock
+#ifdef F_CPU
+#	define SYSCLOCK  F_CPU     // main Arduino clock
+#else
+#	define SYSCLOCK  16000000  // main Arduino clock
+#endif
 #define CLKSPERUSEC (SYSCLOCK/PRESCALE/1000000)   // timer clocks per microsecond
 
 #define ERR 0
