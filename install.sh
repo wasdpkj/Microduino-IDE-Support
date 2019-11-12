@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo -e "\n\n install Version:V88 \n\n";
+echo -e "\n\n install Version:V89 \n\n";
 
 # we need bash 4 for associative arrays
 if [ "${BASH_VERSION%%[^0-9]*}" -lt "4" ]; then
@@ -16,17 +16,17 @@ export MAIN_PLATFORMS='declare -A main_platforms=( [uno]="arduino:avr:uno" [due]
 # this will be eval'd in the functions below because arrays can't be exported
 export AUX_PLATFORMS='declare -A aux_platforms=( [core328]="microduino:avr:mddevice:cpu=16MHzatmega328" [coreplus644]="microduino:avr:mddevice:cpu=16MHzatmega644" [coreplus1284]="microduino:avr:mddevice:cpu=16MHzatmega1284" [coreusb]="microduino:avr:mddevice:cpu=usb32u416m" [corerf]="microduino:avr:mddevice:cpu=16MHzatmega128rfa1" [coreesp]="microduino:esp32:CoreESP32:FlashFreq=80" )'
 
-# make display available for arduino CLI
+# make display available for arduino CLI1.
 /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16
 sleep 3
 export DISPLAY=:1.0
 
 pip install pyserial
 
-# download and install arduino 1.8.4
-wget https://downloads.arduino.cc/arduino-1.8.4-linux64.tar.xz
-tar xf arduino-1.8.4-linux64.tar.xz
-mv arduino-1.8.4 $HOME/arduino_ide
+# download and install arduino 1.8.10
+wget https://downloads.arduino.cc/arduino-1.8.10-linux64.tar.xz
+tar xf arduino-1.8.10-linux64.tar.xz
+mv arduino-1.8.10 $HOME/arduino_ide
 
 #cd $HOME/arduino_ide/hardware
 #mkdir Microduino

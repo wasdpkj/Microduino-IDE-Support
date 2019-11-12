@@ -21,7 +21,7 @@
 
 #include <stdint.h>
 #include <Arduino.h>
-#include <PluggableUSB.h>
+#include "PluggableUSB.h"
 
 #if defined(USBCON)
 

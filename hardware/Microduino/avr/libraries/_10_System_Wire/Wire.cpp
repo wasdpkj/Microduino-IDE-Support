@@ -60,14 +60,14 @@ void TwoWire::begin(void)
   txBufferLength = 0;
 
   twi_init();
+  twi_attachSlaveTxEvent(onRequestService); // default callback must exist
+  twi_attachSlaveRxEvent(onReceiveService); // default callback must exist
 }
 
 void TwoWire::begin(uint8_t address)
 {
-  twi_setAddress(address);
-  twi_attachSlaveTxEvent(onRequestService);
-  twi_attachSlaveRxEvent(onReceiveService);
   begin();
+  twi_setAddress(address);
 }
 
 void TwoWire::begin(int address)
