@@ -23,10 +23,12 @@
  * Hardware SPI Macros
  * */
 
-#ifndef ESP32
-    #define SPI_OBJECT  SPI         ///< Default SPI hardware peripheral
-#else
+#if defined(ESP32)
     #define SPI_OBJECT  _spi        ///< Default SPI hardware peripheral
+#elif defined(K210)
+    #define SPI_OBJECT  _spi        ///< Default SPI hardware peripheral
+#else
+    #define SPI_OBJECT  SPI         ///< Default SPI hardware peripheral
 #endif
 
 #if defined (__AVR__) ||  defined(TEENSYDUINO) ||  defined(ARDUINO_ARCH_STM32F1)
@@ -34,6 +36,8 @@
 #elif defined (__arm__)
     #define HSPI_SET_CLOCK() SPI_OBJECT.setClockDivider(11);
 #elif defined(ESP8266) || defined(ESP32)
+    #define HSPI_SET_CLOCK() SPI_OBJECT.setFrequency(_freq);
+#elif defined(K210)
     #define HSPI_SET_CLOCK() SPI_OBJECT.setFrequency(_freq);
 #elif defined(RASPI)
     #define HSPI_SET_CLOCK() SPI_OBJECT.setClock(_freq);
@@ -54,6 +58,7 @@
 #ifdef ESP32
     #define SPI_HAS_WRITE_PIXELS
 #endif
+
 #if defined(ESP8266) || defined(ESP32)
     // Optimized SPI (ESP8266 and ESP32)
     #define HSPI_READ()              SPI_OBJECT.transfer(0)    ///< Hardware SPI read 8 bits
@@ -66,6 +71,12 @@
     #else
         #define HSPI_WRITE_PIXELS(c,l)   for(uint32_t i=0; i<((l)/2); i++){ SPI_WRITE16(((uint16_t*)(c))[i]); }
     #endif
+#elif defined(K210)
+    #define HSPI_WRITE(b)            SPI_OBJECT.transfer((uint8_t)(b))    ///< Hardware SPI write 8 bits
+    #define HSPI_READ()              HSPI_WRITE(0)    ///< Hardware SPI read 8 bits
+    #define HSPI_WRITE16(s)          HSPI_WRITE((s) >> 8); HSPI_WRITE(s)  ///< Hardware SPI write 16 bits
+    #define HSPI_WRITE32(l)          HSPI_WRITE((l) >> 24); HSPI_WRITE((l) >> 16); HSPI_WRITE((l) >> 8); HSPI_WRITE(l)          ///< Hardware SPI write 32 bits
+    #define HSPI_WRITE_PIXELS(c,l)   for(uint32_t i=0; i<(l); i+=2){ HSPI_WRITE(((uint8_t*)(c))[i+1]); HSPI_WRITE(((uint8_t*)(c))[i]); }       ///< Hardware SPI write 'l' pixels 16-bits each
 #else
     // Standard Byte-by-Byte SPI
 
@@ -98,6 +109,8 @@ static inline uint8_t _avr_spi_read(void) {
 #define SPI_DEFAULT_FREQ         8000000
 #elif defined(ESP8266) || defined(ESP32)
 #define SPI_DEFAULT_FREQ         40000000
+#elif defined(K210)
+#define SPI_DEFAULT_FREQ         40000000
 #elif defined(RASPI)
 #define SPI_DEFAULT_FREQ         80000000
 #elif defined(ARDUINO_ARCH_STM32F1)
@@ -107,6 +120,8 @@ static inline uint8_t _avr_spi_read(void) {
 #endif
 
 #if defined(ESP8266) || defined(ESP32)
+#define SPI_BEGIN()             if(_sclk < 0){SPI_OBJECT.begin();}else{SPI_OBJECT.begin(_sclk,_miso,_mosi,-1);}          ///< SPI initialize
+#elif defined(K210)
 #define SPI_BEGIN()             if(_sclk < 0){SPI_OBJECT.begin();}else{SPI_OBJECT.begin(_sclk,_miso,_mosi,-1);}          ///< SPI initialize
 #else
 #define SPI_BEGIN()             SPI_OBJECT.begin();          ///< SPI initialize

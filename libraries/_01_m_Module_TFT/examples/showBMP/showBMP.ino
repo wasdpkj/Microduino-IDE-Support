@@ -9,11 +9,18 @@
 //#define BOARD_TYPE JOYPAD_ESP
 //#define BOARD_TYPE MICROBIT_ESP
 
-#define NORMAL    0       //Cube-S2 + ST7735
-#define JOYPAD_ESP    1   //ESP32 + ST7789
-#define MICROBIT_ESP  2   //ESP32 + ST7789
-
-#if BOARD_TYPE == MICROBIT_ESP
+#if defined(K210)
+SPIClass spi_(SPI0); // MUST be SPI0 for Maix series on board LCD
+#define TFT_CLK   22
+#define TFT_MOSI  20
+#define TFT_MISO  -1
+#define TFT_CS     19
+#define TFT_RST    18  // you can also connect this to the Arduino reset
+#define TFT_DC     21
+#define TFT_BL     23
+#define SPI_PORT  spi_
+Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST);
+#elif defined(MICROBIT_ESP)
 #define TFT_CLK   18
 #define TFT_MOSI  23
 #define TFT_MISO  -1
@@ -23,7 +30,7 @@
 #define TFT_BL    5
 #define SPI_PORT  SPI
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS,  TFT_DC, TFT_RST);
-#elif BOARD_TYPE == JOYPAD_ESP
+#elif defined(JOYPAD_ESP)
 #define TFT_CLK   14
 #define TFT_MOSI  13
 #define TFT_MISO  -1
@@ -148,7 +155,9 @@ void setup() {
   Serial.begin(115200);
   Serial.println(F("BOM decoder test!"));
 
-#ifdef ESP32
+#if defined(K210)
+  tft.begin(SPI_DEFAULT_FREQ, SPI_PORT);
+#elif defined(ESP32)
   tft.begin(SPI_DEFAULT_FREQ, SPI_PORT);
 #else
   tft.begin(SPI_DEFAULT_FREQ);

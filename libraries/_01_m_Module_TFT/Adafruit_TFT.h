@@ -196,7 +196,7 @@ typedef volatile uint32_t RwReg;
 
 #if defined (ARDUINO_STM32_FEATHER) || defined (ARDUINO_MAXIM)    // doesnt work on wiced feather
   #undef USE_FAST_PINIO
-#elif defined (__AVR__) || defined(TEENSYDUINO) || defined(ESP8266) || defined (ESP32) || defined(__arm__)
+#elif defined (__AVR__) || defined(TEENSYDUINO) || defined(ESP8266) || defined (ESP32) || defined (K210) || defined(__arm__)
   #define USE_FAST_PINIO
 #endif
 
@@ -209,12 +209,15 @@ class Adafruit_TFT : public Adafruit_GFX {
         Adafruit_TFT(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1);
         Adafruit_TFT(int8_t _CS, int8_t _DC, int8_t _RST = -1);
 
-#ifndef ESP32
-        void      begin(uint32_t freq = 0);
-		void	  spiInit(uint32_t freq = 0);
-#else
+#if defined(ESP32)
         void      begin(uint32_t freq = 0, SPIClass &spi = SPI);
 		void	  spiInit(uint32_t freq = 0, SPIClass &spi = SPI);
+#elif defined(K210)
+        void      begin(uint32_t freq = 0, SPIClass &spi = SPI);
+		void	  spiInit(uint32_t freq = 0, SPIClass &spi = SPI);
+#else
+        void      begin(uint32_t freq = 0);
+		void	  spiInit(uint32_t freq = 0);
 #endif
 		void 	  displayInit(const uint8_t *addr);
 		void      softReset();
@@ -254,7 +257,9 @@ class Adafruit_TFT : public Adafruit_GFX {
         uint16_t  color565(uint8_t r, uint8_t g, uint8_t b);
 
 //    private:
-#ifdef ESP32
+#if defined(ESP32)
+        SPIClass _spi;
+#elif defined(K210)
         SPIClass _spi;
 #endif
         uint32_t _freq;
@@ -276,6 +281,12 @@ class Adafruit_TFT : public Adafruit_GFX {
         volatile uint32_t *dcport, *csport;
         uint32_t  cspinmask, dcpinmask;
 #endif
+#elif defined(K210)
+        int8_t   _cs, _dc, _rst, _sclk, _mosi, _miso;
+#ifdef USE_FAST_PINIO
+        volatile uint32_t *dcport, *csport;
+        uint32_t  cspinmask, dcpinmask;
+#endif
 #else
         int8_t      _cs, _dc, _rst, _sclk, _mosi, _miso;
 #endif
@@ -291,7 +302,9 @@ class Adafruit_ST7789 : public Adafruit_TFT {
     Adafruit_ST7789(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1);
     Adafruit_ST7789(int8_t _CS, int8_t _DC, int8_t _RST = -1);
 
-#ifdef ESP32
+#if defined(ESP32)
+	void begin(uint32_t freq = 0, SPIClass &spi = SPI);
+#elif defined(K210)
 	void begin(uint32_t freq = 0, SPIClass &spi = SPI);
 #else
 	void begin(uint32_t freq = 0);
@@ -306,7 +319,9 @@ class Adafruit_ST7735 : public Adafruit_TFT{
     Adafruit_ST7735(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1);
     Adafruit_ST7735(int8_t _CS, int8_t _DC, int8_t _RST = -1);
 
-#ifdef ESP32
+#if defined(ESP32)
+	void begin(uint32_t freq = 0, SPIClass &spi = SPI);
+#elif defined(K210)
 	void begin(uint32_t freq = 0, SPIClass &spi = SPI);
 #else
 	void begin(uint32_t freq = 0);

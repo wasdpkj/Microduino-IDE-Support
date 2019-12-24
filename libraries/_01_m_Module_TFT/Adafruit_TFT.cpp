@@ -304,13 +304,17 @@ Adafruit_ST7789::Adafruit_ST7789(int8_t cs, int8_t dc, int8_t rst) :
     @param    freq  Desired SPI clock frequency
 */
 /**************************************************************************/
-#ifdef ESP32
+#if defined(ESP32)
+void Adafruit_ST7789::begin(uint32_t freq, SPIClass &spi)
+#elif defined(K210)
 void Adafruit_ST7789::begin(uint32_t freq, SPIClass &spi)
 #else
 void Adafruit_ST7789::begin(uint32_t freq)
 #endif
 {
-#ifdef ESP32
+#if defined(ESP32)
+	spiInit(freq, spi);
+#elif defined(K210)
 	spiInit(freq, spi);
 #else
 	spiInit(freq);
@@ -403,13 +407,17 @@ Adafruit_ST7735::Adafruit_ST7735(int8_t cs, int8_t dc, int8_t rst) :
     @param    freq  Desired SPI clock frequency
 */
 /**************************************************************************/
-#ifdef ESP32
+#if defined(ESP32)
+void Adafruit_ST7735::begin(uint32_t freq, SPIClass &spi)
+#elif defined(K210)
 void Adafruit_ST7735::begin(uint32_t freq, SPIClass &spi)
 #else
 void Adafruit_ST7735::begin(uint32_t freq)
 #endif
 {
-#ifdef ESP32
+#if defined(ESP32)
+	spiInit(freq, spi);
+#elif defined(K210)
 	spiInit(freq, spi);
 #else
 	spiInit(freq);
@@ -481,7 +489,11 @@ Adafruit_TFT::Adafruit_TFT(int8_t cs, int8_t dc, int8_t mosi,
     _cs   = cs;
     _dc   = dc;
     _rst  = rst;
-#ifdef ESP32
+#if defined(ESP32)
+    _sclk = sclk;
+    _mosi  = mosi;
+    _miso = miso;
+#elif defined(K210)
     _sclk = sclk;
     _mosi  = mosi;
     _miso = miso;
@@ -567,13 +579,17 @@ void Adafruit_TFT::displayInit(const uint8_t *addr) {
     @param    freq  Desired SPI clock frequency
 */
 /**************************************************************************/
-#ifdef ESP32
+#if defined(ESP32)
+void Adafruit_TFT::begin(uint32_t freq, SPIClass &spi)
+#elif defined(K210)
 void Adafruit_TFT::begin(uint32_t freq, SPIClass &spi)
 #else
 void Adafruit_TFT::begin(uint32_t freq)
 #endif
 {
-#ifdef ESP32
+#if defined(ESP32)
+	spiInit(freq, spi);
+#elif defined(K210)
 	spiInit(freq, spi);
 #else
 	spiInit(freq);
@@ -596,13 +612,17 @@ void Adafruit_TFT::begin(uint32_t freq)
     @param    freq  Desired SPI clock frequency
 */
 /**************************************************************************/
-#ifdef ESP32
+#if defined(ESP32)
+void Adafruit_TFT::spiInit(uint32_t freq, SPIClass &spi)
+#elif defined(K210)
 void Adafruit_TFT::spiInit(uint32_t freq, SPIClass &spi)
 #else
 void Adafruit_TFT::spiInit(uint32_t freq)
 #endif
 {
-#ifdef ESP32
+#if defined(ESP32)
+    _spi = spi;
+#elif defined(K210)
     _spi = spi;
 #endif
     if(!freq){
