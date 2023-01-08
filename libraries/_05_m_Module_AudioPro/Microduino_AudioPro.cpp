@@ -20,7 +20,9 @@
 #include "Microduino_AudioPro.h"
 
 static AudioPro *myself;
+#if defined(LOAD_SD_LIBRARY) || defined(LOAD_SDFAT_LIBRARY)
 static AudioPro_FilePlayer *myself_sd;
+#endif
 
 #ifndef _BV
 #define _BV(x) (1<<(x))
@@ -35,13 +37,16 @@ static void feeder(void) {
   myself->feedBuffer();
 }
 
+#if defined(LOAD_SD_LIBRARY) || defined(LOAD_SDFAT_LIBRARY)
 static void feeder_sd(void) {
   myself_sd->feedBuffer();
 }
+#endif
 
 boolean feedBufferLock = false;
 
 
+#if defined(LOAD_SD_LIBRARY) || defined(LOAD_SDFAT_LIBRARY)
 
 AudioPro_FilePlayer::AudioPro_FilePlayer(SDClass& _sd, uint8_t midi, uint8_t cs, uint8_t dcs, uint8_t dreq)
   : AudioPro(midi, cs, dcs, dreq), sd(_sd) {
@@ -95,7 +100,6 @@ void AudioPro_FilePlayer::pausePlaying(boolean pause) {
   else {
     if (!getAmplifier()) {
       setAmplifier(true);
-      delay(200);
     }
     playingMusic = true;
     this->feedBuffer();
@@ -135,7 +139,6 @@ boolean AudioPro_FilePlayer::playMP3(const char *trackname) {
 
   if (!getAmplifier()) {
     setAmplifier(true);
-    delay(200);
   }
 
   // As explained in datasheet, set twice 0 in REG_DECODETIME to set time back to 0
@@ -321,7 +324,7 @@ boolean AudioPro_FilePlayer::detachInterrupt(uint8_t type) {
   */
   if (type == _dreq) {
 #if defined(__AVR__)
-    SPI.notUsingInterrupt(digitalPinToInterrupt(_dreq));
+    hwspi._spi->notUsingInterrupt(digitalPinToInterrupt(_dreq));
 #endif
     detachInterrupt(digitalPinToInterrupt(_dreq));
     return true;
@@ -341,21 +344,25 @@ boolean AudioPro_FilePlayer::useInterrupt(uint8_t type) {
   */
   if (type == _dreq) {
 #if defined(__AVR__)
-    SPI.usingInterrupt(digitalPinToInterrupt(_dreq));
+    hwspi._spi->usingInterrupt(digitalPinToInterrupt(_dreq));
 #endif
     attachInterrupt(digitalPinToInterrupt(_dreq), feeder_sd, CHANGE);
     return true;
   }
   return false;
 }
+#endif
 
 /***************************************************************/
+AudioPro::AudioPro(SPIClass *spiclass, uint8_t midi, uint8_t cs, uint8_t dcs, uint8_t dreq)
+    : _midi(midi), _cs(cs), _dcs(dcs), _dreq(dreq)
+{
+  hwspi._spi = spiclass;
 
-AudioPro::AudioPro(uint8_t midi, uint8_t cs, uint8_t dcs, uint8_t dreq) {
-  _midi = midi;
-  _cs = cs;
-  _dcs = dcs;
-  _dreq = dreq;
+  // _midi = midi;
+  // _cs = cs;
+  // _dcs = dcs;
+  // _dreq = dreq;
 
 
   playingMusic = false;
@@ -363,6 +370,31 @@ AudioPro::AudioPro(uint8_t midi, uint8_t cs, uint8_t dcs, uint8_t dreq) {
   romAddr = 0;
   romLen = 0;
   romLenCache = 0;
+  amplifierStatus = 0;
+}
+
+
+AudioPro::AudioPro(uint8_t midi, uint8_t cs, uint8_t dcs, uint8_t dreq) 
+    : _midi(midi), _cs(cs), _dcs(dcs), _dreq(dreq)
+{
+  hwspi._spi = &SPI;
+ 
+  
+  // _midi = midi;
+  // _cs = cs;
+  // _dcs = dcs;
+  // _dreq = dreq;
+
+  // _sck = -1;
+  // _miso = -1;
+  // _mosi = -1;
+
+  playingMusic = false;
+  romTrack = false;
+  romAddr = 0;
+  romLen = 0;
+  romLenCache = 0;
+  amplifierStatus = 0;
 }
 
 boolean AudioPro::useInterrupt(uint8_t type) {
@@ -376,7 +408,7 @@ boolean AudioPro::useInterrupt(uint8_t type) {
   */
   if (type == _dreq) {
 #if defined(__AVR__)
-    SPI.usingInterrupt(digitalPinToInterrupt(_dreq));
+    hwspi._spi->usingInterrupt(digitalPinToInterrupt(_dreq));
 #endif
     attachInterrupt(digitalPinToInterrupt(_dreq), feeder, CHANGE);
     return true;
@@ -395,7 +427,7 @@ boolean AudioPro::detachInterrupt(uint8_t type) {
   */
   if (type == _dreq) {
 #if defined(__AVR__)
-    SPI.notUsingInterrupt(digitalPinToInterrupt(_dreq));
+    hwspi._spi->notUsingInterrupt(digitalPinToInterrupt(_dreq));
 #endif
     detachInterrupt(digitalPinToInterrupt(_dreq));
     return true;
@@ -609,18 +641,20 @@ boolean AudioPro::readyForData(void) {
 }
 
 void AudioPro::playData(uint8_t *buffer, uint8_t buffsiz) {
-  SPI.beginTransaction(VS1053_DATA_SPI_SETTING);
+  hwspi.settings = VS1053_DATA_SPI_SETTING;
+  hwspi._spi->beginTransaction(hwspi.settings);
   digitalWrite(_dcs, LOW);
   for (uint8_t i = 0; i < buffsiz; i++) {
     spiwrite(buffer[i]);
   }
   digitalWrite(_dcs, HIGH);
-  SPI.endTransaction();
+  hwspi._spi->endTransaction();
 }
 
 
 void AudioPro::playBuffer(uint8_t *buffer, size_t buffsiz) {
-  SPI.beginTransaction(VS1053_DATA_SPI_SETTING);
+  hwspi.settings = VS1053_DATA_SPI_SETTING;
+  hwspi._spi->beginTransaction(hwspi.settings);
   digitalWrite(_dcs, LOW);
   while ( buffsiz ) {
     while (!readyForData());
@@ -630,7 +664,7 @@ void AudioPro::playBuffer(uint8_t *buffer, size_t buffsiz) {
     while ( chunk_length-- ) spiwrite(*buffer++);
   }
   digitalWrite(_dcs, HIGH);
-  SPI.endTransaction();
+  hwspi._spi->endTransaction();
 }
 
 
@@ -668,7 +702,6 @@ boolean AudioPro::playROM(const uint8_t *_buffer, uint32_t _len) {
 
   if (!getAmplifier()) {
     setAmplifier(true);
-    delay(200);
   }
 
   // As explained in datasheet, set twice 0 in REG_DECODETIME to set time back to 0
@@ -695,9 +728,7 @@ void AudioPro::pausePlaying(boolean pause) {
   else {
     if (!getAmplifier()) {
       setAmplifier(true);
-      delay(200);
     }
-    delay(200);
     playingMusic = true;
     this->feedBuffer();
   }
@@ -801,7 +832,7 @@ void AudioPro::reset() {
   // TODO: http://www.vlsi.fi/player_vs1011_1002_1003/modularplayer/vs10xx_8c.html#a3
   digitalWrite(_cs, HIGH);
   digitalWrite(_dcs, HIGH);
-  delay(100);
+
   softReset();
   delay(100);
 
@@ -829,11 +860,6 @@ uint8_t AudioPro::begin(void) {
   digitalWrite(_dcs, HIGH);
   pinMode(_dreq, INPUT);
   delay(100);
-
-  SPI.begin();
-  SPI.setDataMode(SPI_MODE0);
-  SPI.setBitOrder(MSBFIRST);
-  SPI.setClockDivider(SPI_CLOCK_DIV128);
 
   reset();
 
@@ -904,24 +930,29 @@ void AudioPro::setAmplifier(boolean sta) {
   uint16_t pins = sciRead(VS1053_REG_WRAM);
 
   if (sta)
+  {
     pins &= ~_BV(4);
+    WriteWRAM(VS1053_GPIO_ODATA, pins);
+    amplifierStatus = 1;
+    delay(10);
+  }
   else
+  {
     pins |= _BV(4);
+    WriteWRAM(VS1053_GPIO_ODATA, pins);
+    amplifierStatus = 0;
+  }
 
-  WriteWRAM(VS1053_GPIO_ODATA, pins);
 }
 
 boolean AudioPro::getAmplifier() {
-  sciWrite(VS1053_REG_WRAMADDR, VS1053_GPIO_IDATA);
-  uint16_t val = sciRead(VS1053_REG_WRAM);
-  if (val & _BV(4)) return false;
-  return true;
+  return amplifierStatus;
 }
 
 uint16_t AudioPro::sciRead(uint8_t addr) {
   uint16_t data;
-
-  SPI.beginTransaction(VS1053_CONTROL_SPI_SETTING);
+  hwspi.settings = VS1053_CONTROL_SPI_SETTING;
+  hwspi._spi->beginTransaction(hwspi.settings);
   digitalWrite(_cs, LOW);
   spiwrite(VS1053_SCI_READ);
   spiwrite(addr);
@@ -930,21 +961,22 @@ uint16_t AudioPro::sciRead(uint8_t addr) {
   data <<= 8;
   data |= spiread();
   digitalWrite(_cs, HIGH);
-  SPI.endTransaction();
+  hwspi._spi->endTransaction();
 
   return data;
 }
 
 
 void AudioPro::sciWrite(uint8_t addr, uint8_t data_H, uint8_t data_L) {
-  SPI.beginTransaction(VS1053_CONTROL_SPI_SETTING);
+  hwspi.settings = VS1053_CONTROL_SPI_SETTING;
+  hwspi._spi->beginTransaction(hwspi.settings);
   digitalWrite(_cs, LOW);
   spiwrite(VS1053_SCI_WRITE);
   spiwrite(addr);
   spiwrite(data_H);
   spiwrite(data_L);
   digitalWrite(_cs, HIGH);
-  SPI.endTransaction();
+  hwspi._spi->endTransaction();
 }
 
 
@@ -956,11 +988,11 @@ void AudioPro::sciWrite(uint8_t addr, uint16_t data) {
 
 
 uint8_t AudioPro::spiread(void) {
-  return SPI.transfer(0x00);
+  return hwspi._spi->transfer(0x00);
 }
 
 void AudioPro::spiwrite(uint8_t c) {
-  SPI.transfer(c);
+  hwspi._spi->transfer(c);
 }
 
 //------------------------------------------------------------------------------
@@ -977,9 +1009,9 @@ uint16_t AudioPro::ReadWRAM (uint16_t addressbyte) {
   uint16_t tmp1, tmp2;
 
   //Set SPI bus for write
-  SPI.setDataMode(SPI_MODE0);
-  SPI.setBitOrder(MSBFIRST);
-  SPI.setClockDivider(SPI_CLOCK_DIV128);
+  // hwspi._spi->setDataMode(SPI_MODE0);
+  // hwspi._spi->setBitOrder(MSBFIRST);
+  // hwspi._spi->setClockDivider(SPI_CLOCK_DIV128);
 
   sciWrite(VS1053_REG_WRAMADDR, addressbyte);
 
@@ -1024,8 +1056,8 @@ void AudioPro::sineTest(uint8_t n, uint16_t ms) {
 
   while (!readyForData());
   //  delay(10);
-
-  SPI.beginTransaction(VS1053_DATA_SPI_SETTING);
+  hwspi.settings = VS1053_DATA_SPI_SETTING;
+  hwspi._spi->beginTransaction(hwspi.settings);
   digitalWrite(_dcs, LOW);
   spiwrite(0x53);
   spiwrite(0xEF);
@@ -1036,11 +1068,12 @@ void AudioPro::sineTest(uint8_t n, uint16_t ms) {
   spiwrite(0x00);
   spiwrite(0x00);
   digitalWrite(_dcs, HIGH);
-  SPI.endTransaction();
+  hwspi._spi->endTransaction();
 
   delay(ms);
-
-  SPI.beginTransaction(VS1053_DATA_SPI_SETTING);
+  
+  hwspi.settings = VS1053_DATA_SPI_SETTING;
+  hwspi._spi->beginTransaction(hwspi.settings);
   digitalWrite(_dcs, LOW);
   spiwrite(0x45);
   spiwrite(0x78);
@@ -1051,7 +1084,7 @@ void AudioPro::sineTest(uint8_t n, uint16_t ms) {
   spiwrite(0x00);
   spiwrite(0x00);
   digitalWrite(_dcs, HIGH);
-  SPI.endTransaction();
+  hwspi._spi->endTransaction();
 }
 
 

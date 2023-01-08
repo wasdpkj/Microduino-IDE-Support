@@ -5,14 +5,26 @@
 */
 
 #include <Microduino_AudioPro.h>
+#include <SPI.h>
 
-AudioPro midiPlayer;
+#define AUDIO_MIDI      D2
+#define AUDIO_CS        A3
+#define AUDIO_DC        A2
+#define AUDIO_IRQ       D3
+
+// AudioPro midiPlayer;
+AudioPro midiPlayer(&SPI, AUDIO_MIDI, AUDIO_CS, AUDIO_DC, AUDIO_IRQ);
+
 
 uint8_t toneNum[12] = {57, 59, 60, 62, 64, 65, 67, 69, 71, 72, 74, 76};
 
 void setup() {
   Serial.begin(115200);
   delay(200);
+  
+  pinMode(AUDIO_CS, OUTPUT);
+  digitalWrite(AUDIO_CS, HIGH);  
+  SPI.begin();
 
   if (! midiPlayer.begin()) { // initialise the music player
     Serial.println(F("Couldn't find VS1053, do you have the right pins defined?"));

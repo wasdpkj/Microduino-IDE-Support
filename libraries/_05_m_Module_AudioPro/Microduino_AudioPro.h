@@ -19,16 +19,26 @@
 #ifndef AUDIOPRO_VS1053_H
 #define AUDIOPRO_VS1053_H
 
+#define LOAD_SD_LIBRARY // Default SD Card library
+
 #include <Arduino.h>
 
 #include <SPI.h> 
+#if defined(LOAD_SD_LIBRARY) || defined(LOAD_SDFAT_LIBRARY)
 #include <SD.h>
+#endif
 #if defined(__AVR__)
 #include <avr/pgmspace.h>
 #elif defined(ESP32)
 #include <pgmspace.h>
+#elif defined(LS5x10)
+#include <pgmspace.h>
 #endif
 
+#ifdef SPI_DEFAULT_FREQ
+#undef SPI_DEFAULT_FREQ
+#endif
+#define SPI_DEFAULT_FREQ         2000000      ///< Default SPI data clock frequency
 
 typedef volatile uint8_t PortReg;
 typedef uint8_t PortMask;
@@ -44,7 +54,7 @@ typedef uint8_t PortMask;
 
 //#define VS1053_TIMER0_DREQ 255 // allows useInterrupt to accept pins 0 to 254
 
-#define VS1053_CONTROL_SPI_SETTING  SPISettings(250000,  MSBFIRST, SPI_MODE0)
+#define VS1053_CONTROL_SPI_SETTING  SPISettings(500000,  MSBFIRST, SPI_MODE0)
 #define VS1053_DATA_SPI_SETTING     SPISettings(8000000, MSBFIRST, SPI_MODE0)
 #define VS1053_SCI_READ 0x03
 #define VS1053_SCI_WRITE 0x02
@@ -186,6 +196,8 @@ static const char sdData[] = "AudioPro.dat";
 class AudioPro {
  public:
   AudioPro(uint8_t midi = VS1053_PIN_MIDI, uint8_t cs = VS1053_PIN_XCS, uint8_t dcs = VS1053_PIN_XDCS, uint8_t dreq = VS1053_PIN_DREQ);
+  AudioPro(SPIClass *spiclass, uint8_t midi, uint8_t cs, uint8_t dcs, uint8_t dreq);
+ 
   uint8_t begin(void);
   void end();						//new
   void reset(void);
@@ -248,11 +260,26 @@ class AudioPro {
  protected:
   uint8_t _midi, _dreq;
 
+  boolean amplifierStatus;
+
   boolean readyForData(void);
   uint8_t mp3buffer[VS1053_DATABUFFERLEN];
 
+  struct
+  {                 //   Values specific to HARDWARE SPI:
+    SPIClass *_spi; ///< SPI class pointer
+#if defined(SPI_HAS_TRANSACTION)
+    SPISettings settings; ///< SPI transaction settings
+#else
+    uint32_t _freq; ///< SPI bitrate (if no SPI transactions)
+    uint32_t _div; ///< SPI bitrate (if no SPI transactions)
+#endif
+    // uint32_t _mode; ///< SPI data mode (transactions or no)
+  } hwspi;          ///< Hardware SPI values
+
  private:
   uint8_t _cs, _dcs;
+//  int16_t _sck, _miso, _mosi;
 
   boolean romTrack;							//new
   uint32_t romAddr;							//new
@@ -268,6 +295,7 @@ class AudioPro {
 };
 
 
+#if defined(LOAD_SD_LIBRARY) || defined(LOAD_SDFAT_LIBRARY)
 class AudioPro_FilePlayer : public AudioPro {
  public:
   AudioPro_FilePlayer (SDClass& _sd,
@@ -307,6 +335,7 @@ class AudioPro_FilePlayer : public AudioPro {
   boolean staFile = false;
   uint8_t numMusicFile = 0;  
 };
+#endif
 
 
 //------------------------------------------------------------------------------
