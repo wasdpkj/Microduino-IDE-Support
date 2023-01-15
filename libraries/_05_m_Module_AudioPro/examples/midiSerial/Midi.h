@@ -4,7 +4,7 @@ SoftwareSerial VS1053_MIDI(-1, VS1053_PIN_MIDI);
 #endif
 
 //CoreESP UART Port: [RX,TX]
-#if defined(ESP32)
+#if defined(ESP32) || defined(LE501X)
 HardwareSerial VS1053_MIDI(1);
 #endif
 

@@ -29,9 +29,7 @@
 #endif
 #if defined(__AVR__)
 #include <avr/pgmspace.h>
-#elif defined(ESP32)
-#include <pgmspace.h>
-#elif defined(LS5x10)
+#elif defined(ESP32) || defined(LE501X)
 #include <pgmspace.h>
 #endif
 

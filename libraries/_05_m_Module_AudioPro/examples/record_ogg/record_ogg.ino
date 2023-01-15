@@ -14,12 +14,16 @@ File recording;  // the file we will save our recording to
 #define RECBUFFSIZE 128  // 64 or 128 bytes.
 uint8_t recording_buffer[RECBUFFSIZE];
 
+uint16_t saveRecordedData(boolean isrecord);
+
 void setup() {
   Serial.begin(115200);
   Serial.println("Adafruit VS1053 Ogg Recording Test");
   pinMode(SD_PIN_SEL, OUTPUT);    //先初始化AudioPro，所以先使能SD卡
   digitalWrite(SD_PIN_SEL, HIGH);
   delay(500);
+
+  SPI.begin();
 
   // initialise the music player
   if (!musicPlayer.begin()) {

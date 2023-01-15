@@ -14,12 +14,16 @@ AudioPro_FilePlayer musicPlayer =  AudioPro_FilePlayer(SD);
 
 uint8_t fileNum = 0;  //文件数量
 
+void help();
+
 void setup() {
   Serial.begin(115200);
   Serial.println(F("AudioPro(VS1053) Simple Test"));
   pinMode(SD_PIN_SEL, OUTPUT);    //先初始化AudioPro，所以先使能SD卡
   digitalWrite(SD_PIN_SEL, HIGH);
   delay(500);
+
+  SPI.begin();
 
   if (! musicPlayer.begin()) { // initialise the music player
     Serial.println(F("Couldn't find VS1053, do you have the right pins defined?"));

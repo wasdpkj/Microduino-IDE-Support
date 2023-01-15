@@ -13,7 +13,7 @@ void setup() {
   Serial.begin(9600);
   delay(200);
 
-#if defined(ESP32)
+#if defined(ESP32) || defined(LE501X)
   VS1053_MIDI.begin(31250, SERIAL_8N1, -1, VS1053_PIN_MIDI);
 #endif
 #if defined (__AVR__)

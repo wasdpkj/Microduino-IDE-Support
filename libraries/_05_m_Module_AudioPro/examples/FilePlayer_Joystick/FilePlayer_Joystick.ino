@@ -48,6 +48,8 @@ void setup() {
   digitalWrite(SD_PIN_SEL, HIGH);
   delay(500);
 
+  SPI.begin();
+
   if (! musicPlayer.begin()) { // initialise the music player
     Serial.println(F("Couldn't find VS1053, do you have the right pins defined?"));
     while (1);
@@ -81,7 +83,7 @@ void setup() {
   for (uint8_t a = 0; a < 5; a++) {
     keyAnalog[a].begin(INPUT);
   }
-#if defined (ESP32)
+#if defined (ESP32) || defined (LE501X)
   analogReadResolution(10);  //9-12 在此ADC设置为10bit精度
 #endif
   delay(200);

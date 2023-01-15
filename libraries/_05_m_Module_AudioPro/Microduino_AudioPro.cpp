@@ -346,7 +346,7 @@ boolean AudioPro_FilePlayer::useInterrupt(uint8_t type) {
 #if defined(__AVR__)
     hwspi._spi->usingInterrupt(digitalPinToInterrupt(_dreq));
 #endif
-    attachInterrupt(digitalPinToInterrupt(_dreq), feeder_sd, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(_dreq), feeder_sd, RISING);
     return true;
   }
   return false;
@@ -410,7 +410,7 @@ boolean AudioPro::useInterrupt(uint8_t type) {
 #if defined(__AVR__)
     hwspi._spi->usingInterrupt(digitalPinToInterrupt(_dreq));
 #endif
-    attachInterrupt(digitalPinToInterrupt(_dreq), feeder, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(_dreq), feeder, RISING);
     return true;
   }
   return false;
@@ -858,7 +858,7 @@ uint8_t AudioPro::begin(void) {
   digitalWrite(_cs, HIGH);
   pinMode(_dcs, OUTPUT);
   digitalWrite(_dcs, HIGH);
-  pinMode(_dreq, INPUT);
+  pinMode(_dreq, INPUT_PULLUP);
   delay(100);
 
   reset();
