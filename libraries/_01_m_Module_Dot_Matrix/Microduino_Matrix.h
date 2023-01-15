@@ -34,9 +34,7 @@
 
 #include "Microduino_MatrixBase.h"
 
-#if defined (ESP32)
-
-#else
+#if defined (__AVR__)
 #define WDT
 #ifdef WDT
 #include <avr/wdt.h>

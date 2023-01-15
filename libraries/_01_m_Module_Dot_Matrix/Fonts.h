@@ -28,10 +28,10 @@
 
 #include <Arduino.h>
 
-#if defined (ESP32)
-#include <pgmspace.h>
-#else
+#if defined (__AVR__)
 #include <avr/pgmspace.h>
+#else
+#include <pgmspace.h>
 #endif
 
 #define CharToInt(y) (y-32)
