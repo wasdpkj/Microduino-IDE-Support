@@ -32,7 +32,7 @@ SoftwareSerial mySerial(4, 5);   // Core RX, TX
 Number LED(NUM, &mySerial);  //使用串口
 #endif
 
-#if defined(ESP32)
+#if defined(ESP32) || defined (LE501X)
 HardwareSerial mySerial(1);
 Number LED(NUM, &mySerial, D4, D5);  //使用串口
 #endif

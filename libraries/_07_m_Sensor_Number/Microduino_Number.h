@@ -24,7 +24,7 @@ class Number {
 #if defined (__AVR__)
     Number(uint8_t n, SoftwareSerial *ser);
     Number(uint8_t n, HardwareSerial *ser);
-#elif defined (ESP32)
+#elif defined (ESP32) || defined (LE501X)
     Number(uint8_t n, HardwareSerial *ser, int _rx = D4, int _tx = D5);
 #endif
     void begin();
@@ -45,7 +45,7 @@ class Number {
     HardwareSerial *numHwSerial;
 #if defined (__AVR__)
     SoftwareSerial *numSwSerial;
-#elif defined (ESP32)
+#elif defined (ESP32) || defined (LE501X)
     uint8_t pinRX = D4;
     uint8_t pinTX = D5;
 #endif

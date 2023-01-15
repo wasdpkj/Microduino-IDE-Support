@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "Microduino_Number.h"
 
-#if defined (ESP32)
+#if defined (ESP32) || defined (LE501X)
 Number::Number(uint8_t n, HardwareSerial *ser, int _rx, int _tx) {
   common_init();
   numHwSerial = ser;
@@ -48,7 +48,7 @@ void Number::begin() {
     numSwSerial->begin(9600);
   else
     numHwSerial->begin(9600);
-#elif defined (ESP32)
+#elif defined (ESP32) || defined (LE501X)
   numHwSerial->begin(9600, SERIAL_8N1, pinRX, pinTX);
 #endif
   delay(100);
