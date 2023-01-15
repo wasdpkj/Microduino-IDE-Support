@@ -1,7 +1,7 @@
-#ifdef ESP32
-#include <pgmspace.h>
-#else
+#if defined(__AVR__)
 #include <avr/pgmspace.h>
+#else
+#include <pgmspace.h>
 #endif
 
 #include <stdlib.h>
