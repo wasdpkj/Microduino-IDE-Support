@@ -81,6 +81,12 @@ THE SOFTWARE.
 // Arduino-style "Serial.print" debug constant (uncomment to enable)
 // -----------------------------------------------------------------------------
 //#define I2CDEV_SERIAL_DEBUG
+#if defined (LE501X)
+    #include "Arduino.h"
+    #include <Wire.h>
+    #undef I2CDEV_IMPLEMENTATION
+    #define I2CDEV_IMPLEMENTATION I2CDEV_ARDUINO_WIRE
+#endif
 
 #ifdef ARDUINO
     #if ARDUINO < 100
