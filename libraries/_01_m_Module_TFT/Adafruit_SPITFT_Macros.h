@@ -111,7 +111,7 @@ static inline uint8_t _avr_spi_read(void) {
 #elif defined(ESP8266) || defined(ESP32)
 #define SPI_DEFAULT_FREQ         40000000
 #elif defined(LE501X)
-#define SPI_DEFAULT_FREQ         20000000
+#define SPI_DEFAULT_FREQ         8000000    //SPI MAX FREQ: 2MHZ@16M, 8MHZ@64M; SSI MAX FREQ: 8MHZ@16M, 32MHZ@64M
 #elif defined(K210)
 #define SPI_DEFAULT_FREQ         40000000
 #elif defined(RASPI)

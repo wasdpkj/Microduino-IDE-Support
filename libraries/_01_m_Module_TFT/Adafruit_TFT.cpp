@@ -189,7 +189,7 @@ void Adafruit_TFT::begin(uint32_t freq, uint8_t spiNeedInit)
 	
 	
 	softReset();
-	displayInit(_config.initcodeAddr);					
+	displayInit((const uint8_t *)_config.initcodeAddr);					
 	invertDisplay(_config.invert);	
 	setRotation(0);
 }
