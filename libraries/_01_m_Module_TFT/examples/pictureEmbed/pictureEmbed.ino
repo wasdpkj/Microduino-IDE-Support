@@ -26,6 +26,12 @@
 //#define BOARD_TYPE JOYPAD_ESP
 //#define BOARD_TYPE MICROBIT_ESP
 
+/*
+ * ST7735_128x160
+ * ST7789_240x240
+ * ST7789_240x320
+ * ST7789_170x320
+ */
 #if defined(K210)
 SPIClass spi_(SPI0); // MUST be SPI0 for Maix series on board LCD
 #define TFT_CLK   22
@@ -36,7 +42,7 @@ SPIClass spi_(SPI0); // MUST be SPI0 for Maix series on board LCD
 #define TFT_DC     21
 #define TFT_BL     23
 #define SPI_PORT  spi_
-Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST);
+ST7789_240x240 tft = ST7789_240x240(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST);
 #elif defined(MICROBIT_ESP)
 #define TFT_CLK   18
 #define TFT_MOSI  23
@@ -46,7 +52,7 @@ Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST
 #define TFT_RST   -1   //15
 #define TFT_BL    5
 #define SPI_PORT  SPI
-Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS,  TFT_DC, TFT_RST);
+ST7789_240x240 tft = ST7789_240x240(TFT_CS,  TFT_DC, TFT_RST);
 #elif defined(JOYPAD_ESP)
 #define TFT_CLK   14
 #define TFT_MOSI  13
@@ -56,7 +62,23 @@ Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS,  TFT_DC, TFT_RST);
 #define TFT_RST   -1   //15
 #define TFT_BL    2
 #define SPI_PORT  TFTSPI
-Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST);
+ST7789_240x240 tft = ST7789_240x240(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST);
+#elif defined(LE501X)
+#define TFT_CLK   D13
+#define TFT_MOSI  D11
+#define TFT_MISO  -1
+#define TFT_CS     D5
+#define TFT_RST    -1  // you can also connect this to the Arduino reset
+#define TFT_DC     D4
+#define TFT_BL     D6
+#if (SDK_HCLK_MHZ == 64)
+#define TFT_SPI_FREQ    32000000
+#define SPI_PORT  SSI   //SPI or SSI
+#else
+#define TFT_SPI_FREQ    SPI_DEFAULT_FREQ
+#define SPI_PORT  SPI   //SPI or SSI
+#endif 
+ST7789_240x240 tft = ST7789_240x240(TFT_CS, TFT_DC, TFT_RST);
 #else
 #define TFT_CLK   D13
 #define TFT_MOSI  D11
@@ -66,22 +88,27 @@ Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST
 #define TFT_DC     D4
 #define TFT_BL     D6
 #define SPI_PORT  SPI
-Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
+ST7789_240x240 tft = ST7789_240x240(TFT_CS, TFT_DC, TFT_RST);
 #endif
 
 void setup() {
   Serial.begin(115200);
   Serial.print("Hello! TFT Test");
 
-#if defined(K210)
-  tft.begin(SPI_DEFAULT_FREQ, SPI_PORT);
-#elif defined(ESP32)
-  tft.begin(SPI_DEFAULT_FREQ, SPI_PORT);
+  SPI_PORT.begin();
+
+#if defined(K210) || defined(ESP32)
+  tft.begin(SPI_DEFAULT_FREQ, &SPI_PORT);
+#elif defined(LE501X)
+  tft.begin(TFT_SPI_FREQ, &SPI_PORT, false);
 #else
   tft.begin(SPI_DEFAULT_FREQ);
 #endif
-  pinMode(TFT_BL, OUTPUT);
-  digitalWrite(TFT_BL, HIGH);
+
+  if(TFT_BL != -1){
+    pinMode(TFT_BL, OUTPUT);
+    digitalWrite(TFT_BL, HIGH);
+  }
 }
 
 void loop(void) {
@@ -92,7 +119,7 @@ void loop(void) {
       tft.drawRGBBitmap(
         random(-DRAGON_WIDTH , tft.width()),
         random(-DRAGON_HEIGHT, tft.height()),
-#if defined(__AVR__) || defined(ESP8266) || defined(ESP32)
+#if defined(__AVR__) || defined(ESP8266) || defined(ESP32) || defined(LE501X)
         dragonBitmap,
 #else
         // Some non-AVR MCU's have a "flat" memory model and don't

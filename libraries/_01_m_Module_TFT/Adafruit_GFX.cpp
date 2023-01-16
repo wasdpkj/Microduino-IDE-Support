@@ -33,10 +33,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "Adafruit_GFX.h"
 #include "glcdfont.c"
-#ifdef __AVR__
-  #include <avr/pgmspace.h>
-#elif defined(ESP8266) || defined(ESP32)
-  #include <pgmspace.h>
+
+#if defined(__AVR__)
+#include <avr/pgmspace.h>
+#else
+#include <pgmspace.h>
 #endif
 
 // Many (but maybe not all) non-AVR board installs define macros

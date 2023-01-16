@@ -29,349 +29,7 @@
 #endif
 #include <limits.h>
 
-
-static const uint8_t PROGMEM
-  cmd_ST7789_240x240[] =  {             // Init commands for 7789 screens
-    19,                              	//  9 commands in list:
-    //TFT_SWRESET,   ST_CMD_DELAY,	 	//  1: Software reset, no args, w/delay
-    //  150,                         	//    150 ms delay
-    TFT_SLPOUT ,   ST_CMD_DELAY, 		//  2: Out of sleep mode, no args, w/delay
-      255,                          	//     255 = 500 ms delay
-	ST7789_PWCTR1 	, 2,				//Power control
-	  0xA4,0xA1,						//AVDD=6.8V,AVCL=-4.8V,VDDS=2.3V
-	ST7789_GCCTL  	, 1,
-	  0x35,								//VGH=13.26V,VGL=-10.43
-	ST7789_VCMOSET	, 1,				//VCM control
-	  0x32,								//Vcom=1.35V
-	ST7789_VDVVRHEN , 1,			
-	  0x01,							
-	ST7789_VRHSET  	, 1,				
-	  0x19,								//GVDD=4.8V
-	ST7789_VDVSET  	, 1,				
-	  0x20,								//VDV=0v
-    TFT_COLMOD 	, 1+ST_CMD_DELAY,		//  3: Set color mode, 1 arg + delay:
-      0x55,                         	//     16-bit color
-      10,                           	//     10 ms delay
-    TFT_MADCTL 	, 1,            		//  4: Mem access ctrl (directions), 1 arg:
-      0x00,                        	    //     Row/col addr, bottom-top refresh
-    ST7789_PORCTL  	, 5,             
-      0x0C,0x0C,0x00,0x33,0x33,
-	ST7789_FRMCTR2 	, 1,				//In Normal Mode	
-	  0x0F,								//0x0F:60Hz
-										
-	TFT_GAMMASET , 1,					//Gamma curve selected
-	  0x01,								
-	TFT_GMCTRP1 , 14,					//Set Gamma
-	  0xD0,0x08,0x0E,0x09,
-	  0x09,0x05,0x31,0x33,
-	  0x48,0x17,0x14,0x15,
-	  0x31,0x34,						
-	TFT_GMCTRN1 , 14,					//Set Gamma
-	  0xD0,0x08,0x0E,0x09,
-	  0x09,0x15,0x31,0x33,
-	  0x48,0x17,0x14,0x15,
-	  0x31,0x34,												
-    TFT_CASET  , 4,              		//  5: Column addr set, 4 args, no delay:
-      0x00,
-      ST7789_240x240_XSTART,        	//     XSTART = 0
-      (ST7789_TFTWIDTH+ST7789_240x240_XSTART)>>8,
-      (ST7789_TFTWIDTH+ST7789_240x240_XSTART)&0xFF, //     XEND = 240
-    TFT_RASET  , 4,              		//  6: Row addr set, 4 args, no delay:
-      0x00,
-      ST7789_240x240_YSTART,            //     YSTART = 0
-      (ST7789_TFTHEIGHT+ST7789_240x240_YSTART)>>8,
-      (ST7789_TFTHEIGHT+ST7789_240x240_YSTART)&0xFF, //     YEND = 240
-    TFT_INVON  ,   ST_CMD_DELAY,  		//  7: hack
-      10,
-    TFT_NORON  ,   ST_CMD_DELAY, 		//  8: Normal display on, no args, w/delay
-      10,                           	//     10 ms delay
-    TFT_DISPON ,   ST_CMD_DELAY, 		//  9: Main screen turn on, no args, delay
-	  255 								//     255 = max (500 ms) delay
-  };                          	
-
-
-/*
-static const uint8_t PROGMEM
-  cmd_ST7789_240x240[] =  {             // Init commands for 7789 screens
-    19,                              	//  9 commands in list:
-    //TFT_SWRESET,   ST_CMD_DELAY,	 	//  1: Software reset, no args, w/delay
-    //  150,                         	//    150 ms delay
-    TFT_SLPOUT ,   ST_CMD_DELAY, 		//  2: Out of sleep mode, no args, w/delay
-      255,                          	//     255 = 500 ms delay
-
-    TFT_MADCTL 	, 1,            		//  4: Mem access ctrl (directions), 1 arg:
-      0x00,                        	    //     Row/col addr, bottom-top refresh
-    TFT_COLMOD 	, 1+ST_CMD_DELAY,		//  3: Set color mode, 1 arg + delay:
-      0x55,                         	//     16-bit color
-      10,                           	//     10 ms delay
-    TFT_INVON  ,   ST_CMD_DELAY,  		//  7: hack
-      10,
-    TFT_CASET  , 4,              		//  5: Column addr set, 4 args, no delay:
-      0x00,
-      ST7789_240x240_XSTART,        	//     XSTART = 0
-      (ST7789_TFTWIDTH+ST7789_240x240_XSTART)>>8,
-      (ST7789_TFTWIDTH+ST7789_240x240_XSTART)&0xFF, //     XEND = 240
-    TFT_RASET  , 4,              		//  6: Row addr set, 4 args, no delay:
-      0x00,
-      ST7789_240x240_YSTART,            //     YSTART = 0
-      (ST7789_TFTHEIGHT+ST7789_240x240_YSTART)>>8,
-      (ST7789_TFTHEIGHT+ST7789_240x240_YSTART)&0xFF, //     YEND = 240
-
-    ST7789_PORCTL  	, 5,             
-      0x0C,0x0C,0x00,0x33,0x33,
-	ST7789_GCCTL  	, 1,
-	  0x35,								//VGH=13.26V,VGL=-10.43
-
-	ST7789_VCMOSET	, 1,				//VCM control
-	  0x1F,								//Vcom=1.35V
-	ST7789_LCMCTRL , 1,			
-	  0x2c,							
-	ST7789_VDVVRHEN , 1,			
-	  0x01,							
-	ST7789_VRHSET  	, 1,				
-	  0x12,								//GVDD=4.8V
-	ST7789_VDVSET  	, 1,				
-	  0x20,								//VDV=0v
-	ST7789_FRMCTR2 	, 1,				//In Normal Mode	
-	  0x0F,								//0x0F:60Hz
-	ST7789_PWCTR1 	, 2,				//Power control
-	  0xA4,0xA1,						//AVDD=6.8V,AVCL=-4.8V,VDDS=2.3V
-
-										
-	TFT_GAMMASET , 1,					//Gamma curve selected
-	  0x01,								
-	TFT_GMCTRP1 , 14,					//Set Gamma
-      0xd0,0x08,0x11,0x08,
-      0x0c,0x15,0x39,0x33,
-      0x50,0x36,0x13,0x14,
-      0x29,0x2d,				
-	TFT_GMCTRN1 ,14,					//Set Gamma
-      0xd0,0x08,0x10,0x08,
-      0x06,0x06,0x39,0x44,
-      0x51,0x0b,0x16,0x14,
-      0x2f,0x31,  											
-
-//    TFT_NORON  ,   ST_CMD_DELAY, 		//  8: Normal display on, no args, w/delay
-//      10,                           	//     10 ms delay
-    TFT_DISPON ,   ST_CMD_DELAY, 		//  9: Main screen turn on, no args, delay
-	  255 								//     255 = max (500 ms) delay
-  };   
-*/
-
-/*
-static const uint8_t PROGMEM
-  cmd_ST7789_240x240[] =  {             // Init commands for 7789 screens
-    17,                              	//  9 commands in list:
-    //TFT_SWRESET,   ST_CMD_DELAY,	 	//  1: Software reset, no args, w/delay
-    //  150,                         	//    150 ms delay
-    TFT_SLPOUT ,   ST_CMD_DELAY, 		//  2: Out of sleep mode, no args, w/delay
-      255,                          	//     255 = 500 ms delay
-    ST7789_PORCTL  	, 5,             
-      0x0C,0x0C,0x00,0x33,0x33,
-	ST7789_GCCTL  	, 1,
-	  0x45,								//VGH=13.26V,VGL=-10.43
-	ST7789_VCMOSET	, 1,				//VCM control
-	  0x2B,								//Vcom=1.35V
-	ST7789_LCMCTRL , 1,			
-	  0x2c,							
-	ST7789_VDVVRHEN , 2,			
-	  0x01,0xFF,							
-	ST7789_VRHSET  	, 1,				
-	  0x11,								//GVDD=4.8V
-	ST7789_VDVSET  	, 1,				
-	  0x20,								//VDV=0v
-	ST7789_FRMCTR2 	, 1,				//In Normal Mode	
-	  0x0F,								//0x0F:60Hz
-	ST7789_PWCTR1 	, 2,				//Power control
-	  0xA4,0xA1,						//AVDD=6.8V,AVCL=-4.8V,VDDS=2.3V
-	TFT_GMCTRP1 , 14,					//Set Gamma
-      0xD0,0x00,0x05,0x0E,
-	  0x15,0x0D,0x37,0x43,
-	  0x47,0x09,0x15,0x12,
-	  0x16,0x19,				
-	TFT_GMCTRN1 ,14,					//Set Gamma
-      0xD0,0x00,0x05,0x0D,
-	  0x0C,0x06,0x2D,0x44,
-	  0x40,0x0E,0x1C,0x18,
-	  0x16,0x19,											
-    TFT_MADCTL 	, 1,            		//  4: Mem access ctrl (directions), 1 arg:
-      0x00,                        	    //     Row/col addr, bottom-top refresh
-    TFT_COLMOD 	, 1+ST_CMD_DELAY,		//  3: Set color mode, 1 arg + delay:
-      0x55,                         	//     16-bit color
-      10,                           	//     10 ms delay
-    TFT_SLPOUT ,   ST_CMD_DELAY, 		//  2: Out of sleep mode, no args, w/delay
-      255,                          	//     255 = 500 ms delay
-    TFT_INVON  ,   ST_CMD_DELAY,  		//  7: hack
-      10,
-
-    TFT_DISPON ,   ST_CMD_DELAY, 		//  9: Main screen turn on, no args, delay
-	  255 								//     255 = max (500 ms) delay
-  };                          	
-*/
-
-static const uint8_t PROGMEM
-  cmd_ST7735_128x160[] =  {       		// Init commands for 7789 screens
-    21,                       	  		// 21 commands in list:
-    TFT_SWRESET,   ST_CMD_DELAY,  		//  1: Software reset, 0 args, w/delay
-      150,                   	  		//     150 ms delay
-    TFT_SLPOUT ,   ST_CMD_DELAY,  		//  2: Out of sleep mode, 0 args, w/delay
-      255,                    	  		//     500 ms delay
-    ST7735_FRMCTR1, 3      ,  	  		//  3: Frame rate ctrl - normal mode, 3 args:
-      0x01, 0x2C, 0x2D,       	  		//     Rate = fosc/(1x2+40) * (LINE+2C+2D)
-    ST7735_FRMCTR2, 3      ,  	  		//  4: Frame rate control - idle mode, 3 args:
-      0x01, 0x2C, 0x2D,       	  		//     Rate = fosc/(1x2+40) * (LINE+2C+2D)
-    ST7735_FRMCTR3, 6      ,  	  		//  5: Frame rate ctrl - partial mode, 6 args:
-      0x01, 0x2C, 0x2D,       	  		//     Dot inversion mode
-      0x01, 0x2C, 0x2D,       	  		//     Line inversion mode
-    ST7735_INVCTR , 1      ,  	  		//  6: Display inversion ctrl, 1 arg, no delay:
-      0x07,                   	  		//     No inversion
-    ST7735_PWCTR1 , 3      ,  	  		//  7: Power control, 3 args, no delay:
-      0xA2,	                      		
-      0x02,                   	  		//     -4.6V
-      0x84,                   	  		//     AUTO mode
-    ST7735_PWCTR2 , 1      ,  	  		//  8: Power control, 1 arg, no delay:
-      0xC5,                   	  		//     VGH25 = 2.4C VGSEL = -10 VGH = 3 * AVDD
-    ST7735_PWCTR3 , 2      ,  	  		//  9: Power control, 2 args, no delay:
-      0x0A,                   	  		//     Opamp current small
-      0x00,                   	  		//     Boost frequency
-    ST7735_PWCTR4 , 2      ,  	  		// 10: Power control, 2 args, no delay:
-      0x8A,                   	  		//     BCLK/2, Opamp current small & Medium low
-      0x2A,  	                  		
-    ST7735_PWCTR5 , 2      ,  	  		// 11: Power control, 2 args, no delay:
-      0x8A, 0xEE,	              		
-    ST7735_VMCTR1 , 1      ,  	  		// 12: Power control, 1 arg, no delay:
-      0x0E,		
-    TFT_INVOFF , 0      , 		  		// 13: Don't invert display, no args, no delay
-    TFT_MADCTL , 1      , 		  		// 14: Memory access control (directions), 1 arg:
-      0xC0,               		  		//     row addr/col addr, bottom to top refresh
-    TFT_COLMOD , 1      , 		  		// 15: set color mode, 1 arg, no delay:
-      0x05, 		              		
-    TFT_CASET  , 4      , 		  		//  1: Column addr set, 4 args, no delay:
-      0x00,		
-      ST7735_128x160_XSTART,      		//     XSTART = 0
-      (ST7735_TFTWIDTH+ST7735_128x160_XSTART)>>8,
-      (ST7735_TFTWIDTH+ST7735_128x160_XSTART)&0xFF, //     XEND = 128
-    TFT_RASET  , 4      ,  		  		//  2: Row addr set, 4 args, no delay:
-      0x00,
-      ST7735_128x160_YSTART,      		//     YSTART = 0
-      (ST7735_TFTHEIGHT+ST7735_128x160_YSTART)>>8,
-      (ST7735_TFTHEIGHT+ST7735_128x160_YSTART)&0xFF, //     YEND = 160
-    TFT_GMCTRP1, 16      , 		  		//  1: Magical unicorn dust, 16 args, no delay:
-      0x02, 0x1c, 0x07, 0x12,
-      0x37, 0x32, 0x29, 0x2d,
-      0x29, 0x25, 0x2B, 0x39,
-      0x00, 0x01, 0x03, 0x10,
-    TFT_GMCTRN1, 16      , 		  		//  2: Sparkles and rainbows, 16 args, no delay:
-      0x03, 0x1d, 0x07, 0x06,
-      0x2E, 0x2C, 0x29, 0x2D,
-      0x2E, 0x2E, 0x37, 0x3F,
-      0x00, 0x00, 0x02, 0x10,
-    TFT_NORON  ,    ST_CMD_DELAY, 		//  3: Normal display on, no args, w/delay
-      10,                     	  		//     10 ms delay
-    TFT_DISPON ,    ST_CMD_DELAY, 		//  4: Main screen turn on, no args w/delay
-      100 
-  };  
-
-
-/**************************************************************************/
-/*!
-    @brief  Instantiate Adafruit ST7789 driver with SPI
-    @param    cs    Chip select pin #
-    @param    dc    Data/Command pin #
-    @param    rst   Reset pin # (optional, pass -1 if unused)
-*/
-/**************************************************************************/
-Adafruit_ST7789::Adafruit_ST7789(int8_t cs, int8_t dc, int8_t mosi, int8_t sclk, int8_t rst, int8_t miso) : 
-	Adafruit_TFT(cs,dc,mosi,sclk,rst,miso) {
-}
-
-/**************************************************************************/
-/*!
-    @brief  Instantiate Adafruit ST7789 driver with SPI
-    @param    cs    Chip select pin #
-    @param    dc    Data/Command pin #
-    @param    rst   Reset pin # (optional, pass -1 if unused)
-*/
-/**************************************************************************/
-Adafruit_ST7789::Adafruit_ST7789(int8_t cs, int8_t dc, int8_t rst) : 
-	Adafruit_TFT(cs,dc,rst) {
-}
-
-/**************************************************************************/
-/*!
-    @brief   Initialize ST7789 chip
-    Connects to the ST7789 over SPI and sends initialization procedure commands
-    @param    freq  Desired SPI clock frequency
-*/
-/**************************************************************************/
-#if defined(ESP32)
-void Adafruit_ST7789::begin(uint32_t freq, SPIClass &spi)
-#elif defined(K210)
-void Adafruit_ST7789::begin(uint32_t freq, SPIClass &spi)
-#else
-void Adafruit_ST7789::begin(uint32_t freq)
-#endif
-{
-#if defined(ESP32)
-	spiInit(freq, spi);
-#elif defined(K210)
-	spiInit(freq, spi);
-#else
-	spiInit(freq);
-#endif
-	
-    _width  = ST7789_TFTWIDTH;
-    _height = ST7789_TFTHEIGHT;
-	
-	softReset();
-	displayInit(cmd_ST7789_240x240);
-	setRotation(0);
-}
-
-/**************************************************************************/
-/*!
-    @brief   Set origin of (0,0) and orientation of TFT display
-    @param   m  The index for rotation, from 0-3 inclusive
-*/
-/**************************************************************************/
-void Adafruit_ST7789::setRotation(uint8_t m) {
-    rotation = m % 4; // can't be higher than 3
-    switch (rotation) {
-        case 0:
-            m = (0x00 | MADCTL_RGB);
-//			m=0x00;
-            _width  = ST7789_TFTWIDTH;
-            _height = ST7789_TFTHEIGHT;
-			scrollTo(0);
-            break;
-        case 1:
-            m = (MADCTL_MX | MADCTL_MV | MADCTL_RGB);
-//			m=0x60;
-            _width  = ST7789_TFTHEIGHT;
-            _height = ST7789_TFTWIDTH;
-			scrollTo(0);
-            break;
-        case 2:
-            m = (MADCTL_MX | MADCTL_MY | MADCTL_RGB);
-//			m=0xC0;
-            _width  = ST7789_TFTWIDTH;
-            _height = ST7789_TFTHEIGHT;
-			scrollTo(ST7789_240x240_YSTART);
-            break;
-        case 3:
-            m = (MADCTL_MY | MADCTL_MV | MADCTL_RGB);
-//			m=0xA0;
-            _width  = ST7789_TFTHEIGHT;
-            _height = ST7789_TFTWIDTH;
-			scrollTo(ST7789_240x240_YSTART);
-            break;
-    }
-
-    startWrite();
-    writeCommand(TFT_MADCTL);
-    spiWrite(m);
-    endWrite();
-}
+#include "HardwareSerial.h"
 
 
 
@@ -384,9 +42,9 @@ void Adafruit_ST7789::setRotation(uint8_t m) {
     @param    rst   Reset pin # (optional, pass -1 if unused)
 */
 /**************************************************************************/
-Adafruit_ST7735::Adafruit_ST7735(int8_t cs, int8_t dc, int8_t mosi, int8_t sclk, int8_t rst, int8_t miso) : 
-	Adafruit_TFT(cs,dc,mosi,sclk,rst,miso) {
-}
+//Adafruit_ST7789::Adafruit_ST7789(int8_t cs, int8_t dc, int8_t mosi, int8_t sclk, int8_t rst, int8_t miso) : 
+//	Adafruit_TFT(cs,dc,mosi,sclk,rst,miso) {
+//}
 
 /**************************************************************************/
 /*!
@@ -396,85 +54,12 @@ Adafruit_ST7735::Adafruit_ST7735(int8_t cs, int8_t dc, int8_t mosi, int8_t sclk,
     @param    rst   Reset pin # (optional, pass -1 if unused)
 */
 /**************************************************************************/
-Adafruit_ST7735::Adafruit_ST7735(int8_t cs, int8_t dc, int8_t rst) : 
-	Adafruit_TFT(cs,dc,rst) {
-}
+//Adafruit_ST7789::Adafruit_ST7789(int8_t cs, int8_t dc, int8_t rst) : 
+//	Adafruit_TFT(cs,dc,rst) {
+//}
 
-/**************************************************************************/
-/*!
-    @brief   Initialize ST7789 chip
-    Connects to the ST7789 over SPI and sends initialization procedure commands
-    @param    freq  Desired SPI clock frequency
-*/
-/**************************************************************************/
-#if defined(ESP32)
-void Adafruit_ST7735::begin(uint32_t freq, SPIClass &spi)
-#elif defined(K210)
-void Adafruit_ST7735::begin(uint32_t freq, SPIClass &spi)
-#else
-void Adafruit_ST7735::begin(uint32_t freq)
-#endif
-{
-#if defined(ESP32)
-	spiInit(freq, spi);
-#elif defined(K210)
-	spiInit(freq, spi);
-#else
-	spiInit(freq);
-#endif
-	
-    _width  = ST7735_TFTWIDTH;
-    _height = ST7735_TFTHEIGHT;
-	
-	softReset();
-	displayInit(cmd_ST7735_128x160);
-	setRotation(0);
-}
 
-/**************************************************************************/
-/*!
-    @brief   Set origin of (0,0) and orientation of TFT display
-    @param   m  The index for rotation, from 0-3 inclusive
-*/
-/**************************************************************************/
-void Adafruit_ST7735::setRotation(uint8_t m) {
-    rotation = m % 4; // can't be higher than 3
-    switch (rotation) {
-        case 0:
-            m = (MADCTL_MX | MADCTL_MY | MADCTL_RGB);
-//			m=0x00;
-            _width  = ST7735_TFTWIDTH;
-            _height = ST7735_TFTHEIGHT;
-			scrollTo(0);
-            break;
-        case 1:
-            m = (MADCTL_MY | MADCTL_MV | MADCTL_RGB);
-//			m=0x60;
-            _width  = ST7735_TFTHEIGHT;
-            _height = ST7735_TFTWIDTH;
-			scrollTo(0);
-            break;
-        case 2:
-            m = (0x00 | MADCTL_RGB);
-//			m=0xC0;
-            _width  = ST7735_TFTWIDTH;
-            _height = ST7735_TFTHEIGHT;
-			scrollTo(0);
-            break;
-        case 3:
-            m = (MADCTL_MX | MADCTL_MV | MADCTL_RGB);
-//			m=0xA0;
-            _width  = ST7735_TFTHEIGHT;
-            _height = ST7735_TFTWIDTH;
-			scrollTo(0);
-            break;
-    }
 
-    startWrite();
-    writeCommand(TFT_MADCTL);
-    spiWrite(m);
-    endWrite();
-}  
 
 /**************************************************************************/
 /*!
@@ -485,15 +70,11 @@ void Adafruit_ST7735::setRotation(uint8_t m) {
 */
 /**************************************************************************/
 Adafruit_TFT::Adafruit_TFT(int8_t cs, int8_t dc, int8_t mosi,
-        int8_t sclk, int8_t rst, int8_t miso) : Adafruit_GFX(ST7789_TFTWIDTH, ST7789_TFTHEIGHT) {
+        int8_t sclk, int8_t rst, int8_t miso) : Adafruit_GFX(_config.width, _config.height) {
     _cs   = cs;
     _dc   = dc;
     _rst  = rst;
-#if defined(ESP32)
-    _sclk = sclk;
-    _mosi  = mosi;
-    _miso = miso;
-#elif defined(K210)
+#if defined(ESP32) || defined(K210) || defined(LE501X)
     _sclk = sclk;
     _mosi  = mosi;
     _miso = miso;
@@ -503,6 +84,7 @@ Adafruit_TFT::Adafruit_TFT(int8_t cs, int8_t dc, int8_t mosi,
     _miso  = -1;
 #endif
     _freq = 0;
+    
 #ifdef USE_FAST_PINIO
     if (_cs >= 0) {
     csport    = portOutputRegister(digitalPinToPort(_cs));
@@ -521,7 +103,7 @@ Adafruit_TFT::Adafruit_TFT(int8_t cs, int8_t dc, int8_t mosi,
     @param    rst   Reset pin # (optional, pass -1 if unused)
 */
 /**************************************************************************/
-Adafruit_TFT::Adafruit_TFT(int8_t cs, int8_t dc, int8_t rst) : Adafruit_GFX(ST7789_TFTWIDTH, ST7789_TFTHEIGHT) {
+Adafruit_TFT::Adafruit_TFT(int8_t cs, int8_t dc, int8_t rst) : Adafruit_GFX(_config.width, _config.height) {
     _cs   = cs;
     _dc   = dc;
     _rst  = rst;
@@ -579,27 +161,36 @@ void Adafruit_TFT::displayInit(const uint8_t *addr) {
     @param    freq  Desired SPI clock frequency
 */
 /**************************************************************************/
-#if defined(ESP32)
-void Adafruit_TFT::begin(uint32_t freq, SPIClass &spi)
-#elif defined(K210)
-void Adafruit_TFT::begin(uint32_t freq, SPIClass &spi)
+#if defined(ESP32) || defined(K210) || defined(LE501X)
+void Adafruit_TFT::begin(uint32_t freq, SPIClass *spiclass, uint8_t spiNeedInit)
 #else
-void Adafruit_TFT::begin(uint32_t freq)
+void Adafruit_TFT::begin(uint32_t freq, uint8_t spiNeedInit)
 #endif
 {
-#if defined(ESP32)
-	spiInit(freq, spi);
-#elif defined(K210)
-	spiInit(freq, spi);
+#if defined(ESP32) || defined(K210) || defined(LE501X)
+	spiInit(freq, spiclass, spiNeedInit);
 #else
-	spiInit(freq);
+	spiInit(freq, spiNeedInit);
 #endif
 	
-    _width  = ST7789_TFTWIDTH;
-    _height = ST7789_TFTHEIGHT;
+	//memcpy((uint8_t*)&_config, (uint8_t*)&config, sizeof(tft_config_t));
+	
+/*	
+	_config.type = config.type;
+	_config.xStart = config.xStart;
+	_config.yStart = config.yStart;
+	_config.width = config.width;
+	_config.height = config.height;
+	_config.invert = config.invert;
+*/
+	
+    _width  = _config.width;
+    _height = _config.height;
+	
 	
 	softReset();
-	displayInit(cmd_ST7789_240x240);
+	displayInit(_config.initcodeAddr);					
+	invertDisplay(_config.invert);	
 	setRotation(0);
 }
 
@@ -612,19 +203,26 @@ void Adafruit_TFT::begin(uint32_t freq)
     @param    freq  Desired SPI clock frequency
 */
 /**************************************************************************/
-#if defined(ESP32)
-void Adafruit_TFT::spiInit(uint32_t freq, SPIClass &spi)
-#elif defined(K210)
-void Adafruit_TFT::spiInit(uint32_t freq, SPIClass &spi)
+#if defined(ESP32) || defined(K210) || defined(LE501X)
+void Adafruit_TFT::spiInit(uint32_t freq, SPIClass *spiclass, uint8_t spiNeedInit)
 #else
-void Adafruit_TFT::spiInit(uint32_t freq)
+void Adafruit_TFT::spiInit(uint32_t freq, uint8_t spiNeedInit)
 #endif
 {
-#if defined(ESP32)
-    _spi = spi;
-#elif defined(K210)
-    _spi = spi;
+#if defined(ESP32) || defined(K210) || defined(LE501X)
+    if (!spiclass)
+    {
+      Serial.println(F("ERROR: spiclass is no define!"));
+      return;
+    }
+    else
+    {
+      _spi = spiclass;
+    }
+#else
+    //_spi = &SPI;
 #endif
+
     if(!freq){
         freq = SPI_DEFAULT_FREQ;
     }
@@ -636,25 +234,27 @@ void Adafruit_TFT::spiInit(uint32_t freq)
 	  digitalWrite(_cs, HIGH);
 	}
     pinMode(_dc, OUTPUT);
-    digitalWrite(_dc, LOW);
+    digitalWrite(_dc, LOW);	//HIGH
 
     // Hardware SPI
-	SPI_BEGIN();
-
+    if (spiNeedInit)
+    {
+      SPI_BEGIN();
+    }
     // toggle RST low to reset
     if (_rst >= 0) {
       pinMode(_rst, OUTPUT);
-      digitalWrite(_rst, HIGH);
-      delay(100);
       digitalWrite(_rst, LOW);
-      delay(100);
+      delay(10);
       digitalWrite(_rst, HIGH);
-      delay(200);
+      delay(150);
     }
 }
 
 void Adafruit_TFT::softReset() {
+	startWrite();
 	writeCommand(TFT_SWRESET);
+	endWrite();
     delay(150);
 }
 
@@ -685,30 +285,38 @@ void Adafruit_TFT::setRotation(uint8_t m) {
         case 0:
             m = (0x00 | MADCTL_RGB);
 //			m=0x00;
-            _width  = ST7789_TFTWIDTH;
-            _height = ST7789_TFTHEIGHT;
+            _width = _config.width;
+            _height = _config.height;
+            _smartX = _config.xStart;
+            _smartY = _config.yStart;
 			scrollTo(0);
             break;
         case 1:
             m = (MADCTL_MX | MADCTL_MV | MADCTL_RGB);
 //			m=0x60;
-            _width  = ST7789_TFTHEIGHT;
-            _height = ST7789_TFTWIDTH;
+            _width = _config.height;
+            _height = _config.width;
+            _smartX = _config.yStart;
+            _smartY = _config.xStart;
 			scrollTo(0);
             break;
         case 2:
             m = (MADCTL_MX | MADCTL_MY | MADCTL_RGB);
 //			m=0xC0;
-            _width  = ST7789_TFTWIDTH;
-            _height = ST7789_TFTHEIGHT;
-			scrollTo(ST7789_240x240_YSTART);
+            _width = _config.width;
+            _height = _config.height;
+            _smartX = _config.xStart;
+            _smartY = _config.yStart;
+            scrollTo(_config.yStart);
             break;
         case 3:
             m = (MADCTL_MY | MADCTL_MV | MADCTL_RGB);
 //			m=0xA0;
-            _width  = ST7789_TFTHEIGHT;
-            _height = ST7789_TFTWIDTH;
-			scrollTo(ST7789_240x240_YSTART);
+            _width = _config.height;
+            _height = _config.width;
+            _smartX = _config.yStart;
+            _smartY = _config.xStart;
+            scrollTo(_config.yStart);
             break;
     }
 
@@ -765,8 +373,8 @@ void Adafruit_TFT::scrollTo(uint16_t y) {
 */
 /**************************************************************************/
 void Adafruit_TFT::setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
-    uint32_t xa = ((uint32_t)x << 16) | (x+w-1);
-    uint32_t ya = ((uint32_t)y << 16) | (y+h-1);
+    uint32_t xa = ((uint32_t)(x + _smartX) << 16) | (x + w - 1 + _smartX);
+    uint32_t ya = ((uint32_t)(y + _smartY) << 16) | (y + h - 1 + _smartY);
     writeCommand(TFT_CASET); // Column addr set
     SPI_WRITE32(xa);
     writeCommand(TFT_RASET); // Row addr set
@@ -840,8 +448,12 @@ void Adafruit_TFT::writeColor(uint16_t color, uint32_t len){
     }
 #else
     while(len--) {
-        HSPI_WRITE(hi);
-        HSPI_WRITE(lo);
+        uint16_t _data;
+	_data = (0xFF00 & (hi << 8)) | (lo);
+	HSPI_WRITE16(_data);
+
+       // HSPI_WRITE(hi);
+       // HSPI_WRITE(lo);
     }
 #endif
 }
@@ -1122,3 +734,8 @@ void Adafruit_TFT::spiWrite(uint8_t b) {
     HSPI_WRITE(b);
     return;
 }
+
+tft_config_t tftCfg_ST7735_128x160;
+tft_config_t tftCfg_ST7789_240x240;
+tft_config_t tftCfg_ST7789_240x320;
+tft_config_t tftCfg_ST7789_170x320;

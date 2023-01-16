@@ -23,15 +23,13 @@
 #ifndef _ADAFRUIT_ST7789H_
 #define _ADAFRUIT_ST7789H_
 
-#if ARDUINO >= 100
- #include "Arduino.h"
- #include "Print.h"
-#else
- #include "WProgram.h"
-#endif
+#include "Arduino.h"
+#include "Print.h"
+
 #include <SPI.h>
 #include "Adafruit_GFX.h"
 #include "Adafruit_SPITFT_Macros.h"
+
 
 #if defined(ARDUINO_STM32_FEATHER)
 typedef volatile uint32 RwReg;
@@ -40,21 +38,64 @@ typedef volatile uint32 RwReg;
 typedef volatile uint32_t RwReg;
 #endif
 
-//**ST7735**
-#define ST7735_TFTWIDTH	  128
-#define ST7735_TFTHEIGHT  160
+#define TYPE_ST7735	1
+#define TYPE_ST7789	2
 
-#define ST7735_128x160_XSTART 0
-#define ST7735_128x160_YSTART 0
+typedef struct{
+		uint8_t type;
+		uint8_t xStart;
+		uint8_t yStart;
+		uint16_t width;
+		uint16_t height;
+		bool invert;
+		uint32_t initcodeAddr;
+}tft_config_t;
 
-//**ST7789**
-#define ST7789_240x240_XSTART 0
-#define ST7789_240x240_YSTART 80
+extern tft_config_t tftCfg_ST7735_128x160;
+extern tft_config_t tftCfg_ST7789_240x240;
+extern tft_config_t tftCfg_ST7789_240x320;
+extern tft_config_t tftCfg_ST7789_170x320;
 
-#define ST7789_TFTWIDTH   240       ///< ST7789 max TFT width
-#define ST7789_TFTHEIGHT  240       ///< ST7789 max TFT height
+#if 0
+#define TFT_TYPE ST7789_170x320
+
+#define ST7735_XSTART 0
+#define ST7735_YSTART 0
+#define ST7735_TFTWIDTH 128  ///< ST7735 max TFT width
+#define ST7735_TFTHEIGHT 160 ///< ST7735 max TFT height
+
+#if (TFT_TYPE == ST7735_128x160)
+/*ST7735*/
+#define TFT_XSTART 0
+#define TFT_YSTART 0
+#define TFT_TFTWIDTH 128  ///< ST7789 max TFT width
+#define TFT_TFTHEIGHT 160 ///< ST7789 max TFT height
+#elif (TFT_TYPE == ST7789_240x240)
+/*ST7789*/
+#define TFT_XSTART 0
+#define TFT_YSTART 80
+#define TFT_TFTWIDTH 240  ///< ST7789 max TFT width
+#define TFT_TFTHEIGHT 240 ///< ST7789 max TFT height
+#define TFT_INV TFT_INVON
+#elif (TFT_TYPE == ST7789_240x320)
+/*ST7789*/
+#define TFT_XSTART 0
+#define TFT_YSTART 0
+#define TFT_TFTWIDTH 240  ///< ST7789 max TFT width
+#define TFT_TFTHEIGHT 320 ///< ST7789 max TFT height
+#define TFT_INV TFT_INVOFF
+#elif (TFT_TYPE == ST7789_170x320)
+/*ST7789*/
+#define TFT_XSTART 35
+#define TFT_YSTART 0
+#define TFT_TFTWIDTH 170  ///< ST7789 max TFT width
+#define TFT_TFTHEIGHT 320 ///< ST7789 max TFT height
+#define TFT_INV TFT_INVON
+#endif
+#endif
 
 
+//---------------------------------
 #define ST_CMD_DELAY 0x80 // special signifier for command lists
 
 #define MADCTL_MY  0x80     ///< Right to left
@@ -196,10 +237,14 @@ typedef volatile uint32_t RwReg;
 
 #if defined (ARDUINO_STM32_FEATHER) || defined (ARDUINO_MAXIM)    // doesnt work on wiced feather
   #undef USE_FAST_PINIO
+#elif defined (LE501X)
+  #undef USE_FAST_PINIO
 #elif defined (__AVR__) || defined(TEENSYDUINO) || defined(ESP8266) || defined (ESP32) || defined (K210) || defined(__arm__)
   #define USE_FAST_PINIO
 #endif
 
+
+#include "initcode.h"
 
 /// Class to manage hardware interface with ST7789 chipset (also seems to work with ILI9340)
 class Adafruit_TFT : public Adafruit_GFX {
@@ -209,16 +254,14 @@ class Adafruit_TFT : public Adafruit_GFX {
         Adafruit_TFT(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1);
         Adafruit_TFT(int8_t _CS, int8_t _DC, int8_t _RST = -1);
 
-#if defined(ESP32)
-        void      begin(uint32_t freq = 0, SPIClass &spi = SPI);
-		void	  spiInit(uint32_t freq = 0, SPIClass &spi = SPI);
-#elif defined(K210)
-        void      begin(uint32_t freq = 0, SPIClass &spi = SPI);
-		void	  spiInit(uint32_t freq = 0, SPIClass &spi = SPI);
+#if defined(ESP32) || defined(K210) || defined(LE501X)
+        void      begin(uint32_t freq = 0, SPIClass &spiclass = &SPI, uint8_t spiNeedInit = 1);
+		void	  spiInit(uint32_t freq = 0, SPIClass &spiclass = &SPI, uint8_t spiNeedInit = 1);
 #else
-        void      begin(uint32_t freq = 0);
-		void	  spiInit(uint32_t freq = 0);
+        void      begin(uint32_t freq = 0, uint8_t spiNeedInit = 1);
+		void	  spiInit(uint32_t freq = 0, uint8_t spiNeedInit = 1);
 #endif
+
 		void 	  displayInit(const uint8_t *addr);
 		void      softReset();
         void      setRotation(uint8_t r);
@@ -257,78 +300,116 @@ class Adafruit_TFT : public Adafruit_GFX {
         uint16_t  color565(uint8_t r, uint8_t g, uint8_t b);
 
 //    private:
-#if defined(ESP32)
-        SPIClass _spi;
-#elif defined(K210)
-        SPIClass _spi;
-#endif
+        SPIClass *_spi;
+		
+		tft_config_t _config;
+
         uint32_t _freq;
+
+        uint16_t _smartX;
+        uint16_t _smartY;
+  	
 #if defined (__AVR__) || defined(TEENSYDUINO)
         int8_t  _cs, _dc, _rst, _sclk, _mosi, _miso;
 #ifdef USE_FAST_PINIO
         volatile uint8_t *dcport, *csport;
         uint8_t  cspinmask, dcpinmask;
 #endif
+
+#elif defined (LE501X)
+        int8_t   _cs, _dc, _rst, _sclk, _mosi, _miso;
+#ifdef USE_FAST_PINIO
+        volatile uint32_t *dcport, *csport;
+        uint32_t  cspinmask, dcpinmask;
+#endif
+
 #elif defined (__arm__)
         int32_t  _cs, _dc, _rst, _sclk, _mosi, _miso;
 #ifdef USE_FAST_PINIO
         volatile RwReg *dcport, *csport;
         uint32_t  cspinmask, dcpinmask;
 #endif
-#elif defined (ESP8266) || defined (ESP32)
+
+#elif defined (ESP8266) || defined (ESP32) || defined(K210)
         int8_t   _cs, _dc, _rst, _sclk, _mosi, _miso;
 #ifdef USE_FAST_PINIO
         volatile uint32_t *dcport, *csport;
         uint32_t  cspinmask, dcpinmask;
 #endif
-#elif defined(K210)
-        int8_t   _cs, _dc, _rst, _sclk, _mosi, _miso;
-#ifdef USE_FAST_PINIO
-        volatile uint32_t *dcport, *csport;
-        uint32_t  cspinmask, dcpinmask;
-#endif
+
 #else
         int8_t      _cs, _dc, _rst, _sclk, _mosi, _miso;
 #endif
+
 
         void        writeCommand(uint8_t cmd);
         void        spiWrite(uint8_t v);
         uint8_t     spiRead(void);
 };
-
+#if 0
 // Subclass of TFT type display for ST7789 TFT Driver
 class Adafruit_ST7789 : public Adafruit_TFT {
   public:
-    Adafruit_ST7789(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1);
-    Adafruit_ST7789(int8_t _CS, int8_t _DC, int8_t _RST = -1);
+    Adafruit_ST7789(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1) : Adafruit_TFT(_CS,_DC,_MOSI,_SCLK,_RST,_MISO){}
+	Adafruit_ST7789(int8_t _CS, int8_t _DC, int8_t _RST = -1) : Adafruit_TFT(_CS,_DC,_RST){}
 
-#if defined(ESP32)
-	void begin(uint32_t freq = 0, SPIClass &spi = SPI);
-#elif defined(K210)
-	void begin(uint32_t freq = 0, SPIClass &spi = SPI);
+
+#if defined(ESP32) || defined(K210) || defined(LE501X)
+	void begin(uint32_t freq = 0, SPIClass &spiclass = &SPI, uint8_t spiNeedInit = 1);
 #else
-	void begin(uint32_t freq = 0);
+	void begin(uint32_t freq = 0, uint8_t spiNeedInit = 1);
 #endif
 
-    void setRotation(uint8_t m);
+  // void setRotation(uint8_t m);
 };
+#endif
 
-// Subclass of TFT type display for ST7735 TFT Driver
-class Adafruit_ST7735 : public Adafruit_TFT{
+// Subclass of TFT type display for ST7789 TFT Driver
+class ST7735_128x160 : public Adafruit_TFT {
   public:
-    Adafruit_ST7735(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1);
-    Adafruit_ST7735(int8_t _CS, int8_t _DC, int8_t _RST = -1);
+	tft_config_t _userConfig = {
+		TYPE_ST7789, 0, 0, 128, 160, true, &cmd_initcode_ST7735_128x160
+	};
 
-#if defined(ESP32)
-	void begin(uint32_t freq = 0, SPIClass &spi = SPI);
-#elif defined(K210)
-	void begin(uint32_t freq = 0, SPIClass &spi = SPI);
-#else
-	void begin(uint32_t freq = 0);
-#endif
-
-    void setRotation(uint8_t m);
+    ST7735_128x160(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1) : Adafruit_TFT(_CS,_DC,_MOSI,_SCLK,_RST,_MISO){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
+	ST7735_128x160(int8_t _CS, int8_t _DC, int8_t _RST = -1) : Adafruit_TFT(_CS,_DC,_RST){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
 };
+
+// Subclass of TFT type display for ST7789 TFT Driver
+class ST7789_240x240 : public Adafruit_TFT {
+  public:
+	tft_config_t _userConfig = {
+		TYPE_ST7789, 0, 80, 240, 240, true, &cmd_initcode_ST7789_240x240
+	};
+
+    ST7789_240x240(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1) : Adafruit_TFT(_CS,_DC,_MOSI,_SCLK,_RST,_MISO){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
+	ST7789_240x240(int8_t _CS, int8_t _DC, int8_t _RST = -1) : Adafruit_TFT(_CS,_DC,_RST){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
+};
+
+
+// Subclass of TFT type display for ST7789 TFT Driver
+class ST7789_240x320 : public Adafruit_TFT {
+  public:
+	tft_config_t _userConfig = {
+		TYPE_ST7789, 0, 0, 240, 320, false, &cmd_initcode_ST7789_240x320
+	};
+
+    ST7789_240x320(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1) : Adafruit_TFT(_CS,_DC,_MOSI,_SCLK,_RST,_MISO){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
+	ST7789_240x320(int8_t _CS, int8_t _DC, int8_t _RST = -1) : Adafruit_TFT(_CS,_DC,_RST){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
+};
+
+// Subclass of TFT type display for ST7789 TFT Driver
+class ST7789_170x320 : public Adafruit_TFT {
+  public:
+	tft_config_t _userConfig = {
+		TYPE_ST7789, 35, 0, 170, 320, true, &cmd_initcode_ST7789_170x320
+	};
+
+    ST7789_170x320(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1) : Adafruit_TFT(_CS,_DC,_MOSI,_SCLK,_RST,_MISO){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
+	ST7789_170x320(int8_t _CS, int8_t _DC, int8_t _RST = -1) : Adafruit_TFT(_CS,_DC,_RST){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}	
+};
+
+
 
 
 #endif
