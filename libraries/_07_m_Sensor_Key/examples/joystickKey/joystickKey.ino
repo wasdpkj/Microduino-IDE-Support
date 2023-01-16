@@ -24,7 +24,7 @@ void setup() {
   for (uint8_t a = 0; a < 5; a++) {
     keyAnalog[a].begin(INPUT);
   }
-#if defined (ESP32)
+#if defined (ESP32) ||  defined (LE501X)
   analogReadResolution(10);  //9-12 在此ADC设置为10bit精度
 #endif
 }

@@ -1,10 +1,11 @@
 //BMP转hex工具：https://www.microduino.cn/wiki/index.php/File:DataToHex.zip
 
-#include "bmpFile.h"
 
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_TFT.h> // Hardware-specific library
 #include <SPI.h>
+
+#include "bmpFile.h"
 
 //#define BOARD_TYPE JOYPAD_ESP
 //#define BOARD_TYPE MICROBIT_ESP

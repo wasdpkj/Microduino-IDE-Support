@@ -1,14 +1,14 @@
 //JPEGDecoder库： https://github.com/MakotoKurauchi/JPEGDecoder
 //JPEG转hex工具：https://www.microduino.cn/wiki/index.php/File:DataToHex.zip
 
-#include "jpegFile.h"
-
 // JPEG decoder library
 #include <JPEGDecoder.h>
 
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_TFT.h> // Hardware-specific library
 #include <SPI.h>
+
+#include "jpegFile.h"
 
 //#define BOARD_TYPE JOYPAD_ESP
 //#define BOARD_TYPE MICROBIT_ESP
@@ -221,12 +221,31 @@ void renderJPEG(int xpos, int ypos) {
     if (( mcu_x + win_w ) <= tft.width() && ( mcu_y + win_h ) <= tft.height()) {
       tft.startWrite();
       tft.setAddrWindow(mcu_x, mcu_y, win_w, win_h);
+#if 0        
       for (int y = 0; y < win_h; y++) {
         for (int x = 0; x < win_w; x++) {
           //tft.writePixel(mcu_x + x, mcu_y + y, *pImg++);
           tft.writePixel(*pImg++);
         }
       }
+#else
+#define TMPBUF_LONGWORDS (SPI_MAX_PIXELS_AT_ONCE + 1) / 2
+#define TMPBUF_PIXELS (TMPBUF_LONGWORDS * 2)
+
+      // Fill temp buffer 32 bits at a time
+      uint32_t len = (win_h * win_w);
+      uint16_t bufLen = (len < TMPBUF_PIXELS) ? len : TMPBUF_PIXELS;
+      uint16_t xferLen;
+
+      uint32_t _offset = 0;
+      while (len)
+      {                                            // While pixels remain
+          xferLen = (bufLen < len) ? bufLen : len; // How many this pass?
+          tft.writePixels((uint16_t *)pImg + _offset, xferLen);
+          _offset += xferLen;
+          len -= xferLen;
+      }     
+#endif
       tft.endWrite();
     }
     else if ( (mcu_y + win_h) >= tft.height()) {
@@ -281,4 +300,3 @@ void showTime(uint32_t msTime) {
   Serial.print(msTime);
   Serial.println(F(" ms "));
 }
-
