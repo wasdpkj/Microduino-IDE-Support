@@ -113,6 +113,8 @@
 
 #if defined(__GNUC__) && defined(__AVR__)
 #include <avr/pgmspace.h>
+#elif defined(LE501X)
+#include <pgmspace.h>
 #endif 
 
 /*==========================================*/
@@ -161,6 +163,14 @@ uint8_t u8x8_pgm_read_esp(const uint8_t * addr);   /* u8x8_8x8.c */
 #endif
 
 
+#if defined(LE501X)
+#  define U8X8_FONT_SECTION(name) U8X8_SECTION(".progmem." name)
+#  define u8x8_pgm_read(adr) pgm_read_byte_near(adr)
+#  define U8X8_PROGMEM PROGMEM
+# ifndef ARDUINO
+#  define ARDUINO 184
+# endif
+#endif
 
 #ifndef U8X8_FONT_SECTION
 #  define U8X8_FONT_SECTION(name) 
