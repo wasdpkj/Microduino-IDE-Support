@@ -44,6 +44,9 @@ THE SOFTWARE.
 
 // Tom Carpenter's conditional PROGMEM code
 // http://forum.arduino.cc/index.php?topic=129407.0
+#ifdef LE501X
+#include <pgmspace.h>
+#else
 #ifndef __arm__
 #ifdef ESP32
 #include <pgmspace.h>
@@ -91,6 +94,7 @@ THE SOFTWARE.
         #define pgm_read_dword_far(addr) pgm_read_dword(addr)
         #define pgm_read_float_far(addr) pgm_read_float(addr)
     #endif
+#endif
 #endif
 
 /* Source is from the InvenSense MotionApps v2 demo code. Original source is
