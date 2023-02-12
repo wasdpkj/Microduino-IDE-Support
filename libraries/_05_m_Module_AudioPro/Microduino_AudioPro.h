@@ -33,6 +33,8 @@
 #include <pgmspace.h>
 #endif
 
+#include "vs_patches.h"
+
 #ifdef SPI_DEFAULT_FREQ
 #undef SPI_DEFAULT_FREQ
 #endif
@@ -133,6 +135,14 @@ typedef uint8_t PortMask;
 #define DECODE 1
 #define VOLUME 1
 
+/// Actual Mode: Input, Output, Output Streaming Midi
+enum VS_MODE {
+    VS_MODE_NA,
+    VS_MODE_OUT,
+    VS_MODE_IN,
+    VS_MODE_MIDI,
+};
+
 //software patch for MIDI Play
 //const unsigned short  MIDIPatch[] = { /*if you don't let GPIO1 = H,please send this patch by spi*/
 static const uint16_t  MIDIPatch[] PROGMEM = { /*if you don't let GPIO1 = H,please send this patch by spi*/
@@ -141,6 +151,7 @@ static const uint16_t  MIDIPatch[] PROGMEM = { /*if you don't let GPIO1 = H,plea
   0x3400, 0x0030, 0x0495, 0x3d00, 0x0024, 0x2908, 0x4d40, 0x0030, /* 10 */
   0x0200, 0x000a, 0x0001, 0x0050
 };
+
 
 //software patch for Recording
 static const uint16_t recPlugin[] PROGMEM = { /* Compressed plugin for recording*/
@@ -199,6 +210,16 @@ class AudioPro {
   uint8_t begin(void);
   void end();						//new
   void reset(void);
+
+  // gets Version of the VLSI chip being used
+  uint16_t getChipVersion();    
+  uint8_t chip_version;
+  uint8_t mode;
+
+  // Starts the MIDI output processing
+  bool pathMidi();
+  // Prepares for regular output in decoding mode - (note that this method is also is calling begin())
+  bool pathOutput();
 
   boolean useInterrupt(uint8_t type = VS1053_PIN_DREQ);		//new
   boolean detachInterrupt(uint8_t type = VS1053_PIN_DREQ);	//new

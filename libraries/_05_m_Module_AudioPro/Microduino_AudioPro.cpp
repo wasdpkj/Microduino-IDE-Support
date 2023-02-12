@@ -850,7 +850,19 @@ void AudioPro::end() {
   setAmplifier(false);
 }
 
+/**
+ * get the Version Number for the VLSI chip
+ * VLSI datasheet: 0 for VS1001, 1 for VS1011, 2 for VS1002, 3 for VS1003, 4 for VS1053 and VS8053,
+ * 5 for VS1033, 7 for VS1103, and 6 for VS1063. 
+ */
+uint16_t AudioPro::getChipVersion() {
+    uint16_t status = sciRead(VS1053_REG_STATUS);
+       
+    return ( (status & 0x00F0) >> 4);
+}
+
 uint8_t AudioPro::begin(void) {
+  uint8_t result = 0;
   pinMode(_midi, INPUT_PULLUP);
   delay(100);
 
@@ -863,10 +875,70 @@ uint8_t AudioPro::begin(void) {
 
   reset();
 
+  // set and print chip version
+  chip_version = getChipVersion();
+  switch(chip_version){
+      case 3: { //VS1003
+        result = 3;
+      } break;   
+      case 4: { //VS1053
+        result = 4;
+      } break; 
+      default:  //Unsuppored chip
+        result = 0;
+        break;
+  }
+
   setAmplifier(true);
 
-  return (sciRead(VS1053_REG_STATUS) >> 4) & 0x0F;
+  mode = VS_MODE_NA; // default mode
+
+  return result;
 }
+
+bool AudioPro::pathMidi() {
+    bool result = false;           
+
+    while (! readyForData() );
+
+    switch(chip_version){
+        case 3: { //MIDI1003
+            applyPatch(MIDIPatch_1003, MIDI1003_SIZE); 
+            sciWrite(0xA , 0x30);  // setting VS1003 Start adress for user code
+        } break;   
+        case 4: { //MIDI1053
+            applyPatch(MIDIPatch_1053, MIDI1053_SIZE); 
+            sciWrite(0xA , 0x50);  // setting VS1053 Start adress for user code
+        } break; 
+        default:
+           break;
+    }
+
+    delay(50);
+    // check if midi is active
+    uint16_t check = sciRead(VS1053_REG_AUDATA);
+    //Serial.println(check, HEX);
+
+    if (check==0xac45){
+        mode = VS_MODE_MIDI;
+        result = true;
+    }
+    
+    return result;
+}
+
+bool AudioPro::pathOutput() {
+    mode = VS_MODE_OUT;
+
+    while (! readyForData() );
+
+    if (chip_version == 4) { // Only perform an update if we really are using a VS1053, not. eg. VS1003
+        applyPatch(PATCHES, PATCHES_SIZE);
+    }
+
+    return true;
+}
+
 
 uint16_t AudioPro::recordedWordsWaiting(void) {
   return sciRead(VS1053_REG_HDAT1);
