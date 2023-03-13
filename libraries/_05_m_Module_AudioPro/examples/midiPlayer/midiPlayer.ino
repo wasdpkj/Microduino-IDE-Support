@@ -31,7 +31,11 @@ void setup() {
     while (1);
   }
   Serial.println(F("VS1053 found"));
-  midiPlayer.applyPatch(MIDIPatch, sizeof(MIDIPatch) / sizeof(uint16_t));
+  
+  if (!midiPlayer.pathMidi()) {
+    Serial.println(F("Couldn't switch mide mode!"));
+    while (1);
+  }
 
   midiPlayer.midiSetVolume(0, 127); //channels,volume
   // See http://www.vlsi.fi/fileadmin/datasheets/vs1053.pdf Pg 31
