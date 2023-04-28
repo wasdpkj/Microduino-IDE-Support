@@ -37,7 +37,7 @@
 
 #define I2C_READ_TIMEOUT 1000
 
-  typedef enum temperature_units {
+enum temperature_units {
   TEMP_RAW,
   TEMP_K,
   TEMP_C,

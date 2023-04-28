@@ -102,7 +102,7 @@ float Tem_Hum::getTemperature() {
     temp = ((uint16_t)buf[2]&0x0F) << 8;
     temp += buf[3];
 }
-if((buf[4]&0x80) == 0x80)
+if((buf[3]&0x80) == 0x80)
     return -temp/10.0;
 return temp/10.0;
 }

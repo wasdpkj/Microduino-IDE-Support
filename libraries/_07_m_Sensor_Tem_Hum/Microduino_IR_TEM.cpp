@@ -199,7 +199,7 @@ int16_t IR_TEM::calcRawTemp(float calcTemp)
   }
   else
   {
-    float tempFloat;
+    float tempFloat = 0;
     //单位转换
     if (_defaultUnit == TEMP_F)
     {
