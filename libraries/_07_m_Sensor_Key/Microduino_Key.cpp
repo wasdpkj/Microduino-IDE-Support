@@ -50,14 +50,14 @@ uint8_t VirtualKey::readVal(uint8_t _val, uint8_t _sta) { // return the value as
   keyVal = _val; //触发时
 
   if(_sta == KEY_NONE){
-        if(!keyCache && keyVal)
-		return KEY_PRESSED;
-	else if(keyCache && !keyVal)
-		return KEY_RELEASED;
-	else if(!keyCache && !keyVal)
-		return KEY_RELEASING;
-	else if(keyCache && keyVal)
-		return KEY_PRESSING;
+    if(!keyCache && keyVal)
+      return KEY_PRESSED;
+    else if(keyCache && !keyVal)
+      return KEY_RELEASED;
+    else if(!keyCache && !keyVal)
+      return KEY_RELEASING;
+    else if(keyCache && keyVal)
+      return KEY_PRESSING;
   }
   else{
     if (!keyCache && keyVal) {//按下
@@ -81,21 +81,21 @@ uint8_t VirtualKey::readVal(uint8_t _val, uint8_t _sta) { // return the value as
       buttonsta[0] = true;
     }
     if (_sta == KEY_RELEASING && !buttonsta[0] && !_val) {//一直松开
-      return true;
+      return KEY_RELEASED;
     }
     else if (_sta == KEY_PRESSED && buttonsta[1]) {//按下
       buttonsta[1] = false;
-      return true;
+      return KEY_RELEASED;
     }
     else if (_sta == KEY_PRESSING && buttonsta[0] && _val) {//一直按着
-      return true;
+      return KEY_RELEASED;
     }
     else if (_sta == KEY_RELEASED && buttonsta[2]) {//松开
       buttonsta[2] = false;
-      return true;
+      return KEY_RELEASED;
     }
-    return false;
   }
+  return KEY_NONE;
 }
 
 

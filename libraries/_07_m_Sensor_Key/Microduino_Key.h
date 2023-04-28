@@ -31,7 +31,7 @@
 
 #include <Arduino.h>
 
-enum{
+typedef enum {
   KEY_NONE = 0,
   KEY_RELEASED = 1,
   KEY_PRESSED,
@@ -40,7 +40,7 @@ enum{
 } key_val;
 
 
-enum{
+typedef enum {
   NOT_PRESS = 0,
   SHORT_PRESS = 1,
   LONG_PRESS,
