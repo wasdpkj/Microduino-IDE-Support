@@ -68,4 +68,6 @@ uint8_t Ultrasonic::getVersion() {
       uint8_t i = Wire.read();
       return  i;
     }
+
+    return 0;
 }
