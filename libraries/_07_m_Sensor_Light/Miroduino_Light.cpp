@@ -102,8 +102,6 @@ void Light_D1::getRaw (uint16_t *broadband, uint16_t *ir)
 /**************************************************************************/
 boolean Light_D1::begin(tsl2561IntegrationTime_t _it, tsl2561Gain_t _gain) 
 {
-  uint8_t buf;
-  
   Wire.begin();
 
   /* Make sure we're actually connected */
