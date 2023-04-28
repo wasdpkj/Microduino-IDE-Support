@@ -188,7 +188,7 @@ void LedControl::setRow(uint8_t _row, byte _value) {
     for (uint8_t _col = 0; _col < 8; _col++) {
       _val = _value >> (_col);
       _val = _val & 0x01;
-      temp[_col + 1] = (_val ? this->brightness : 0) & 0x7F | 0x40;
+      temp[_col + 1] = ((_val ? this->brightness : 0) & 0x7F) | (0x40);
     }
     Wire.write(temp, 9);
     Wire.endTransmission();
@@ -226,11 +226,11 @@ void LedControl::setColumn(uint8_t _col, byte _value) {
 void LedControl::writeString(uint16_t _time, char* _displayString) {
   int16_t _leng = 0;
   int16_t _wight = 0;
-  while (_displayString[_leng] != NULL) _wight += 1 + pgm_read_byte(alphabetBitmap[CharToInt(_displayString[_leng++])] + FONE_SIZE_X);
+  while (_displayString[_leng] != 0) _wight += 1 + pgm_read_byte(alphabetBitmap[CharToInt(_displayString[_leng++])] + FONE_SIZE_X);
   //  Serial.println(_wight);
 
   for (int16_t a = 8; a > -_wight; a--) {
-    int16_t c = 0;
+    // int16_t c = 0;
     setCursor(a, 0);
     print(_displayString);
     delay(_time);
@@ -262,7 +262,7 @@ void LedControl::displayChar(int8_t _row, int8_t _col, char _charIndex) {
 
 
   for (int8_t i = m; i < FONE_SIZE_X + 1; i++) {
-	byte _val,_cache = 0x00;
+	byte _val = 0x00;
     for (int8_t j = _col; _col < 0 ? j < 8 + _col : j < 8; j++) {
       if (i - m + _row < 0 || i - m + _row > 7) {
         break;

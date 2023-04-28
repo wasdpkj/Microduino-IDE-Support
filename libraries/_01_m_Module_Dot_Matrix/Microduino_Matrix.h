@@ -47,8 +47,6 @@
 #define U8G_DRAW_LOWER_RIGHT  0x08
 #define U8G_DRAW_ALL (U8G_DRAW_UPPER_RIGHT|U8G_DRAW_UPPER_LEFT|U8G_DRAW_LOWER_RIGHT|U8G_DRAW_LOWER_LEFT)
 
-#define read16(Y,Z)  (uint16_t)((uint8_t)pgm_read_byte((Y) + (Z++)) | ((uint8_t)pgm_read_byte((Y) + (Z++)) << 8))
-#define read32(Y,Z) (uint32_t)((uint8_t)pgm_read_byte((Y) + (Z++)) | ((uint8_t)pgm_read_byte((Y) + (Z++)) << 8) | ((uint8_t)pgm_read_byte((Y) + (Z++)) << 16) | ((uint8_t)pgm_read_byte((Y) + (Z++)) << 24))
 #define BUFFPIXEL (MatrixPix_X * 8 * 3)
 
 class Matrix : public Print {

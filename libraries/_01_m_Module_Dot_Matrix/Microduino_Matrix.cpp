@@ -28,6 +28,23 @@
 
 #include "Microduino_Matrix.h"
 
+
+static uint16_t read16(const uint8_t *Y, uint32_t* _offset)
+{
+  uint32_t _addr = *_offset;
+  uint16_t _val = (uint16_t)(((uint8_t)pgm_read_byte(Y + _addr) | ((uint8_t)pgm_read_byte(Y + _addr + 1) << 8)));
+  *_offset = _addr + 2;
+  return _val;
+}
+
+static uint32_t read32(const uint8_t *Y, uint32_t* _offset)
+{
+  uint32_t _addr = *_offset;
+	uint32_t _val = (uint32_t)(((uint8_t)pgm_read_byte(Y + _addr) | ((uint8_t)pgm_read_byte(Y + _addr + 1) << 8) | ((uint8_t)pgm_read_byte(Y + _addr + 2)) << 16) | ((uint8_t)pgm_read_byte(Y + _addr + 3) << 24));
+  *_offset = _addr + 4;
+  return _val;
+}
+
 Matrix::Matrix(uint8_t (*_addr)[8],bool _type) {
   //  uint8_t (*p)[10]=_addr;
   uint8_t _x = 0, _y = 0;
@@ -517,14 +534,14 @@ bool Matrix::drawBMP(int16_t x, int16_t y, const uint8_t *bitmap){
   uint8_t  _dataBuffer[BUFFPIXEL]; //pixel buffer (R+G+B per pixel)
 
   //Parse BMP header
-  if (read16(bitmap, _dataNum) == 0x4D42) { //BMP signature
-    (void)read32(bitmap, _dataNum); //File size
-    (void)read32(bitmap, _dataNum); //Read & ignore creator bytes
-    uint32_t bmpImageoffset = read32(bitmap, _dataNum); //Start of image data in file
+  if (read16(bitmap, &_dataNum) == 0x4D42) { //BMP signature
+    (void)read32(bitmap, &_dataNum); //File size
+    (void)read32(bitmap, &_dataNum); //Read & ignore creator bytes
+    uint32_t bmpImageoffset = read32(bitmap, &_dataNum); //Start of image data in file
     //Read DIB header
-    (void)read32(bitmap, _dataNum);  //Header size
-    int bmpWidth  = read32(bitmap, _dataNum),
-    bmpHeight = read32(bitmap, _dataNum);
+    (void)read32(bitmap, &_dataNum);  //Header size
+    int bmpWidth  = read32(bitmap, &_dataNum),
+    bmpHeight = read32(bitmap, &_dataNum);
 
     bool  flip = true;      //BMP is stored bottom-to-top
     //If bmpHeight is negative, image is in top-down order.
@@ -533,9 +550,9 @@ bool Matrix::drawBMP(int16_t x, int16_t y, const uint8_t *bitmap){
       flip = false;
     }
 
-    if (read16(bitmap, _dataNum) == 1) { //# planes -- must be '1'
-      uint8_t bmpDepth = read16(bitmap, _dataNum); //Bit depth (currently must be 24)
-      if ((bmpDepth == 24) && (read32(bitmap, _dataNum) == 0)) { //0 = uncompressed
+    if (read16(bitmap, &_dataNum) == 1) { //# planes -- must be '1'
+      uint8_t bmpDepth = read16(bitmap, &_dataNum); //Bit depth (currently must be 24)
+      if ((bmpDepth == 24) && (read32(bitmap, &_dataNum) == 0)) { //0 = uncompressed
         //BMP rows are padded (if needed) to 4-byte boundary
         uint32_t rowSize = (bmpWidth * 3 + 3) & ~3; //Not always = bmpWidth; may have padding
 
@@ -619,7 +636,7 @@ int16_t Matrix::getStringWidth(char* _String) {
   //    return (uint32_t)(offset + millis() / 1000);
   int _leng = 0;
   int _Width = 0;
-  while (_String[_leng] != NULL) {
+  while (_String[_leng] != 0) {
     _Width += 1 + pgm_read_byte(alphabetBitmap[CharToInt(_String[_leng])] + FONE_SIZE_X);
     _leng++;
   }
@@ -631,7 +648,7 @@ int16_t Matrix::getStringHeight(char* _String) {
   //    return (uint32_t)(offset + millis() / 1000);
   int _leng = 0;
   int _Height = 0;
-  while (_String[_leng] != NULL) {
+  while (_String[_leng] != 0) {
     _Height += 1 + FONE_SIZE_Y;
     _leng++;
   }
