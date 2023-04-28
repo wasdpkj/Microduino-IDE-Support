@@ -170,7 +170,7 @@ boolean AudioPro_FilePlayer::playMP3(String trackname) {
 boolean AudioPro_FilePlayer::playTrack(uint8_t trackNo) {
   //a storage place for track names
   char trackName[] = "track001.mp3";
-  uint8_t trackNumber = 1;
+  // uint8_t trackNumber = 1;
 
   //tack the number onto the rest of the filename
   sprintf(trackName, "track%03d.mp3", trackNo);
@@ -187,7 +187,7 @@ uint8_t AudioPro_FilePlayer::getMusicNum() {
 
     numMusicFile = 0;
 
-    char * filename = "TRACK001.mp3";
+    char * filename = (char*)"TRACK001.mp3";
 
     File file2;
     if (sd.exists(sdData)) {
@@ -355,14 +355,13 @@ boolean AudioPro_FilePlayer::useInterrupt(uint8_t type) {
 
 /***************************************************************/
 AudioPro::AudioPro(SPIClass *spiclass, uint8_t midi, uint8_t cs, uint8_t dcs, uint8_t dreq)
-    : _midi(midi), _cs(cs), _dcs(dcs), _dreq(dreq)
 {
   hwspi._spi = spiclass;
 
-  // _midi = midi;
-  // _cs = cs;
-  // _dcs = dcs;
-  // _dreq = dreq;
+  _midi = midi;
+  _cs = cs;
+  _dcs = dcs;
+  _dreq = dreq;
 
 
   playingMusic = false;
@@ -375,15 +374,13 @@ AudioPro::AudioPro(SPIClass *spiclass, uint8_t midi, uint8_t cs, uint8_t dcs, ui
 
 
 AudioPro::AudioPro(uint8_t midi, uint8_t cs, uint8_t dcs, uint8_t dreq) 
-    : _midi(midi), _cs(cs), _dcs(dcs), _dreq(dreq)
 {
   hwspi._spi = &SPI;
- 
   
-  // _midi = midi;
-  // _cs = cs;
-  // _dcs = dcs;
-  // _dreq = dreq;
+  _midi = midi;
+  _cs = cs;
+  _dcs = dcs;
+  _dreq = dreq;
 
   // _sck = -1;
   // _miso = -1;
@@ -596,7 +593,14 @@ void AudioPro::applyPatch(const uint16_t *patch, uint16_t patchsize) {
 void AudioPro::midiSetBank(uint8_t chan, uint8_t bank) {
   if (chan > 15 || bank > 127) return;
 
-  uint8_t _c[] = {0, MIDI_CHAN_MSG | chan, 0, MIDI_CHAN_BANK, 0, bank};
+  // uint8_t _c[] = {0, MIDI_CHAN_MSG | chan, 0, MIDI_CHAN_BANK, 0, bank};
+  uint8_t _c[6];
+  _c[0] = 0;
+  _c[1] = MIDI_CHAN_MSG | chan;
+  _c[2] = 0;
+  _c[3] = MIDI_CHAN_BANK;
+  _c[4] = 0;
+  _c[5] = bank;
   while (!readyForData());
   playData(_c, sizeof(_c));
 }
@@ -605,7 +609,14 @@ void AudioPro::midiSetBank(uint8_t chan, uint8_t bank) {
 void AudioPro::midiSetVolume(uint8_t chan, uint16_t vol) {
   if (chan > 15 || vol > 127) return;
 
-  uint8_t _c[] = {0, MIDI_CHAN_MSG | chan, 0, MIDI_CHAN_VOLUME, 0, vol};
+  // uint8_t _c[] = {0, MIDI_CHAN_MSG | chan, 0, MIDI_CHAN_VOLUME, 0, vol};
+  uint8_t _c[6];
+  _c[0] = 0;
+  _c[1] = MIDI_CHAN_MSG | chan;
+  _c[2] = 0;
+  _c[3] = MIDI_CHAN_VOLUME;
+  _c[4] = 0;
+  _c[5] = vol;
   while (!readyForData());
   playData(_c, sizeof(_c));
 }
@@ -613,7 +624,12 @@ void AudioPro::midiSetVolume(uint8_t chan, uint16_t vol) {
 void AudioPro::midiSetInstrument(uint8_t chan, uint8_t inst) {
   if (chan > 15 || inst > 127) return;  // page 32 has instruments starting with 1 not 0 :(
 
-  uint8_t _c[] = {0, MIDI_CHAN_PROGRAM | chan, 0, inst};
+  // uint8_t _c[] = {0, MIDI_CHAN_PROGRAM | chan, 0, inst};
+  uint8_t _c[4];
+  _c[0] = 0;
+  _c[1] = MIDI_CHAN_PROGRAM | chan;
+  _c[2] = 0;
+  _c[3] = inst;  
   while (!readyForData());
   playData(_c, sizeof(_c));
 }
@@ -621,7 +637,14 @@ void AudioPro::midiSetInstrument(uint8_t chan, uint8_t inst) {
 void AudioPro::noteOn(uint8_t chan, uint8_t n, uint8_t vol) {
   if (chan > 15 || n > 127 || vol > 127) return;
 
-  uint8_t _c[] = {0, MIDI_NOTE_ON | chan, 0, n, 0, vol};
+  // uint8_t _c[] = {0, MIDI_NOTE_ON | chan, 0, n, 0, vol};
+  uint8_t _c[6];
+  _c[0] = 0;
+  _c[1] = MIDI_NOTE_ON | chan;
+  _c[2] = 0;
+  _c[3] = n;
+  _c[4] = 0;
+  _c[5] = vol;
   while (!readyForData());
   playData(_c, sizeof(_c));
 }
@@ -630,7 +653,14 @@ void AudioPro::noteOn(uint8_t chan, uint8_t n, uint8_t vol) {
 void AudioPro::noteOff(uint8_t chan, uint8_t n, uint8_t vol) {
   if (chan > 15 || n > 127 || vol > 127) return;
 
-  uint8_t _c[] = {0, MIDI_NOTE_OFF | chan, 0, n, 0, vol};
+  // uint8_t _c[] = {0, MIDI_NOTE_OFF | chan, 0, n, 0, vol};
+  uint8_t _c[6];
+  _c[0] = 0;
+  _c[1] = MIDI_NOTE_OFF | chan;
+  _c[2] = 0;
+  _c[3] = n;
+  _c[4] = 0;
+  _c[5] = vol;  
   while (!readyForData());
   playData(_c, sizeof(_c));
 }
@@ -737,7 +767,7 @@ void AudioPro::pausePlaying(boolean pause) {
 uint16_t AudioPro::getVolume(boolean sta) {
   noInterrupts(); //cli();
   uint16_t _vol = sciRead(VS1053_REG_VOLUME);
-  if (sta = VOLUME) {
+  if (sta == VOLUME) {
     _vol = (_vol >> 8) & 0x00ff;
     _vol = 127 - _vol;
   }
@@ -957,7 +987,7 @@ void AudioPro::stopPlaying(void) {
 uint16_t AudioPro::getStatus(boolean sta) {
   noInterrupts(); //cli();
   uint16_t t = sciRead(VS1053_REG_STATUS);
-  if (sta = DECODE) {
+  if (sta == DECODE) {
     t = (t >> 15) | 0x0000;
   }
   interrupts(); //sei();

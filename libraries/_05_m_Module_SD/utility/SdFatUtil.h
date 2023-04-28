@@ -32,8 +32,14 @@
 #define PgmPrintln(x) SerialPrintln_P(PSTR(x))
 /** Defined so doxygen works for function definitions. */
 #endif
+
+#ifndef NOINLINE
 #define NOINLINE __attribute__((noinline,unused))
+#endif
+
+#ifndef UNUSEDOK
 #define UNUSEDOK __attribute__((unused))
+#endif
 //------------------------------------------------------------------------------
 /** Return the number of bytes currently free in RAM. */
 static UNUSEDOK int FreeRam(void) {

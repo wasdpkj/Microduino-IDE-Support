@@ -449,8 +449,12 @@ uint8_t SdFile::open(SdFile* dirFile, const char* fileName, uint8_t oflag) {
 
   // set timestamps
   if (dateTime_) {
+    uint16_t _createData;
+    uint16_t _createTime;
     // call user function
-    dateTime_(&p->creationDate, &p->creationTime);
+    dateTime_(&_createData, &_createTime);
+    p->creationDate = _createData;
+    p->creationTime = _createTime;
   } else {
     // use default date/time
     p->creationDate = FAT_DEFAULT_DATE;
@@ -979,7 +983,12 @@ uint8_t SdFile::sync(void) {
 
     // set modify time if user supplied a callback date/time function
     if (dateTime_) {
-      dateTime_(&d->lastWriteDate, &d->lastWriteTime);
+      uint16_t _createData;
+      uint16_t _createTime;
+      // call user function
+      dateTime_(&_createData, &_createTime);
+      d->lastWriteDate = _createData;
+      d->lastWriteTime = _createTime;      
       d->lastAccessDate = d->lastWriteDate;
     }
     // clear directory dirty
