@@ -39,6 +39,14 @@ Microduino_GPS::Microduino_GPS(HardwareSerial *ser, int _rx, int _tx) {
   pinRX = _rx;
   pinTX = _tx;
 }
+#elif defined (LE501X)
+// Constructor when using HardwareSerial
+Microduino_GPS::Microduino_GPS(HardwareSerial *ser, int _rx, int _tx) {
+  common_init();  // Set everything to common state, then...
+  gpsHwSerial = ser; // ...override gpsHwSerial with value passed.
+  pinRX = _rx;
+  pinTX = _tx;
+}
 #elif defined (__AVR__)
 // Constructor when using SoftwareSerial
 Microduino_GPS::Microduino_GPS(SoftwareSerial *ser) {
@@ -75,6 +83,14 @@ void Microduino_GPS::common_init(void) {
 void Microduino_GPS::begin(uint32_t baud) {
   uint32_t _baud[5] = {9600, 19200, 38400, 57600, 115200};
 #if defined (ESP32)
+  if (gpsHwSerial) {
+    for (int _n = 0; _n < 5; _n++) {
+      gpsHwSerial->begin(_baud[_n], SERIAL_8N1, pinRX, pinTX);
+      set_baud(baud);
+    }
+    gpsHwSerial->begin(baud, SERIAL_8N1, pinRX, pinTX);
+  }
+#elif defined (LE501X)
   if (gpsHwSerial) {
     for (int _n = 0; _n < 5; _n++) {
       gpsHwSerial->begin(_baud[_n], SERIAL_8N1, pinRX, pinTX);

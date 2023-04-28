@@ -53,6 +53,8 @@ class Microduino_GPS {
 #if defined (__AVR__)
     Microduino_GPS(SoftwareSerial *ser); // Constructor when using SoftwareSerial
     Microduino_GPS(HardwareSerial *ser); // Constructor when using HardwareSerial
+#elif defined (LE501X)
+    Microduino_GPS(HardwareSerial *ser, int _rx = D2, int _tx = D3);
 #elif defined (ESP32)
     Microduino_GPS(HardwareSerial *ser, int _rx = D2, int _tx = D3);
 #endif
@@ -95,6 +97,9 @@ class Microduino_GPS {
     HardwareSerial *gpsHwSerial;
 #if defined (__AVR__)
     SoftwareSerial *gpsSwSerial;
+#elif defined (LE501X)
+    uint8_t pinRX = D2;
+    uint8_t pinTX = D3;
 #elif defined (ESP32)
     uint8_t pinRX = D2;
     uint8_t pinTX = D3;
