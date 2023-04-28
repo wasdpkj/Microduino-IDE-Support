@@ -65,12 +65,12 @@ uint8_t JPEGDecoder::pjpeg_callback(uint8_t* pBuf, uint8_t buf_size, uint8_t *pB
 uint8_t JPEGDecoder::pjpeg_need_bytes_callback(uint8_t* pBuf, uint8_t buf_size, uint8_t *pBytes_actually_read, void *pCallback_data) {
 	uint n;
 
-	pCallback_data;
+	// pCallback_data;
 
 	n = jpg_min(g_nInFileSize - g_nInFileOfs, buf_size);
 
 	if (jpg_source == JPEG_ARRAY) { // We are handling an array
-		for (int i = 0; i < n; i++) {
+		for (uint i = 0; i < n; i++) {
 			pBuf[i] = pgm_read_byte(jpg_data++);
 			//Serial.println(pBuf[i],HEX);
 		}

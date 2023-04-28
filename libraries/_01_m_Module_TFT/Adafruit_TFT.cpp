@@ -70,7 +70,7 @@
 */
 /**************************************************************************/
 Adafruit_TFT::Adafruit_TFT(int8_t cs, int8_t dc, int8_t mosi,
-        int8_t sclk, int8_t rst, int8_t miso) : Adafruit_GFX(_config.width, _config.height) {
+        int8_t sclk, int8_t rst, int8_t miso) : Adafruit_GFX(240, 320) {
     _cs   = cs;
     _dc   = dc;
     _rst  = rst;
@@ -103,7 +103,7 @@ Adafruit_TFT::Adafruit_TFT(int8_t cs, int8_t dc, int8_t mosi,
     @param    rst   Reset pin # (optional, pass -1 if unused)
 */
 /**************************************************************************/
-Adafruit_TFT::Adafruit_TFT(int8_t cs, int8_t dc, int8_t rst) : Adafruit_GFX(_config.width, _config.height) {
+Adafruit_TFT::Adafruit_TFT(int8_t cs, int8_t dc, int8_t rst) : Adafruit_GFX(240, 320) {
     _cs   = cs;
     _dc   = dc;
     _rst  = rst;
@@ -186,6 +186,9 @@ void Adafruit_TFT::begin(uint32_t freq, uint8_t spiNeedInit)
 	
     _width  = _config.width;
     _height = _config.height;
+
+    Adafruit_GFX::WIDTH = _width;
+    Adafruit_GFX::HEIGHT = _height;
 	
 	
 	softReset();
@@ -386,6 +389,7 @@ void Adafruit_TFT::setAddrWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h)
 /*!
     @brief   Blit 1 pixel of color without setting up SPI transaction
     @param   color 16-bits of 5-6-5 color data
+*/
 /**************************************************************************/
 void Adafruit_TFT::pushColor(uint16_t color) {
 	startWrite();
@@ -423,8 +427,6 @@ void Adafruit_TFT::writePixels(uint16_t * colors, uint32_t len){
 /**************************************************************************/
 void Adafruit_TFT::writeColor(uint16_t color, uint32_t len){
 	if(!len) return; // Avoid 0-byte transfers
-
-	uint8_t hi = color >> 8, lo = color;
 	
 #ifdef SPI_HAS_WRITE_PIXELS
     #define TMPBUF_LONGWORDS (SPI_MAX_PIXELS_AT_ONCE + 1) / 2
@@ -447,6 +449,7 @@ void Adafruit_TFT::writeColor(uint16_t color, uint32_t len){
         len -= xferLen;
     }
 #else
+	uint8_t hi = color >> 8, lo = color;
     while(len--) {
         uint16_t _data;
 	_data = (0xFF00 & (hi << 8)) | (lo);
