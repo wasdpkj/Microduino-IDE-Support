@@ -26,9 +26,9 @@
 ||
 || @name Software PWM Library
 || @type Library
-|| @target Atmel AVR 8 Bit
+|| @target Atmel AVR 8 Bit, Linkedsemi LE501X
 ||
-|| @version 1.0.1
+|| @version 1.0.2
 ||
 */
 
@@ -64,6 +64,9 @@ void SoftPWMSetPercent(int8_t pin, uint8_t percent, uint8_t hardset = 0);
 void SoftPWMEnd(int8_t pin);
 void SoftPWMSetFadeTime(int8_t pin, uint16_t fadeUpTime, uint16_t fadeDownTime);
 void SoftPWMSetPolarity(int8_t pin, uint8_t polarity);
+
+void SoftPWMInit(uint8_t defaultPolarity = SOFTPWM_NORMAL);
+void SoftPWMDeinit(void);
 
 #endif
 

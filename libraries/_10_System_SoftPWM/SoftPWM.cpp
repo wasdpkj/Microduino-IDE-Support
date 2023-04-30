@@ -32,9 +32,9 @@
 ||
 || @name Software PWM Library
 || @type Library
-|| @target Atmel AVR 8 Bit
+|| @target Atmel AVR 8 Bit, Linkedsemi LE501X
 ||
-|| @version 1.0.1
+|| @version 1.0.2
 ||
 */
 
@@ -356,4 +356,14 @@ void SoftPWMSetFadeTime(int8_t pin, uint16_t fadeUpTime, uint16_t fadeDownTime)
         break;
     }
   }
+}
+
+void SoftPWMInit(uint8_t defaultPolarity)
+{
+  SoftPWMBegin(defaultPolarity);
+}
+
+void SoftPWMDeinit(void)
+{
+  SOFTPWM_TIMER_DEINIT();
 }

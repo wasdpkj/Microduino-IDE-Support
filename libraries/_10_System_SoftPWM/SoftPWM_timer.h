@@ -15,7 +15,7 @@
 || @type Library support
 || @target Atmel AVR 8 Bit, Linkedsemi LE501X
 ||
-|| @version 1.0.1
+|| @version 1.0.2
 ||
 */
 
@@ -51,6 +51,7 @@
   OCR2A = (ocr);          /* We want to have at least 30Hz or else it gets choppy */ \
   TIMSK2 = (1 << OCIE2A); /* enable timer2 output compare match interrupt */ \
 })
+#define SOFTPWM_TIMER_DEINIT()
 
 #elif defined(USE_TIMER4_HS)
 #define SOFTPWM_TIMER_INTERRUPT    TIMER4_COMPA_vect
@@ -65,22 +66,27 @@
   OCR4C  = (ocr); \
   TIMSK4  = (1 << OCIE4A); \
 })
+#define SOFTPWM_TIMER_DEINIT()
 
 #elif defined(USE_LSTIMER)
 
 #define SOFT_PWM_PERIOD_US  64      // ≈ 60 Hz
 #define SOFTPWM_TIMER_INTERRUPT    softpwm_interval_timer
+
+static SW_TIM_HandleTypeDef softTimHandle = {.channel = -1, .period = 0, .periodCalc = 0, .number = -1};
+
 #ifdef ISR
 #undef ISR
 #endif
 #define ISR(f) void XIP_BANNED_FUNC(f, void)
 #define SOFTPWM_TIMER_SET(val)
 #define SOFTPWM_TIMER_INIT(ocr) ({                \
-  static SW_TIM_HandleTypeDef softTimHandle;             \
   softTimHandle.channel = SOFTTIMER_CHANNEL_PWM;  \
   softTimHandle.period = SOFT_PWM_PERIOD_US;      \
-  softTimHandle.periodCalc = 0;                   \
   softTimerAttachInterrupt(&softTimHandle, softpwm_interval_timer); \
+})
+#define SOFTPWM_TIMER_DEINIT()  ({          \
+  softTimerDetachInterrupt(&softTimHandle); \
 })
 
 #elif defined(USE_INTERVALTIMER)
@@ -94,5 +100,6 @@
   IntervalTimer *t = new IntervalTimer(); \
   t->begin(softpwm_interval_timer, 1000000.0 / (float)(SOFTPWM_FREQ * 256)); \
 })
+#define SOFTPWM_TIMER_DEINIT()
 #endif
 

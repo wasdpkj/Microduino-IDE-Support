@@ -26,6 +26,8 @@ SoftPWMSetFadeTime              KEYWORD2
 SoftPWMBegin                    KEYWORD2
 SoftPWMEnd                      KEYWORD2
 SoftPWMSetPolarity              KEYWORD2
+SoftPWMInit                     KEYWORD2
+SoftPWMDeinit                   KEYWORD2
 
 ########################################
 # Constants (LITERAL2)
