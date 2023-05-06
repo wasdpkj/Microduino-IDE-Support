@@ -42,6 +42,7 @@
    detach()    - Stops an attached servos from pulsing its i/o pin.
 
    //修改记录：兼容ESP32, 2017-09-07，by CWJ 
+   //修改记录：兼容LE501X, 2023-05-06，by PKJ 
 */
 
 #ifndef Servo_h
@@ -100,6 +101,50 @@ typedef struct {
   unsigned int ticks;
 } servo_t;
 #endif
+
+
+#if defined(LE501X)
+#include "le501x-hal-timer.h"
+
+#define _useSoftTimer
+// #define _useHardTimer
+
+
+typedef struct  {
+  uint8_t nbr        : 6 ;            // a pin number from 0 to 63
+  uint8_t isActive   : 1 ;            // true if this channel is enabled, pin not pulsed if false
+} ServoPin_t   ;
+
+typedef struct {
+  ServoPin_t Pin;
+  unsigned int ticks;
+} servo_t;
+
+#if defined(_useSoftTimer)
+#define MAX_SERVOS   (6)
+
+typedef struct {
+  bool waitout;
+  unsigned int ticks;
+} servo_swtimer_t;
+
+#elif defined(_useHardTimer)
+#define HWTIMER_FOR_SERVO   TIMER_0
+
+#if (HWTIMER_FOR_SERVO == TIMER_0)
+#define MAX_SERVOS   (4)
+#elif (HWTIMER_FOR_SERVO == TIMER_1)
+#define MAX_SERVOS   (4)
+#elif (HWTIMER_FOR_SERVO == TIMER_2)
+#define MAX_SERVOS   (2)
+#elif (HWTIMER_FOR_SERVO == TIMER_3)
+#define MAX_SERVOS   (4)
+#endif
+
+#endif  /* _useHardTimer */
+
+#endif /* LE501X */
+
 
 #if defined (ESP32)
 #define LEDC_SERVO_BIT     14

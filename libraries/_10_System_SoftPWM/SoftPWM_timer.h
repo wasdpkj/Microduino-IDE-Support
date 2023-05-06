@@ -70,10 +70,11 @@
 
 #elif defined(USE_LSTIMER)
 
-#define SOFT_PWM_PERIOD_US  64      // ≈ 60 Hz
+#define SOFT_PWM_PERIOD_US        (64)          /* ≈ 60Hz */
+
 #define SOFTPWM_TIMER_INTERRUPT    softpwm_interval_timer
 
-static SW_TIM_HandleTypeDef softTimHandle = {.channel = -1, .period = 0, .periodCalc = 0, .number = -1};
+static SW_TIM_HandleTypeDef softTimHandle;
 
 #ifdef ISR
 #undef ISR
@@ -81,8 +82,12 @@ static SW_TIM_HandleTypeDef softTimHandle = {.channel = -1, .period = 0, .period
 #define ISR(f) void XIP_BANNED_FUNC(f, void)
 #define SOFTPWM_TIMER_SET(val)
 #define SOFTPWM_TIMER_INIT(ocr) ({                \
+  softTimHandle.init.period = -1;      \
+  softTimHandle.init.timer = -1;      \
   softTimHandle.channel = SOFTTIMER_CHANNEL_PWM;  \
   softTimHandle.period = SOFT_PWM_PERIOD_US;      \
+  softTimHandle.periodCalc = 0;      \
+  softTimHandle.number = -1;      \
   softTimerAttachInterrupt(&softTimHandle, softpwm_interval_timer); \
 })
 #define SOFTPWM_TIMER_DEINIT()  ({          \

@@ -240,11 +240,124 @@ static boolean isTimerActive(timer16_Sequence_t timer)
 
 #endif
 
+
 #if defined (ESP32)
 static uint8_t servoNum = 0;
 #define SERVO_MIN() (MIN_PULSE_WIDTH - (this->min*1.22))  // minimum value in uS for this servo
 #define SERVO_MAX() (MAX_PULSE_WIDTH - (this->max*1.22))  // maximum value in uS for this servo 
 #endif
+
+
+#if defined(LE501X)
+
+// convenience macros
+#define SERVO_MIN() (MIN_PULSE_WIDTH - (this->min * 1.0))  // minimum value in uS for this servo
+#define SERVO_MAX() (MAX_PULSE_WIDTH - (this->max * 1.0))  // maximum value in uS for this servo 
+
+#define usToTicks(_us)    (_us)     // converts microseconds to tick (assumes prescale of 8)  // 12 Aug 2009
+#define ticksToUs(_ticks) (_ticks) // converts from ticks back to microseconds
+
+uint8_t ServoCount = 0;                                     // the total number of attached servos
+
+static servo_t servos[MAX_SERVOS];             // static array of servo structures
+
+static boolean isTimerActive(void)
+{
+  // returns true if any servo is active on this timer
+  for (uint8_t channel = 0; channel < MAX_SERVOS; channel++) 
+  {
+    if (servos[channel].Pin.isActive == true)
+      return true;
+  }
+  return false;
+}
+
+#if defined(_useSoftTimer)
+
+
+static SW_TIM_HandleTypeDef softTimHandle = {.init{.period = -1, .timer = -1,}, .channel = SOFTTIMER_CHANNEL_SERVO, .period = 0, .periodCalc = 0, .number = -1};
+
+static servo_swtimer_t servo_swtimer[MAX_SERVOS];
+
+// #define DEBUGIO  PA13
+#define SOFT_PWM_PERIOD_US  (softTimHandle.period)
+
+static inline void handle_interrupts(void)
+{
+#ifdef DEBUGIO  
+  fastSetPin(DEBUGIO);  
+#endif
+
+  for(uint8_t i = 0;i < MAX_SERVOS;i++)
+  {
+    if(servos[i].Pin.isActive)
+    {
+      servo_swtimer[i].ticks += usToTicks(SOFT_PWM_PERIOD_US);
+      if(!servo_swtimer[i].waitout)
+      {
+        if(servo_swtimer[i].ticks >= servos[i].ticks)
+        {
+          fastClrPin(servos[i].Pin.nbr); // its an active channel so pulse it low
+          servo_swtimer[i].waitout = 1;
+        }
+      }
+      else if(servo_swtimer[i].ticks >= usToTicks(REFRESH_INTERVAL) )
+      {
+          fastSetPin(servos[i].Pin.nbr); // its an active channel so pulse it high
+
+          servo_swtimer[i].waitout = 0;
+          servo_swtimer[i].ticks = 0;
+      }
+    }
+  }
+
+#ifdef DEBUGIO  
+  fastClrPin(DEBUGIO);
+#endif
+}
+
+
+static void initISR(void)
+{
+  softTimHandle.init.period = -1;      
+  softTimHandle.init.timer = -1;      
+
+  softTimHandle.channel = SOFTTIMER_CHANNEL_SERVO;
+
+  if(softTimHandle.init.period <= 0)
+  {
+    softTimHandle.period = DEFAULT_SWTIM_PERIOD;
+  }
+  else
+  {
+    softTimHandle.period = softTimHandle.init.period;
+  }
+
+  softTimHandle.periodCalc = 0;
+  softTimHandle.number = -1;
+
+#ifdef DEBUGIO  
+  pinMode(DEBUGIO, OUTPUT);
+#endif
+
+  softTimerAttachInterrupt(&softTimHandle, handle_interrupts); 
+}
+
+static void finISR(void)
+{
+  //disable use of the given timer
+  softTimerDetachInterrupt(&softTimHandle);
+}
+
+#elif defined(_useHardTimer)
+
+
+#endif
+
+#endif
+
+
+
 
 /****************** end of static functions ******************************/
 
@@ -270,6 +383,26 @@ Servo::Servo()
   else
     this->servoIndex = INVALID_SERVO ;  // too many servos
 #endif
+
+#if defined(LE501X)
+#if defined(_useSoftTimer)
+  if ( ServoCount < MAX_SERVOS) {
+    this->servoIndex = ServoCount++;                    // assign a servo index to this instance
+    servos[this->servoIndex].ticks = usToTicks(DEFAULT_PULSE_WIDTH);   // store default values  - 12 Aug 2009
+  }
+  else
+    this->servoIndex = INVALID_SERVO ;  // too many servos
+#elif defined(_useHardTimer)
+  if (ServoCount < MAX_SERVOS) {
+    this->servoIndex = ServoCount;
+    servos[this->servoIndex].ticks = usToTicks(DEFAULT_PULSE_WIDTH);   // store default values  - 12 Aug 2009
+    ServoCount++;
+  }
+  else {
+    this->servoIndex = INVALID_SERVO;
+  }
+#endif
+#endif
 }
 
 uint8_t Servo::attach(int pin)
@@ -289,6 +422,42 @@ uint8_t Servo::attach(int pin, int min, int max)
     this->attachFlag = true;
   }
   return this->servoIndex;
+#endif
+
+#if defined(_useSoftTimer)    
+  if (this->servoIndex < MAX_SERVOS ) {
+    servos[this->servoIndex].Pin.nbr = pin;
+    this->min  = (MIN_PULSE_WIDTH - min) / 1.0;
+    this->max  = (MAX_PULSE_WIDTH - max) / 1.0;
+
+    pinMode( pin, OUTPUT) ;                                   // set servo pin to output
+    // initialize the timer if it has not already been initialized
+    if (isTimerActive() == false)
+    {
+      initISR();
+    }
+    servo_swtimer[this->servoIndex].waitout = 0;
+    servo_swtimer[this->servoIndex].ticks = 0;
+
+    servos[this->servoIndex].Pin.isActive = true;  // this must be set after the check for isTimerActive
+  }
+  return this->servoIndex ;
+#elif defined(_useHardTimer)
+  if (this->servoIndex < MAX_SERVOS ) {
+    servos[this->servoIndex].Pin.nbr = pin;
+    this->min  = (MIN_PULSE_WIDTH - min) / 1.0;
+    this->max  = (MAX_PULSE_WIDTH - max) / 1.0;
+
+    // initialize the timer if it has not already been initialized
+    if (isTimerActive() == false)
+    {
+      pwmInit(HWTIMER_FOR_SERVO, REFRESH_INTERVAL);
+    }
+    pwmAttachPin(pin, this->servoIndex);
+
+    servos[this->servoIndex].Pin.isActive = true;  // this must be set after the check for isTimerActive
+  }
+  return this->servoIndex ;
 #endif
 
 #if defined(__AVR__)
@@ -313,6 +482,25 @@ void Servo::detach()
 #if defined (ESP32)
    this->attachFlag = false;
    ledcDetachPin(this->servoPin);
+#endif
+
+#if defined(_useSoftTimer)
+  servos[this->servoIndex].Pin.isActive = false;
+
+  servo_swtimer[this->servoIndex].waitout = 0;
+  servo_swtimer[this->servoIndex].ticks = 0;
+  if (isTimerActive() == false) 
+  {
+    finISR();
+  }
+#elif defined(_useHardTimer)
+  servos[this->servoIndex].Pin.isActive = false;
+
+  pwmDetachPin(this->servoIndex);
+  if (isTimerActive() == false)
+  {
+    pwmDeinit();
+  }
 #endif
 
 #if defined(__AVR__)
@@ -352,6 +540,13 @@ void Servo::writeMicroseconds(int _value)
     this->lastValue = _value;
 #endif
 
+#if defined(_useSoftTimer)
+    servos[channel].ticks = _value;
+#elif defined(_useHardTimer)
+    pwmUpdata(this->servoIndex, (uint32_t)_value);
+    servos[channel].ticks = _value;
+#endif
+
 #if defined(__AVR__)
     _value = _value - TRIM_DURATION;
     _value = usToTicks(_value);  // convert to ticks after compensating for interrupt overhead - 12 Aug 2009
@@ -367,7 +562,7 @@ void Servo::writeMicroseconds(int _value)
 
 int Servo::read() // return the value as degrees
 {
-#if defined (ESP32)
+#if defined (ESP32) || defined (LE501X)
   return  map( this->readMicroseconds() + 1, SERVO_MIN(), SERVO_MAX(), 0, 180);
 #endif
 
@@ -386,6 +581,13 @@ int Servo::readMicroseconds()
     pulsewidth  = 0;
 #endif
 
+#if defined(_useSoftTimer) || defined(_useHardTimer)
+  if ( this->servoIndex != INVALID_SERVO )
+    pulsewidth = ticksToUs(servos[this->servoIndex].ticks) ;
+  else
+    pulsewidth  = 0;
+#endif
+
 #if defined(__AVR__)
   if ( this->servoIndex != INVALID_SERVO )
     pulsewidth = ticksToUs(servos[this->servoIndex].ticks)  + TRIM_DURATION ;   // 12 aug 2009
@@ -399,6 +601,10 @@ bool Servo::attached()
 {
 #if defined (ESP32)
   return this->attachFlag;
+#endif
+
+#if defined(_useSoftTimer) || defined(_useHardTimer)
+  return servos[this->servoIndex].Pin.isActive ;
 #endif
 
 #if defined(__AVR__)

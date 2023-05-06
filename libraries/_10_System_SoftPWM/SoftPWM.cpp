@@ -91,6 +91,8 @@ typedef struct
 softPWMChannel _softpwm_channels[SOFTPWM_MAXCHANNELS];
 
 
+// #define DEBUGIO  PA13
+
 // Here is the meat and gravy
 #ifdef WIRING
 void SoftPWM_Timer_Interrupt(void)
@@ -99,6 +101,9 @@ ISR(SOFTPWM_TIMER_INTERRUPT)
 #endif
 {
   // return;
+#ifdef DEBUGIO  
+  fastSetPin(DEBUGIO);  
+#endif
 
   uint8_t i;
   int16_t newvalue;
@@ -185,7 +190,12 @@ ISR(SOFTPWM_TIMER_INTERRUPT)
         }
 		  }
     }
-  }  
+  }
+
+#ifdef DEBUGIO  
+  fastClrPin(DEBUGIO);  
+#endif
+
 
 }
 
@@ -200,6 +210,9 @@ void SoftPWMBegin(uint8_t defaultPolarity)
   // At these settings on a 16 MHz part, we will get a PWM period of
   // approximately 60Hz (~16ms).
 
+#ifdef DEBUGIO  
+  pinMode(DEBUGIO, OUTPUT);
+#endif
 
   uint8_t i;
 
