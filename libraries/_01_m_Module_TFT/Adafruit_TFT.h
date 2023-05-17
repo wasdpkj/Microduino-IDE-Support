@@ -38,6 +38,7 @@ typedef volatile uint32 RwReg;
 typedef volatile uint32_t RwReg;
 #endif
 
+// #define TFT_TYPE
 #define TYPE_ST7735	1
 #define TYPE_ST7789	2
 
@@ -55,7 +56,7 @@ typedef struct{
 extern tft_config_t tftCfg_ST7735_128x160;
 extern tft_config_t tftCfg_ST7789_240x240;
 extern tft_config_t tftCfg_ST7789_240x320;
-extern tft_config_t tftCfg_ST7789_170x320;
+extern tft_config_t tftCfg_ST7789_172x320;
 
 
 //---------------------------------
@@ -214,8 +215,8 @@ class Adafruit_TFT : public Adafruit_GFX {
     protected:
 
     public:
-        Adafruit_TFT(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1);
-        Adafruit_TFT(int8_t _CS, int8_t _DC, int8_t _RST = -1);
+        Adafruit_TFT(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1, uint16_t _width = 240, uint16_t _height = 320);
+        Adafruit_TFT(int8_t _CS, int8_t _DC, int8_t _RST = -1, uint16_t _width = 240, uint16_t _height = 320);
 
 #if defined(ESP32) || defined(K210) || defined(LE501X)
         void      begin(uint32_t freq = 0, SPIClass *spiclass = &SPI, uint8_t spiNeedInit = 1);
@@ -309,47 +310,131 @@ class Adafruit_TFT : public Adafruit_GFX {
 
 // Subclass of TFT type display for ST7735 TFT Driver
 class ST7735_128x160 : public Adafruit_TFT {
+  #ifdef TFT_WIDTH
+  #undef TFT_WIDTH
+  #endif
+  #ifdef TFT_HEIGHT
+  #undef TFT_HEIGHT
+  #endif
+  #ifdef TFT_X_OFFSET
+  #undef TFT_X_OFFSET
+  #endif
+  #ifdef TFT_Y_OFFSET
+  #undef TFT_Y_OFFSET
+  #endif
+  #ifdef TFT_INVERT
+  #undef TFT_INVERT
+  #endif
+
+  #define TFT_WIDTH       128
+  #define TFT_HEIGHT      160
+  #define TFT_X_OFFSET    0
+  #define TFT_Y_OFFSET    0
+  #define TFT_INVERT      false          
   public:
 	tft_config_t _userConfig = {
-		TYPE_ST7789, 0, 0, 128, 160, false, 2,(uint32_t)&cmd_initcode_ST7735_128x160
+		TYPE_ST7789, TFT_X_OFFSET, TFT_Y_OFFSET, TFT_WIDTH, TFT_HEIGHT, TFT_INVERT, 2,(uint32_t)&cmd_initcode_ST7735_128x160
 	};
 
-    ST7735_128x160(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1) : Adafruit_TFT(_CS,_DC,_MOSI,_SCLK,_RST,_MISO){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
-	ST7735_128x160(int8_t _CS, int8_t _DC, int8_t _RST = -1) : Adafruit_TFT(_CS,_DC,_RST){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
+    ST7735_128x160(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1, uint16_t _width = TFT_WIDTH, uint16_t _height = TFT_HEIGHT) : Adafruit_TFT(_CS,_DC,_MOSI,_SCLK,_RST,_MISO,_width,_height){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
+	ST7735_128x160(int8_t _CS, int8_t _DC, int8_t _RST = -1, uint16_t _width = TFT_WIDTH, uint16_t _height = TFT_HEIGHT) : Adafruit_TFT(_CS,_DC,_RST,_width,_height){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
 };
 
 // Subclass of TFT type display for ST7789 TFT Driver
 class ST7789_240x240 : public Adafruit_TFT {
+  #ifdef TFT_WIDTH
+  #undef TFT_WIDTH
+  #endif
+  #ifdef TFT_HEIGHT
+  #undef TFT_HEIGHT
+  #endif
+  #ifdef TFT_X_OFFSET
+  #undef TFT_X_OFFSET
+  #endif
+  #ifdef TFT_Y_OFFSET
+  #undef TFT_Y_OFFSET
+  #endif
+  #ifdef TFT_INVERT
+  #undef TFT_INVERT
+  #endif
+
+  #define TFT_WIDTH       240
+  #define TFT_HEIGHT      240
+  #define TFT_X_OFFSET    0
+  #define TFT_Y_OFFSET    80    
+  #define TFT_INVERT      true       
   public:
 	tft_config_t _userConfig = {
-		TYPE_ST7789, 0, 80, 240, 240, true, 0,(uint32_t)&cmd_initcode_ST7789_240x240
+		TYPE_ST7789, TFT_X_OFFSET, TFT_Y_OFFSET, TFT_WIDTH, TFT_HEIGHT, TFT_INVERT, 0,(uint32_t)&cmd_initcode_ST7789_240x240
 	};
-
-    ST7789_240x240(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1) : Adafruit_TFT(_CS,_DC,_MOSI,_SCLK,_RST,_MISO){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
-	ST7789_240x240(int8_t _CS, int8_t _DC, int8_t _RST = -1) : Adafruit_TFT(_CS,_DC,_RST){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
+        
+    ST7789_240x240(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1, uint16_t _width = TFT_WIDTH, uint16_t _height = TFT_HEIGHT) : Adafruit_TFT(_CS,_DC,_MOSI,_SCLK,_RST,_MISO,_width,_height){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
+	ST7789_240x240(int8_t _CS, int8_t _DC, int8_t _RST = -1, uint16_t _width = TFT_WIDTH, uint16_t _height = TFT_HEIGHT) : Adafruit_TFT(_CS,_DC,_RST,_width,_height){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
 };
 
 
 // Subclass of TFT type display for ST7789 TFT Driver
 class ST7789_240x320 : public Adafruit_TFT {
+  #ifdef TFT_WIDTH
+  #undef TFT_WIDTH
+  #endif
+  #ifdef TFT_HEIGHT
+  #undef TFT_HEIGHT
+  #endif
+  #ifdef TFT_X_OFFSET
+  #undef TFT_X_OFFSET
+  #endif
+  #ifdef TFT_Y_OFFSET
+  #undef TFT_Y_OFFSET
+  #endif
+  #ifdef TFT_INVERT
+  #undef TFT_INVERT
+  #endif
+
+  #define TFT_WIDTH       240
+  #define TFT_HEIGHT      320
+  #define TFT_X_OFFSET    0
+  #define TFT_Y_OFFSET    0
+  #define TFT_INVERT      false
   public:
 	tft_config_t _userConfig = {
-		TYPE_ST7789, 0, 0, 240, 320, false, 0,(uint32_t)&cmd_initcode_ST7789_240x320
+		TYPE_ST7789, TFT_X_OFFSET, TFT_Y_OFFSET, TFT_WIDTH, TFT_HEIGHT, TFT_INVERT, 0,(uint32_t)&cmd_initcode_ST7789_240x320
 	};
 
-    ST7789_240x320(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1) : Adafruit_TFT(_CS,_DC,_MOSI,_SCLK,_RST,_MISO){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
-	ST7789_240x320(int8_t _CS, int8_t _DC, int8_t _RST = -1) : Adafruit_TFT(_CS,_DC,_RST){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
+    ST7789_240x320(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1, uint16_t _width = TFT_WIDTH, uint16_t _height = TFT_HEIGHT) : Adafruit_TFT(_CS,_DC,_MOSI,_SCLK,_RST,_MISO,_width,_height){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
+	ST7789_240x320(int8_t _CS, int8_t _DC, int8_t _RST = -1, uint16_t _width = TFT_WIDTH, uint16_t _height = TFT_HEIGHT) : Adafruit_TFT(_CS,_DC,_RST,_width,_height){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
 };
 
 // Subclass of TFT type display for ST7789 TFT Driver
-class ST7789_170x320 : public Adafruit_TFT {
+class ST7789_172x320 : public Adafruit_TFT {
+  #ifdef TFT_WIDTH
+  #undef TFT_WIDTH
+  #endif
+  #ifdef TFT_HEIGHT
+  #undef TFT_HEIGHT
+  #endif
+  #ifdef TFT_X_OFFSET
+  #undef TFT_X_OFFSET
+  #endif
+  #ifdef TFT_Y_OFFSET
+  #undef TFT_Y_OFFSET
+  #endif
+  #ifdef TFT_INVERT
+  #undef TFT_INVERT
+  #endif
+
+  #define TFT_WIDTH       172
+  #define TFT_HEIGHT      320
+  #define TFT_X_OFFSET    34
+  #define TFT_Y_OFFSET    0       
+  #define TFT_INVERT      true
   public:
 	tft_config_t _userConfig = {
-		TYPE_ST7789, 35, 0, 170, 320, true, 0,(uint32_t)&cmd_initcode_ST7789_170x320
+		TYPE_ST7789, TFT_X_OFFSET, TFT_Y_OFFSET, TFT_WIDTH, TFT_HEIGHT, TFT_INVERT, 0,(uint32_t)&cmd_initcode_ST7789_172x320
 	};
 
-    ST7789_170x320(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1) : Adafruit_TFT(_CS,_DC,_MOSI,_SCLK,_RST,_MISO){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
-	ST7789_170x320(int8_t _CS, int8_t _DC, int8_t _RST = -1) : Adafruit_TFT(_CS,_DC,_RST){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}	
+    ST7789_172x320(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1, uint16_t _width = TFT_WIDTH, uint16_t _height = TFT_HEIGHT) : Adafruit_TFT(_CS,_DC,_MOSI,_SCLK,_RST,_MISO,_width,_height){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}
+	ST7789_172x320(int8_t _CS, int8_t _DC, int8_t _RST = -1, uint16_t _width = TFT_WIDTH, uint16_t _height = TFT_HEIGHT) : Adafruit_TFT(_CS,_DC,_RST,_width,_height){memcpy((uint8_t*)&_config, (uint8_t*)&_userConfig, sizeof(tft_config_t));}	
 };
 
 

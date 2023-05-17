@@ -14,7 +14,7 @@
  * ST7735_128x160
  * ST7789_240x240
  * ST7789_240x320
- * ST7789_170x320
+ * ST7789_172x320
  */
 #if defined(K210)
 SPIClass spi_(SPI0); // MUST be SPI0 for Maix series on board LCD

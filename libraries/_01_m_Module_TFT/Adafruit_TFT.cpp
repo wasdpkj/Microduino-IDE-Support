@@ -70,7 +70,7 @@
 */
 /**************************************************************************/
 Adafruit_TFT::Adafruit_TFT(int8_t cs, int8_t dc, int8_t mosi,
-        int8_t sclk, int8_t rst, int8_t miso) : Adafruit_GFX(240, 320) {
+        int8_t sclk, int8_t rst, int8_t miso, uint16_t width, uint16_t height) : Adafruit_GFX(width, height) {
     _cs   = cs;
     _dc   = dc;
     _rst  = rst;
@@ -103,7 +103,7 @@ Adafruit_TFT::Adafruit_TFT(int8_t cs, int8_t dc, int8_t mosi,
     @param    rst   Reset pin # (optional, pass -1 if unused)
 */
 /**************************************************************************/
-Adafruit_TFT::Adafruit_TFT(int8_t cs, int8_t dc, int8_t rst) : Adafruit_GFX(240, 320) {
+Adafruit_TFT::Adafruit_TFT(int8_t cs, int8_t dc, int8_t rst, uint16_t width, uint16_t height) : Adafruit_GFX(width, height) {
     _cs   = cs;
     _dc   = dc;
     _rst  = rst;
@@ -291,7 +291,7 @@ void Adafruit_TFT::setRotation(uint8_t m) {
             _width = _config.width;
             _height = _config.height;
             _smartX = _config.xStart;
-            _smartY = _config.yStart;
+            _smartY = 0;
 			scrollTo(0);
             break;
         case 1:
@@ -299,7 +299,7 @@ void Adafruit_TFT::setRotation(uint8_t m) {
 //			m=0x60;
             _width = _config.height;
             _height = _config.width;
-            _smartX = _config.yStart;
+            _smartX = 0;
             _smartY = _config.xStart;
 			scrollTo(0);
             break;
@@ -309,7 +309,7 @@ void Adafruit_TFT::setRotation(uint8_t m) {
             _width = _config.width;
             _height = _config.height;
             _smartX = _config.xStart;
-            _smartY = _config.yStart;
+            _smartY = 0;
             scrollTo(_config.yStart);
             break;
         case 3:
@@ -317,7 +317,7 @@ void Adafruit_TFT::setRotation(uint8_t m) {
 //			m=0xA0;
             _width = _config.height;
             _height = _config.width;
-            _smartX = _config.yStart;
+            _smartX = 0;
             _smartY = _config.xStart;
             scrollTo(_config.yStart);
             break;
@@ -741,4 +741,4 @@ void Adafruit_TFT::spiWrite(uint8_t b) {
 tft_config_t tftCfg_ST7735_128x160;
 tft_config_t tftCfg_ST7789_240x240;
 tft_config_t tftCfg_ST7789_240x320;
-tft_config_t tftCfg_ST7789_170x320;
+tft_config_t tftCfg_ST7789_172x320;

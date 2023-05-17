@@ -211,7 +211,7 @@ static const uint8_t PROGMEM
 };
 
 static const uint8_t PROGMEM
-    cmd_initcode_ST7789_170x320[] = {
+    cmd_initcode_ST7789_172x320[] = {
         // Init commands for 7789 screens
         19, //  9 commands in list:
         // TFT_SWRESET,   ST_CMD_DELAY,	 	//  1: Software reset, no args, w/delay
