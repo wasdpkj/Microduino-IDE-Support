@@ -515,7 +515,11 @@ uint8_t const SCK_PIN = 13;
 
 #endif // Sd2PinMap_h
 
+#if defined(D7)
 #define SDCARD_SS_PIN D7
+#else
+#define SDCARD_SS_PIN -1
+#endif
 
 // Two Wire (aka I2C) ports
 uint8_t const SDA_PIN = SDA;
