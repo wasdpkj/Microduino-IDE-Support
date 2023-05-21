@@ -1,5 +1,5 @@
 /*
-  time.c - low level time and date functions
+  ArduinoTime.c - low level time and date functions
   Copyright (c) Michael Margolis 2009-2014
 
   This library is free software; you can redistribute it and/or
@@ -29,7 +29,7 @@
 
 #include <Arduino.h> 
 
-#include "Time.h"
+#include "ArduinoTime.h"
 
 static tmElements_t tm;          // a cache of time elements
 static time_t cacheTime;   // the time the cache was updated
