@@ -46,6 +46,7 @@ Microduino-IDE [![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Sup
 
 - Add the URL for the package to `"File>Preferences>Additional Boards Manager URLs"`
   - URL:https://raw.githubusercontent.com/wasdpkj/Microduino-IDE-Support/master/_for_travis/package_microduino_index.json
+  - URL:https://raw.githubusercontent.com/wasdpkj/Microduino-IDE-Support/master/_for_travis/package_linkedsemi_index.json
 - `"Tools>Board>Boards Manager"`...
 - Select the board and the latest version you want to install
   - `"Microduino AVR Boards"`
