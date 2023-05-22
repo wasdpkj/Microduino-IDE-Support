@@ -6,7 +6,7 @@
       "websiteURL": "https://github.com/wasdpkj/LE501X_Arduino-IDE-Support",
       "email": "kjpan@linkedsemi.com",
       "help": {
-        "online": "https://wiki.microduino.cn"
+        "online": "https://docs.linkedsemi.com"
       },
       "platforms": [
         {
@@ -14,72 +14,68 @@
           "architecture": "le501x",
           "version": "2.0.1",
           "category": "Contributed",
-          "url": "https://github.com/wasdpkj/LE501X_Arduino-IDE-Support/files/11528572/linkedsemi-2.0.1.tar.gz",
+          "url": "https://raw.githubusercontent.com/wasdpkj/Microduino-IDE-Support/master/_for_travis/boards/linkedsemi-2.0.1.tar.gz",
           "archiveFileName": "linkedsemi-le501x-1.0.1.tar.gz",
           "checksum": "SHA-256:33cb73f3dc322a4171514c578874c630f87c40dad1d8410f1ec2d357d40e988e",
           "size": "8708707",
           "help": {
-            "online": "https://ls-doc.readthedocs.io/zh_CN/latest/src/sdk/getting_started.html"
+            "online": ""
           },
           "boards": [
-            {
-              "name": "Linkedsemi M5110-N1 EVK"
-            },
-            {
-              "name": "Linkedsemi Core-M5110N1"
-            }
+            { "name": "Linkedsemi M5110-N1 EVK" },
+            { "name": "Linkedsemi Core-M5110N1" }
           ],
           "toolsDependencies": [
             {
-              "packager": "panda",
+              "packager": "linkedsemi",
               "name": "gcc-arm-none-eabi",
               "version": "10-2020q4"
             }
           ]
-        }
+        }        		
       ],
       "tools": [
         {
           "name": "gcc-arm-none-eabi",
           "version": "10-2020q4",
           "systems": [
-            {
-              "host": "arm-linux-gnueabihf",
-              "url": "https://github.com/fortytwosystems/ArduinoModule-gcc-arm-none-eabi/releases/download/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-armv7l-linux.tar.bz2",
-              "archiveFileName": "gcc-arm-none-eabi-10-2020-q4-major-armv7l-linux.tar.bz2",
-              "checksum": "SHA-256:27d1d413ff7dd71ca4a80e02c2ba1d3a2166cb3ab4ad859da199463d33e621c3",
-              "size": "127367661"
-            },
-            {
-              "host": "aarch64-linux-gnu",
-              "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-aarch64-linux.tar.bz2",
-              "archiveFileName": "gcc-arm-none-eabi-10-2020-q4-major-aarch64-linux.tar.bz2",
-              "checksum": "SHA-256:343d8c812934fe5a904c73583a91edd812b1ac20636eb52de04135bb0f5cf36a",
-              "size": "168010269"
-            },
-            {
-              "host": "i686-mingw32",
-              "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-win32.zip",
-              "archiveFileName": "gcc-arm-none-eabi-10-2020-q4-major-win32.zip",
-              "checksum": "SHA-256:90057b8737b888c53ca5aee332f1f73c401d6d3873124d2c2906df4347ebef9e",
-              "size": "199785259"
-            },
-            {
-              "host": "x86_64-apple-darwin",
-              "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-mac.tar.bz2",
-              "archiveFileName": "gcc-arm-none-eabi-10-2020-q4-major-mac.tar.bz2",
-              "checksum": "SHA-256:bed12de3565d4eb02e7b58be945376eaca79a8ae3ebb785ec7344e7e2db0bdc0",
-              "size": "158420213"
-            },
-            {
-              "host": "x86_64-pc-linux-gnu",
-              "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2",
-              "archiveFileName": "gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2",
-              "checksum": "SHA-256:21134caa478bbf5352e239fbc6e2da3038f8d2207e089efc96c3b55f1edcd618",
-              "size": "156882554"
-            }
+              {
+                  "host": "arm-linux-gnueabihf",
+                  "url": "https://github.com/fortytwosystems/ArduinoModule-gcc-arm-none-eabi/releases/download/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-armv7l-linux.tar.bz2",
+                  "archiveFileName": "gcc-arm-none-eabi-10-2020-q4-major-armv7l-linux.tar.bz2",
+                  "checksum": "SHA-256:27d1d413ff7dd71ca4a80e02c2ba1d3a2166cb3ab4ad859da199463d33e621c3",
+                  "size": "127367661"
+              },
+              {
+                  "host": "aarch64-linux-gnu",
+                  "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-aarch64-linux.tar.bz2",
+                  "archiveFileName": "gcc-arm-none-eabi-10-2020-q4-major-aarch64-linux.tar.bz2",
+                  "checksum": "SHA-256:343d8c812934fe5a904c73583a91edd812b1ac20636eb52de04135bb0f5cf36a",
+                  "size": "168010269"
+              },
+              {
+                  "host": "i686-mingw32",
+                  "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-win32.zip",
+                  "archiveFileName": "gcc-arm-none-eabi-10-2020-q4-major-win32.zip",
+                  "checksum": "SHA-256:90057b8737b888c53ca5aee332f1f73c401d6d3873124d2c2906df4347ebef9e",
+                  "size": "199785259"
+              },
+              {
+                  "host": "x86_64-apple-darwin",
+                  "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-mac.tar.bz2",
+                  "archiveFileName": "gcc-arm-none-eabi-10-2020-q4-major-mac.tar.bz2",
+                  "checksum": "SHA-256:bed12de3565d4eb02e7b58be945376eaca79a8ae3ebb785ec7344e7e2db0bdc0",
+                  "size": "158420213"
+              },
+              {
+                  "host": "x86_64-pc-linux-gnu",
+                  "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2",
+                  "archiveFileName": "gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2",
+                  "checksum": "SHA-256:21134caa478bbf5352e239fbc6e2da3038f8d2207e089efc96c3b55f1edcd618",
+                  "size": "156882554"
+              }
           ]
-        }
+        }        
       ]
     }
   ]
