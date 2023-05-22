@@ -45,7 +45,7 @@ Microduino-IDE [![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Sup
 ### How to add the support package for Microduino
 
 - Add the URL for the package to `"File>Preferences>Additional Boards Manager URLs"`
-  - URL:https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/package_Microduino_index.json
+  - URL:https://raw.githubusercontent.com/wasdpkj/Microduino-IDE-Support/master/package_Microduino_index.json
 - `"Tools>Board>Boards Manager"`...
 - Select the board and the latest version you want to install
   - `"Microduino AVR Boards"`
