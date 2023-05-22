@@ -16,8 +16,8 @@
           "category": "Contributed",
           "url": "https://raw.githubusercontent.com/wasdpkj/Microduino-IDE-Support/master/_for_travis/boards/linkedsemi-2.0.1.tar.gz",
           "archiveFileName": "linkedsemi-le501x-1.0.1.tar.gz",
-          "checksum": "SHA-256:33cb73f3dc322a4171514c578874c630f87c40dad1d8410f1ec2d357d40e988e",
-          "size": "8708707",
+          "checksum": "SHA-256:ba3b5f65017c00e35d2ec06d923b137c18ce55b1f6818cf8926d534f3254e252",
+          "size": "8655727",
           "help": {
             "online": ""
           },
