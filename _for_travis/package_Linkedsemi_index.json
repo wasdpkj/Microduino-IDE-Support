@@ -19,7 +19,7 @@
           "checksum": "SHA-256:33cb73f3dc322a4171514c578874c630f87c40dad1d8410f1ec2d357d40e988e",
           "size": "8708707",
           "help": {
-            "online": ""
+            "online": "https://ls-doc.readthedocs.io/zh_CN/latest/src/sdk/getting_started.html"
           },
           "boards": [
             {
