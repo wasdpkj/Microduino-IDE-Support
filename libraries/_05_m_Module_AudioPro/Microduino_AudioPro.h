@@ -25,7 +25,11 @@
 
 #include <SPI.h> 
 #if defined(LOAD_SD_LIBRARY) || defined(LOAD_SDFAT_LIBRARY)
+#if defined(ESP32) 
+#include <SDcard.h>
+#else
 #include <SD.h>
+#endif
 #endif
 #if defined(__AVR__)
 #include <avr/pgmspace.h>
@@ -34,6 +38,7 @@
 #endif
 
 #include "vs_patches.h"
+
 
 #ifdef SPI_DEFAULT_FREQ
 #undef SPI_DEFAULT_FREQ

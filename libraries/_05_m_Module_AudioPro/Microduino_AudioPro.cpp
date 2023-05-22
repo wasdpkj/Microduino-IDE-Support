@@ -28,6 +28,12 @@ static AudioPro_FilePlayer *myself_sd;
 #define _BV(x) (1<<(x))
 #endif
 
+
+#ifndef __min
+#define __min(a,b) ((a)<(b)?(a):(b)) 
+#endif
+
+
 /*
   SIGNAL(TIMER0_COMPA_vect) {
    myself->feedBuffer();
@@ -295,7 +301,7 @@ void AudioPro_FilePlayer::feedBuffer(void) {
       }
     }
     else {
-      bytesread = min(panda_len - mp3LenCache, VS1053_DATABUFFERLEN);
+      bytesread = __min(panda_len - mp3LenCache, VS1053_DATABUFFERLEN);
       for (uint16_t a = 0; a < bytesread; a++) {
         mp3buffer[a] = pgm_read_byte(panda + mp3LenCache);
         mp3LenCache++;
@@ -455,7 +461,7 @@ void AudioPro::feedBuffer(void) {
   while (readyForData()) {
     int bytesread;
     if (romLenCache < romLen) {
-      bytesread = min(romLen - romLenCache, VS1053_DATABUFFERLEN);
+      bytesread = __min(romLen - romLenCache, VS1053_DATABUFFERLEN);
       for (uint16_t a = 0; a < bytesread; a++) {
         mp3buffer[a] = pgm_read_byte(romAddr + romLenCache);
         romLenCache++;
@@ -463,7 +469,7 @@ void AudioPro::feedBuffer(void) {
       //Serial.print("romLenCache-A:");Serial.println(romLenCache);
     }
     else if (romLenCache < (panda_len + romLen)) {
-      bytesread = min(panda_len - (romLenCache - romLen), VS1053_DATABUFFERLEN);
+      bytesread = __min(panda_len - (romLenCache - romLen), VS1053_DATABUFFERLEN);
       for (uint16_t a = 0; a < bytesread; a++) {
         mp3buffer[a] = pgm_read_byte(panda + (romLenCache - romLen));
         romLenCache++;
@@ -689,7 +695,7 @@ void AudioPro::playBuffer(uint8_t *buffer, size_t buffsiz) {
   while ( buffsiz ) {
     while (!readyForData());
     delayMicroseconds(3);
-    size_t chunk_length = min(buffsiz, VS1053_DATABUFFERLEN);
+    size_t chunk_length = __min(buffsiz, VS1053_DATABUFFERLEN);
     buffsiz -= chunk_length;
     while ( chunk_length-- ) spiwrite(*buffer++);
   }
