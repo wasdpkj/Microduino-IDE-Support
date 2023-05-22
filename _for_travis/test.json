@@ -1,223 +1,144 @@
 {
   "packages": [
     {
-      "name": "fortytwosystems",
-      "maintainer": "FortyTwo Systems",
-      "websiteURL": "http://www.fortytwosystems.com/",
-      "email": "dave@fortytwosystems.com",
+      "name": "nucDuino",
+      "maintainer": "DFRobot",
+      "websiteURL": "http://www.dfrobot.com/",
+      "email": "ouki.wang@dfrobot.com",
+      "help": {
+        "online": "http://www.dfrobot.com/"
+      },
+
       "platforms": [
         {
-          "name": "FortyTwo Systems SAMC Boards (32-bits ARM Cortex-M0+)",
-          "architecture": "samc",
-          "version": "%%VERSION%%",
+          "name": "Bluno M0 MainBoard & DFRduino M0 MainBoard",
+          "architecture": "nucDuino",
+          "version": "1.0.3",
           "category": "Contributed",
           "help": {
-            "online": "http://docs.fortytwosystems.com/"
+            "online": "http://www.dfrobot.com/"
           },
-          "url": "https://github.com/fortytwosystems/ArduinoCore-samc/releases/download/v%%VERSION%%/%%FILENAME%%",
-          "archiveFileName": "%%FILENAME%%",
-          "checksum": "SHA-256:%%CHECKSUM%%",
-          "size": "%%SIZE%%",
+          "url": "https://github.com/DFRobot/DFRobotDuinoBoard/raw/master/nucDuino-1.0.3.zip",
+          "archiveFileName": "nucDuino-1.0.3.zip",
+          "checksum": "SHA-256:dbe73e21180edef80a7659608a2449642fc7414d80bb1fda847b2372b2ea6c64",	  
+          "size": "5119069",
           "boards": [
-            { "name": "FortyTwo Mega" },
-            { "name": "FortyTwo Uno" }
+            {"name": "Bluno M0 MainBoard"}
           ],
           "toolsDependencies": [
             {
-              "packager": "fortytwosystems",
-              "name": "gcc-arm-none-eabi",
-              "version": "10-2020q4"
-            },
+              "packager": "nucDuino",
+              "name": "arm-none-eabi-gcc",
+              "version": "4.8.3-2014q1"
+            }
+          ]
+        },
+        {
+          "name": "Bluno M0 MainBoard & DFRduino M0 MainBoard",
+          "architecture": "nucDuino",
+          "version": "1.0.2",
+          "category": "Contributed",
+          "help": {
+            "online": "http://www.dfrobot.com/"
+          },
+          "url": "https://github.com/DFRobot/DFRobotDuinoBoard/raw/master/nucDuino-1.0.2.zip",
+          "archiveFileName": "nucDuino-1.0.2.zip",
+          "checksum": "SHA-256:e2b59Fe3eaefff40ad897115f1f877abf995f6637a4029dada9315f96a89f615",	  
+          "size": "4311402",
+          "boards": [
+            {"name": "Bluno M0 MainBoard"}
+          ],
+          "toolsDependencies": [
             {
-              "packager": "fortytwosystems",
-              "name": "bossac",
-              "version": "1.9.1-fortytwo-0"
-            },
+              "packager": "nucDuino",
+              "name": "arm-none-eabi-gcc",
+              "version": "4.8.3-2014q1"
+            }
+          ]
+        },
+	    {
+          "name": "Bluno M0 MainBoard & DFRduino M0 MainBoard",
+          "architecture": "nucDuino",
+          "version": "1.0.1",
+          "category": "Contributed",
+          "help": {
+            "online": "http://www.dfrobot.com/"
+          },
+          "url": "https://github.com/DFRobot/DFRobotDuinoBoard/raw/master/nucDuino-1.0.1.zip",
+          "archiveFileName": "nucDuino-1.0.1.zip",
+          "checksum": "SHA-256:32651ed99ffffd356deb730e4fdbc5f8924848e2bbC4cb7d3190d26ebeb86a95",					   
+          "size": "4946849", 
+          "boards": [
+            {"name": "Bluno M0 MainBoard"}
+          ],
+          "toolsDependencies": [
             {
-              "packager": "arduino",
-              "name": "openocd",
-              "version": "0.10.0-arduino7"
-            },
+              "packager": "nucDuino",
+              "name": "arm-none-eabi-gcc",
+              "version": "4.8.3-2014q1"
+            }
+          ]
+        },
+		
+        {
+          "name": "Bluno M0 MainBoard & DFRduino M0 MainBoard",
+          "architecture": "nucDuino",
+          "version": "1.0.0",
+          "category": "Contributed",
+          "help": {
+            "online": "http://www.dfrobot.com/"
+          },
+          "url": "https://github.com/DFRobot/DFRobotDuinoBoard/raw/master/nucDuino-1.0.0.tar.gz",
+          "archiveFileName": "nucDuino-1.0.0.tar.gz",
+          "checksum": "SHA-256:6971a6d7f25115b7bcaf2514f52036b39f380f1604c0d095b3e55fe79a3f3e3f",
+          "size": "3853874",
+          "boards": [
+            {"name": "Bluno M0 MainBoard"}
+          ],
+          "toolsDependencies": [
             {
-              "packager": "fortytwosystems",
-              "name": "CMSIS",
-              "version": "5.7.0"
-            },
-            {
-              "packager": "fortytwosystems",
-              "name": "CMSIS-Microchip",
-              "version": "1.0.0"
+              "packager": "nucDuino",
+              "name": "arm-none-eabi-gcc",
+              "version": "4.8.3-2014q1"
             }
           ]
         }
       ],
+
       "tools": [
         {
-          "name": "CMSIS-Microchip",
-          "version": "1.0.0",
-          "systems":
-          [
-            {
-                "host": "i686-mingw32",
-                "url": "https://github.com/fortytwosystems/ArduinoModule-CMSIS-Microchip/releases/download/v1.0.0/CMSIS-Microchip-1.0.0.tar.bz2",
-                "archiveFileName": "CMSIS-Microchip-1.0.0.tar.bz2",
-                "checksum": "SHA-256:c750fdcba47ca24743da0773b17110545f432de5a868bd7b119d0bf8178fe5ad",
-                "size": "10914371"
-            },
-            {
-                "host": "x86_64-apple-darwin",
-                "url": "https://github.com/fortytwosystems/ArduinoModule-CMSIS-Microchip/releases/download/v1.0.0/CMSIS-Microchip-1.0.0.tar.bz2",
-                "archiveFileName": "CMSIS-Microchip-1.0.0.tar.bz2",
-                "checksum": "SHA-256:c750fdcba47ca24743da0773b17110545f432de5a868bd7b119d0bf8178fe5ad",
-                "size": "10914371"
-            },
-            {
-                "host": "x86_64-pc-linux-gnu",
-                "url": "https://github.com/fortytwosystems/ArduinoModule-CMSIS-Microchip/releases/download/v1.0.0/CMSIS-Microchip-1.0.0.tar.bz2",
-                "archiveFileName": "CMSIS-Microchip-1.0.0.tar.bz2",
-                "checksum": "SHA-256:c750fdcba47ca24743da0773b17110545f432de5a868bd7b119d0bf8178fe5ad",
-                "size": "10914371"
-            },
-            {
-                "host": "i686-pc-linux-gnu",
-                "url": "https://github.com/fortytwosystems/ArduinoModule-CMSIS-Microchip/releases/download/v1.0.0/CMSIS-Microchip-1.0.0.tar.bz2",
-                "archiveFileName": "CMSIS-Microchip-1.0.0.tar.bz2",
-                "checksum": "SHA-256:c750fdcba47ca24743da0773b17110545f432de5a868bd7b119d0bf8178fe5ad",
-                "size": "10914371"
-            },
-            {
-                "host": "arm-linux-gnueabihf",
-                "url": "https://github.com/fortytwosystems/ArduinoModule-CMSIS-Microchip/releases/download/v1.0.0/CMSIS-Microchip-1.0.0.tar.bz2",
-                "archiveFileName": "CMSIS-Microchip-1.0.0.tar.bz2",
-                "checksum": "SHA-256:c750fdcba47ca24743da0773b17110545f432de5a868bd7b119d0bf8178fe5ad",
-                "size": "10914371"
-            },
-            {
-                "host": "all",
-                "url": "https://github.com/fortytwosystems/ArduinoModule-CMSIS-Microchip/releases/download/v1.0.0/CMSIS-Microchip-1.0.0.tar.bz2",
-                "archiveFileName": "CMSIS-Microchip-1.0.0.tar.bz2",
-                "checksum": "SHA-256:c750fdcba47ca24743da0773b17110545f432de5a868bd7b119d0bf8178fe5ad",
-                "size": "10914371"
-            }
-          ]
-        },
-        {
-          "name": "CMSIS",
-          "version": "5.7.0",
-          "systems":
-          [
+           "name":"arm-none-eabi-gcc",
+           "version":"4.8.3-2014q1",
+           "systems":[
               {
-              "host": "i686-mingw32",
-              "url": "https://github.com/fortytwosystems/ArduinoModule-CMSIS/releases/download/v5.7.0/CMSIS-5.7.0.tar.bz2",
-              "archiveFileName": "CMSIS-5.7.0.tar.bz2",
-              "checksum": "SHA-256:8332e71b18c6bef0f7615315aa70010e5f33c815d5b6f5121ac044be069aa709",
-              "size": "99876071"
+                 "host":"i686-mingw32",
+                 "archiveFileName":"gcc-arm-none-eabi-4.8.3-2014q1-windows.tar.gz",
+                 "url":"http://downloads.arduino.cc/gcc-arm-none-eabi-4.8.3-2014q1-windows.tar.gz",
+                 "checksum":"SHA-256:fd8c111c861144f932728e00abd3f7d1107e186eb9cd6083a54c7236ea78b7c2",
+                 "size":"84537449"
               },
               {
-              "host": "x86_64-apple-darwin",
-              "url": "https://github.com/fortytwosystems/ArduinoModule-CMSIS/releases/download/v5.7.0/CMSIS-5.7.0.tar.bz2",
-              "archiveFileName": "CMSIS-5.7.0.tar.bz2",
-              "checksum": "SHA-256:8332e71b18c6bef0f7615315aa70010e5f33c815d5b6f5121ac044be069aa709",
-              "size": "99876071"
+                 "host":"x86_64-apple-darwin",
+                 "url":"http://downloads.arduino.cc/gcc-arm-none-eabi-4.8.3-2014q1-mac.tar.gz",
+                 "archiveFileName":"gcc-arm-none-eabi-4.8.3-2014q1-mac.tar.gz",
+                 "checksum":"SHA-256:3598acf21600f17a8e4a4e8e193dc422b894dc09384759b270b2ece5facb59c2",
+                 "size":"52518522"
               },
               {
-              "host": "x86_64-pc-linux-gnu",
-              "url": "https://github.com/fortytwosystems/ArduinoModule-CMSIS/releases/download/v5.7.0/CMSIS-5.7.0.tar.bz2",
-              "archiveFileName": "CMSIS-5.7.0.tar.bz2",
-              "checksum": "SHA-256:8332e71b18c6bef0f7615315aa70010e5f33c815d5b6f5121ac044be069aa709",
-              "size": "99876071"
+                 "host":"x86_64-pc-linux-gnu",
+                 "url":"http://downloads.arduino.cc/gcc-arm-none-eabi-4.8.3-2014q1-linux64.tar.gz",
+                 "archiveFileName":"gcc-arm-none-eabi-4.8.3-2014q1-linux64.tar.gz",
+                 "checksum":"SHA-256:d23f6626148396d6ec42a5b4d928955a703e0757829195fa71a939e5b86eecf6",
+                 "size":"51395093"
               },
               {
-              "host": "i686-pc-linux-gnu",
-              "url": "https://github.com/fortytwosystems/ArduinoModule-CMSIS/releases/download/v5.7.0/CMSIS-5.7.0.tar.bz2",
-              "archiveFileName": "CMSIS-5.7.0.tar.bz2",
-              "checksum": "SHA-256:8332e71b18c6bef0f7615315aa70010e5f33c815d5b6f5121ac044be069aa709",
-              "size": "99876071"
-              },
-              {
-              "host": "arm-linux-gnueabihf",
-              "url": "https://github.com/fortytwosystems/ArduinoModule-CMSIS/releases/download/v5.7.0/CMSIS-5.7.0.tar.bz2",
-              "archiveFileName": "CMSIS-5.7.0.tar.bz2",
-              "checksum": "SHA-256:8332e71b18c6bef0f7615315aa70010e5f33c815d5b6f5121ac044be069aa709",
-              "size": "99876071"
-              },
-              {
-              "host": "all",
-              "url": "https://github.com/fortytwosystems/ArduinoModule-CMSIS/releases/download/v5.7.0/CMSIS-5.7.0.tar.bz2",
-              "archiveFileName": "CMSIS-5.7.0.tar.bz2",
-              "checksum": "SHA-256:8332e71b18c6bef0f7615315aa70010e5f33c815d5b6f5121ac044be069aa709",
-              "size": "99876071"
+                 "host":"i686-pc-linux-gnu",
+                 "url":"http://downloads.arduino.cc/gcc-arm-none-eabi-4.8.3-2014q1-linux32.tar.gz",
+                 "archiveFileName":"gcc-arm-none-eabi-4.8.3-2014q1-linux32.tar.gz",
+                 "checksum":"SHA-256:ba1994235f69c526c564f65343f22ddbc9822b2ea8c5ee07dd79d89f6ace2498",
+                 "size":"51029223"
               }
-          ]
-        },
-        {
-          "name": "gcc-arm-none-eabi",
-          "version": "10-2020q4",
-          "systems": [
-              {
-                  "host": "arm-linux-gnueabihf",
-                  "url": "https://github.com/fortytwosystems/ArduinoModule-gcc-arm-none-eabi/releases/download/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-armv7l-linux.tar.bz2",
-                  "archiveFileName": "gcc-arm-none-eabi-10-2020-q4-major-armv7l-linux.tar.bz2",
-                  "checksum": "SHA-256:27d1d413ff7dd71ca4a80e02c2ba1d3a2166cb3ab4ad859da199463d33e621c3",
-                  "size": "127367661"
-              },
-              {
-                  "host": "aarch64-linux-gnu",
-                  "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-aarch64-linux.tar.bz2",
-                  "archiveFileName": "gcc-arm-none-eabi-10-2020-q4-major-aarch64-linux.tar.bz2",
-                  "checksum": "SHA-256:343d8c812934fe5a904c73583a91edd812b1ac20636eb52de04135bb0f5cf36a",
-                  "size": "168010269"
-              },
-              {
-                  "host": "i686-mingw32",
-                  "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-win32.zip",
-                  "archiveFileName": "gcc-arm-none-eabi-10-2020-q4-major-win32.zip",
-                  "checksum": "SHA-256:90057b8737b888c53ca5aee332f1f73c401d6d3873124d2c2906df4347ebef9e",
-                  "size": "199785259"
-              },
-              {
-                  "host": "x86_64-apple-darwin",
-                  "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-mac.tar.bz2",
-                  "archiveFileName": "gcc-arm-none-eabi-10-2020-q4-major-mac.tar.bz2",
-                  "checksum": "SHA-256:bed12de3565d4eb02e7b58be945376eaca79a8ae3ebb785ec7344e7e2db0bdc0",
-                  "size": "158420213"
-              },
-              {
-                  "host": "x86_64-pc-linux-gnu",
-                  "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2",
-                  "archiveFileName": "gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2",
-                  "checksum": "SHA-256:21134caa478bbf5352e239fbc6e2da3038f8d2207e089efc96c3b55f1edcd618",
-                  "size": "156882554"
-              }
-          ]
-        },
-        {
-          "name": "bossac",
-          "version": "1.9.1-fortytwo-0",
-          "systems":
-          [
-              {
-              "host": "i686-mingw32",
-              "url": "https://github.com/fortytwosystems/BOSSA/releases/download/v1.9.1-fortytwo-0/bossac-1.9.1-fortytwo-0-i686-mingw32.tar.bz2",
-              "archiveFileName": "bossac-1.9.1-fortytwo-0-i686-mingw32.tar.bz2",
-              "checksum": "SHA-256:4e846b8c5f5565d16af1d049d830a85413454f93a2c4ab11654d487fae7c5179",
-              "size": "736039"
-              },
-              {
-              "host": "x86_64-apple-darwin",
-              "url": "https://github.com/fortytwosystems/BOSSA/releases/download/v1.9.1-fortytwo-0/bossac-1.9.1-fortytwo-0-x86_64-apple-darwin.tar.bz2",
-              "archiveFileName": "bossac-1.9.1-fortytwo-0-x86_64-apple-darwin.tar.bz2",
-              "checksum": "SHA-256:20d1578a660400b11914483dbaf5f1da8b87ff67b124c46ebe05c57a460b2147",
-              "size": "47048"
-              },
-              {
-              "host": "arm-linux-gnueabihf",
-              "url": "https://github.com/fortytwosystems/BOSSA/releases/download/v1.9.1-fortytwo-0/bossac-1.9.1-fortytwo-0-arm-linux-gnueabihf.tar.bz2",
-              "archiveFileName": "bossac-1.9.1-fortytwo-0-arm-linux-gnueabihf.tar.bz2",
-              "checksum": "SHA-256:c1db274d9e4bc9d4bddf0838c5f5cd535a9f9d2f135af2d56988ffae6b62523a",
-              "size": "526241"
-              }
-          ]
+           ]
         }
       ]
     }
