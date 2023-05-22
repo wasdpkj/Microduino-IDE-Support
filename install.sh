@@ -60,7 +60,7 @@ echo "########################################################################";
 
 # install the microduino board packages
 echo -n "ADD PACKAGE INDEX: "
-DEPENDENCY_OUTPUT=$(arduino --pref "boardsmanager.additional.urls=https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/package_microduino_index.json" --save-prefs 2>&1)
+DEPENDENCY_OUTPUT=$(arduino --pref "boardsmanager.additional.urls=https://raw.githubusercontent.com/wasdpkj/Microduino-IDE-Support/master/_for_travis/package_microduino_index.json" --save-prefs 2>&1)
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 
 echo -n "MICRODUINO ESP32: "
