@@ -14,9 +14,9 @@ Microduino_GPS GPS(&GPSSerial);
 Microduino_GPS GPS(&GPSSerial);
 #endif
 
-//CoreESP32 UART Port: [D2,D3]
-#if defined (ESP32)
-HardwareSerial GPSSerial(1);
+// UART Port: [D2,D3]
+#if defined (ESP32) || defined(LE501X)
+#define GPSSerial Serial1
 Microduino_GPS GPS(&GPSSerial,D2,D3);
 #endif
 

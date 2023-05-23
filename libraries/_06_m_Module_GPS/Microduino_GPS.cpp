@@ -80,36 +80,56 @@ void Microduino_GPS::common_init(void) {
   latitude = longitude = geoidheight = altitude = speed = angle = magvariation = HDOP = 0.0; // float
 }
 
-void Microduino_GPS::begin(uint32_t baud) {
+void Microduino_GPS::begin(uint32_t baud, bool autobaud) {
   uint32_t _baud[5] = {9600, 19200, 38400, 57600, 115200};
 #if defined (ESP32)
   if (gpsHwSerial) {
+    if(autobaud){
     for (int _n = 0; _n < 5; _n++) {
       gpsHwSerial->begin(_baud[_n], SERIAL_8N1, pinRX, pinTX);
       set_baud(baud);
+      delay(5);
+      set_baud(baud);
+      delay(5);
+    }
     }
     gpsHwSerial->begin(baud, SERIAL_8N1, pinRX, pinTX);
   }
 #elif defined (LE501X)
   if (gpsHwSerial) {
+    if(autobaud){
     for (int _n = 0; _n < 5; _n++) {
       gpsHwSerial->begin(_baud[_n], SERIAL_8N1, pinRX, pinTX);
       set_baud(baud);
+      delay(5);
+      set_baud(baud);
+      delay(5);
+    }
     }
     gpsHwSerial->begin(baud, SERIAL_8N1, pinRX, pinTX);
   }
 #elif defined (__AVR__)
   if (gpsHwSerial) {
+    if(autobaud){
     for (int _n = 0; _n < 5; _n++) {
       gpsHwSerial->begin(_baud[_n]);
       set_baud(baud);
+      delay(5);
+      set_baud(baud);
+      delay(5);
+    }
     }
     gpsHwSerial->begin(baud);
   }
   else {
+    if(autobaud){
     for (int _n = 0; _n < 5; _n++) {
       gpsSwSerial->begin(_baud[_n]);
       set_baud(baud);
+      delay(5);
+      set_baud(baud);
+      delay(5);
+    }
     }
     gpsSwSerial->begin(baud);
   }
@@ -487,6 +507,7 @@ char Microduino_GPS::read(void) {
 
   return c;
 }
+
 byte Microduino_GPS::available() {
   read();
   if (recvdflag) {
@@ -501,4 +522,39 @@ byte Microduino_GPS::available() {
   else {
     return GPS_NO_READY;
   }
+}
+
+
+/**************************************************************************/
+/*!
+    @brief Send a command to the GPS device
+    @param str Pointer to a string holding the command to send
+*/
+/**************************************************************************/
+void Microduino_GPS::sendCommand(uint8_t *data, uint8_t len) {
+  if (gpsHwSerial) {
+    for(uint8_t i = 0;i < len;i++)
+    {
+      gpsHwSerial->write(data[i]);
+    }
+  }
+#if defined (__AVR__)
+  else {
+    for(uint8_t i = 0;i < len;i++)
+    {
+      gpsSwSerial->write(data[i]);
+    }
+  }
+#endif  
+}
+
+void Microduino_GPS::sendCommand(const char *str) {
+  if (gpsHwSerial) {
+    gpsHwSerial->println(str);
+  }
+#if defined (__AVR__)
+  else {
+    gpsSwSerial->println(str);
+  }
+#endif  
 }

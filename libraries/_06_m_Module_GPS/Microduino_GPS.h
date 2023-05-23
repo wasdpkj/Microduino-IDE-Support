@@ -20,6 +20,9 @@
 
 #include <Arduino.h>
 
+#include "pmtk.h"
+#include "gpshex.h"
+
 #if defined (__AVR__)
 #include <SoftwareSerial.h>
 #endif
@@ -31,6 +34,9 @@
 #define UPDATE_2HZ 1
 #define UPDATE_4HZ 2
 #define UPDATE_5HZ 3
+// #define UPDATE_10HZ 4
+// #define UPDATE_20HZ 5
+#define UPDATE_25HZ 6
 
 #define GPS_SBAS     0
 #define BEIDOU_SBAS   1
@@ -46,10 +52,12 @@
 // how long to wait when we're looking for a response
 #define MAXWAITSENTENCE 5
 
+#define AUTOBAUD_OFF   0
+#define AUTOBAUD_ON    1
 
 class Microduino_GPS {
   public:
-    void begin(uint32_t baud);
+    void begin(uint32_t baud, bool autobaud = AUTOBAUD_ON);
 #if defined (__AVR__)
     Microduino_GPS(SoftwareSerial *ser); // Constructor when using SoftwareSerial
     Microduino_GPS(HardwareSerial *ser); // Constructor when using HardwareSerial
@@ -89,6 +97,9 @@ class Microduino_GPS {
     void set_baud(uint32_t _set_baud);
     void set_cnssmode(uint8_t _set_cnssmode);
     void set_powermode(uint8_t _set_powermode);
+
+    void sendCommand(const char *str);
+    void sendCommand(uint8_t *data, uint8_t len);
 
   private:
     boolean paused;

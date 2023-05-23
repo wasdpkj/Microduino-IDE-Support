@@ -24,6 +24,7 @@ mddevice.pid.5=0x0036
 mddevice.vid.6=0x2A03
 mddevice.pid.6=0x8036
 
+mddevice.build.board=AVR_MDDEVICE
 
 ##Microduino Core (328p)
 ##############################################################
