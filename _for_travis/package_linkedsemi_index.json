@@ -40,8 +40,8 @@
           "category": "Contributed",
           "url": "https://raw.githubusercontent.com/wasdpkj/Microduino-IDE-Support/master/_for_travis/boards/linkedsemi-2.0.2.tar.gz",
           "archiveFileName": "linkedsemi-2.0.2.tar.gz",
-          "checksum": "SHA-256:ceee0b4696ea67842b73e6fa0e94040327716a2519df44ef65b0a7d8c20fe583",
-          "size": "8655735",
+          "checksum": "SHA-256:2e3494cb675836802122b91e078fc31ee68251259f83d90e2d5f6d32388f6cd9",
+          "size": "8655795",
           "help": {
             "online": ""
           },
