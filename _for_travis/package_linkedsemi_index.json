@@ -15,7 +15,7 @@
           "version": "2.0.1",
           "category": "Contributed",
           "url": "https://raw.githubusercontent.com/wasdpkj/Microduino-IDE-Support/master/_for_travis/boards/linkedsemi-2.0.1.tar.gz",
-          "archiveFileName": "linkedsemi-le501x-1.0.1.tar.gz",
+          "archiveFileName": "linkedsemi-2.0.1.tar.gz",
           "checksum": "SHA-256:ba3b5f65017c00e35d2ec06d923b137c18ce55b1f6818cf8926d534f3254e252",
           "size": "8655727",
           "help": {
@@ -32,7 +32,31 @@
               "version": "10-2020q4"
             }
           ]
-        }        		
+        },
+        {
+          "name": "Linkedsemi LE501X Boards",
+          "architecture": "le501x",
+          "version": "2.0.2",
+          "category": "Contributed",
+          "url": "https://raw.githubusercontent.com/wasdpkj/Microduino-IDE-Support/master/_for_travis/boards/linkedsemi-2.0.2.tar.gz",
+          "archiveFileName": "linkedsemi-2.0.2.tar.gz",
+          "checksum": "SHA-256:ceee0b4696ea67842b73e6fa0e94040327716a2519df44ef65b0a7d8c20fe583",
+          "size": "8655735",
+          "help": {
+            "online": ""
+          },
+          "boards": [
+            { "name": "Linkedsemi M5110-N1 EVK" },
+            { "name": "Linkedsemi Core-M5110N1" }
+          ],
+          "toolsDependencies": [
+            {
+              "packager": "linkedsemi",
+              "name": "gcc-arm-none-eabi",
+              "version": "10-2020q4"
+            }
+          ]
+        }        
       ],
       "tools": [
         {
