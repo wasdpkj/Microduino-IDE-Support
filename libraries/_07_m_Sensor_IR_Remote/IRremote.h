@@ -14,6 +14,14 @@
 
 #include <Arduino.h>
 
+#if defined(LE501X)
+#include "le501x-hal-timer.h"
+
+#define _useSoftTimer
+// #define _useHardTimer
+
+#endif /* LE501X */
+
 // The following are compile-time library options.
 // If you change them, recompile the library.
 // If DEBUG is defined, a lot of debugging output will be printed during decoding.
@@ -67,6 +75,7 @@ private:
 #define VIRTUAL
 #endif
 
+#if (defined (__AVR__) || defined (ESP32))
 class IRsend
 {
 public:
@@ -85,9 +94,8 @@ public:
   void enableIROut(int khz);
   VIRTUAL void mark(int usec);
   VIRTUAL void space(int usec);
-}
-;
-
+};
+#endif
 // Some useful constants
 
 #define USECPERTICK 50  // microseconds per clock interrupt tick

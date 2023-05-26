@@ -17,6 +17,47 @@
 #include <avr/interrupt.h>
 #elif defined (ESP32)
 void IRTimer();
+#elif defined(LE501X)
+static inline void handle_interrupts(void);
+
+static SW_TIM_HandleTypeDef IRSoftTimHandle = {
+    .init{
+        .period = -1,
+        .timer = -1,
+    },
+    .channel = SOFTTIMER_CHANNEL_IR,
+    .period = 0,
+    .periodCalc = 0,
+    .number = -1};
+#define SOFT_IR_PERIOD_US (IRSoftTimHandle.period)
+
+static void initISR(void)
+{
+    IRSoftTimHandle.init.period = -1;
+    IRSoftTimHandle.init.timer = -1;
+
+    IRSoftTimHandle.channel = SOFTTIMER_CHANNEL_IR;
+
+    if (IRSoftTimHandle.init.period <= 0)
+    {
+        IRSoftTimHandle.period = DEFAULT_SWTIM_PERIOD;
+    }
+    else
+    {
+        IRSoftTimHandle.period = IRSoftTimHandle.init.period;
+    }
+
+    IRSoftTimHandle.periodCalc = 0;
+    IRSoftTimHandle.number = -1;
+    softTimerAttachInterrupt(&IRSoftTimHandle, handle_interrupts);
+}
+
+static void finISR(void)
+{
+    // disable use of the given timer
+    softTimerDetachInterrupt(&IRSoftTimHandle);
+}
+
 #endif
 
 volatile irparams_t irparams;
@@ -70,7 +111,7 @@ IRsend::IRsend(int sendpin)
   ledcAttachPin(sendpin, LEDC_channel_IR); 
 }
 #endif
-
+#if (defined (__AVR__) || defined (ESP32))
 void IRsend::sendMedia(unsigned char *data, int length)
 {
   enableIROut(38);
@@ -315,7 +356,7 @@ void IRsend::enableIROut(int khz) {
   OCR2B = OCR2A / 3; // 33% duty cycle
 #endif 
 }
-
+#endif
 IRrecv::IRrecv(int recvpin)
 {
   irparams.recvpin = recvpin;
@@ -361,6 +402,8 @@ void IRrecv::enableIRIn() {
 
   RESET_TIMER3;
   sei();  // enable interrupts
+#elif defined(LE501X)
+  initISR();
 #else
   TCCR2A = 0;  // normal mode
 
@@ -405,6 +448,10 @@ ISR(TIMER4_OVF_vect)
 ISR(TIMER3_OVF_vect)
 {
   RESET_TIMER3;
+#elif defined(LE501X)
+static inline void handle_interrupts(void)
+{
+  unsigned int timercache;
 #else
 ISR(TIMER2_OVF_vect)
 {
@@ -420,6 +467,9 @@ ISR(TIMER2_OVF_vect)
   switch(irparams.rcvstate) {
   case STATE_IDLE: // In the middle of a gap
     if (irdata == MARK) {
+#if defined(LE501X)
+      irparams.timer = irparams.timer * SOFT_IR_PERIOD_US / USECPERTICK;
+#endif
       if (irparams.timer < GAP_TICKS) {
         // Not big enough to be a gap.
         irparams.timer = 0;
@@ -435,6 +485,9 @@ ISR(TIMER2_OVF_vect)
     break;
   case STATE_MARK: // timing MARK
     if (irdata == SPACE) {   // MARK ended, record time
+#if defined(LE501X)
+      irparams.timer = irparams.timer * SOFT_IR_PERIOD_US / USECPERTICK;
+#endif
       irparams.rawbuf[irparams.rawlen++] = irparams.timer;
       irparams.timer = 0;
       irparams.rcvstate = STATE_SPACE;
@@ -442,18 +495,25 @@ ISR(TIMER2_OVF_vect)
     break;
   case STATE_SPACE: // timing SPACE
     if (irdata == MARK) { // SPACE just ended, record it
+#if defined(LE501X)
+      irparams.timer = irparams.timer * SOFT_IR_PERIOD_US / USECPERTICK;
+#endif
       irparams.rawbuf[irparams.rawlen++] = irparams.timer;
       irparams.timer = 0;
       irparams.rcvstate = STATE_MARK;
-    } 
+    }
     else { // SPACE
+#if defined(LE501X)
+      if (irparams.timer > (GAP_TICKS * USECPERTICK / SOFT_IR_PERIOD_US)) {
+#else
       if (irparams.timer > GAP_TICKS) {
+#endif
         // big SPACE, indicates gap between codes
         // Mark current code as ready for processing
         // Switch to STOP
         // Don't reset timer; keep counting space width
         irparams.rcvstate = STATE_STOP;
-      } 
+      }
     }
     break;
   case STATE_STOP: // waiting, measuring gap
