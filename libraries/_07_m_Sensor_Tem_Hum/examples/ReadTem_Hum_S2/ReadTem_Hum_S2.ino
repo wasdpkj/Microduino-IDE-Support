@@ -18,7 +18,7 @@ void setup()
 {
   Serial.begin(9600);
   Serial.print("Tem_Hum_S2:");
-  Serial.print(termo.begin());  //初始化温湿度传感器，并串口打印传感器是否在线
+  Serial.println(termo.begin());  //初始化温湿度传感器，并串口打印传感器是否在线
   delay(1000);
 }
 
