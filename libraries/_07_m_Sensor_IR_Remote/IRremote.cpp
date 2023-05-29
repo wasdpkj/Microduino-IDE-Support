@@ -18,6 +18,10 @@
 #elif defined (ESP32)
 void IRTimer();
 #elif defined(LE501X)
+
+uint8_t IRoutCount = 0;
+static irout_t irout[MAX_IROUT];
+
 static inline void handle_interrupts(void);
 
 static SW_TIM_HandleTypeDef IRSoftTimHandle = {
@@ -52,10 +56,32 @@ static void initISR(void)
     softTimerAttachInterrupt(&IRSoftTimHandle, handle_interrupts);
 }
 
+/*
 static void finISR(void)
 {
-    // disable use of the given timer
-    softTimerDetachInterrupt(&IRSoftTimHandle);
+  // disable use of the given timer
+  softTimerDetachInterrupt(&IRSoftTimHandle);
+}
+*/
+
+static boolean isTimerActive(void)
+{
+  // returns true if any servo is active on this timer
+  for (uint8_t channel = 0; channel < MAX_IROUT; channel++) 
+  {
+    if (irout[channel].Pin.isActive == true)
+      return true;
+  }
+  return false;
+}
+
+static int32_t getperiod(uint8_t fre)
+{
+  if (TIM_FRE == fre)
+  {
+    return TIM_PERIOD;
+  }
+  return (SDK_HCLK_MHZ * 1000000 / (HARDTIM_PRESCALER + 1) / (fre * 1000) - 1);
 }
 
 #endif
@@ -110,8 +136,44 @@ IRsend::IRsend(int sendpin)
 {
   ledcAttachPin(sendpin, LEDC_channel_IR); 
 }
+#elif defined (LE501X)
+IRsend::IRsend(int sendpin, uint8_t timerindex)
+{
+  switch (timerindex)
+  {
+  case TIMER_3:
+    maxindex_ir = 4;
+    htimerindex = TIMER_3;
+    break;
+  case TIMER_2:
+    maxindex_ir = 2;
+    htimerindex = TIMER_2;
+    break;
+  case TIMER_1:
+    maxindex_ir = 4;
+    htimerindex = TIMER_1;
+    break;
+  case TIMER_0:
+    maxindex_ir = 4;
+    htimerindex = TIMER_0;
+    break;
+  default:
+    maxindex_ir = MAX_IROUT;
+    htimerindex = HWTIMER_FOR_IROUT;
+    break;
+  }
+
+  if (IRoutCount < maxindex_ir) {
+    this->irIndex = IRoutCount;
+    IRoutCount++;
+    irout[this->irIndex].Pin.nbr = sendpin;
+  }
+  else {
+    this->irIndex = INVALID_IROUT;
+  }
+}
 #endif
-#if (defined (__AVR__) || defined (ESP32))
+
 void IRsend::sendMedia(unsigned char *data, int length)
 {
   enableIROut(38);
@@ -260,6 +322,8 @@ void IRsend::mark(int time) {
   // The mark output is modulated at the PWM frequency.
 #if defined (ESP32)
   ledcWrite(LEDC_channel_IR, 100);
+#elif defined (LE501X)
+  pwmUpdata(this->irIndex, irout[this->irIndex].Period / 3);
 #elif defined (__AVR_ATmega32U4__)
   TCCR4A |= _BV(COM4A1); 
 #elif defined(__AVR_ATmega128RFA1__)
@@ -277,6 +341,8 @@ void IRsend::space(int time) {
   // A space is no output, so the PWM output is disabled.
 #if defined (ESP32)
   ledcWrite(LEDC_channel_IR, 0); 
+#elif defined (LE501X)
+  pwmUpdata(this->irIndex, 0);
 #elif defined (__AVR_ATmega32U4__)
   TCCR4A &= ~(_BV(COM4A1));
 #elif defined(__AVR_ATmega128RFA1__)
@@ -303,6 +369,19 @@ void IRsend::enableIROut(int khz) {
   // Disable the Timer2 Interrupt (which is used for receiving IR)
 #if defined (ESP32)
   ledcSetup(LEDC_channel_IR, khz*1000, LEDC_TIMER_8BIT);
+#elif defined (LE501X)
+  if (isTimerActive() == false)
+  {
+    irout[this->irIndex].Pin.isActive = true; // this must be set after the check for isTimerActive
+    if (irout[this->irIndex].ticks != khz)
+    {
+      irout[this->irIndex].ticks = khz;
+      irout[this->irIndex].Period = (uint32_t)getperiod(irout[this->irIndex].ticks);
+      pwmDeinit();
+      pwmInit(htimerindex, irout[this->irIndex].Period);
+      pwmAttachPin(irout[this->irIndex].Pin.nbr, this->irIndex);
+    }
+  }
 #elif defined (__AVR_ATmega32U4__)
 	TIMSK4 &= ~_BV(TOIE4);
 #elif defined(__AVR_ATmega128RFA1__)
@@ -312,6 +391,8 @@ void IRsend::enableIROut(int khz) {
 #endif
  
 #if defined (ESP32)
+
+#elif defined (LE501X)
 
 #elif defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__)
   pinMode(8, OUTPUT);
@@ -334,6 +415,8 @@ void IRsend::enableIROut(int khz) {
   // CS2 = 000: no prescaling
 #if defined (ESP32)
   
+#elif defined (LE501X)
+
 #elif defined (__AVR_ATmega32U4__)
   TCCR4B = _BV(PWM4X) | _BV(CS40);
   TCCR4D = _BV(WGM40);
@@ -356,7 +439,7 @@ void IRsend::enableIROut(int khz) {
   OCR2B = OCR2A / 3; // 33% duty cycle
 #endif 
 }
-#endif
+
 IRrecv::IRrecv(int recvpin)
 {
   irparams.recvpin = recvpin;
@@ -451,7 +534,6 @@ ISR(TIMER3_OVF_vect)
 #elif defined(LE501X)
 static inline void handle_interrupts(void)
 {
-  unsigned int timercache;
 #else
 ISR(TIMER2_OVF_vect)
 {
@@ -504,7 +586,7 @@ ISR(TIMER2_OVF_vect)
     }
     else { // SPACE
 #if defined(LE501X)
-      if (irparams.timer > (GAP_TICKS * USECPERTICK / SOFT_IR_PERIOD_US)) {
+      if (irparams.timer > (unsigned int)(GAP_TICKS * USECPERTICK / SOFT_IR_PERIOD_US)) {
 #else
       if (irparams.timer > GAP_TICKS) {
 #endif

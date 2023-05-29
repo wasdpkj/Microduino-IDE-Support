@@ -17,8 +17,35 @@
 #if defined(LE501X)
 #include "le501x-hal-timer.h"
 
-#define _useSoftTimer
-// #define _useHardTimer
+#define INVALID_IROUT 255 // flag indicating an invalid servo index
+
+#define HWTIMER_FOR_IROUT TIMER_2
+
+#if (HWTIMER_FOR_IROUT == TIMER_0)
+#define MAX_IROUT (4)
+#elif (HWTIMER_FOR_IROUT == TIMER_1)
+#define MAX_IROUT (4)
+#elif (HWTIMER_FOR_IROUT == TIMER_2)
+#define MAX_IROUT (2)
+#elif (HWTIMER_FOR_IROUT == TIMER_3)
+#define MAX_IROUT (4)
+#endif
+
+#define TIM_FRE 38
+#define TIM_PERIOD (SDK_HCLK_MHZ * 1000000 / (HARDTIM_PRESCALER + 1) / (TIM_FRE*1000) - 1) /* Period Value  */
+
+typedef struct
+{
+  uint8_t nbr : 6;      // a pin number from 0 to 63
+  uint8_t isActive : 1; // true if this channel is enabled, pin not pulsed if false
+} IRPin_t;
+
+typedef struct
+{
+  IRPin_t Pin;
+  uint8_t ticks;
+  uint32_t Period;
+} irout_t;
 
 #endif /* LE501X */
 
@@ -65,8 +92,7 @@ private:
   long decodeSony(decode_results *results);
   long decodeRC5(decode_results *results);
   long decodeRC6(decode_results *results);
-} 
-;
+};
 
 // Only used for testing; can remove virtual for shorter code
 #ifdef TEST
@@ -75,15 +101,16 @@ private:
 #define VIRTUAL
 #endif
 
-#if (defined (__AVR__) || defined (ESP32))
 class IRsend
 {
 public:
-  #if defined (ESP32)
-  IRsend(int sendpin=D3);
-  #else
+#if defined(ESP32)
+  IRsend(int sendpin = D3);
+#elif defined(LE501X)
+  IRsend(int sendpin = D2, uint8_t timerindex = HWTIMER_FOR_IROUT);
+#else
   IRsend() {}
-  #endif
+#endif
   void sendMedia(unsigned char *data, int length);
   void sendNEC(unsigned long data, int nbits);
   void sendSony(unsigned long data, int nbits);
@@ -94,8 +121,12 @@ public:
   void enableIROut(int khz);
   VIRTUAL void mark(int usec);
   VIRTUAL void space(int usec);
-};
+#if defined (LE501X)
+  uint8_t irIndex;               // index into the channel data for this IR
+  uint8_t htimerindex;
+  uint8_t maxindex_ir;
 #endif
+};
 // Some useful constants
 
 #define USECPERTICK 50  // microseconds per clock interrupt tick
