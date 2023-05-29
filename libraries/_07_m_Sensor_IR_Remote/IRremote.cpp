@@ -20,6 +20,7 @@ void IRTimer();
 #elif defined(LE501X)
 
 uint8_t IRoutCount = 0;
+uint8_t maxindex_ir;
 static irout_t irout[MAX_IROUT];
 
 static inline void handle_interrupts(void);
@@ -67,7 +68,7 @@ static void finISR(void)
 static boolean isTimerActive(void)
 {
   // returns true if any servo is active on this timer
-  for (uint8_t channel = 0; channel < MAX_IROUT; channel++) 
+  for (uint8_t channel = 0; channel < maxindex_ir; channel++) 
   {
     if (irout[channel].Pin.isActive == true)
       return true;
@@ -143,23 +144,23 @@ IRsend::IRsend(int sendpin, uint8_t timerindex)
   {
   case TIMER_3:
     maxindex_ir = 4;
-    htimerindex = TIMER_3;
+    this->htimerindex = TIMER_3;
     break;
   case TIMER_2:
     maxindex_ir = 2;
-    htimerindex = TIMER_2;
+    this->htimerindex = TIMER_2;
     break;
   case TIMER_1:
     maxindex_ir = 4;
-    htimerindex = TIMER_1;
+    this->htimerindex = TIMER_1;
     break;
   case TIMER_0:
     maxindex_ir = 4;
-    htimerindex = TIMER_0;
+    this->htimerindex = TIMER_0;
     break;
   default:
-    maxindex_ir = MAX_IROUT;
-    htimerindex = HWTIMER_FOR_IROUT;
+    maxindex_ir = HWTIMER_FOR_IDX;
+    this->htimerindex = HWTIMER_FOR_IROUT;
     break;
   }
 
@@ -378,7 +379,7 @@ void IRsend::enableIROut(int khz) {
       irout[this->irIndex].ticks = khz;
       irout[this->irIndex].Period = (uint32_t)getperiod(irout[this->irIndex].ticks);
       pwmDeinit();
-      pwmInit(htimerindex, irout[this->irIndex].Period);
+      pwmInit(this->htimerindex, irout[this->irIndex].Period);
       pwmAttachPin(irout[this->irIndex].Pin.nbr, this->irIndex);
     }
   }

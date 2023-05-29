@@ -18,18 +18,9 @@
 #include "le501x-hal-timer.h"
 
 #define INVALID_IROUT 255 // flag indicating an invalid servo index
-
 #define HWTIMER_FOR_IROUT TIMER_2
-
-#if (HWTIMER_FOR_IROUT == TIMER_0)
+#define HWTIMER_FOR_IDX 2
 #define MAX_IROUT (4)
-#elif (HWTIMER_FOR_IROUT == TIMER_1)
-#define MAX_IROUT (4)
-#elif (HWTIMER_FOR_IROUT == TIMER_2)
-#define MAX_IROUT (2)
-#elif (HWTIMER_FOR_IROUT == TIMER_3)
-#define MAX_IROUT (4)
-#endif
 
 #define TIM_FRE 38
 #define TIM_PERIOD (SDK_HCLK_MHZ * 1000000 / (HARDTIM_PRESCALER + 1) / (TIM_FRE*1000) - 1) /* Period Value  */
@@ -107,7 +98,7 @@ public:
 #if defined(ESP32)
   IRsend(int sendpin = D3);
 #elif defined(LE501X)
-  IRsend(int sendpin = D2, uint8_t timerindex = HWTIMER_FOR_IROUT);
+  IRsend(int sendpin = D2, uint8_t timerindex = TIMER_2);
 #else
   IRsend() {}
 #endif
@@ -124,7 +115,6 @@ public:
 #if defined (LE501X)
   uint8_t irIndex;               // index into the channel data for this IR
   uint8_t htimerindex;
-  uint8_t maxindex_ir;
 #endif
 };
 // Some useful constants
