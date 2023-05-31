@@ -20,7 +20,6 @@ void IRTimer();
 #elif defined(LE501X)
 
 uint8_t IRoutCount = 0;
-uint8_t maxindex_ir;
 static irout_t irout[MAX_IROUT];
 
 static inline void handle_interrupts(void);
@@ -65,10 +64,21 @@ static void finISR(void)
 }
 */
 
+static inline void pwmhandle_interrupts(void)
+{
+    for (uint8_t idx = 0; idx < MAX_IROUT; idx++)
+    {
+        if (irout[idx].Pin.isActive == true)
+        {
+          irout[idx].delayticks += irout[idx].Period;
+        }
+    }
+}
+
 static boolean isTimerActive(void)
 {
   // returns true if any servo is active on this timer
-  for (uint8_t channel = 0; channel < maxindex_ir; channel++) 
+  for (uint8_t channel = 0; channel < MAX_IROUT; channel++) 
   {
     if (irout[channel].Pin.isActive == true)
       return true;
@@ -143,28 +153,28 @@ IRsend::IRsend(int sendpin, uint8_t timerindex)
   switch (timerindex)
   {
   case TIMER_3:
-    maxindex_ir = 4;
+    this->maxindex_ir = 4;
     this->htimerindex = TIMER_3;
     break;
   case TIMER_2:
-    maxindex_ir = 2;
+    this->maxindex_ir = 2;
     this->htimerindex = TIMER_2;
     break;
   case TIMER_1:
-    maxindex_ir = 4;
+    this->maxindex_ir = 4;
     this->htimerindex = TIMER_1;
     break;
   case TIMER_0:
-    maxindex_ir = 4;
+    this->maxindex_ir = 4;
     this->htimerindex = TIMER_0;
     break;
   default:
-    maxindex_ir = HWTIMER_FOR_IDX;
+    this->maxindex_ir = HWTIMER_FOR_IDX;
     this->htimerindex = HWTIMER_FOR_IROUT;
     break;
   }
 
-  if (IRoutCount < maxindex_ir) {
+  if (IRoutCount < this->maxindex_ir) {
     this->irIndex = IRoutCount;
     IRoutCount++;
     irout[this->irIndex].Pin.nbr = sendpin;
@@ -324,6 +334,7 @@ void IRsend::mark(int time) {
 #if defined (ESP32)
   ledcWrite(LEDC_channel_IR, 100);
 #elif defined (LE501X)
+  irout[this->irIndex].delayticks = 0;
   pwmUpdata(this->irIndex, irout[this->irIndex].Period / 3);
 #elif defined (__AVR_ATmega32U4__)
   TCCR4A |= _BV(COM4A1); 
@@ -332,8 +343,15 @@ void IRsend::mark(int time) {
 #else
   TCCR2A |= _BV(COM2B1); // Enable pin 3 PWM output
 #endif
-  delayMicroseconds(time);
 
+#if defined (LE501X)
+  while (irout[this->irIndex].delayticks < time)
+  {
+    __NOP();
+  }
+#else
+  delayMicroseconds(time);
+#endif
 }
 
 /* Leave pin off for time (given in microseconds) */
@@ -343,6 +361,7 @@ void IRsend::space(int time) {
 #if defined (ESP32)
   ledcWrite(LEDC_channel_IR, 0); 
 #elif defined (LE501X)
+  irout[this->irIndex].delayticks = 0;
   pwmUpdata(this->irIndex, 0);
 #elif defined (__AVR_ATmega32U4__)
   TCCR4A &= ~(_BV(COM4A1));
@@ -351,7 +370,15 @@ void IRsend::space(int time) {
 #else
   TCCR2A &= ~(_BV(COM2B1)); // Disable pin 3 PWM output
 #endif
+
+#if defined (LE501X)
+  while (irout[this->irIndex].delayticks < time)
+  {
+    __NOP();
+  }
+#else
   delayMicroseconds(time);
+#endif
 }
 
 void IRsend::enableIROut(int khz) {
@@ -378,8 +405,8 @@ void IRsend::enableIROut(int khz) {
     {
       irout[this->irIndex].ticks = khz;
       irout[this->irIndex].Period = (uint32_t)getperiod(irout[this->irIndex].ticks);
-      pwmDeinit();
       pwmInit(this->htimerindex, irout[this->irIndex].Period);
+      initpwmISR(pwmhandle_interrupts);
       pwmAttachPin(irout[this->irIndex].Pin.nbr, this->irIndex);
     }
   }
@@ -680,7 +707,7 @@ long IRrecv::decodeNEC(decode_results *results) {
   if (irparams.rawlen < 2 * NEC_BITS + 4) {
     return ERR;
   }
-  // Initial space  
+  // Initial space
   if (!MATCH_SPACE(results->rawbuf[offset], NEC_HDR_SPACE)) {
     return ERR;
   }

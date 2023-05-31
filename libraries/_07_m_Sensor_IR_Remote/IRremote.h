@@ -36,6 +36,7 @@ typedef struct
   IRPin_t Pin;
   uint8_t ticks;
   uint32_t Period;
+  int delayticks;
 } irout_t;
 
 #endif /* LE501X */
@@ -115,6 +116,7 @@ public:
 #if defined (LE501X)
   uint8_t irIndex;               // index into the channel data for this IR
   uint8_t htimerindex;
+  uint8_t maxindex_ir;
 #endif
 };
 // Some useful constants
