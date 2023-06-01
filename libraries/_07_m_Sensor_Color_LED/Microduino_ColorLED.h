@@ -39,7 +39,29 @@
 #ifndef COLOR_LED_H
 #define COLOR_LED_H
 
- #include <Arduino.h>
+#include <Arduino.h>
+
+#if defined(LE501X)
+#include <SPI.h>
+
+#define SPI_DEFAULT_FREQ 8000000 // SPI MAX FREQ: 2MHZ@16M, 8MHZ@64M; SSI MAX FREQ: 8MHZ@16M, 32MHZ@64M
+// 8M 1bit = 125ns 8bit = 1000ns = 1us
+// 0码: H->0.4us L->0.85us 误差：150ns
+// 1码: H->0.85us L->0.4us 误差：150ns
+// 复位：L->50us
+/*
+0xE0,H->0.375us L->0.625us
+   _ _ _
+ /     /
+/     /_ _ _ _ _
+0xF8,H->0.625us L->0.375us
+   - - - - -
+ /         /
+/         / _ _ _
+*/
+#define CODE0 0xE0
+#define CODE1 0xF8
+#endif
 
 // The order of primary colors in the NeoPixel data stream can vary
 // among device types, manufacturers and even different revisions of
@@ -151,7 +173,11 @@ class ColorLED {
   ~ColorLED();
 
   void
-    begin(void),
+#if defined(LE501X)
+  begin(uint32_t freq = 0, SPIClass *spiclass = &SPI, uint8_t spiNeedInit = 1),
+#else
+  begin(void),
+#endif
     show(void),
     setPin(uint8_t p),
     setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b),
@@ -179,6 +205,10 @@ class ColorLED {
     getPixelColor(uint16_t n) const;
   inline bool
     canShow(void) { return (micros() - endTime) >= 300L; }
+#if defined(LE501X)
+  SPIClass *_spi;
+  uint32_t _freq;
+#endif
 
  private:
 
@@ -206,6 +236,10 @@ class ColorLED {
     *port;         // Output PORT register
   uint8_t
     pinMask;       // Output PORT bitmask
+  
+#endif
+#if defined(LE501X)
+  void lsShow(uint8_t *_pixels, uint16_t _numBytes);
 #endif
 };
 

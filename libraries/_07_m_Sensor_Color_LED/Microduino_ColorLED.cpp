@@ -90,14 +90,55 @@ ColorLED::~ColorLED() {
   if(pin >= 0) pinMode(pin, INPUT);
 }
 
+#if defined(LE501X)
+
+void ColorLED::begin(uint32_t freq, SPIClass *spiclass, uint8_t spiNeedInit)
+{
+  if (!spiclass)
+  {
+    Serial.println(F("ERROR: spiclass is no define!"));
+    return;
+  }
+  else
+  {
+    _spi = spiclass;
+  }
+
+  if (!freq)
+  {
+    freq = SPI_DEFAULT_FREQ;
+  }
+  _freq = freq;
+
+  // Hardware SPI
+  if (spiNeedInit)
+  {
+    _spi->begin(-1, -1, pin, -1);//mosi
+  }
+}
+
+void ColorLED::lsShow(uint8_t *_pixels, uint16_t _numBytes)
+{
+  uint8_t led_buf[8];
+  for (uint16_t i = 0; i < _numBytes; i++)
+  {
+    for (uint8_t n = 0; n < 8; n++)
+    {
+      led_buf[n] = ((_pixels[i] & (1 << (7 - n))) ? (CODE1) : CODE0);
+    }
+    _spi->writeBytes(led_buf, 8);
+  }
+}
+
+#else
 void ColorLED::begin(void) {
   if(pin >= 0) {
     pinMode(pin, OUTPUT);
     digitalWrite(pin, LOW);
   }
   begun = true;
-
 }
+#endif
 
 void ColorLED::updateLength(uint16_t n) {
   if(pixels) free(pixels); // Free existing data (if any)
@@ -1076,6 +1117,10 @@ void ColorLED::show(void) {
 // END AVR ----------------------------------------------------------------
 
 
+#elif defined(LE501X)
+
+lsShow(pixels, numBytes);
+
 #elif defined(__arm__)
 
 // ARM MCUs -- Teensy 3.0, 3.1, LC, Arduino Due ---------------------------
@@ -1834,7 +1879,6 @@ void ColorLED::show(void) {
       first = 0;
     }
   }
-
 #else 
 #error Architecture not supported
 #endif
@@ -1851,6 +1895,9 @@ void ColorLED::show(void) {
 
 // Set the output pin number
 void ColorLED::setPin(uint8_t p) {
+#if defined(LE501X)
+  pin = p;
+#else
   if(begun && (pin >= 0)) pinMode(pin, INPUT);
     pin = p;
     if(begun) {
@@ -1860,6 +1907,7 @@ void ColorLED::setPin(uint8_t p) {
 #ifdef __AVR__
     port    = portOutputRegister(digitalPinToPort(p));
     pinMask = digitalPinToBitMask(p);
+#endif
 #endif
 }
 
