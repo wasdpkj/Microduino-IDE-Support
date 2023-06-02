@@ -43,8 +43,9 @@
 
 #if defined(LE501X)
 #include <SPI.h>
-
-#define SPI_DEFAULT_FREQ 8000000 // SPI MAX FREQ: 2MHZ@16M, 8MHZ@64M; SSI MAX FREQ: 8MHZ@16M, 32MHZ@64M
+#define SPI_2M_FREQ 2000000
+#define SPI_8M_FREQ 8000000
+#define SPI_DEFAULT_FREQ SPI_2M_FREQ // SPI MAX FREQ: 2MHZ@16M, 8MHZ@64M; SSI MAX FREQ: 8MHZ@16M, 32MHZ@64M
 // 8M 1bit = 125ns 8bit = 1000ns = 1us
 // 0码: H->0.4us L->0.85us 误差：150ns
 // 1码: H->0.85us L->0.4us 误差：150ns
@@ -58,6 +59,7 @@
    - - - - -
  /         /
 /         / _ _ _
+
 */
 #define CODE0 0xE0
 #define CODE1 0xF8
@@ -174,7 +176,7 @@ class ColorLED {
 
   void
 #if defined(LE501X)
-  begin(uint32_t freq = 0, SPIClass *spiclass = &SPI, uint8_t spiNeedInit = 1),
+  begin(uint32_t freq = SPI_DEFAULT_FREQ, SPIClass *spiclass = &SPI, uint8_t spiNeedInit = 1),
 #else
   begin(void),
 #endif

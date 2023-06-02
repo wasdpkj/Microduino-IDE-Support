@@ -108,6 +108,11 @@ void ColorLED::begin(uint32_t freq, SPIClass *spiclass, uint8_t spiNeedInit)
   {
     freq = SPI_DEFAULT_FREQ;
   }
+  else if (!(freq == SPI_2M_FREQ || freq == SPI_8M_FREQ))
+  {
+    Serial.println(F("ERROR: Only support 2M or 8M!"));
+    return;
+  }
   _freq = freq;
 
   // Hardware SPI
@@ -115,18 +120,41 @@ void ColorLED::begin(uint32_t freq, SPIClass *spiclass, uint8_t spiNeedInit)
   {
     _spi->begin(-1, -1, pin, -1);//mosi
   }
+
+  _spi->setFrequency(_freq);
+
+}
+
+static void color2buf(uint8_t val, uint8_t *buf)
+{
+  buf[0] = (val & 0x20 ? 0x01 : 0x00) | (val & 0x40 ? 0x08 : 0x00) | (val & 0x80 ? 0x40 : 0x00) | 0x24;
+  buf[1] = (val & 0x08 ? 0x04 : 0x00) | (val & 0x10 ? 0x20 : 0x00) | 0x92;
+  buf[2] = (val & 0x01 ? 0x02 : 0x00) | (val & 0x02 ? 0x10 : 0x00) | (val & 0x04 ? 0x80 : 0x00) | 0x49;
 }
 
 void ColorLED::lsShow(uint8_t *_pixels, uint16_t _numBytes)
 {
-  uint8_t led_buf[8];
-  for (uint16_t i = 0; i < _numBytes; i++)
+  uint8_t led_buf[9];
+  if (_freq == SPI_8M_FREQ)
   {
-    for (uint8_t n = 0; n < 8; n++)
+    for (uint16_t i = 0; i < _numBytes; i++)
     {
-      led_buf[n] = ((_pixels[i] & (1 << (7 - n))) ? (CODE1) : CODE0);
+      for (uint8_t n = 0; n < 8; n++)
+      {
+        led_buf[n] = ((_pixels[i] & (1 << (7 - n))) ? (CODE1) : CODE0);
+      }
+      _spi->writeBytes(led_buf, 8);
     }
-    _spi->writeBytes(led_buf, 8);
+  }
+  else
+  {
+    for (uint16_t i = 0; i < _numBytes / 3; i++)
+    {
+      color2buf(_pixels[3 * i], &led_buf[0]);
+      color2buf(_pixels[3 * i + 1], &led_buf[3]);
+      color2buf(_pixels[3 * i + 2], &led_buf[6]);
+      _spi->writeBytes(led_buf, 9);
+    }
   }
 }
 
