@@ -2,7 +2,7 @@
 
 /****************************** ProtocolSer ******************************/
 
-#if defined (ESP32)
+#if defined (ESP32) || defined (LE501X)
 ProtocolSer::ProtocolSer(HardwareSerial *ser, uint8_t _len, int _rx, int _tx){
 	commonInit();
 	pHwSerial = ser;
@@ -36,7 +36,7 @@ void ProtocolSer::commonInit(void){
 
 void ProtocolSer::begin(uint32_t _baud){
 	baud = _baud;
-#if defined (ESP32)
+#if defined (ESP32) || defined (LE501X)
 	if(pHwSerial){
 		pHwSerial->begin(baud, SERIAL_8N1, pinRX, pinTX);
 	}

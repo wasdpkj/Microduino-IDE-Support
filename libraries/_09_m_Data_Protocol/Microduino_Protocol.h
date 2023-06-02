@@ -25,7 +25,7 @@ class ProtocolSer{
 #if defined (__AVR__)
 	ProtocolSer(SoftwareSerial *ser, uint8_t _len);
 	ProtocolSer(HardwareSerial *ser, uint8_t _len);
-#elif defined (ESP32)
+#elif defined (ESP32) || defined (LE501X)
 	ProtocolSer(HardwareSerial *ser, uint8_t _len, int _rx = D2, int _tx = D3);
 #endif
 
@@ -40,7 +40,7 @@ class ProtocolSer{
 	HardwareSerial *pHwSerial;
 #if defined (__AVR__)
   	SoftwareSerial *pSwSerial;
-#elif defined (ESP32)
+#elif defined (ESP32) || defined (LE501X)
     uint8_t pinRX = D2;
     uint8_t pinTX = D3;
 #endif
