@@ -40,11 +40,6 @@
 #include "vs_patches.h"
 
 
-#ifdef SPI_DEFAULT_FREQ
-#undef SPI_DEFAULT_FREQ
-#endif
-#define SPI_DEFAULT_FREQ         2000000      ///< Default SPI data clock frequency
-
 typedef volatile uint8_t PortReg;
 typedef uint8_t PortMask;
 

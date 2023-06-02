@@ -30,6 +30,7 @@ SPIClass spi_(SPI0); // MUST be SPI0 for Maix series on board LCD
 #define TFT_BL     23
 #define SPI_PORT  spi_
 ST7789_240x240 tft = ST7789_240x240(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST);
+
 #elif defined(MICROBIT_ESP)
 #define TFT_CLK   18
 #define TFT_MOSI  23
@@ -40,6 +41,7 @@ ST7789_240x240 tft = ST7789_240x240(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST);
 #define TFT_BL    5
 #define SPI_PORT  SPI
 ST7789_240x240 tft = ST7789_240x240(TFT_CS,  TFT_DC, TFT_RST);
+
 #elif defined(JOYPAD_ESP)
 #define TFT_CLK   14
 #define TFT_MOSI  13
@@ -50,6 +52,7 @@ ST7789_240x240 tft = ST7789_240x240(TFT_CS,  TFT_DC, TFT_RST);
 #define TFT_BL    2
 #define SPI_PORT  TFTSPI
 ST7789_240x240 tft = ST7789_240x240(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST);
+
 #elif defined(LE501X)
 #define TFT_CLK   D13
 #define TFT_MOSI  D11
@@ -58,14 +61,15 @@ ST7789_240x240 tft = ST7789_240x240(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST);
 #define TFT_RST    -1  // you can also connect this to the Arduino reset
 #define TFT_DC     D4
 #define TFT_BL     D6
-#if (SDK_HCLK_MHZ == 64)
-#define TFT_SPI_FREQ    32000000
-#define SPI_PORT  SSI   //SPI or SSI
-#else
-#define TFT_SPI_FREQ    SPI_DEFAULT_FREQ
 #define SPI_PORT  SPI   //SPI or SSI
-#endif 
+
+#if (SPI_PORT == SPI)
+#define TFT_SPI_FREQ    SPI_MAX_FREQ
+#else
+#define TFT_SPI_FREQ    SSI_MAX_FREQ
+#endif
 ST7789_240x240 tft = ST7789_240x240(TFT_CS, TFT_DC, TFT_RST);
+
 #else
 #define TFT_CLK   D13
 #define TFT_MOSI  D11
@@ -91,14 +95,14 @@ void setup()
   Serial.begin(115200); // Used for messages and the C array generator
   Serial.println(F("JPEG decoder test!"));
 
-  SPI_PORT.begin();
-
 #if defined(K210) || defined(ESP32)
   tft.begin(SPI_DEFAULT_FREQ, &SPI_PORT);
 #elif defined(LE501X)
+  SPI_PORT.begin(TFT_CLK, TFT_MISO, TFT_MOSI, -1);
   tft.begin(TFT_SPI_FREQ, &SPI_PORT, false);
 #else
-  tft.begin(SPI_DEFAULT_FREQ);
+  SPI_PORT.begin();
+  tft.begin(SPI_DEFAULT_FREQ, false);
 #endif
 
   if(TFT_BL != -1){

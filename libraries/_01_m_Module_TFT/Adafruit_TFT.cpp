@@ -223,7 +223,7 @@ void Adafruit_TFT::spiInit(uint32_t freq, uint8_t spiNeedInit)
       _spi = spiclass;
     }
 #else
-    //_spi = &SPI;
+    _spi = &SPI;
 #endif
 
     if(!freq){
