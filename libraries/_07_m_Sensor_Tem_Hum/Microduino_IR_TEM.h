@@ -8,8 +8,6 @@
 
   // E-mail:
   // jinqipeng@mircoduino.cc
-
-  //���ڣ�2018.2
 *********************************************************/
 #ifndef _MICRODUINO_IR_TEM_H_
 #define _MICRODUINO_IR_TEM_H_

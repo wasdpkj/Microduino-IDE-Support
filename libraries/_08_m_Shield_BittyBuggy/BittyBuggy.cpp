@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "BittyBuggy.h"
 
-#if defined(ESP32)
+#if defined(ESP32) || defined(LE501X)
 BittyBuggy::BittyBuggy(HardwareSerial *ser, int _rx, int _tx)
 {
   common_init();
@@ -36,7 +36,7 @@ void BittyBuggy::common_init(void)
 
 boolean BittyBuggy::begin(uint32_t _baud)
 {
-#if defined(ESP32)
+#if defined(ESP32) || defined(LE501X)
   carHwSerial->begin(_baud, SERIAL_8N1, pinRX, pinTX);
 #elif defined(__AVR__)
   if (carHwSerial)

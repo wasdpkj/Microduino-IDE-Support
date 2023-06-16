@@ -26,11 +26,12 @@
 #include <Arduino.h>
 #include "Microduino_Dust.h"
 
-
+#if defined(__AVR)
 Dust::Dust(SoftwareSerial *ser) {
 	commonInit();
 	pmSwSerial = ser;
 }
+#endif
 
 Dust::Dust(HardwareSerial *ser) {
 	commonInit();
@@ -38,7 +39,9 @@ Dust::Dust(HardwareSerial *ser) {
 }
 
 void Dust::commonInit(void){
+#if defined(__AVR)	
 	pmSwSerial = NULL;
+#endif	
 	pmHwSerial = NULL;
 }
 
@@ -85,21 +88,7 @@ bool Dust::dataParse(uint8_t _input)
 bool Dust::available()
 {
 	uint32_t pmTimer = millis() + DUSTMAX_TIME;
-	if(pmSwSerial)
-	{
-		pmSwSerial->begin(SERIAL_BAUD);
-		pmSwSerial->flush();
-		while(millis() < pmTimer)
-		{
-			if(pmSwSerial->available() > 0 && dataParse(pmSwSerial->read()))
-			{
-				pmSwSerial->end();
-				return true;
-			}
-		}
-		pmSwSerial->end();
-	}
-	else
+	if(pmHwSerial)
 	{
 		pmHwSerial->begin(SERIAL_BAUD);
 		pmHwSerial->flush();
@@ -113,6 +102,23 @@ bool Dust::available()
 		}
 		pmHwSerial->end();
 	}
+#if defined(__AVR)	
+	else if(pmSwSerial)
+	{
+		pmSwSerial->begin(SERIAL_BAUD);
+		pmSwSerial->flush();
+		while(millis() < pmTimer)
+		{
+			if(pmSwSerial->available() > 0 && dataParse(pmSwSerial->read()))
+			{
+				pmSwSerial->end();
+				return true;
+			}
+		}
+		pmSwSerial->end();
+	}
+#endif	
+
 	return false;
 }
 

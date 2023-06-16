@@ -25,7 +25,9 @@
 #ifndef __MICRODUINO_DUST_H__
 #define __MICRODUINO_DUST_H__
 
+#if defined(__AVR)	
 #include <SoftwareSerial.h>
+#endif
 
 #define STEP_WAIT_AA 	0  
 #define STEP_WAIT_DATA 	1 
@@ -48,7 +50,9 @@ const byte Negative_data[11] = {0x3f, 0x30, 0x5b, 0x79, 0x74, 0x6d, 0x6f, 0x38, 
 
 class Dust{
 public:
+#if defined(__AVR)	
 	Dust(SoftwareSerial *ser);
+#endif	
 	Dust(HardwareSerial *ser);
 	
 	bool available();
@@ -59,8 +63,9 @@ private:
 	uint8_t serialIndex;
 	uint8_t serialCheckSum;
 	uint8_t serialData[4];
-
+#if defined(__AVR)
 	SoftwareSerial *pmSwSerial;
+#endif
 	HardwareSerial *pmHwSerial;
 
 	void commonInit(void);

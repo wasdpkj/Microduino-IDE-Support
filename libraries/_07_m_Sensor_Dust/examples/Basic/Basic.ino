@@ -4,15 +4,19 @@
 // 版权所有：
 // @Machine  maxing@microduino.cc
 // 
-//Dust 不支持ESP32
+//Dust 可能不支持ESP32
 //
 // ==============
 
 #include <Microduino_Dust.h>
 
+#if defined(__AVR__) && defined(__AVR_ATmega328P__)
 SoftwareSerial mySerial(4, -1); // RX, TX
 Dust pmSensor(&mySerial);    //使用软串口
-//Dust pmSensor(&Serial1);   //Core+ D2,D3
+//Dust pmSensor(&Serial);   //Core D0,D1
+#else
+Dust pmSensor(&Serial1);   //Core+ D2,D3
+#endif
 
 void setup() {
   Serial.begin(9600);

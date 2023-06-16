@@ -96,7 +96,7 @@ class BittyBuggy
 #if defined(__AVR__)
     BittyBuggy(SoftwareSerial *ser);
     BittyBuggy(HardwareSerial *ser);
-#elif defined(ESP32)
+#elif defined(ESP32) || defined(LE501X)
     BittyBuggy(HardwareSerial *ser, int _rx = D2, int _tx = D3);
 #endif
 
@@ -138,7 +138,7 @@ class BittyBuggy
     HardwareSerial *carHwSerial;
 #if defined(__AVR__)
     SoftwareSerial *carSwSerial;
-#elif defined(ESP32)
+#elif defined(ESP32) || defined(LE501X)
     uint8_t pinRX = D2;
     uint8_t pinTX = D3;
 #endif

@@ -8,8 +8,6 @@
 
   // E-mail:
   // jinqipeng@mircoduino.cc
-
-  //���ڣ�2018.2
 *********************************************************/
 #include "Microduino_IR_TEM.h"
 
