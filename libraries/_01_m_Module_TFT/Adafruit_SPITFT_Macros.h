@@ -67,7 +67,7 @@
     #define HSPI_WRITE16(s)          SPI_OBJECT->write16(s)     ///< Hardware SPI write 16 bits
     #define HSPI_WRITE32(l)          SPI_OBJECT->write32(l)     ///< Hardware SPI write 32 bits
     #ifdef SPI_HAS_WRITE_PIXELS
-        #define SPI_MAX_PIXELS_AT_ONCE  8
+        #define SPI_MAX_PIXELS_AT_ONCE  32
         #define HSPI_WRITE_PIXELS(c,l)   SPI_OBJECT->writePixels(c,l)
     #else
         #define HSPI_WRITE_PIXELS(c,l)   for(uint32_t i=0; i<((l)/2); i++){ SPI_WRITE16(((uint16_t*)(c))[i]); }

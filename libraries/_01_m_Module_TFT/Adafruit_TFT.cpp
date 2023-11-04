@@ -284,6 +284,7 @@ uint16_t Adafruit_TFT::color565(uint8_t red, uint8_t green, uint8_t blue) {
 /**************************************************************************/
 void Adafruit_TFT::setRotation(uint8_t m) {
     rotation = m % 4; // can't be higher than 3
+
     switch (rotation) {
         case 0:
             m = (0x00 | MADCTL_RGB);
@@ -291,7 +292,7 @@ void Adafruit_TFT::setRotation(uint8_t m) {
             _width = _config.width;
             _height = _config.height;
             _smartX = _config.xStart;
-            _smartY = 0;
+            _smartY = _config.yStart;
 			scrollTo(0);
             break;
         case 1:
@@ -299,7 +300,7 @@ void Adafruit_TFT::setRotation(uint8_t m) {
 //			m=0x60;
             _width = _config.height;
             _height = _config.width;
-            _smartX = 0;
+            _smartX = _config.yStart;
             _smartY = _config.xStart;
 			scrollTo(0);
             break;
@@ -309,7 +310,7 @@ void Adafruit_TFT::setRotation(uint8_t m) {
             _width = _config.width;
             _height = _config.height;
             _smartX = _config.xStart;
-            _smartY = 0;
+            _smartY = _config.yStart;
             scrollTo(_config.yStart);
             break;
         case 3:
@@ -317,7 +318,7 @@ void Adafruit_TFT::setRotation(uint8_t m) {
 //			m=0xA0;
             _width = _config.height;
             _height = _config.width;
-            _smartX = 0;
+            _smartX = _config.yStart;
             _smartY = _config.xStart;
             scrollTo(_config.yStart);
             break;
@@ -738,7 +739,3 @@ void Adafruit_TFT::spiWrite(uint8_t b) {
     return;
 }
 
-tft_config_t tftCfg_ST7735_128x160;
-tft_config_t tftCfg_ST7789_240x240;
-tft_config_t tftCfg_ST7789_240x320;
-tft_config_t tftCfg_ST7789_172x320;
