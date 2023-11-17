@@ -167,6 +167,17 @@ void directModeOutput(IO_REG_TYPE pin)
 #define DIRECT_MODE_OUTPUT(base, pin)   directModeOutput(pin)
 #warning "ESP32 OneWire testing"
 
+#elif defined(LE501X)
+#include "le501x-hal-gpio.h"
+#define PIN_TO_BASEREG(pin)             (0)
+#define PIN_TO_BITMASK(pin)             (pin)
+#define IO_REG_TYPE uint8_t
+#define IO_REG_ASM
+#define DIRECT_READ(base, pin)         (fastReadPin(pin))
+#define DIRECT_WRITE_LOW(base, pin)    (fastClrPin(pin))
+#define DIRECT_WRITE_HIGH(base, pin)   (fastSetPin(pin))
+#define DIRECT_MODE_INPUT(base, pin)   (pinMode(pin, INPUT))
+#define DIRECT_MODE_OUTPUT(base, pin)  (pinMode(pin, OUTPUT))
 #else
 #error "Please define I/O register types here"
 #endif
