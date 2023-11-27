@@ -40,6 +40,9 @@ uint8_t const CMD8 = 0X08;
 uint8_t const CMD9 = 0X09;
 /** SEND_CID - read the card identification information (CID register) */
 uint8_t const CMD10 = 0X0A;
+
+uint8_t const CMD12 = 12;
+
 /** SEND_STATUS - read the card status register */
 uint8_t const CMD13 = 0X0D;
 /** READ_BLOCK - read a single data block from the card */

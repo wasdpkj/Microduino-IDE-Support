@@ -717,3 +717,10 @@ uint8_t Sd2Card::writeStop(void) {
   chipSelectHigh();
   return false;
 }
+
+
+void Sd2Card::powerDown(void)
+{
+  cardCommand(CMD12, 0);
+  chipSelectHigh();
+}

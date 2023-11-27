@@ -232,6 +232,7 @@ class Sd2Card {
   uint8_t writeData(const uint8_t* src);
   uint8_t writeStart(uint32_t blockNumber, uint32_t eraseCount);
   uint8_t writeStop(void);
+  void powerDown(void);
  private:
   uint32_t block_;
   uint8_t chipSelectPin_;

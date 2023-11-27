@@ -93,6 +93,8 @@ public:
   boolean rmdir(const char *filepath);
   boolean rmdir(const String &filepath) { return rmdir(filepath.c_str()); }
 
+  void powerDown(void);
+
 private:
 
   // This is used to determine the mode used to open a file

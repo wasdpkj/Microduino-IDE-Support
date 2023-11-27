@@ -569,6 +569,11 @@ boolean SDClass::remove(const char *filepath) {
   return walkPath(filepath, root, callback_remove);
 }
 
+void SDClass::powerDown(void) 
+{
+  card.powerDown(); 
+}
+
 
 // allows you to recurse into a directory
 File File::openNextFile(uint8_t mode) {
