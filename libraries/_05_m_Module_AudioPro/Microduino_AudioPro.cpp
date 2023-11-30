@@ -70,7 +70,7 @@ boolean AudioPro_FilePlayer::begin(void) {
   mp3LenSta = false;
   mp3LenCache = 0;
   //Serial.print("Version = "); Serial.println(v);
-  return (v == 4);
+  return ((v == 3)|(v == 4));
 }
 
 void AudioPro_FilePlayer::end(void) {
