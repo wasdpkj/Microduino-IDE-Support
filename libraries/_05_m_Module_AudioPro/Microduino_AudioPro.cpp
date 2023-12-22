@@ -40,12 +40,18 @@ static AudioPro_FilePlayer *myself_sd;
   }
 */
 static void feeder(void) {
-  myself->feedBuffer();
+  if(myself)
+  {
+    myself->feedBuffer();
+  }
 }
 
 #if defined(LOAD_SD_LIBRARY) || defined(LOAD_SDFAT_LIBRARY)
 static void feeder_sd(void) {
-  myself_sd->feedBuffer();
+  if(myself_sd)
+  {
+    myself_sd->feedBuffer();
+  }
 }
 #endif
 
@@ -319,8 +325,13 @@ void AudioPro_FilePlayer::feedBuffer(void) {
   feedBufferLock = false;
 }
 
-boolean AudioPro_FilePlayer::detachInterrupt(uint8_t type) {
-  myself_sd = this;  // oy vey
+boolean AudioPro_FilePlayer::notUsingInterrupt(uint8_t type) {
+  if(!myself_sd)
+  {
+    return false;	
+  }
+  
+  myself_sd = NULL;  // oy vey
   /*
     if (type == VS1053_TIMER0_DREQ) {
       OCR0A = 0xAF;
@@ -339,7 +350,11 @@ boolean AudioPro_FilePlayer::detachInterrupt(uint8_t type) {
 }
 
 boolean AudioPro_FilePlayer::useInterrupt(uint8_t type) {
-  if (myself) AudioPro::detachInterrupt(); //只允许一个中断实例
+  if (myself) 
+  {
+    AudioPro::notUsingInterrupt(); //只允许一个中断实例
+  }
+  
   myself_sd = this;  // oy vey
   /*
     if (type == VS1053_TIMER0_DREQ) {
@@ -419,8 +434,13 @@ boolean AudioPro::useInterrupt(uint8_t type) {
   return false;
 }
 
-boolean AudioPro::detachInterrupt(uint8_t type) {
-  myself = this;  // oy vey
+boolean AudioPro::notUsingInterrupt(uint8_t type) {
+  if(!myself)
+  {
+    return false;	
+  }	
+	
+  myself = NULL;  // oy vey
   /*
     if (type == VS1053_TIMER0_DREQ) {
       OCR0A = 0xAF;

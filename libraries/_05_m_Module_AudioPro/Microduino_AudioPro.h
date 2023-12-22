@@ -222,7 +222,8 @@ class AudioPro {
   bool pathOutput();
 
   boolean useInterrupt(uint8_t type = VS1053_PIN_DREQ);		//new
-  boolean detachInterrupt(uint8_t type = VS1053_PIN_DREQ);	//new
+  boolean notUsingInterrupt(uint8_t type = VS1053_PIN_DREQ);	//new
+  
   void feedBuffer(void);			//new
   volatile boolean playingMusic;	//new
   boolean paused(void);				//new
@@ -324,7 +325,7 @@ class AudioPro_FilePlayer : public AudioPro {
   void end();
 
   boolean useInterrupt(uint8_t type = VS1053_PIN_DREQ);
-  boolean detachInterrupt(uint8_t type = VS1053_PIN_DREQ);
+  boolean notUsingInterrupt(uint8_t type = VS1053_PIN_DREQ);
 
   uint8_t getMusicNum();
   String getMusicName(uint8_t _FileNum);
