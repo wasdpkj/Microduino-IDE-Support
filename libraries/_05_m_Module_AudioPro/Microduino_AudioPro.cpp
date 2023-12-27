@@ -211,8 +211,10 @@ uint8_t AudioPro_FilePlayer::getMusicNum() {
     file2 = sd.open(sdData, FILE_WRITE);
     if (!file2) return 0;
 
+
     File file;
     file = sd.open("/");
+	file.rewindDirectory();
     if (!file) return 0;
     while (1) {
       File entry =  file.openNextFile(O_READ);
@@ -227,9 +229,16 @@ uint8_t AudioPro_FilePlayer::getMusicNum() {
       }
       entry.close();
     }
-    file.close();
+    if(file) {
+      file.seek(0);
+      file.close();
+	}
 
-    file2.close();
+    if(file2) {
+      file2.seek(0);
+	  file2.close();
+	}
+	
     staFile = true;
   }
 
