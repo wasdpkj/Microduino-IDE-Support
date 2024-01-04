@@ -64,7 +64,7 @@
 #define RC6_T1		444
 #define RC6_RPT_LENGTH	46000
 
-#define TOLERANCE 25  // percent tolerance in measurements
+#define TOLERANCE 50  // percent tolerance in measurements
 #define LTOL (1.0 - TOLERANCE/100.) 
 #define UTOL (1.0 + TOLERANCE/100.) 
 
