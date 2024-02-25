@@ -338,6 +338,8 @@ void IRsend::mark(int time) {
   pwmUpdata(this->irIndex, irout[this->irIndex].Period / 3);
 #elif defined (__AVR_ATmega32U4__)
   TCCR4A |= _BV(COM4A1); 
+#elif defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644P__)
+  TCCR1A |= _BV(COM1B1);
 #elif defined(__AVR_ATmega128RFA1__)
   TCCR3A |= _BV(COM3B1);
 #else
@@ -365,6 +367,8 @@ void IRsend::space(int time) {
   pwmUpdata(this->irIndex, 0);
 #elif defined (__AVR_ATmega32U4__)
   TCCR4A &= ~(_BV(COM4A1));
+#elif defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644P__)
+  TCCR1A &= ~(_BV(COM1B1));
 #elif defined(__AVR_ATmega128RFA1__)
   TCCR3A &= ~(_BV(COM3B1));
 #else
@@ -412,6 +416,8 @@ void IRsend::enableIROut(int khz) {
   }
 #elif defined (__AVR_ATmega32U4__)
 	TIMSK4 &= ~_BV(TOIE4);
+#elif defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644P__)
+	TIMSK1 &= ~_BV(TOIE1); //Timer1 Overflow Interrupt
 #elif defined(__AVR_ATmega128RFA1__)
 	TIMSK3 &= ~_BV(TOIE3); //Timer3 Overflow Interrupt
 #else
@@ -423,8 +429,8 @@ void IRsend::enableIROut(int khz) {
 #elif defined (LE501X)
 
 #elif defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__)
-  pinMode(8, OUTPUT);
-  digitalWrite(8, LOW); // When not sending PWM, we want it low
+  pinMode(22, OUTPUT);
+  digitalWrite(22, LOW); // When not sending PWM, we want it low
 #elif defined(__AVR_ATmega128RFA1__)
   pinMode(5, OUTPUT);
   digitalWrite(5, LOW);
@@ -451,6 +457,14 @@ void IRsend::enableIROut(int khz) {
   
   OCR4A = SYSCLOCK / 2 / khz / 1000;
   OCR4B = OCR4A / 3;
+#elif defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__)
+  TCCR1A = _BV(WGM10);
+  TCCR1B = _BV(WGM12) | _BV(CS10);
+
+  // The top value for the timer.  The modulation frequency will be SYSCLOCK / 2 / OCR2A.
+  OCR1A = SYSCLOCK / 2 / khz / 1000;
+  OCR1B = OCR1A / 3; // 33% duty cycle 
+
 #elif defined(__AVR_ATmega128RFA1__)
   TCCR3A = _BV(WGM30);
   TCCR3B = _BV(WGM32) | _BV(CS30);
@@ -497,6 +511,30 @@ void IRrecv::enableIRIn() {
   sbi(TIMSK4, TOIE4);
   
   RESET_TIMER4;
+  sei();  // enable interrupts
+#elif defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__)
+  //panda
+
+  TCCR1A = 0;  // normal mode
+
+  //Prescale /8 (16M/8 = 0.5 microseconds per tick)
+  // Therefore, the timer interval can range from 0.5 to 128 microseconds
+  // depending on the reset value (255 to 0)
+
+  // TCCR1B = _BV(WGM13) | _BV(WGM12) | _BV(CS11); /* div 8 clock prescaler */
+
+  cbi(TCCR1B,CS12);
+  sbi(TCCR1B,CS11);
+  cbi(TCCR1B,CS10);
+
+  // sbi(TCCR1B,WGM12);
+  // cbi(TCCR1B,WGM11);
+  // sbi(TCCR1B,WGM10);
+
+  //Timer1 Overflow Interrupt Enable
+  sbi(TIMSK1,TOIE1);
+
+  RESET_TIMER1;
   sei();  // enable interrupts
 #elif defined(__AVR_ATmega128RFA1__)
   TCCR3A = 0;  // normal mode
@@ -555,6 +593,10 @@ void IRTimer()
 ISR(TIMER4_OVF_vect)
 {
   RESET_TIMER4;
+#elif defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega644P__)
+ISR(TIMER1_OVF_vect)
+{
+  RESET_TIMER1;
 #elif defined(__AVR_ATmega128RFA1__)
 ISR(TIMER3_OVF_vect)
 {
@@ -583,6 +625,7 @@ ISR(TIMER2_OVF_vect)
       if (irparams.timer < GAP_TICKS) {
         // Not big enough to be a gap.
         irparams.timer = 0;
+        // Serial.print("x");
       } 
       else {
         // gap just ended, record duration and start recording transmission
@@ -590,6 +633,7 @@ ISR(TIMER2_OVF_vect)
         irparams.rawbuf[irparams.rawlen++] = irparams.timer;
         irparams.timer = 0;
         irparams.rcvstate = STATE_MARK;
+        // Serial.print("ok");
       }
     }
     break;

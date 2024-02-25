@@ -14,8 +14,18 @@
 
 #include <Arduino.h>
 
+#if ! defined(MICROS_PER_TICK)
+#define MICROS_PER_TICK    50L // must be with L to get 32 bit results if multiplied with rawbuf[] content.
+#endif
+
+#define MILLIS_IN_ONE_SECOND 1000L
+#define MICROS_IN_ONE_SECOND 1000000L
+#define MICROS_IN_ONE_MILLI 1000L
+
+
 #define CLKFUDGE 5      // fudge factor for clock interrupt overhead
 #define CLK 256      // max value for clock (timer 2)
+#define CLK_16BIT 65536      // max value for clock (timer 1)
 #define PRESCALE 8      // timer2 clock prescale
 #define SYSCLOCK 16000000  // main Arduino clock
 #define CLKSPERUSEC (SYSCLOCK/PRESCALE/1000000)   // timer clocks per microsecond
@@ -33,7 +43,10 @@
 
 // clock timer reset value
 #define INIT_TIMER_COUNT (CLK - USECPERTICK*CLKSPERUSEC + CLKFUDGE) 
+#define INIT_TIMER_16BIT_COUNT (CLK_16BIT - USECPERTICK*CLKSPERUSEC + CLKFUDGE) 
+
 #if defined (__AVR__)
+#define RESET_TIMER1 TCNT1 = INIT_TIMER_16BIT_COUNT
 #define RESET_TIMER2 TCNT2 = INIT_TIMER_COUNT
 #define RESET_TIMER3 TCNT3 = INIT_TIMER_COUNT
 #define RESET_TIMER4 TCNT4 = INIT_TIMER_COUNT
