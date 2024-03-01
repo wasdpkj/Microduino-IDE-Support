@@ -259,6 +259,12 @@ void disableSendPWMByTimer() {
 #define IR_USE_AVR_TIMER1     // send pin = pin 13
 #  endif
 
+#elif defined(__AVR_ATmega128RFA1__)
+#  if !defined(IR_USE_AVR_TIMER3)
+// #define IR_USE_AVR_TIMER1     // send pin = pin D8
+#define IR_USE_AVR_TIMER3     // send pin = pin D5
+#  endif
+
 /***************************************
  * CPU's with MajorCore
  ***************************************/

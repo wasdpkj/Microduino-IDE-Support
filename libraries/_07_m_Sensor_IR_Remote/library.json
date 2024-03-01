@@ -1,5 +1,5 @@
 {
-  "name": "IRremote",
+  "name": "_07_m_Sensor_IR_Remote",
   "keywords": "communication, infrared, ir, remote",
   "description": "Send and receive infrared signals with multiple protocols",
   "repository":

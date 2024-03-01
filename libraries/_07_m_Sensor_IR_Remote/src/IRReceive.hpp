@@ -625,6 +625,24 @@ bool IRrecv::decode() {
     return true;
 }
 
+bool IRrecv::decode(decode_results *aResults) {
+    bool _decodeStatus = this->decode();
+
+    aResults->decode_type = decodedIRData.protocol;        // deprecated, moved to decodedIRData.protocol ///< UNKNOWN, NEC, SONY, RC5, ...
+    aResults->address = decodedIRData.address;             // Used by Panasonic & Sharp [16-bits]
+    aResults->value = decodedIRData.decodedRawData;        // deprecated, moved to decodedIRData.decodedRawData ///< Decoded value / command [max 32-bits]
+    aResults->bits = decodedIRData.numberOfBits;           // deprecated, moved to decodedIRData.numberOfBits ///< Number of bits in decoded value
+    aResults->magnitude = decodedIRData.extra;             // deprecated, moved to decodedIRData.extra ///< Used by MagiQuest [16-bits]
+    aResults->isRepeat = decodedIRData.flags;              // deprecated, moved to decodedIRData.flags ///< True if repeat of value is detected
+
+// next 3 values are copies of irparams_struct values - see above
+    aResults->rawbuf = decodedIRData.rawDataPtr->rawbuf;   // deprecated, moved to decodedIRData.rawDataPtr->rawbuf ///< Raw intervals in 50uS ticks
+    aResults->rawlen = decodedIRData.rawDataPtr->rawlen;   // deprecated, moved to decodedIRData.rawDataPtr->rawlen ///< Number of records in rawbuf
+    aResults->overflow = decodedIRData.flags;              // deprecated, moved to decodedIRData.flags ///< true if IR raw code too long
+
+    return _decodeStatus;
+}
+
 /**********************************************************************************************************************
  * Common decode functions
  **********************************************************************************************************************/
@@ -1650,6 +1668,7 @@ const char* IRrecv::getProtocolString() {
     return ::getProtocolString(decodedIRData.protocol);
 }
 #endif
+
 
 /**********************************************************************************************************************
  * The OLD and DEPRECATED decode function with parameter aResults, kept for backward compatibility to old 2.0 tutorials
