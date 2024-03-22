@@ -1,11 +1,16 @@
 /*
  * IRrecord: record and play back IR signals as a minimal 
  * An IR detector/demodulator must be connected to the input RECV_PIN.
- * An IR LED must be connected to Arduino PWM pin:
- * Microduino Core:D3(Timer2)/D10(Timer1)
- * Microduino Core+:D8(Timer2)/D22(Timer1)
- * Microduino CoreUSB:D6(Timer3)/D9(Timer1)
- * Microduino CoreRF:D5(Timer3)/D8(Timer1)
+ * New features: {
+ *      At AVR The IR_LED Pin fixed as D4
+ * }
+ * Old:{
+ *      An IR LED must be connected to Arduino PWM pin:
+ *      Microduino Core:D3(Timer2)/D10(Timer1)
+ *      Microduino Core+:D8(Timer2)/D22(Timer1)
+ *      Microduino CoreUSB:D6(Timer3)/D9(Timer1)
+ *      Microduino CoreRF:D5(Timer3)/D8(Timer1)
+ * }
  * A button must be connected to the input BUTTON_PIN; this is the
  * send button.
  * A visible LED can be connected to STATUS_PIN to provide status.
@@ -21,7 +26,7 @@
 
 #include <IRremote.h>
 
-int RECV_PIN = 4;
+int RECV_PIN = 2;
 int BUTTON_PIN = 12;
 int STATUS_PIN = 13;
 
@@ -32,7 +37,7 @@ decode_results results;
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
   irrecv.enableIRIn(); // Start the receiver
   pinMode(BUTTON_PIN, INPUT);
   pinMode(STATUS_PIN, OUTPUT);

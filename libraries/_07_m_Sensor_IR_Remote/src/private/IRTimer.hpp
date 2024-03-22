@@ -63,7 +63,7 @@ void timerConfigForSend(uint16_t aFrequencyKHz);
 
 // Macros for enabling timers for development
 //#define SEND_PWM_BY_TIMER
-// #define IR_USE_AVR_TIMER1
+#define IR_USE_AVR_TIMER1
 //#define IR_USE_AVR_TIMER2
 //#define IR_USE_AVR_TIMER3
 // #define IR_USE_AVR_TIMER4

@@ -8,7 +8,7 @@
 
 #include <IRremote.h>
 
-int RECV_PIN = 4;
+int RECV_PIN = 2;
 int RELAY_PIN = 6;
 
 IRrecv irrecv(RECV_PIN);
@@ -62,7 +62,7 @@ void setup()
 {
   pinMode(RELAY_PIN, OUTPUT);
   pinMode(13, OUTPUT);
-    Serial.begin(9600);
+  Serial.begin(115200);
   irrecv.enableIRIn(); // Start the receiver
 }
 

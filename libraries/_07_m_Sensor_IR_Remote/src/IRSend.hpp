@@ -71,6 +71,12 @@ IRsend::IRsend() { // @suppress("Class members should be properly initialized")
 
 #if defined(CORE_MICRODUINO)
 
+#if defined(__AVR__) && defined(IR_USE_AVR_TIMER1)      //自定义发射脚，固定为D4
+    sendPin = 4;
+#endif
+
+#else
+
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328PB__) || defined(__AVR_ATmega168__)
 #  if defined(IR_USE_AVR_TIMER1)
     sendPin = 10;
@@ -103,6 +109,8 @@ IRsend::IRsend() { // @suppress("Class members should be properly initialized")
 #  endif 
 
 #endif  
+
+#endif
 
 #endif  // defined(CORE_MICRODUINO)
 
