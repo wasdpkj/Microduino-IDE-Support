@@ -69,6 +69,44 @@ IRsend::IRsend() { // @suppress("Class members should be properly initialized")
     sendPin = 0;
 #endif
 
+#if defined(CORE_MICRODUINO)
+
+#if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328PB__) || defined(__AVR_ATmega168__)
+#  if defined(IR_USE_AVR_TIMER1)
+    sendPin = 10;
+#  elif defined(IR_USE_AVR_TIMER2)
+    sendPin = 3;
+#  endif
+
+#elif defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284P__) \
+|| defined(__AVR_ATmega644__) || defined(__AVR_ATmega644P__)
+#  if defined(IR_USE_AVR_TIMER1)
+    sendPin = 22;
+#  elif defined(IR_USE_AVR_TIMER2)
+    sendPin = 8;
+#  endif 
+
+#elif defined(__AVR_ATmega32U4__) 
+
+#  if defined(IR_USE_AVR_TIMER1)
+    sendPin = 9;
+#  elif defined(IR_USE_AVR_TIMER3)
+    sendPin = 6;
+#  endif 
+
+#elif defined(__AVR_ATmega128RFA1__)
+
+#  if defined(IR_USE_AVR_TIMER1)
+    sendPin = 8;
+#  elif defined(IR_USE_AVR_TIMER3)
+    sendPin = 5;
+#  endif 
+
+#endif  
+
+#endif  // defined(CORE_MICRODUINO)
+
+
 #if !defined(NO_LED_FEEDBACK_CODE)
     setLEDFeedback(0, DO_NOT_ENABLE_LED_FEEDBACK);
 #endif

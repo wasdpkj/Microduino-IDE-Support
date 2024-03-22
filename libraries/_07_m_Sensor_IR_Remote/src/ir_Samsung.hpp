@@ -314,7 +314,7 @@ bool IRrecv::decodeSamsung() {
     return true;
 }
 
-// Old version with MSB first
+// Old version with LSB first
 bool IRrecv::decodeSAMSUNG(decode_results *aResults) {
     unsigned int offset = 1;  // Skip first space
 
@@ -344,7 +344,7 @@ bool IRrecv::decodeSAMSUNG(decode_results *aResults) {
     offset++;
 
     if (!decodePulseDistanceWidthData(SAMSUNG_BITS, offset, SAMSUNG_BIT_MARK, 0, SAMSUNG_ONE_SPACE, SAMSUNG_ZERO_SPACE,
-            PROTOCOL_IS_MSB_FIRST)) {
+            PROTOCOL_IS_LSB_FIRST)) {
         return false;
     }
 
@@ -356,7 +356,7 @@ bool IRrecv::decodeSAMSUNG(decode_results *aResults) {
     return true;
 }
 
-// Old version with MSB first
+// Old version with LSB first
 void IRsend::sendSAMSUNG(unsigned long data, int nbits) {
     // Set IR carrier frequency
     enableIROut (SAMSUNG_KHZ);
@@ -367,7 +367,7 @@ void IRsend::sendSAMSUNG(unsigned long data, int nbits) {
 
     // Old version with MSB first Data + stop bit
     sendPulseDistanceWidthData(SAMSUNG_BIT_MARK, SAMSUNG_ONE_SPACE, SAMSUNG_BIT_MARK, SAMSUNG_ZERO_SPACE, data, nbits,
-            PROTOCOL_IS_MSB_FIRST);
+            PROTOCOL_IS_LSB_FIRST);
 }
 
 /** @}*/

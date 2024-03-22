@@ -211,7 +211,7 @@ bool IRrecv::decodeSonyMSB(decode_results *aResults) {
 }
 
 /**
- * Old version with MSB first data
+ * Old version with LSB first data
  */
 void IRsend::sendSony(unsigned long data, int nbits) {
     // Set IR carrier frequency
@@ -221,8 +221,8 @@ void IRsend::sendSony(unsigned long data, int nbits) {
     mark(SONY_HEADER_MARK);
     space(SONY_SPACE);
 
-    // Old version with MSB first Data
-    sendPulseDistanceWidthData(SONY_ONE_MARK, SONY_SPACE, SONY_ZERO_MARK, SONY_SPACE, data, nbits, PROTOCOL_IS_MSB_FIRST);
+    // Old version with LSB first Data
+    sendPulseDistanceWidthData(SONY_ONE_MARK, SONY_SPACE, SONY_ZERO_MARK, SONY_SPACE, data, nbits, PROTOCOL_IS_LSB_FIRST);
 }
 
 /** @}*/

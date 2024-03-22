@@ -401,6 +401,36 @@ bool IRrecv::decodeNECMSB(decode_results *aResults) {
 }
 
 /**
+ * With Send sendNECLSB() you can send your old 32 bit codes.
+ */
+void IRsend::sendNECLSB(uint32_t data, uint8_t nbits, bool repeat) 
+{   
+#if 1
+   // Set IR carrier frequency
+    enableIROut (NEC_KHZ);
+
+    if (data == 0xFFFFFFFF || repeat) {
+        sendNECRepeat();
+        return;
+    }
+
+    // Header
+    mark(NEC_HEADER_MARK);
+    space(NEC_HEADER_SPACE);
+
+    // Old version with MSB first Data + stop bit
+    sendPulseDistanceWidthData(NEC_BIT_MARK, NEC_ONE_SPACE, NEC_BIT_MARK, NEC_ZERO_SPACE, data, nbits, PROTOCOL_IS_LSB_FIRST);
+
+#else
+    uint32_t dataBuffer;
+    // dataBuffer = ((aRawData << 8) & 0xFF000000) | ((aRawData >> 8) & 0x00FF0000) | ((aRawData << 8) & 0x0000FF00) | ((aRawData >> 8) & 0x000000FF);
+    dataBuffer = ((aRawData << 8) & 0xFF00FF00) | ((aRawData >> 8) & 0x00FF00FF);
+
+    sendNECMSB(dataBuffer, nbits, repeat);
+#endif    
+}
+
+/**
  * With Send sendNECMSB() you can send your old 32 bit codes.
  * To convert one into the other, you must reverse the byte positions and then reverse all bit positions of each byte.
  * Use bitreverse32Bit().

@@ -579,8 +579,9 @@ public:
     void sendNEC(uint32_t aRawData,
             uint8_t nbits)
                     __attribute__ ((deprecated ("This old function sends MSB first! Please use sendNECMSB() or sendNEC(aAddress, aCommand, aNumberOfRepeats)."))) {
-        sendNECMSB(aRawData, nbits);
+        sendNECLSB(aRawData, nbits);
     }
+    void sendNECLSB(uint32_t data, uint8_t nbits, bool repeat = false);
     void sendNECMSB(uint32_t data, uint8_t nbits, bool repeat = false);
     void sendRC5(uint32_t data, uint8_t nbits);
     void sendRC5ext(uint8_t addr, uint8_t cmd, bool toggle);
@@ -592,10 +593,10 @@ public:
     void sendSharpRaw(unsigned long data, int nbits);
     void sendSharp(uint16_t address, uint16_t command);
     void sendSAMSUNG(unsigned long data, int nbits);
-    __attribute__ ((deprecated ("This old function sends MSB first! Please use sendSamsung().")));
+    __attribute__ ((deprecated ("This old function sends LSB first! Please use sendSamsung().")));
     void sendSony(unsigned long data,
             int nbits)
-                    __attribute__ ((deprecated ("This old function sends MSB first! Please use sendSony(aAddress, aCommand, aNumberOfRepeats).")));
+                    __attribute__ ((deprecated ("This old function sends LSB first! Please use sendSony(aAddress, aCommand, aNumberOfRepeats).")));
     ;
     void sendWhynter(uint32_t aData, uint8_t aNumberOfBitsToSend);
 
