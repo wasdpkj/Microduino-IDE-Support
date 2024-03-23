@@ -108,8 +108,6 @@ IRsend::IRsend() { // @suppress("Class members should be properly initialized")
     sendPin = 5;
 #  endif 
 
-#endif  
-
 #endif
 
 #endif  // defined(CORE_MICRODUINO)
