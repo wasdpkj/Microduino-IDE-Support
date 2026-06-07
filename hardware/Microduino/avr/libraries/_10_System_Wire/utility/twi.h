@@ -22,14 +22,12 @@
 
   #include <inttypes.h>
 
-  //#define ATMEGA8
-
   #ifndef TWI_FREQ
   #define TWI_FREQ 100000L
   #endif
 
-  #ifndef TWI_BUFFER_LENGTH
-  #define TWI_BUFFER_LENGTH 32
+  #ifndef TWI_BUFFER_SIZE
+  #define TWI_BUFFER_SIZE 32
   #endif
 
   #define TWI_READY 0
@@ -50,6 +48,8 @@
   void twi_reply(uint8_t);
   void twi_stop(void);
   void twi_releaseBus(void);
+  void twi_setTimeoutInMicros(uint32_t, bool);
+  void twi_handleTimeout(bool);
+  bool twi_manageTimeoutFlag(bool);
 
 #endif
-

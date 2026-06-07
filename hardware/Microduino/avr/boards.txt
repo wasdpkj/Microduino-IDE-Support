@@ -2,6 +2,10 @@
 
 menu.cpu=Processor
 menu.usb=UploadType
+menu.clock=Clock
+menu.bootloader=Bootloader
+menu.baudrate=Baud rate
+menu.BOD=BOD
 
 mddevice.name= Microduino/mCookie-device
 
@@ -82,7 +86,6 @@ mddevice.menu.cpu.8MHzatmega328.bootloader.low_fuses=0xFF
 mddevice.menu.cpu.8MHzatmega328.bootloader.high_fuses=0xDE
 mddevice.menu.cpu.8MHzatmega328.bootloader.extended_fuses=0x05
 mddevice.menu.cpu.8MHzatmega328.bootloader.file=optiboot/optiboot_micro_328p_8m.hex
-
 
 ##Microduino Core+ (644pa)
 ##############################################################
@@ -258,3 +261,97 @@ mddevice.menu.cpu.16MHzatmega128rfa1.bootloader.low_fuses=0xff
 mddevice.menu.cpu.16MHzatmega128rfa1.bootloader.high_fuses=0xda
 mddevice.menu.cpu.16MHzatmega128rfa1.bootloader.extended_fuses=0xf5
 mddevice.menu.cpu.16MHzatmega128rfa1.bootloader.file=atmega/ATmegaBOOT_atmega128rfa1.hex
+
+##Microduino Core (328PB)
+##############################################################
+
+md328pb.name=Microduino/mCookie-Core (328PB)
+
+## CH340
+md328pb.vid.0=0x1a86
+md328pb.pid.0=0x7523
+## FT232
+md328pb.vid.1=0x0403
+md328pb.pid.1=0x6001
+## CP2102
+md328pb.vid.2=0x10c4
+md328pb.pid.2=0xea60
+
+md328pb.upload.tool=avrdude
+md328pb.upload.maximum_data_size=2048
+md328pb.bootloader.tool=avrdude
+md328pb.bootloader.unlock_bits=0xFF
+md328pb.bootloader.lock_bits=0xFF
+md328pb.bootloader.cfd_bit=0
+md328pb.bootloader.high_fuses=0xD7
+
+md328pb.build.board=AVR_PRO
+md328pb.build.core=arduino
+md328pb.build.variant=328pb
+md328pb.build.mcu=atmega328pb
+md328pb.build.bootloader_led=led+b5
+
+md328pb.upload.pattern="{cmd.path}" "-C{config.path}" {upload.verbose} {upload.verify} -p{build.mcu} -c{upload.protocol} "-P{serial.port}" -b{upload.speed} -D -xnometadata "-Ueeprom:w:{build.path}/{build.project_name}.eep:i" "-Uflash:w:{build.path}/{build.project_name}.hex:i"
+
+# Bootloader UART (urboot autobaud + urclock)
+md328pb.menu.bootloader.uart0=UART0 (D0/D1)
+md328pb.menu.bootloader.uart0.upload.maximum_size=32384
+md328pb.menu.bootloader.uart0.upload.protocol=urclock
+md328pb.menu.bootloader.uart0.upload.uartpins=uart0_rxd0_txd1
+md328pb.menu.bootloader.uart0.build.export_merged_output=true
+md328pb.menu.bootloader.uart0.bootloader.file=urboot/{build.mcu}/watchdog_1_s/autobaud/{upload.uartpins}/{build.bootloader_led}/urboot_{build.mcu}_pr_ee_ce.hex
+
+md328pb.menu.bootloader.uart1=UART1 (D11=TX, D12=RX)
+md328pb.menu.bootloader.uart1.upload.maximum_size=32384
+md328pb.menu.bootloader.uart1.upload.protocol=urclock
+md328pb.menu.bootloader.uart1.upload.uartpins=uart1_rxb4_txb3
+md328pb.menu.bootloader.uart1.build.export_merged_output=true
+md328pb.menu.bootloader.uart1.bootloader.file=urboot/{build.mcu}/watchdog_1_s/autobaud/{upload.uartpins}/{build.bootloader_led}/urboot_{build.mcu}_pr_ee_ce.hex
+
+# Baud rate
+md328pb.menu.baudrate.default=Default
+md328pb.menu.baudrate.default.upload.speed={upload.default_speed}
+md328pb.menu.baudrate.115200=115200
+md328pb.menu.baudrate.115200.upload.speed=115200
+md328pb.menu.baudrate.57600=57600
+md328pb.menu.baudrate.57600.upload.speed=57600
+md328pb.menu.baudrate.38400=38400
+md328pb.menu.baudrate.38400.upload.speed=38400
+md328pb.menu.baudrate.19200=19200
+md328pb.menu.baudrate.19200.upload.speed=19200
+md328pb.menu.baudrate.9600=9600
+md328pb.menu.baudrate.9600.upload.speed=9600
+
+# Brown out detection (ATmega328PB extended fuse)
+md328pb.menu.BOD.2v7=BOD 2.7V
+md328pb.menu.BOD.2v7.bootloader.extended_fuses=0b1111{bootloader.cfd_bit}101
+
+md328pb.menu.BOD.4v3=BOD 4.3V
+md328pb.menu.BOD.4v3.bootloader.extended_fuses=0b1111{bootloader.cfd_bit}100
+
+md328pb.menu.BOD.1v8=BOD 1.8V
+md328pb.menu.BOD.1v8.bootloader.extended_fuses=0b1111{bootloader.cfd_bit}110
+
+md328pb.menu.BOD.disabled=BOD disabled
+md328pb.menu.BOD.disabled.bootloader.extended_fuses=0b1111{bootloader.cfd_bit}111
+
+# External clock (urboot autobaud: one hex works for all frequencies)
+md328pb.menu.clock.8MHz_external=External 8 MHz
+md328pb.menu.clock.8MHz_external.upload.default_speed=57600
+md328pb.menu.clock.8MHz_external.bootloader.low_fuses=0xFF
+md328pb.menu.clock.8MHz_external.build.f_cpu=8000000L
+
+md328pb.menu.clock.12MHz_external=External 12 MHz
+md328pb.menu.clock.12MHz_external.upload.default_speed=57600
+md328pb.menu.clock.12MHz_external.bootloader.low_fuses=0xFF
+md328pb.menu.clock.12MHz_external.build.f_cpu=12000000L
+
+md328pb.menu.clock.16MHz_external=External 16 MHz
+md328pb.menu.clock.16MHz_external.upload.default_speed=115200
+md328pb.menu.clock.16MHz_external.bootloader.low_fuses=0xFF
+md328pb.menu.clock.16MHz_external.build.f_cpu=16000000L
+
+md328pb.menu.clock.20MHz_external=External 20 MHz
+md328pb.menu.clock.20MHz_external.upload.default_speed=115200
+md328pb.menu.clock.20MHz_external.bootloader.low_fuses=0xFF
+md328pb.menu.clock.20MHz_external.build.f_cpu=20000000L

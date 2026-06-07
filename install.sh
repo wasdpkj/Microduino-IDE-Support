@@ -14,7 +14,7 @@ export MAIN_PLATFORMS='declare -A main_platforms=( [uno]="arduino:avr:uno" [due]
 
 # associative array for other platforms that can be called explicitly in .travis.yml configs
 # this will be eval'd in the functions below because arrays can't be exported
-export AUX_PLATFORMS='declare -A aux_platforms=( [core328]="microduino:avr:mddevice:cpu=16MHzatmega328" [coreplus644]="microduino:avr:mddevice:cpu=16MHzatmega644" [coreplus1284]="microduino:avr:mddevice:cpu=16MHzatmega1284" [coreusb]="microduino:avr:mddevice:cpu=usb32u416m" [corerf]="microduino:avr:mddevice:cpu=16MHzatmega128rfa1" [coreesp]="microduino:esp32:CoreESP32:FlashFreq=80" )'
+export AUX_PLATFORMS='declare -A aux_platforms=( [core328]="microduino:avr:mddevice:cpu=16MHzatmega328" [coreplus644]="microduino:avr:mddevice:cpu=16MHzatmega644" [coreplus1284]="microduino:avr:mddevice:cpu=16MHzatmega1284" [coreusb]="microduino:avr:mddevice:cpu=usb32u416m" [corerf]="microduino:avr:mddevice:cpu=16MHzatmega128rfa1" [coreesp]="esp32:esp32:esp32:FlashFreq=80" )'
 
 # make display available for arduino CLI1.
 /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16
@@ -60,19 +60,12 @@ echo "########################################################################";
 
 # install the microduino board packages
 echo -n "ADD PACKAGE INDEX: "
-DEPENDENCY_OUTPUT=$(arduino --pref "boardsmanager.additional.urls=https://raw.githubusercontent.com/wasdpkj/Microduino-IDE-Support/master/_for_travis/package_microduino_index.json" --save-prefs 2>&1)
+DEPENDENCY_OUTPUT=$(arduino --pref "boardsmanager.additional.urls=https://raw.githubusercontent.com/wasdpkj/Microduino-IDE-Support/master/_for_travis/package_microduino_index.json,https://espressif.github.io/arduino-esp32/package_esp32_index.json" --save-prefs 2>&1)
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
 
-echo -n "MICRODUINO ESP32: "
-DEPENDENCY_OUTPUT=$(arduino --install-boards microduino:esp32:1.8.4+6.0 2>&1)
+echo -n "ESP32 (OFFICIAL): "
+DEPENDENCY_OUTPUT=$(arduino --install-boards esp32:esp32 2>&1)
 if [ $? -ne 0 ]; then echo -e "\xe2\x9c\x96"; else echo -e "\xe2\x9c\x93"; fi
-
-#- ln -s $TRAVIS_BUILD_DIR esp32
-#cd $HOME/travis/\.arduino15/packages/microduino/hardware/esp32/\1\.\8\.\4/tools
-#python get.py
-#export PATH="$HOME/arduino_ide:$TRAVIS_BUILD_DIR/\.arduino15/packages/microduino/hardware/esp32/\1\.\8\.\4/tools/xtensa-esp32-elf/bin:$PATH"
-#which arduino
-#cd $TRAVIS_BUILD_DIR
 
 echo -n "MICRODUINO AVR: "
 DEPENDENCY_OUTPUT=$(arduino --install-boards microduino:avr 2>&1)

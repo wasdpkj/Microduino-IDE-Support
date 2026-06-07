@@ -47,15 +47,16 @@ Microduino-IDE [![Build Status](https://travis-ci.org/wasdpkj/Microduino-IDE-Sup
 - Add the URL for the package to `"File>Preferences>Additional Boards Manager URLs"`
   - URL:https://raw.githubusercontent.com/wasdpkj/Microduino-IDE-Support/master/_for_travis/package_microduino_index.json
   - URL:https://raw.githubusercontent.com/wasdpkj/Microduino-IDE-Support/master/_for_travis/package_linkedsemi_index.json
+  - URL:https://espressif.github.io/arduino-esp32/package_esp32_index.json
 - `"Tools>Board>Boards Manager"`...
 - Select the board and the latest version you want to install
   - `"Microduino AVR Boards"`
-  - `"Microduino ESP32 Boards"`
+  - `"esp32"` (official Espressif ESP32 package, for CoreESP32)
 - Wait for it to download completely
 - Close Boards Manager
 - Select the board at `"Tools>Board"`
   - `"Microduino/mCookie-device"`
-  - `"Microduino CoreESP32"`
+  - `"ESP32 Dev Module"` (for CoreESP32, see pinmap below)
 
 ### How to add the libraries for Microduino
 

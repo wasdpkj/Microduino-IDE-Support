@@ -202,6 +202,9 @@ void analogWrite(uint8_t pin, int val)
 			#if defined(TCCR3A) && defined(COM3B1)
 			case TIMER3B:
 				// connect pwm to pin on timer 3, channel B
+				#if defined(__AVR_ATmega328PB__)
+				PORTD |= _BV(PD2);
+				#endif
 				sbi(TCCR3A, COM3B1);
 				OCR3B = val; // set pwm duty
 				break;
