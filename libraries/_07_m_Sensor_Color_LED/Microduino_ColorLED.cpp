@@ -1149,6 +1149,67 @@ void ColorLED::show(void) {
 
 lsShow(pixels, numBytes);
 
+#elif defined(_PY32_DEF_)
+
+// PY32 / Air001 — same SysTick timing as Adafruit NeoPixel 1.15.3
+  uint8_t *p = pixels, *end = p + numBytes, pix = *p++, mask = 0x80;
+  uint32_t cyc;
+  uint32_t saveLoad = SysTick->LOAD, saveVal = SysTick->VAL;
+#if defined(NEO_KHZ400) // 800 KHz check needed only if 400 KHz support enabled
+  if (is800KHz) {
+#endif
+    #define TOP_US 1.5f  // 周期时间设置为1.5µs
+    #define T0H_US 0.3f  // 0码高电平时间设置为0.3µs
+    #define T1H_US 0.9f  // 1码高电平时间设置为1µs
+
+    uint32_t top = (uint32_t)(F_CPU * TOP_US / 1000000.0f);
+    uint32_t t0 = top - (uint32_t)(F_CPU * T0H_US / 1000000.0f);
+    uint32_t t1 = top - (uint32_t)(F_CPU * T1H_US / 1000000.0f);
+
+    SysTick->LOAD = top - 1; // Config SysTick for NeoPixel bit freq
+    SysTick->VAL = 0;        // Set to start value
+    for (;;) {
+      LL_GPIO_SetOutputPin(gpioPort, gpioPin);
+      cyc = (pix & mask) ? t1 : t0;
+      while (SysTick->VAL > cyc)
+        ;
+      LL_GPIO_ResetOutputPin(gpioPort, gpioPin);
+      if (!(mask >>= 1)) {
+        if (p >= end)
+          break;
+        pix = *p++;
+        mask = 0x80;
+      }
+      while (SysTick->VAL <= cyc)
+        ;
+    }
+#if defined(NEO_KHZ400)
+  } else {                                 // 400 kHz bitstream
+    uint32_t top = (F_CPU / 400000);       // 2.5µs
+    uint32_t t0 = top - (F_CPU / 2000000); // 0.5µs
+    uint32_t t1 = top - (F_CPU / 833333);  // 1.2µs
+    SysTick->LOAD = top - 1; // Config SysTick for NeoPixel bit freq
+    SysTick->VAL = 0;        // Set to start value
+    for (;;) {
+      LL_GPIO_SetOutputPin(gpioPort, gpioPin);
+      cyc = (pix & mask) ? t1 : t0;
+      while (SysTick->VAL > cyc)
+        ;
+      LL_GPIO_ResetOutputPin(gpioPort, gpioPin);
+      if (!(mask >>= 1)) {
+        if (p >= end)
+          break;
+        pix = *p++;
+        mask = 0x80;
+      }
+      while (SysTick->VAL <= cyc)
+        ;
+    }
+  }
+#endif // NEO_KHZ400
+  SysTick->LOAD = saveLoad; // Restore SysTick rollover to 1 ms
+  SysTick->VAL = saveVal;   // Restore SysTick value
+
 #elif defined(__arm__)
 
 // ARM MCUs -- Teensy 3.0, 3.1, LC, Arduino Due ---------------------------
@@ -1935,6 +1996,10 @@ void ColorLED::setPin(uint8_t p) {
 #ifdef __AVR__
     port    = portOutputRegister(digitalPinToPort(p));
     pinMask = digitalPinToBitMask(p);
+#endif
+#if defined(_PY32_DEF_)
+    gpioPort = digitalPinToPort(p);
+    gpioPin = PY32_LL_GPIO_PIN(digitalPinToPinName(p));
 #endif
 #endif
 }

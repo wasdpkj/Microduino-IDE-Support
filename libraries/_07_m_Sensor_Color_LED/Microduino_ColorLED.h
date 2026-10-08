@@ -240,6 +240,10 @@ class ColorLED {
     pinMask;       // Output PORT bitmask
   
 #endif
+#if defined(_PY32_DEF_)
+  GPIO_TypeDef *gpioPort; ///< Output GPIO PORT
+  uint32_t gpioPin;       ///< Output GPIO PIN
+#endif
 #if defined(LE501X)
   void lsShow(uint8_t *_pixels, uint16_t _numBytes);
 #endif
