@@ -3,8 +3,24 @@
 板卡 **Microduino/mCookie-Core (328PB)**（`md328pb`）使用 **urboot autobaud** + **urclock** 上传协议。
 
 - **UART0 / UART1 各一份 hex**，8/12/16/20 MHz 外部晶振共用（运行时 autobaud 测速）
-- 上传协议：`urclock`（需 Arduino IDE 2.x / avrdude 7+）
+- 上传协议：`urclock`（需 avrdude 7+，推荐 MiniCore 自带的 `avrdude 8.0-arduino.1`）
 - 最大 sketch 空间：**32384** 字节（vector bootloader）
+
+## 烧录引导程序：`AVR Part "atmega328pb" not found`
+
+旧版 arduino 自带的 **avrdude 6.3.0-arduino9** 没有 `atmega328pb` 定义。`platform.txt` 已固定使用：
+
+```
+tools.avrdude.path={runtime.tools.avrdude-8.0-arduino.1.path}
+```
+
+请先通过 Boards Manager 安装 **MiniCore**（会附带 avrdude 8.0），或执行：
+
+```
+arduino-cli core install MiniCore:avr --additional-urls https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
+```
+
+然后**重启 Arduino IDE**，再烧录引导程序。
 
 ## 文件路径（boards.txt 模板）
 

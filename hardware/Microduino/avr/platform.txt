@@ -96,9 +96,15 @@ recipe.preproc.macros="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} {
 
 # AVR Uploader/Programmers tools
 # ------------------------------
+# Prefer MiniCore's avrdude 8.0 (has atmega328pb + urclock for urboot).
+# Fallback to Arduino's 6.3.0-arduino17 (has atmega328pb; no urclock).
+# Do NOT use generic {runtime.tools.avrdude.path}: IDE may resolve to
+# 6.3.0-arduino9 which lacks atmega328pb and breaks Burn Bootloader.
 
-tools.avrdude.path={runtime.tools.avrdude.path}
+tools.avrdude.path={runtime.tools.avrdude-8.0-arduino.1.path}
+tools.avrdude.path.windows={runtime.tools.avrdude-8.0-arduino.1.path}
 tools.avrdude.cmd.path={path}/bin/avrdude
+tools.avrdude.cmd.path.windows={path}/bin/avrdude.exe
 tools.avrdude.config.path={path}/etc/avrdude.conf
 
 tools.avrdude.network_cmd={runtime.tools.arduinoOTA.path}/bin/arduinoOTA
