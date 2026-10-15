@@ -12,6 +12,49 @@
           "help": {
             "online": "https://wiki.microduino.cn"
           },
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-avr-1.8.11+1.0.tar.gz",
+          "checksum": "SHA-256:1BEDF71FA796FA0373EBA32B389CE1971229725B8EB97E925DC959B95E508D0E",
+          "name": "Microduino AVR Boards",
+          "version": "1.8.11+1.0",
+          "architecture": "avr",
+          "archiveFileName": "microduino-avr-1.8.11+1.0.tar.gz",
+          "size": "372584",
+          "toolsDependencies": [],
+          "boards": [
+            {
+              "name": "Core (328p)@16M,5V"
+            },
+            {
+              "name": "Core (328p)@8M,3.3V"
+            },
+            {
+              "name": "Microduino/mCookie-Core (328PB)"
+            },
+            {
+              "name": "Core+ (644pa)@16M,5V)"
+            },
+            {
+              "name": "Core+ (644pa)@8M,3.3V"
+            },
+            {
+              "name": "Core+ (1284pa)@16M,5V)"
+            },
+            {
+              "name": "Core+ (1284pa)@8M,3.3V"
+            },
+            {
+              "name": "Core USB (32u4)"
+            },
+            {
+              "name": "Core RF (128rfa1)"
+            }
+          ]
+        },
+        {
+          "category": "Microduino",
+          "help": {
+            "online": "https://wiki.microduino.cn"
+          },
           "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-avr-1.8.10+1.0.tar.gz",
           "checksum": "SHA-256:1EAB6BBEE628DDD2A879218E00244378EE78F2D3976D5809606E1C437C36C864",
           "name": "Microduino AVR Boards",
@@ -19,8 +62,7 @@
           "architecture": "avr",
           "archiveFileName": "microduino-avr-1.8.10+1.0.tar.gz",
           "size": "288882",
-          "toolsDependencies": [
-          ],
+          "toolsDependencies": [],
           "boards": [
             {
               "name": "Core (328p)@16M,5V"
@@ -60,8 +102,7 @@
           "architecture": "avr",
           "archiveFileName": "microduino-avr-1.8.4+2.0.tar.gz",
           "size": "288493",
-          "toolsDependencies": [
-          ],
+          "toolsDependencies": [],
           "boards": [
             {
               "name": "Core (328p)@16M,5V"
@@ -101,8 +142,7 @@
           "architecture": "avr",
           "archiveFileName": "microduino-avr-1.6.9+2.0.tar.gz",
           "size": "288316",
-          "toolsDependencies": [
-          ],
+          "toolsDependencies": [],
           "boards": [
             {
               "name": "Core (328p)@16M,5V"
@@ -173,7 +213,7 @@
               "name": "WiPy 3.0"
             }
           ]
-        },		
+        },
         {
           "category": "Microduino",
           "help": {
@@ -220,8 +260,8 @@
               "name": "WiPy 3.0"
             }
           ]
-        },        
-		{
+        },
+        {
           "category": "Microduino",
           "help": {
             "online": "https://wiki.microduino.cn"
@@ -405,7 +445,7 @@
               "name": "Noduino Quantum"
             }
           ]
-        }		
+        }
       ],
       "tools": [
         {
@@ -443,21 +483,21 @@
           ]
         },
         {
-          "version": "1.22.0-61-gab8375a-5.2.0", 
-          "name": "xtensa-esp32-elf-gcc", 
+          "version": "1.22.0-61-gab8375a-5.2.0",
+          "name": "xtensa-esp32-elf-gcc",
           "systems": [
             {
-              "url": "https://dl.espressif.com/dl/xtensa-esp32-elf-win32-1.22.0-61-gab8375a-5.2.0.zip", 
-              "checksum": "SHA-256:c00dbdab8e8acc273d4aa319a74f7bb1d9496c843159823201d685359174168f", 
-              "host": "i686-mingw32", 
-              "archiveFileName": "xtensa-esp32-elf-win32-1.22.0-61-gab8375a-5.2.0.zip", 
+              "url": "https://dl.espressif.com/dl/xtensa-esp32-elf-win32-1.22.0-61-gab8375a-5.2.0.zip",
+              "checksum": "SHA-256:c00dbdab8e8acc273d4aa319a74f7bb1d9496c843159823201d685359174168f",
+              "host": "i686-mingw32",
+              "archiveFileName": "xtensa-esp32-elf-win32-1.22.0-61-gab8375a-5.2.0.zip",
               "size": "76346909"
             },
             {
-              "url": "https://dl.espressif.com/dl/xtensa-esp32-elf-osx-1.22.0-61-gab8375a-5.2.0.tar.gz", 
-              "checksum": "SHA-256:89a9a6084ec032ddcd4bdae37b428e533ed5fd0c0ab6b66ddf703e4b3f83d6e4", 
-              "host": "x86_64-apple-darwin", 
-              "archiveFileName": "xtensa-esp32-elf-osx-1.22.0-61-gab8375a-5.2.0.tar.gz",   
+              "url": "https://dl.espressif.com/dl/xtensa-esp32-elf-osx-1.22.0-61-gab8375a-5.2.0.tar.gz",
+              "checksum": "SHA-256:89a9a6084ec032ddcd4bdae37b428e533ed5fd0c0ab6b66ddf703e4b3f83d6e4",
+              "host": "x86_64-apple-darwin",
+              "archiveFileName": "xtensa-esp32-elf-osx-1.22.0-61-gab8375a-5.2.0.tar.gz",
               "size": "40481812"
             },
             {
@@ -674,7 +714,7 @@
             }
           ]
         }
-      ],  
+      ],
       "email": "pankejia@microduino.cc",
       "name": "microduino"
     }
