@@ -12,15 +12,14 @@
           "help": {
             "online": "https://wiki.microduino.cn"
           },
-          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-avr-1.8.10+1.0.tar.gz",
-          "checksum": "SHA-256:1EAB6BBEE628DDD2A879218E00244378EE78F2D3976D5809606E1C437C36C864",
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-avr-1.8.11+1.0.tar.gz",
+          "checksum": "SHA-256:1BEDF71FA796FA0373EBA32B389CE1971229725B8EB97E925DC959B95E508D0E",
           "name": "Microduino AVR Boards",
-          "version": "1.8.10+1.0",
+          "version": "1.8.11+1.0",
           "architecture": "avr",
-          "archiveFileName": "microduino-avr-1.8.10+1.0.tar.gz",
-          "size": "288882",
-          "toolsDependencies": [
-          ],
+          "archiveFileName": "microduino-avr-1.8.11+1.0.tar.gz",
+          "size": "372584",
+          "toolsDependencies": [],
           "boards": [
             {
               "name": "Core (328p)@16M,5V"
@@ -29,7 +28,47 @@
               "name": "Core (328p)@8M,3.3V"
             },
             {
-              "name": "Core (328PB)"
+              "name": "Microduino/mCookie-Core (328PB)"
+            },
+            {
+              "name": "Core+ (644pa)@16M,5V)"
+            },
+            {
+              "name": "Core+ (644pa)@8M,3.3V"
+            },
+            {
+              "name": "Core+ (1284pa)@16M,5V)"
+            },
+            {
+              "name": "Core+ (1284pa)@8M,3.3V"
+            },
+            {
+              "name": "Core USB (32u4)"
+            },
+            {
+              "name": "Core RF (128rfa1)"
+            }
+          ]
+        },
+        {
+          "category": "Microduino",
+          "help": {
+            "online": "https://wiki.microduino.cn"
+          },
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-avr-1.8.10+1.0.tar.gz",
+          "checksum": "SHA-256:1EAB6BBEE628DDD2A879218E00244378EE78F2D3976D5809606E1C437C36C864",
+          "name": "Microduino AVR Boards",
+          "version": "1.8.10+1.0",
+          "architecture": "avr",
+          "archiveFileName": "microduino-avr-1.8.10+1.0.tar.gz",
+          "size": "288882",
+          "toolsDependencies": [],
+          "boards": [
+            {
+              "name": "Core (328p)@16M,5V"
+            },
+            {
+              "name": "Core (328p)@8M,3.3V"
             },
             {
               "name": "Core+ (644pa)@16M,5V)"
@@ -63,17 +102,13 @@
           "architecture": "avr",
           "archiveFileName": "microduino-avr-1.8.4+2.0.tar.gz",
           "size": "288493",
-          "toolsDependencies": [
-          ],
+          "toolsDependencies": [],
           "boards": [
             {
               "name": "Core (328p)@16M,5V"
             },
             {
               "name": "Core (328p)@8M,3.3V"
-            },
-            {
-              "name": "Core (328PB)"
             },
             {
               "name": "Core+ (644pa)@16M,5V)"
@@ -107,17 +142,13 @@
           "architecture": "avr",
           "archiveFileName": "microduino-avr-1.6.9+2.0.tar.gz",
           "size": "288316",
-          "toolsDependencies": [
-          ],
+          "toolsDependencies": [],
           "boards": [
             {
               "name": "Core (328p)@16M,5V"
             },
             {
               "name": "Core (328p)@8M,3.3V"
-            },
-            {
-              "name": "Core (328PB)"
             },
             {
               "name": "Core+ (644pa)@16M,5V)"
@@ -137,8 +168,7 @@
           ]
         }
       ],
-      "tools": [
-      ],
+      "tools": [],
       "email": "wasdpkj@hotmail.com",
       "name": "microduino"
     }
