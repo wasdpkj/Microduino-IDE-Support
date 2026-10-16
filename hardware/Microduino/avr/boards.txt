@@ -336,6 +336,12 @@ md328pb.menu.BOD.disabled=BOD disabled
 md328pb.menu.BOD.disabled.bootloader.extended_fuses=0b1111{bootloader.cfd_bit}111
 
 # External clock (urboot autobaud: one hex works for all frequencies)
+# First menu entry is Arduino default; prefer 16 MHz external.
+md328pb.menu.clock.16MHz_external=External 16 MHz
+md328pb.menu.clock.16MHz_external.upload.default_speed=115200
+md328pb.menu.clock.16MHz_external.bootloader.low_fuses=0xFF
+md328pb.menu.clock.16MHz_external.build.f_cpu=16000000L
+
 md328pb.menu.clock.8MHz_external=External 8 MHz
 md328pb.menu.clock.8MHz_external.upload.default_speed=57600
 md328pb.menu.clock.8MHz_external.bootloader.low_fuses=0xFF
@@ -345,11 +351,6 @@ md328pb.menu.clock.12MHz_external=External 12 MHz
 md328pb.menu.clock.12MHz_external.upload.default_speed=57600
 md328pb.menu.clock.12MHz_external.bootloader.low_fuses=0xFF
 md328pb.menu.clock.12MHz_external.build.f_cpu=12000000L
-
-md328pb.menu.clock.16MHz_external=External 16 MHz
-md328pb.menu.clock.16MHz_external.upload.default_speed=115200
-md328pb.menu.clock.16MHz_external.bootloader.low_fuses=0xFF
-md328pb.menu.clock.16MHz_external.build.f_cpu=16000000L
 
 md328pb.menu.clock.20MHz_external=External 20 MHz
 md328pb.menu.clock.20MHz_external.upload.default_speed=115200

@@ -20,3 +20,6 @@
 *.PDF	 diff=astextplain
 *.rtf	 diff=astextplain
 *.RTF	 diff=astextplain
+
+# Shell scripts must be LF on Linux (CRLF shebang => fork/exec ENOENT)
+*.sh text eol=lf

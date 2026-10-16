@@ -12,6 +12,49 @@
           "help": {
             "online": "https://wiki.microduino.cn"
           },
+          "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-avr-1.8.11+1.1.tar.gz",
+          "checksum": "SHA-256:F763B1A24562E77357580ABED91B2F3953A926417CF54A62E230ED75F36CB2F5",
+          "name": "Microduino AVR Boards",
+          "version": "1.8.11+1.1",
+          "architecture": "avr",
+          "archiveFileName": "microduino-avr-1.8.11+1.1.tar.gz",
+          "size": "371219",
+          "toolsDependencies": [],
+          "boards": [
+            {
+              "name": "Core (328p)@16M,5V"
+            },
+            {
+              "name": "Core (328p)@8M,3.3V"
+            },
+            {
+              "name": "Microduino/mCookie-Core (328PB)"
+            },
+            {
+              "name": "Core+ (644pa)@16M,5V)"
+            },
+            {
+              "name": "Core+ (644pa)@8M,3.3V"
+            },
+            {
+              "name": "Core+ (1284pa)@16M,5V)"
+            },
+            {
+              "name": "Core+ (1284pa)@8M,3.3V"
+            },
+            {
+              "name": "Core USB (32u4)"
+            },
+            {
+              "name": "Core RF (128rfa1)"
+            }
+          ]
+        },
+        {
+          "category": "Microduino",
+          "help": {
+            "online": "https://wiki.microduino.cn"
+          },
           "url": "https://github.com/wasdpkj/Microduino-IDE-Support/raw/master/_for_travis/boards/microduino-avr-1.8.11+1.0.tar.gz",
           "checksum": "SHA-256:1BEDF71FA796FA0373EBA32B389CE1971229725B8EB97E925DC959B95E508D0E",
           "name": "Microduino AVR Boards",

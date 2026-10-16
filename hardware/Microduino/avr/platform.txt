@@ -6,7 +6,7 @@
 # https://github.com/arduino/Arduino/wiki/Arduino-IDE-1.5-3rd-party-Hardware-specification
 
 name=Microduino AVR Boards
-version=1.8.11+1.0
+version=1.8.11+1.1
 
 # AVR compile variables
 # ---------------------
@@ -76,10 +76,8 @@ recipe.output.tmp_file={build.project_name}.hex
 recipe.output.save_file={build.project_name}.{build.variant}.hex
 
 recipe.hooks.savehex.presavehex.1.pattern.windows="{runtime.platform.path}/scripts/delete_merged_output.bat" {build.export_merged_output} "{build.path}\{build.project_name}.with_bootloader.hex"
-recipe.hooks.savehex.presavehex.1.pattern.linux=chmod +x "{runtime.platform.path}/scripts/delete_merged_output.sh"
-recipe.hooks.savehex.presavehex.2.pattern.linux="{runtime.platform.path}/scripts/delete_merged_output.sh" {build.export_merged_output} "{build.path}/{build.project_name}.with_bootloader.hex"
-recipe.hooks.savehex.presavehex.1.pattern.macosx=chmod +x "{runtime.platform.path}/scripts/delete_merged_output.sh"
-recipe.hooks.savehex.presavehex.2.pattern.macosx="{runtime.platform.path}/scripts/delete_merged_output.sh" {build.export_merged_output} "{build.path}/{build.project_name}.with_bootloader.hex"
+recipe.hooks.savehex.presavehex.1.pattern.linux=bash "{runtime.platform.path}/scripts/delete_merged_output.sh" {build.export_merged_output} "{build.path}/{build.project_name}.with_bootloader.hex"
+recipe.hooks.savehex.presavehex.1.pattern.macosx=bash "{runtime.platform.path}/scripts/delete_merged_output.sh" {build.export_merged_output} "{build.path}/{build.project_name}.with_bootloader.hex"
 
 ## Compute size
 recipe.size.pattern="{compiler.path}{compiler.size.cmd}" -A "{build.path}/{build.project_name}.elf"
