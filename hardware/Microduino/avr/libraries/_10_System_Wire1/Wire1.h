@@ -1,115 +1,28 @@
 /*
-  Wire1.h - Second TWI/I2C bus (TWI1) for ATmega328PB
-  Standalone TwoWire1 class: does not include <Wire.h>, so it works
-  even when Mixly/Arduino IDE picks the stock Wire library first.
+Wire1.h - Second TWI/I2C bus (TWI1) for ATmega328PB
+改动说明（2026-10）：
+- 与 miniCore BSP 对齐：Wire1 对象类型统一为 TwoWire。
+- 通过 `using TwoWire1 = TwoWire;` 保留旧类型名，避免破坏已使用
+  TwoWire1 类型的用户代码（例如 `TwoWire1 *p = &Wire1;`）。
+- 依赖 Wire.h 提供的 TwoWire 类定义（TWI1_vect 存在时，Wire.h 走
+  注入式构造函数分支，方法签名与 TWI1 一致）。
 */
 
 #ifndef TwoWire1_h
 #define TwoWire1_h
 
-#include <Arduino.h>
-#include <inttypes.h>
-#include "Stream.h"
+#include <Wire.h>   // 提供 TwoWire 类定义
 
-// Match Microduino Wire timeout enablement
-#ifndef WIRE_TIMEOUT
-#define WIRE_TIMEOUT
-#endif
+// —— 向后兼容 ——
+// 旧代码中的 `TwoWire1` 类型名继续可用，指向同一个 TwoWire 类型
+using TwoWire1 = TwoWire;
 
+// TWI1 总线对象；类型与 miniCore BSP 保持一致
+extern TwoWire Wire1;
+
+// 保持旧宏，供外部代码探测“Wire1 支持 end()”
+#ifndef WIRE1_HAS_END
 #define WIRE1_HAS_END 1
-
-class TwoWire1 : public Stream
-{
-  private:
-    int bufferLength;
-    uint8_t* rxBuffer;
-    uint8_t rxBufferIndex;
-    uint8_t rxBufferLength;
-
-    uint8_t txAddress;
-    uint8_t* txBuffer;
-    uint8_t txBufferIndex;
-    uint8_t txBufferLength;
-
-    uint8_t transmitting;
-    void (*user_onRequest)(void);
-    void (*user_onReceive)(int);
-    void (*tw_init)(void);
-    void (*tw_disable)(void);
-    void (*tw_setAddress)(uint8_t);
-    void (*tw_setFrequency)(uint32_t);
-    uint8_t (*tw_readFrom)(uint8_t, uint8_t*, uint8_t, uint8_t);
-    uint8_t (*tw_writeTo)(uint8_t, uint8_t*, uint8_t, uint8_t, uint8_t);
-    uint8_t (*tw_transmit)(const uint8_t*, uint8_t);
-    void (*tw_reply)(uint8_t);
-    void (*tw_stop)(void);
-    void (*tw_releaseBus)(void);
-    #if defined(WIRE_TIMEOUT)
-      void (*tw_setTimeoutInMicros)(uint32_t, bool);
-      void (*tw_handleTimeout)(bool);
-      bool (*tw_manageTimeoutFlag)(bool);
-    #endif
-
-  public:
-    TwoWire1(int bufferLength,
-            void (*tw_init)(void),
-            void (*tw_disable)(void),
-            void (*tw_setAddress)(uint8_t),
-            void (*tw_setFrequency)(uint32_t),
-            uint8_t (*tw_readFrom)(uint8_t, uint8_t*, uint8_t, uint8_t),
-            uint8_t (*tw_writeTo)(uint8_t, uint8_t*, uint8_t, uint8_t, uint8_t),
-            uint8_t (*tw_transmit)(const uint8_t*, uint8_t),
-            void (*tw_reply)(uint8_t),
-            void (*tw_stop)(void),
-            void (*tw_releaseBus)(void),
-            #if defined(WIRE_TIMEOUT)
-              void (*tw_setTimeoutInMicros)(uint32_t, bool),
-              void (*tw_handleTimeout)(bool),
-              bool (*tw_manageTimeoutFlag)(bool),
-            #endif
-            void (*tw_attachSlaveRxEvent)( void (*onReceive)(uint8_t*, int) ),
-            void (*onReceive)(uint8_t*, int),
-            void (*tw_attachSlaveTxEvent)( void (*onTrasmit)(void) ),
-            void (*onTrasmit)(void));
-    ~TwoWire1();
-    void begin();
-    void begin(uint8_t);
-    void begin(int);
-    void end();
-    void setClock(uint32_t);
-    #if defined(WIRE_TIMEOUT)
-      void setWireTimeout(uint32_t timeout = 25000, bool reset_with_timeout = false);
-      bool getWireTimeoutFlag(void);
-      void clearWireTimeoutFlag(void);
-    #endif
-    void beginTransmission(uint8_t);
-    void beginTransmission(int);
-    uint8_t endTransmission(void);
-    uint8_t endTransmission(uint8_t);
-    uint8_t requestFrom(uint8_t, uint8_t);
-    uint8_t requestFrom(uint8_t, uint8_t, uint8_t);
-    uint8_t requestFrom(uint8_t, uint8_t, uint32_t, uint8_t, uint8_t);
-    uint8_t requestFrom(int, int);
-    uint8_t requestFrom(int, int, int);
-    virtual size_t write(uint8_t);
-    virtual size_t write(const uint8_t *, size_t);
-    virtual int available(void);
-    virtual int read(void);
-    virtual int peek(void);
-    virtual void flush(void);
-    void onReceive( void (*)(int) );
-    void onRequest( void (*)(void) );
-
-    void onRequestService(void);
-    void onReceiveService(uint8_t*, int);
-
-    inline size_t write(unsigned long n) { return write((uint8_t)n); }
-    inline size_t write(long n) { return write((uint8_t)n); }
-    inline size_t write(unsigned int n) { return write((uint8_t)n); }
-    inline size_t write(int n) { return write((uint8_t)n); }
-    using Print::write;
-};
-
-extern TwoWire1 Wire1;
-
 #endif
+
+#endif // TwoWire1_h

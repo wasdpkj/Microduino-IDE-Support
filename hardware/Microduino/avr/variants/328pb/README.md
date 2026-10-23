@@ -36,7 +36,8 @@
 | `_10_System_SPI` | `SPI` | SPI0（D10–D13） |
 | `_10_System_SPI1` | `SPI1` | SPI1（见上表） |
 
-`_10_System_Wire` 已升级为 MiniCore 版本以支持 Wire1（328P 仍兼容原 API）。
+`_10_System_Wire` 已升级为 MiniCore 版本以支持 Wire1（328P 仍兼容原 API）：TWI1_vect 存在时
+`TwoWire` 走注入式构造函数分支，`Wire`（TWI0）与 `Wire1`（TWI1）因此同为 `TwoWire` 类型。
 
 ## Bootloader
 
